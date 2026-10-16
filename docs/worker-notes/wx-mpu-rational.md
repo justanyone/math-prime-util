@@ -6,3 +6,7 @@ The oracle includes signed and bigint fallback cases. Use signed continued fract
 Implemented continued fractions, tree traversals, and Farey operations. Farey rank currently uses a denominator sieve; source-equivalence remains unverified because the submodule is empty.
 Added one oracle test per requested function, continued-fraction/tree/Farey properties, invalid-input checks, repeated and concurrent calls, and hot-function benchmarks. Focused oracle tests are running offline.
 Focused tests and the gate cannot link because this image has no cc/gcc/clang. Dependencies are cached; force Cargo offline. Try the installed ld with explicit startup objects, without adding repository tooling.
+Library clippy found two manual ilog2 expressions; replaced them with ilog2. Testing ld with a build-directory libgcc_s linker-name symlink; no tracked build tooling was added.
+All 14 requested APIs have implementations, examples, and status ticks. Library clippy passes. Source fidelity, the C native bounds, and Farey performance still need review against the missing reference before this can count as a faithful p <<cut 4 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -19 bytes)

@@ -20,7 +20,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `bell_number`
 - [ ] `bernfrac`
 - [ ] `bernreal`
-- [ ] `bestrational`
+- [x] `bestrational`
 - [ ] `binomial`
 - [ ] `binomialmod`
 - [ ] `bitand`
@@ -34,7 +34,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `bitset`
 - [ ] `bittest`
 - [ ] `bitxor`
-- [ ] `calkin_wilf_n`
+- [x] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
 - [ ] `catalan_number`
 - [ ] `cdivint`
@@ -46,8 +46,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `chinese2`
 - [ ] `cmpint`
 - [ ] `consecutive_integer_lcm`
-- [ ] `contfrac`
-- [ ] `convergents`
+- [x] `contfrac`
+- [x] `convergents`
 - [ ] `cornacchia`
 - [x] `crootint`
 - [ ] `csrand`
@@ -69,8 +69,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `factorial`
 - [ ] `factorialmod`
 - [ ] `falling_factorial`
-- [ ] `farey`
-- [ ] `farey_rank`
+- [x] `farey`
+- [x] `farey_rank`
 - [ ] `fdivrem`
 - [ ] `fermat_factor`
 - [ ] `fibonacci`
@@ -92,7 +92,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `forsquarefree`
 - [ ] `forsquarefreeint`
 - [ ] `frobenius_number`
-- [ ] `from_contfrac`
+- [x] `from_contfrac`
 - [ ] `fromdigits`
 - [ ] `fromzeckendorf`
 - [ ] `fubini`
@@ -215,18 +215,18 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `multifactorial`
 - [ ] `negint`
 - [x] `negmod`
-- [ ] `next_calkin_wilf`
+- [x] `next_calkin_wilf`
 - [ ] `next_chen_prime`
-- [ ] `next_farey`
+- [x] `next_farey`
 - [ ] `next_perfect_power`
 - [ ] `next_prime`
 - [ ] `next_prime_power`
-- [ ] `next_stern_brocot`
+- [x] `next_stern_brocot`
 - [ ] `nth_almost_prime`
 - [ ] `nth_almost_prime_approx`
 - [ ] `nth_almost_prime_lower`
 - [ ] `nth_almost_prime_upper`
-- [ ] `nth_calkin_wilf`
+- [x] `nth_calkin_wilf`
 - [ ] `nth_lucky`
 - [ ] `nth_lucky_approx`
 - [ ] `nth_lucky_lower`
@@ -252,8 +252,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_ramanujan_prime_upper`
 - [ ] `nth_semiprime`
 - [ ] `nth_semiprime_approx`
-- [ ] `nth_stern_brocot`
-- [ ] `nth_stern_diatomic`
+- [x] `nth_stern_brocot`
+- [x] `nth_stern_diatomic`
 - [ ] `nth_twin_prime`
 - [ ] `nth_twin_prime_approx`
 - [ ] `numtoperm`
@@ -375,7 +375,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `squarefree_kernel`
 - [ ] `squfof_factor`
 - [ ] `srand`
-- [ ] `stern_brocot_n`
+- [x] `stern_brocot_n`
 - [ ] `stirling`
 - [ ] `sub1int`
 - [ ] `subfactorial`

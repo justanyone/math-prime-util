@@ -199,7 +199,7 @@ pub fn stern_brocot_n(a: u128, b: u128) -> u128 {
 pub fn nth_calkin_wilf(n: u128) -> (u128, u128) {
     assert!(n > 0, "index must be positive");
     let (mut a, mut b) = (1, 1);
-    for bit in (0..127 - n.leading_zeros()).rev() {
+    for bit in (0..n.ilog2()).rev() {
         if n & (1 << bit) == 0 {
             b += a;
         } else {
@@ -218,7 +218,7 @@ pub fn nth_calkin_wilf(n: u128) -> (u128, u128) {
 /// ```
 pub fn nth_stern_brocot(n: u128) -> (u128, u128) {
     assert!(n > 0, "index must be positive");
-    let depth = 127 - n.leading_zeros();
+    let depth = n.ilog2();
     let mut reversed = 1_u128;
     for bit in 0..depth {
         reversed = (reversed << 1) | ((n >> bit) & 1);

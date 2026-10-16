@@ -6,3 +6,4 @@ Shared prime cache uses OnceLock/Mutex and is Send + Sync. No unsafe. No new Car
 Cite C file and function in each public doc comment. Match existing int/modular test and bench patterns.
 Next: read PLAN.md sections 5-8, crate patterns, and the C sieve entry points, then implement.
 - 2026-10-16T23:57:15Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-sieve-a1.md.
+- 2026-10-16T23:58:15Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-sieve-a1.md.

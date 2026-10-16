@@ -37,8 +37,10 @@ impl Stream {
         let len = data.len().min(40);
         seed[..len].copy_from_slice(&data[..len]);
         if len < 40 {
-            let words: Vec<u32> = seed[..16].chunks_exact(4)
-                .map(|b| u32::from_le_bytes(b.try_into().unwrap())).collect();
+            let words: Vec<u32> = seed[..16]
+                .chunks_exact(4)
+                .map(|b| u32::from_le_bytes(b.try_into().unwrap()))
+                .collect();
             let mut state = 0;
             let increment = (words[1] << 1) | 1;
             pcg(&mut state, increment);
@@ -59,7 +61,11 @@ impl Stream {
         }
         state[14] = u32::from_le_bytes(seed[32..36].try_into().unwrap());
         state[15] = u32::from_le_bytes(seed[36..40].try_into().unwrap());
-        Self { state, buffer: [0; 1024], position: 1024 }
+        Self {
+            state,
+            buffer: [0; 1024],
+            position: 1024,
+        }
     }
 
     // reference/mpu/chacha.c: chacha_core and _refill_buffer.
@@ -67,26 +73,38 @@ impl Stream {
         for block in self.buffer.chunks_exact_mut(64) {
             let mut x = self.state;
             for _ in 0..10 {
-                for (a,b,c,d) in [(0,4,8,12), (1,5,9,13), (2,6,10,14), (3,7,11,15),
-                    (0,5,10,15), (1,6,11,12), (2,7,8,13), (3,4,9,14)] {
-                    quarter(&mut x,a,b,c,d);
+                for (a, b, c, d) in [
+                    (0, 4, 8, 12),
+                    (1, 5, 9, 13),
+                    (2, 6, 10, 14),
+                    (3, 7, 11, 15),
+                    (0, 5, 10, 15),
+                    (1, 6, 11, 12),
+                    (2, 7, 8, 13),
+                    (3, 4, 9, 14),
+                ] {
+                    quarter(&mut x, a, b, c, d);
                 }
             }
             for ((out, word), original) in block.chunks_exact_mut(4).zip(x).zip(self.state) {
                 out.copy_from_slice(&word.wrapping_add(original).to_le_bytes());
             }
             self.state[12] = self.state[12].wrapping_add(1);
-            if self.state[12] == 0 { self.state[13] = self.state[13].wrapping_add(1); }
+            if self.state[12] == 0 {
+                self.state[13] = self.state[13].wrapping_add(1);
+            }
         }
         self.position = 0;
     }
 
     fn fill(&mut self, mut output: &mut [u8]) {
         while !output.is_empty() {
-            if self.position == 1024 { self.refill(); }
+            if self.position == 1024 {
+                self.refill();
+            }
             let n = output.len().min(1024 - self.position);
-            output[..n].copy_from_slice(&self.buffer[self.position..self.position+n]);
-            self.buffer[self.position..self.position+n].fill(0);
+            output[..n].copy_from_slice(&self.buffer[self.position..self.position + n]);
+            self.buffer[self.position..self.position + n].fill(0);
             self.position += n;
             output = &mut output[n..];
         }
@@ -103,19 +121,27 @@ impl Stream {
     }
 
     fn bounded(&mut self, n: u64) -> u64 {
-        if n <= 1 { return 0; }
+        if n <= 1 {
+            return 0;
+        }
         if let Ok(n) = u32::try_from(n) {
             let minimum = n.wrapping_neg() % n;
             loop {
                 let r = self.word32();
-                if r >= minimum { return u64::from(r % n); }
+                if r >= minimum {
+                    return u64::from(r % n);
+                }
             }
         }
-        if n == 1 << 32 { return u64::from(self.word32()); }
+        if n == 1 << 32 {
+            return u64::from(self.word32());
+        }
         let minimum = n.wrapping_neg() % n;
         loop {
             let r = self.word64();
-            if r >= minimum { return r % n; }
+            if r >= minimum {
+                return r % n;
+            }
         }
     }
 }
@@ -159,7 +185,9 @@ pub fn srand(seed: u64) {
 /// math_prime_util::srand(15);
 /// assert_eq!(math_prime_util::irand32(), 140_602_708);
 /// ```
-pub fn irand32() -> u32 { with_stream(Stream::word32) }
+pub fn irand32() -> u32 {
+    with_stream(Stream::word32)
+}
 
 /// Returns MPU's native `irand` (32 random bits). MPU `csprng.c`: `irand32`.
 /// # Panics
@@ -168,7 +196,9 @@ pub fn irand32() -> u32 { with_stream(Stream::word32) }
 /// math_prime_util::srand(15);
 /// assert_eq!(math_prime_util::irand(), 140_602_708);
 /// ```
-pub fn irand() -> u64 { u64::from(irand32()) }
+pub fn irand() -> u64 {
+    u64::from(irand32())
+}
 
 /// Returns 64 random bits. MPU `chacha.c`: `chacha_irand64`.
 /// # Panics
@@ -177,7 +207,9 @@ pub fn irand() -> u64 { u64::from(irand32()) }
 /// math_prime_util::srand(15);
 /// assert_eq!(math_prime_util::irand64(), 603_884_034_911_023_882);
 /// ```
-pub fn irand64() -> u64 { with_stream(Stream::word64) }
+pub fn irand64() -> u64 {
+    with_stream(Stream::word64)
+}
 
 /// Returns a random float scaled by `limit`. Use 1.0 for the unit interval.
 /// MPU `csprng.c`: `drand64`; `XS.xs`: `drand`.
@@ -189,9 +221,13 @@ pub fn irand64() -> u64 { with_stream(Stream::word64) }
 /// ```
 #[allow(clippy::cast_precision_loss)] // Match C's NV conversion and rounding.
 pub fn drand(limit: f64) -> f64 {
-    with_stream(|stream| loop {
-        let r = stream.word64() as f64 * (1.0 / 18_446_744_073_709_551_616.0);
-        if r < 1.0 { return r * if limit == 0.0 { 1.0 } else { limit }; }
+    with_stream(|stream| {
+        loop {
+            let r = stream.word64() as f64 * (1.0 / 18_446_744_073_709_551_616.0);
+            if r < 1.0 {
+                return r * if limit == 0.0 { 1.0 } else { limit };
+            }
+        }
     })
 }
 
@@ -202,7 +238,9 @@ pub fn drand(limit: f64) -> f64 {
 /// math_prime_util::srand(42);
 /// assert!(math_prime_util::rand(10.0) < 10.0);
 /// ```
-pub fn rand(limit: f64) -> f64 { drand(limit) }
+pub fn rand(limit: f64) -> f64 {
+    drand(limit)
+}
 
 /// Returns stream bytes. MPU `csprng.c`: `csprng_rand_bytes`.
 /// # Panics
@@ -213,7 +251,9 @@ pub fn rand(limit: f64) -> f64 { drand(limit) }
 /// ```
 pub fn random_bytes(len: usize) -> Vec<u8> {
     let mut bytes = vec![0; len];
-    if len > 0 { with_stream(|stream| stream.fill(&mut bytes)); }
+    if len > 0 {
+        with_stream(|stream| stream.fill(&mut bytes));
+    }
     bytes
 }
 
@@ -229,7 +269,9 @@ pub fn random_bytes(len: usize) -> Vec<u8> {
 /// ```
 pub fn entropy_bytes(len: usize) -> io::Result<Vec<u8>> {
     let mut bytes = vec![0; len];
-    if len == 0 { return Ok(bytes); }
+    if len == 0 {
+        return Ok(bytes);
+    }
     std::fs::File::open("/dev/urandom")
         .or_else(|_| std::fs::File::open("/dev/random"))?
         .read_exact(&mut bytes)?;
@@ -262,7 +304,9 @@ pub fn urandomb(bits: u32) -> u64 {
 /// ```
 pub fn urandomm(modulus: u64) -> u64 {
     assert!(modulus > 0, "modulus must be positive");
-    if modulus == 1 { return 0; }
+    if modulus == 1 {
+        return 0;
+    }
     with_stream(|stream| stream.bounded(modulus))
 }
 
@@ -275,7 +319,13 @@ pub fn urandomm(modulus: u64) -> u64 {
 /// assert_eq!(math_prime_util::urandomr(3, 8), Some(7));
 /// ```
 pub fn urandomr(low: u64, high: u64) -> Option<u64> {
-    if low > high { return None; }
+    if low > high {
+        return None;
+    }
     let width = high - low;
-    Some(if width == u64::MAX { irand64() } else { low + urandomm(width + 1) })
+    Some(if width == u64::MAX {
+        irand64()
+    } else {
+        low + urandomm(width + 1)
+    })
 }

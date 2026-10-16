@@ -41,7 +41,7 @@ fn prev_prime_oracle() {
 #[test]
 fn sieve_range_oracle() {
     each("sieve", "sieve_range", |c| {
-        // Width or depth 18446744073709551617 exceeds the u64 API.
+        // Width or depth 18_446_744_073_709_551_617 exceeds the u64 API.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             return;
         }

@@ -82,7 +82,7 @@ fn prime(n: u64) -> bool {
     let s = (n - 1).trailing_zeros();
     let d = (n - 1) >> s;
     // This base set is deterministic over the full u64 domain.
-    for a in [2, 325, 9375, 28178, 450775, 9780504, 1795265022] {
+    for a in [2, 325, 9375, 28178, 450_775, 9_780_504, 1_795_265_022] {
         if a % n == 0 {
             continue;
         }
@@ -112,6 +112,7 @@ fn prime(n: u64) -> bool {
 /// ```
 /// assert_eq!(math_prime_util::primes(10, 20), vec![11, 13, 17, 19]);
 /// ```
+#[allow(clippy::missing_panics_doc)] // Segment lengths fit usize on all Rust targets.
 pub fn primes(lo: u64, hi: u64) -> Vec<u64> {
     if lo > hi || hi < 2 {
         return Vec::new();
@@ -267,7 +268,7 @@ fn prefix_sum(n: u64) -> u128 {
         .collect();
     let mut sums: Vec<u128> = values
         .iter()
-        .map(|&v| u128::from(v) * u128::from(v + 1) / 2 - 1)
+        .map(|&v| u128::from(v) * (u128::from(v) + 1) / 2 - 1)
         .collect();
     let index = |v: u64| -> usize {
         if v <= root {
@@ -327,4 +328,35 @@ pub fn prime_precalc(limit: u64) {
 /// ```
 pub fn prime_memfree() {
     *cache() = PrimeCache::default();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{PrimeCache, base_primes, cache, prime_memfree};
+    use std::sync::Arc;
+
+    #[test]
+    fn cache_snapshots_survive_reset_and_duplicate_requests() {
+        fn send_sync<T: Send + Sync>() {}
+        send_sync::<PrimeCache>();
+        prime_memfree();
+        let first = base_primes(100);
+        let duplicate = base_primes(100);
+        let smaller = base_primes(10);
+        assert!(Arc::ptr_eq(&first, &duplicate));
+        assert!(Arc::ptr_eq(&first, &smaller));
+        let larger = base_primes(200);
+        assert_eq!(&larger[..first.len()], first.as_slice());
+        prime_memfree();
+        {
+            let empty = cache();
+            assert_eq!(empty.limit, 0);
+            assert!(empty.primes.is_empty());
+        }
+        assert_eq!(first.last(), Some(&97));
+        assert_eq!(larger.last(), Some(&199));
+        let rebuilt = base_primes(100);
+        assert_eq!(first, rebuilt);
+        assert!(!Arc::ptr_eq(&first, &rebuilt));
+    }
 }

@@ -11,7 +11,7 @@ fn bench_sieve(c: &mut Criterion) {
         b.iter(|| sieve_range(black_box(1_000_000), 10000, 97))
     });
     c.bench_function("cluster", |b| {
-        b.iter(|| sieve_prime_cluster(0, black_box(100000), &[2, 6]))
+        b.iter(|| sieve_prime_cluster(0, black_box(100_000), &[2, 6]))
     });
     c.bench_function("sum_primes", |b| {
         b.iter(|| sum_primes(0, black_box(1_000_000)))

@@ -8,3 +8,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Implemented all nine public APIs and nine oracle tests. Modular arithmetic uses u128 products and binary doubling without division, including even moduli. Next run the focused oracle tests.
 Added recurrence, discriminant, exact/modular agreement, sign, overflow, zero-modulus, and repeated-call tests plus hot-function benchmarks. Functions are stateless, so there is no shared state or launch lifecycle to port.
 All nine compatibility tests pass with no skipped cases. Running algebraic tests next, then the required gate; protected STATUS ticks remain for the merge generator.
+The first gate found four missing semicolons in test closures; fixed them. Added failing regression cases for exact zero components when the other component overflows, then preserved those zeros for root-of-unity parameter ratios.

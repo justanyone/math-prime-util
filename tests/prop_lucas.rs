@@ -62,6 +62,10 @@ fn sequence_rejects_zero_modulus() {
 fn exact_boundaries_and_degenerate_sequences() {
     assert_eq!(fibonacci(93), Some(12_200_160_415_121_876_738));
     assert_eq!(fibonacci(94), None);
+    assert_eq!(lucasu(2, 2, 256), Some(0));
+    assert_eq!(lucasv(2, 2, 258), Some(0));
+    assert_eq!(lucasu(3, 3, 300), Some(0));
+    assert_eq!(lucasv(3, 3, 303), Some(0));
     assert_eq!(lucas_number(92), Some(16_860_207_025_497_407_047));
     assert_eq!(lucas_number(93), None);
     assert_eq!(fibonacci(i64::MIN), None);

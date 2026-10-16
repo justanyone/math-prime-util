@@ -10,13 +10,13 @@ fn component(value: Option<i128>) -> String {
 #[test]
 fn lucasu_oracle() {
     each("lucas", "lucasu", |c| {
-        c.check(lucasu(c.arg(0), c.arg(1), c.arg(2)))
+        c.check(lucasu(c.arg(0), c.arg(1), c.arg(2)));
     });
 }
 #[test]
 fn lucasv_oracle() {
     each("lucas", "lucasv", |c| {
-        c.check(lucasv(c.arg(0), c.arg(1), c.arg(2)))
+        c.check(lucasv(c.arg(0), c.arg(1), c.arg(2)));
     });
 }
 #[test]
@@ -29,13 +29,13 @@ fn lucasuv_oracle() {
 #[test]
 fn lucasumod_oracle() {
     each("lucas", "lucasumod", |c| {
-        c.check(lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)))
+        c.check(lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)));
     });
 }
 #[test]
 fn lucasvmod_oracle() {
     each("lucas", "lucasvmod", |c| {
-        c.check(lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)))
+        c.check(lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)));
     });
 }
 #[test]

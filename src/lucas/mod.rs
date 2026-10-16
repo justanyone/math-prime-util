@@ -61,7 +61,21 @@ fn exact(p: i64, q: i64, k: u64) -> (Option<i128>, Option<i128>) {
         );
     }
     let Some((u, w)) = exact_pair(p, q, k) else {
-        return (None, None);
+        // These root ratios are roots of unity. A zero component stays exact
+        // even when the other component and the intermediate powers overflow.
+        let square = p * p;
+        let period = if q > 0 && square == q {
+            3
+        } else if q > 0 && square == 2 * q {
+            4
+        } else if q > 0 && square == 3 * q {
+            6
+        } else {
+            return (None, None);
+        };
+        let u_zero = k % period == 0;
+        let v_zero = period % 2 == 0 && k % period == period / 2;
+        return (u_zero.then_some(0), v_zero.then_some(0));
     };
     let v = w
         .checked_mul(2)

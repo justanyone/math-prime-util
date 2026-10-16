@@ -1,0 +1,2522 @@
+Revision history for Perl module Math::Prime::Util
+
+0.75 2026-08-08
+
+    - Requires Perl 5.8.1 or later.  Dropping Perl 5.6 support has been
+      considered for years.  Supporting very old Perl builds with broken
+      64-bit integer handling was increasingly time-consuming, especially
+      as modern compiler and testing infrastructure no longer supports
+      such old Perl versions.
+
+    [API Changes]
+
+    - prime_set_config does not allow changing the xs option.  Set MPU_NO_XS=1
+      before loading the module to select the Pure Perl implementation.
+
+    - When a function returns an integer result larger than native type size,
+      it will use the user configured bigint class (default Math::BigInt).
+      We no longer try to preserve the input bigint class.
+
+    - random_bytes and entropy_bytes accept inputs 0 to 2^31-2 (max portable
+      size for a Perl string).  The previously documented values were
+      ambiguous (unsigned).  This makes them concrete.
+
+    - urandomb and functions that produce n-bit random primes or semiprimes
+      are limited to 2^32-1 bits.
+
+    - irand64 always returns a random integer in [0 .. 2^64-1].  On 32-bit this
+      means it will likely return a bigint.
+
+    - random_ndigit_prime is limited to 2^32-1 digits.
+
+    - jordan_totient(k,n) and powersum(n,k) now require exponent k to fit
+      in an unsigned native integer.
+
+    - factorial, subfactorial, bell_number, fubini, primorial, pn_primorial,
+      catalan_number, partitions, partitionsq, and consecutive_integer_lcm
+      will reject inputs that exceed implementation limits (input limited to
+      unsigned native for XS and GMP, signed native for PP).
+
+    - is_power($n,\$root) is now the preferred form for returning the maximal
+      exponent and root.  No need for a dummy second argument.
+
+    [ADDED]
+
+    - is_safe_prime(n)                returns 1 if odd pos n and (n-1)/2 prime
+    - fibonacci(k)                    Fibonacci number, same as lucasu(1,-1,k)
+    - lucas_number(k)                 Lucas number, same as lucasv(1,-1,k)
+    - aliquot_sum                     sum of proper divisors
+    - prime_signature(n)              reverse sorted list of factor exponents
+    - sopfr(n)                        sum of prime factors
+    - sopf(n)                         sum of distinct prime factors
+    - digital_root(n[,base])          iterated sum of digits (default base 10)
+    - mult_digital_root(n[,base])     iterated product of digits
+    - is_palindrome(n[,base])         is n a palindrome (default base 10)
+    - is_harshad(n[,base])            is n a Harshad (Niven) number in base b
+    - abundance(n)                    sigma(n)-2n => deficient/abundant/perfect
+    - bell_number(n)                  Bell number, count of set partitions
+    - catalan_number(n)               Catalan number
+    - integer_complexity(n)           minimum 1s to represent n using + and *
+    - multifactorial(n,k)             k-step multifactorial of n
+    - dedekind_psi(n)                 Dedekind psi function, n*prod(1+1/p)
+    - partitionsq(n)                  number of partitions into distinct parts
+    - convergents(@A)                 list of convergents (p,q) for cfrac list
+    - bestrational(x,dbound)          best rational (p,q) for x with q<=dbound
+    - muladdint(n,m,a)                signed integer n*m + a
+    - mulsubint(n,m,a)                signed integer n*m - a
+    - toint(n)                        truncate input to integer (best form)
+    - urandomr(lo,hi)                 random integer in [lo,hi] inclusive
+    - vecprefixsum(@list)             prefix sum / cumulative sum of list
+    - vecwindow { } $step,$size,@list calls block with windows of size objects
+    - vecpairwise { } \@A,\@B         calls block for each pair from arrays
+    - vecrsort(@L)                    numerically reverse sort integer list
+    - vecrsorti(\@L)                  in-place numeric reverse sort a list ref
+    - remove_factors(n,k)             returns r: n with all factors of k removed
+    - remove_factors_exp(n,k)         as above, returns (r,e) e = times removed
+    - floor_sum(n,m,a,b)              sum floor((a*i+b)/m) for i=0..n-1
+    - inverse_sigma0(k,[lo,]hi)       array ref of n where sigma0(n) = k
+    - inverse_sigma0_count(k,[lo,]hi) count of n where sigma0(n) = k
+    - crootint(n,k)                   ceiling integer k-th root
+    - reverse_digits(n[,base])        reverse digits of |n| in base b
+    - irand32()                       random 32-bit integer (like irand)
+
+    [FIXES]
+
+    - drand now always returns below 1 before scaling in both XS and PP.
+
+    - PP drand, srand, and csrand reject extra arguments, and csrand returns
+      no value in both XS and PP.
+
+    - PP uses timer and scheduler jitter if no normal entropy source is
+      available, rather than deterministically seeding the CSPRNG with zero.
+
+    - PP threads independently reseed their CSPRNG after interpreter cloning.
+
+    - LambertW consistently handles floating-point rounding just below -1/e.
+
+    - Fix rare nth_prime hangs and native overflow near the 64-bit limit.
+
+    - XS setbinop and vec callbacks preserve lexical return values.  Sparse
+      arrays passed to set functions are rejected safely.
+
+    - Do not send bigint Lucas parameters to GMP versions before 0.53.
+
+    - chebyshev_theta and chebyshev_psi had tables corrected for 3 ranges.
+
+    - Fix overflow handling in Farey functions on 32-bit builds.
+
+    - Fix native IV_MIN edge cases in several integer functions, including
+      divrem.  Fix tdivrem with negative inputs on some Windows builds.
+
+    - signint correctly handles positive bigint strings with leading zeroes.
+
+    - trial_factor always removes factors 2, 3, and 5 with bigint inputs,
+      including when given a smaller factor limit.  Match existing docs.
+
+    - lastfor handles die/croak inside loops much better.
+
+    - random_factored_integer dropped the array return for bigints.
+
+    - srand synchronizes its complete, endian-independent UV seed with the
+      GMP backend, including when called without an argument.
+
+    - urandomm(n) accepted n=0 even though documented as positive.  Now rejects.
+
+    - all divisors for large n are properly converted to bigint if needed.
+
+    - Better input validation for many PP and XS paths, especially for
+      random funcs, digit/base conversion, combinatorial counts, iterator
+      arguments, and large size limits.
+
+    - PP/XS/GMP consistency fixes.  Better returning of canonical bigint class.
+
+    - miller_rabin_random requires nbases > 0, and no longer accepts a third
+      argument.  Neither of these were documented.
+
+    - prime_count_approx without GMP preserves more high-precision digits for
+      very large inputs and avoids some old Math::BigFloat non-finite results.
+
+    - The legacy nobigint option is now mirrored into XS.
+      random_ndigit_prime honors it even when GMP dispatch is available.
+
+    - Better GMP dispatch with big inputs.  is_power, lucas_sequence,
+      is_almost_prime, and multifactorial, logint, and rootint avoid older
+      GMP paths that could truncate or reject large arguments, while using
+      GMP 0.54+ where it supports the larger API.
+
+    - powint handles 0, 1, and -1 with very large exponents correctly.
+      Only calls older GMP backends with native-sized exponents.
+
+    - Work around older GMP backends returning empty certificates for 32-bit
+      and smaller random Maurer/Shawe-Taylor primes.
+
+    - sieve_range width and depth are validated as native unsigned integers,
+      and the depth 0/1 behavior of omitting 0 and 1 is now documented.
+
+    - vecuniq now accepts generic defined inputs using List::Util-like
+      string/hash semantics, while retaining a fast native-integer path.
+
+    - allsqrtmod and allrootmod now consistently return the count in scalar
+      context.  Documentation and tests added.
+
+    - More list-returning functions consistently return the number of values
+      in scalar context.  Documentation and tests added.
+
+    - todigitstring with negative bigint in base 10 included the sign.  Fixed.
+
+    - Powerfree functions now consistently validate k (limited to 2^32-1)
+      and document negative-n behavior for count/sum/part variants.
+
+    - Fix nth_powerfree near UV_MAX and keep refinement counts synchronized.
+
+    - rootmod no longer misses some roots modulo prime powers.
+
+    - vecreduce, vecslide, and vecwindow block values are no longer aliases
+      of input values in XS, matching the PP implementations and vecpairwise.
+
+    - random_ndigit_prime(3) was undersampling 101 (since v0.62).
+
+    - random_prime and random_ndigit_prime require GMP 0.54+ for direct GMP
+      dispatch, preserving uniform selection after the initial random trials.
+
+    - omega_prime_count no longer misses some large 7- and 8-omega primes.
+      omega_primes uses bounded memory for large non-prefix ranges.
+
+    - binomialmod avoids native overflow with negative n and very large k,
+      and is much faster for small k with large prime-power moduli.
+
+    - Frobenius (P,Q) uses gcd(n,2QD) and checks disc a square, not |disc|.
+
+    - Fix PP Frobenius-Khashin parameter selection, document 2018 algorithm.
+
+    - Real functions avoid intermediate overflow for large finite inputs,
+      handle special values correctly, and preserve exact inverse_li results.
+
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Some functions now have custom op support.  This means in Perl 5.14+
+      they are resolved at Perl's compile time, skipping function overhead.
+      Functions like addint, mulint, irand64, etc. are 10-50% faster.
+
+    - Native integer sorting with vecsort/vecsorti detects ordered input and
+      skips unnecessary radix passes, especially useful for narrow signed values.
+
+    - vecequal handles circular array references without unbounded recursion.
+
+    - On platforms with support for 128-bit integers, but without the GMP
+      backend, we factor 128-bit integers in C.
+      This includes 32-bit Perl with modern compilers.
+      This can be 100 to 1000 times faster than factoring in Perl.
+      In turn this can speed up some other functions that require factoring.
+      Installing the GMP backend is preferred.
+
+    - Added native C 64-bit and 128-bit ECM (tinyecm), for much faster
+      non-GMP factoring.  PP ECM now uses a deterministic two-stage
+      tinyecm-based implementation.
+
+    - PP factoring has improved ECM, p-1, and pbrent implementations.
+      General factoring removes the initial pbrent stage, starts with a
+      deeper p-1 stage, uses an ECM ladder, and correctly uses HOLF.
+
+    - mertens accepts an optional lower bound.  Native Mertens uses segmented
+      Möbius generation and shares calculation state between range endpoints,
+      reducing memory and runtime.
+
+    - is_prob_prime, is_bpsw_prime, and is_prime can use native 128-bit
+      primality tests on 64-bit builds with uint128_t support.
+
+    - 32-bit XS builds with 128-bit compiler support now use C for sumtotient
+      and sum_primes.  Big speedups on large inputs.
+
+    - urandomm is up to 5x faster without GMP.
+
+    - sieve_range in XS uses a partial sieve.  It can be 10x or more faster
+      for large native ranges and moderate depths.
+
+    - Tightened prime count bounds (upper/lower) using Dusart 2018 and
+      Axler 2022.  Thanks to Pierre Dusart for sending me a copy of his paper.
+
+    - Use amagic calls from XS to perform some integer ops directly using the
+      bigint objects rather than calling into Perl.  Streamlined conversion
+      of output to canonical form.  1.5 to 3x faster for some examples.
+
+    - simple add/sub/mul/div/pow operations directly on the string input.
+      Mostly bypassed if we see Math::GMPz or Math::GMP, but with other classes
+      this can be a 2-8x speedup.
+
+    - string bigint accelerations of logint, rootint, and sqrtint
+      for 5x to 100x speedup.  absint and negint, can be 5x faster.
+
+    - lshiftint, rshiftint, rashiftint similar, for small shift amounts.
+
+    - vecsum and vecprod 100x faster if GMP not available (vs Calc).
+
+    - znlog faster, especially PP, native prime-power subgroups, and
+      large-order rho cases.
+
+    - forsetproduct no longer aliases the input arrays.
+
+    - randperm consistently uses a Fisher-Yates-Knuth shuffle in all cases,
+      both in XS and PP.  randperm(n,k) returns the first k values of the
+      same process as randperm(n).  A shuffle map is used so the full range
+      doesn't always have to be allocated.
+
+    - randperm, shuffle, and vecsample all return the count of results when
+      called in scalar context, without consuming random state.
+
+    - Removed many direct PP-to-GMP fallback calls.  Dispatch to the GMP
+      backend is done directly from XS in most cases.  This does impact the
+      no-XS-but-with-GMP configuration which should only be seen for testing.
+
+    - znorder(a, p^e) is much faster for large prime powers p^e.
+
+    - primes() and twin_primes() can directly dispatch from XS to GMP with
+      the GMP 0.54 back end.  This can give a modest speedup.
+
+    - sopf, sopfr, prime_signature, dedekind_psi, aliquot_sum, abundance,
+      and is_safe_prime can directly dispatch from XS to GMP with GMP 0.54.
+
+    - binomialmod can directly dispatch to the GMP 0.54 back end, avoiding
+      construction of huge intermediate binomial values in more cases.
+
+    - We have a new strint binomial, so large binomials can be computed
+      entirely in standard C.  We still prefer the GMP backend.  This is
+      much faster than default Math::BigInt.
+
+
+0.74 2026-03-13
+
+    [API Changes]
+
+    - is_pseudoprime, is_euler_pseudoprime, and is_strong_pseudoprime will
+      use an implicit base of 2 rather than a missing base error.  This also
+      means is_pseudoprime($n, @bases) works properly.
+
+    - is_strong_pseudoprime passes for bases equal to 0 mod n.  This matches
+      what the GMP code always did, and means primes return 1 for any base.
+
+    - divisor_sum(0) returns 0.  divisors(0) returns an empty list.
+
+    - divisors takes an optional second argument to prune the returned list.
+
+    - consecutive_integer_lcm(0) was returning 0.  Now returns 1, matching
+      the original GMP API as well as the OEIS series.
+
+    - some error messages with invalid arguments have changed.
+
+    - Callers must 'use Math::Prime::Util::MemFree;' if they want to use it.
+
+    - bernfrac was documented to only accept non-negative inputs.  This is
+      now enforced.
+
+    - bernfrac and harmfrac return values are only bigints if needed.
+
+    - The real functions no longer modify their behavior based on whether the
+      "bignum" package was loaded, whether in scope or not.
+
+    [ADDED]
+
+    - powersum(n,k)                   sum of k-th powers of positive ints <= n
+    - sumpowerful(n[,k])              sum of k-powerful numbers <= n
+    - sumliouville(n)                 L(n), sum of liouville(1..n)
+    - sumtotient(n)                   sum of euler_phi(1..n)
+    - prime_bigomega(n)               # of factors (with multiplicity)
+    - prime_omega(n)                  # of factors (distinct)
+    - powint(a, b)                    signed integer a^b
+    - mulint(a, b)                    signed integer a*b
+    - addint(a, b)                    signed integer a+b
+    - subint(a, b)                    signed integer a-b
+    - add1int(n)                      signed integer n+1
+    - sub1int(n)                      signed integer n-1
+    - divint(a, b)                    signed integer a/b (floor)
+    - modint(a, b)                    signed integer a%b (floor)
+    - cdivint(a, b)                   signed integer a/b (ceiling)
+    - divrem(a, b)                    Euclidean quotient and remainder
+    - fdivrem(a, b)                   Floored quotient and remainder
+    - cdivrem(a, b)                   Ceiling quotient and remainder
+    - tdivrem(a, b)                   Truncated quotient and remainder
+    - lshiftint(n, k)                 left shift n by k bits
+    - rshiftint(n, k)                 right shift n by k bits (truncating)
+    - rashiftint(n, k)                right shift n by k bits (flooring)
+    - absint(n)                       integer absolute value
+    - negint(n)                       integer negation
+    - cmpint(a, b)                    integer comparison (like <=>)
+    - signint(n)                      integer sign (-1,0,1)
+    - random_safe_prime               for n-bit safe primes
+    - inverse_li_nv(x)                float inverse logarithmic integral
+    - is_gaussian_prime(a,b)          is a+bi a Gaussian prime
+    - is_lucky(n)                     predicate for lucky number sieve
+    - is_happy(n)                     if n happy number, returns height of n
+    - is_happy(n,base,exponent)       as above but with given base and power
+    - is_smooth(n,k)                  is n a k-smooth number
+    - is_rough(n,k)                   is n a k-rough number
+    - is_practical(n)                 is n a practical number
+    - is_delicate_prime(n[,b])        is n a digitally delicate prime (base b)
+    - is_sum_of_squares(n[,k])        can n be a sum of k squares (dflt k=2)
+    - is_congruent_number(n)          is n a "congruent number"
+    - is_perfect_number(n)            is n equal to sum of its proper divisors
+    - is_omega_prime(k,n)             is n divisible by exactly k primes
+    - is_almost_prime(k,n)            does n have exactly k prime factors
+    - is_chen_prime(n)                is n prime and n+2 prime or semiprime
+    - is_powerfree(n[,k])             is n a k-powerfree number (default k=2)
+    - is_powerful(n[,k])              is n a k-powerful number (default k=2)
+    - is_perfect_power(n)             is n a perfect power (1,4,8,9,16,25,..)
+    - is_odd(n)                       is n an odd integer (not divisible by 2)
+    - is_even(n)                      is n an even integer (divisible by 2)
+    - is_divisible(n,d)               is n exactly divisible by d
+    - is_congruent(n,c,d)             is n congruent to c mod d
+    - is_qr(a,n)                      is a a quadratic residue mod n
+    - is_cyclic(n)                    does n have exactly one group of order n
+    - forsquarefreeint {} lo,hi       loop over square-free integers
+    - almost_primes(k,[start,]end)    array ref of k-almost-primes
+    - almost_prime_count(k,n)         count of integers with exactly k factors
+    - almost_prime_count_approx(k,n)  fast approximate k-almost-prime count
+    - almost_prime_count_lower(k,n)   fast k-almost-prime count lower bound
+    - almost_prime_count_upper(k,n)   fast k-almost-prime count upper bound
+    - nth_almost_prime(k,n)           The nth number with exactly k factors
+    - nth_almost_prime_approx(k,n)    fast approximate nth k-almost-prime
+    - nth_almost_prime_lower(k,n)     fast nth k-almost-prime lower bound
+    - nth_almost_prime_upper(k,n)     fast nth k-almost-prime upper bound
+    - foralmostprimes {} k,a,b        loop over k-almost-primes
+    - omega_primes(k,[start,]end)     array ref of k-omega-primes
+    - omega_prime_count(k,n)          count nums divisible by exactly k primes
+    - nth_omega_prime(k,n)            The nth number dvsbl by exactly k primes
+    - powerful_numbers([lo,]hi[,k])   array ref of k-powerful from lo to hi
+    - powerful_count(n[,k])           count of k-powerful numbers <= n
+    - nth_powerful(n[,k])             the nth k-powerful number (default k=2)
+    - powerfree_count(n[,k])          count of k-powerfree numbers <= n
+    - nth_powerfree(n[,k])            The nth k-powerfree number (default k=2)
+    - powerfree_sum(n[,k])            sum of k-powerfree numbers <= n
+    - powerfree_part(n[,k])           remove excess powers from n
+    - powerfree_part_sum(n[,k])       sum of k-powerfree parts for 1 to n
+    - squarefree_kernel(n)            integer radical of |n|
+    - perfect_power_count([lo,] hi)   count of perfect powers
+    - smooth_count(n,k)               count of k-smooth numbers <= n
+    - rough_count(n,k)                count of k-rough numbers <= n
+    - allsqrtmod(a,n)                 all square roots of a (mod n)
+    - qnr(n)                          least quadratic non-residue
+    - subfactorial(n)                 count of derangements of n objects
+    - fubini(n)                       Fubini (Ordered Bell) number
+    - falling_factorial(x,n)          falling factorial
+    - rising_factorial(x,n)           rising factorial
+    - binomialmod(n,k,m)              fast binomial(n,k) mod m
+    - negmod(a, n)                    -a mod n
+    - submod(a, b, n)                 a - b mod n
+    - muladdmod(a, b, c, n)           a * b + c mod n
+    - mulsubmod(a, b, c, n)           a * b - c mod n
+    - rootmod(a, k, n)                modular k-th root
+    - allrootmod(a,k,n)               all k-th roots of a (mod n)
+    - cornacchia(d,n)                 find x,y for x^2 + d * y^2 = n
+    - vecequal(\@a, \@b)              compare two array refs for equality
+    - tozeckendorf(n)                 Zeckendorf binary string from n
+    - fromzeckendorf(str)             n from Zeckendorf binary string
+    - lucasu(p,q,k)                   U(p,q)_k
+    - lucasv(p,q,k)                   V(p,q)_k
+    - lucasuv(p,q,k)                  U(p,q)_k, V(p,q)_k
+    - lucasumod(p,q,k,n)              U(p,q)_k mod n
+    - lucasvmod(p,q,k,n)              V(p,q)_k mod n
+    - lucasuvmod(p,q,k,n)             (U(p,q)_k mod n, V(p,q)_k mod n)
+    - pisano_period(n)                period of modular Fibonacci sequence
+    - prime_powers([start,] end)      array ref of prime powers
+    - next_prime_power(n)             next prime power: p > n
+    - prev_prime_power(n)             previous prime power: p < n
+    - prime_power_count([start,] end) count of prime powers
+    - prime_power_count_approx(n)     fast approximate prime power count
+    - prime_power_count_lower(n)      fast prime power count lower bound
+    - prime_power_count_upper(n)      fast prime power count upper bound
+    - nth_prime_power(n)              the nth prime power
+    - nth_prime_power_approx(n)       fast approximate nth prime power
+    - nth_prime_power_lower(n)        fast nth prime power lower bound
+    - nth_prime_power_upper(n)        fast nth prime power upper bound
+    - next_perfect_power(n)           next perfect power: p > n
+    - prev_perfect_power(n)           previous perfect power: p < n
+    - perfect_power_count([beg,] end) count of perfect powers
+    - perfect_power_count_approx(n)   fast approximate perfect power count
+    - perfect_power_count_lower(n)    fast perfect power count lower bound
+    - perfect_power_count_upper(n)    fast perfect power count upper bound
+    - nth_perfect_power(n)            the nth perfect power
+    - nth_perfect_power_approx(n)     fast approximate nth perfect power
+    - nth_perfect_power_lower(n)      fast nth perfect power lower bound
+    - nth_perfect_power_upper(n)      fast nth perfect power upper bound
+    - next_chen_prime(n)              next Chen prime: p > n
+    - lucky_numbers([start],] end)    array ref of lucky numbers
+    - lucky_count([start,] end)       count of lucky numbers
+    - lucky_count_approx(n)           fast approximate lucky count
+    - lucky_count_lower(n)            fast lucky count lower bound
+    - lucky_count_upper(n)            fast lucky count upper bound
+    - nth_lucky(n)                    the nth lucky number
+    - nth_lucky_approx(n)             fast approximate nth lucky number
+    - nth_lucky_lower(n)              fast nth lucky number lower bound
+    - nth_lucky_upper(n)              fast nth lucky number upper bound
+    - chinese2([a1,m1],[a2,m2],...)   CRT returning (solution,modulus)
+    - frobenius_number(...)           Frobenius number of a set
+    - vecmex(...)                     least non-negative value not in list
+    - vecpmex(...)                    least positive value not in list
+    - vecuniq(...)                    remove duplicates from list of integers
+    - vecfreq(...)                    return hash of item => count from list
+    - vecsingleton(...)               remove all items that aren't unique
+    - vecslide { ... } @list          calls block for each pair in list
+    - vecsort(@L)                     numerically sort integer list
+    - vecsorti(\@L)                   in-place numeric sort a list ref
+    - vecsample(k,@list)              return k random elements of list
+    - toset(...)                      convert to int set (unique sorted aref)
+    - setinsert(\@A,$v)               insert integer v into integer set A
+    - setinsert(\@A,\@B)              insert list B into integer set A
+    - setremove(\@A,$v)               remove integer v from integer set A
+    - setremove(\@A,\@B)              remove list B values from integer set A
+    - setinvert(\@A,$v)               if v is in set A, remove, otherwise add
+    - setinvert(\@A,\@B)              invert for all values in integer list B
+    - setcontains(\@A,...)            are list values all in int set A
+    - setcontains(\@A,\@B)            is int set B a subset of int set A
+    - setcontainsany(\@A,...)         are any list values in int set A
+    - setcontainsany(\@A,\@B)         is any value in B in int set A
+    - setbinop {...} \@A[,\@B]        apply op to cross product of set(s)
+    - sumset(\@A[,\@B])               new set from a+b {a:A,b:B}
+    - setunion(\@A,\@B)               union of two integer lists
+    - setintersect(\@A,\@B)           intersection of two integer lists
+    - setminus(\@A,\@B)               difference of two integer lists
+    - setdelta(\@A,\@B)               symmetric difference of two int lists
+    - is_sidon_set(\@L)               is integer list L a Sidon set
+    - is_sumfree_set(\@L)             is integer list L a sum-free set
+    - set_is_disjoint(\@A,\@B)        is set B disjoint from set A
+    - set_is_equal(\@A,\@B)           is set B equal to set A
+    - set_is_subset(\@A,\@B)          is set B a subset of set A
+    - set_is_proper_subset(\@A,\@B)   is set B a proper subset of set A
+    - set_is_superset(\@A,\@B)        is set B a superset of set A
+    - set_is_proper_superset(\@A,\@B) is set B a proper superset of set A
+    - set_is_proper_intersection(\@A,\@B)   "" a proper intersection ""
+    - contfrac(n,d)                   list of continued fraction for n/d
+    - from_contfrac(@A)               return (p,q) rational from cfrac list
+    - next_calkin_wilf(n,d)           next breadth-first CW rational
+    - next_stern_brocot(n,d)          next breadth-first SB rational
+    - calkin_wilf_n(n,d)              index of breadth-first CW rational
+    - stern_brocot_n(n,d)             index of breadth-first SB rational
+    - nth_calkin_wilf(n)              CW rational at breadth-first index n
+    - nth_stern_brocot(n)             SB rational at breadth-first index n
+    - nth_stern_diatomic(n)           Stern's Diatomic series; fusc(n)
+    - farey(n)                        list of Farey sequence order n
+    - farey(n,k)                      k'th entry of Farey sequence order n
+    - next_farey(n,[p,q])             next order-n rational after p/q
+    - farey_rank(n,[p,q])             number of F_n less than p/q
+    - minimal_goldbach_pair(n)        least prime p where n-p is also prime
+    - goldbach_pair_count(n)          count of how many prime pairs sum to n
+    - goldbach_pairs(n)               array of all p where p and n-p are prime
+
+
+    [FIXES]
+
+    - nth_ramanujan_* returns undef with input of 0.
+
+    - PP code for is_polygonal with n=0 was wrong.  Fixed and refactored.
+
+    - Some large results that used GMP are properly objectified.
+
+    - When using GMP, native int results are no longer objectified.
+
+    - AKS was modding a with r, since 2012.
+
+    - is_totient(2^k) with k >= 33, found by Trizen in 2019.
+
+    - forsquarefree and forfactored were missing a destroy.  From Trizen.
+
+    - todigitstring with non-standard bases and long strings.  From Trizen.
+
+    - Fix v0.62 breaking extended precision long doubles on some machines.
+      Big difference in epsilon-level precision for LambertW, Li, Zeta.
+
+    - sieve_range documentation for depth didn't exactly match the XS code.
+
+    - is_extra_strong_lucas_pseudoprime(5) was returning 0.
+
+    - lucas_sequence wasn't right for some outlier cases.  This did not
+      impact any primality tests or other internal code.
+
+    - gcd(-n) and lcm(-n) would return -n instead of n.
+
+    - All mod functions are more consistent.  Like Pari, we use mod abs(n).
+      If n=0, we return undef.  If n=1, we return 0.
+
+    - invmod(0,1) = 0 instead of undef.  Both cases make sense, but
+      Pari, Mathematica, SAGE, and Math::BigInt all return 0.
+
+    - sqrtmod was not solving some cases, e.g. sqrtmod(4,8).
+
+    - chinese uses abs modulos, and values are all pre-modded.
+      This fixes negative inputs, e.g. chinese([-4,17],[17,-19])
+
+    - The 70-rt-bignum test was horrendously slow with bignum 0.60+.
+      It was bypassing the validation that sanitized the input.
+
+    - Fix logint for base > n.  Github #75.
+
+    - lcm with empty list returns 1 instead of 0.  Github #73.
+
+    - fix an XS stack issue with calling other routines inside forprimes
+
+    - is_pseudoprime and is_euler_pseudoprime have consistent XS, PP, and GMP
+      behaviour.  Specifically, single digit inputs and bases a multiple of n.
+
+    - kronecker in XS with 63-bit signed a and 64-bit unsigned n fixed.
+
+    - forfactored and forsquarefree were incorrect near 64-bit boundary.
+
+    - trial_factor etc. take an SV rather than silently coerce to a UV.
+
+    - PP trial_factor corrects for MPU::GMP's different API.
+
+    - PP is_perfect_square was wrong for 18446744073709551521 on 64-bit.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - LMO prime count is 1.2-1.5x faster.
+
+    - refactor objectification.  Doesn't force.  Enable on Perl < 5.9.
+
+    - save a nanosecond or two in 32-bit primality testing.
+
+    - Rewrite Ramanujan prime bounds using Axler (2017).  For large values
+      this is much improved.  Big speedup for large exact nth/count.
+
+    - Approx Ramanujan prime nth and count are much more accurate.
+
+    - Internally, approx prime counts are faster, as we don't need
+      to compute RiemannR to extreme precision.
+
+    - Faster and tighter nth_prime_upper bounds.
+
+    - Rewritten C version of Mertens based on pseudocode from Trizen.
+      Over 100x faster at 2^32 and grows O(n^(2/3)) vs O(n).
+
+    - fromdigits for bigints uses subquadratic algorithm, thanks from Trizen.
+      It also will call GMP if possible.  The large example runs 100x faster.
+
+    - ExponentialIntegral with quadmath is much more precise across the range.
+
+    - rewrote C factorialmod.  1.1-2x faster for small inputs, 3-4x for large.
+      The PP non-GMP version also has optimizations added.
+
+    - sum_primes faster for some inputs.
+
+    - Rewrote legendre_phi and removed code duplication.  Much faster.
+      Also makes _legendre_pi(n) about 4x faster.
+
+    - Rewrote prime count caching and removed code duplication.
+      Uses less memory at large sizes and is faster.
+
+    - Error message "must be a positive integer" changed to
+      "must be a non-negative integer" when zero is allowed.
+
+    - More accurate semiprime_count_approx and nth_semiprime_approx.
+
+    - Switched from Kahan to Neumaier sum in some real computations.
+
+    - is_primitive_root faster.  Much faster for p^k and 2p^k with k >= 2.
+
+    - znprimroot faster.  2-20x faster for p^k and 2p^k with k >= 2.
+
+    - native integer input parsing is a little faster.  A big deal for fast
+      functions and long lists.
+
+    - rootint, is_power, {next,prev}_perfect_power up to 2x faster.
+
+    - inverse_totient memory leak fixed, memory use reduced, slightly faster.
+
+    - forsetproduct handles tied input arrays.
+
+    - stirling first kind without GMP is faster for some inputs.
+
+    - Block functions that use MULTICALL now will pre-check the block to
+      see if it needs to be run in its own scope.  If not, then we get a
+      10-30% performance increase with lightweight blocks.
+
+    [OTHER]
+
+    - Legendre, Meissel, and Lehmer prime counting got rewritten to use our
+      common code.  3x less code.  No longer buildable standalone.  Included
+      by default, though still not called internally.
+
+    - lucas_sequence(n,p,q,k) deprecated.  Use lucasuvmod(p,q,k,n) instead.
+
+    - Documentation more consistent with 'positive' vs 'non-negative'.
+
+    - valuation(n,k) now will error if k < 2.  This follows Pari and SAGE.
+      undef is returned for n = 0.  Arguable "Inf" would be preferable.
+
+    - Added ability to select the bigint library, and rewrote large parts of
+      the Perl backend to support other bigint classes (e.g. Math::GMPz and
+      Math::GMP) rather than being specific to Math::BigInt.
+
+    - Older versions of Test::More with Math::GMPz and Math::GMP have issues
+      comparing big integers.  Lots of the tests will stringify the output
+      so is(x,y,txt) will work even if x or y is an object.
+
+
+0.73 2018-11-15
+
+    [ADDED]
+
+    - inverse_totient(n)              the image of euler_phi(n)
+
+    [FIXES]
+
+    - Try to work around 32-bit platforms in semiprime approximations.
+      Cannot reproduce on any of my 32-bit test platforms.
+
+    - Fix RT 127605, memory use in for... iterators.
+
+
+0.72 2018-11-08
+
+    [ADDED]
+
+    - nth_semiprime(n)                the nth semiprime
+    - nth_semiprime_approx(n)         fast approximate nth semiprime
+    - semiprime_count_approx(n)       fast approximate semiprime count
+    - semi_primes                     as primes but for semiprimes
+    - forsetproduct {...} \@a,\@b,... Cartesian product of list refs
+
+    [FIXES]
+
+    - Some platforms are extremely slow for is_pillai.  Speed up tests.
+
+    - Ensure random_factored_integer factor list is sorted min->max.
+
+    - forcomposites didn't check lastfor on every callback.
+
+    - Sun's compilers, in a valid interpretation of the code, generated
+      divide by zero code for pillai testing.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - chebyshev_theta and chebyshev_psi redone and uses a table.
+      Large inputs are significantly faster.
+
+    - Convert some FP functions to use quadmath if possible.  Without
+      quadmath there should be no change.  With quadmath functions like
+      LogarithmicIntegral and LambertW will be slower but more accurate.
+
+    - semiprime_count for non-trivial inputs uses a segmented sieve and
+      precalculates primes for larger values so can run 2-3x faster.
+
+    - forsemiprimes uses a sieve so large ranges are much faster.
+
+    - ranged moebius more efficient for small intervals.
+
+    - Thanks to GRAY for his module Set::Product which has clean and
+      clever XS code, which I used to improve my code.
+
+    - forfactored uses multicall.  Up to 2x faster.
+
+    - forperm, forcomb, forderange uses multicall.  2-3x faster.
+
+    - Frobenius-Khashin algorithm changed from 2013 version to 2016/2018.
+
+
+0.71 2018-08-28
+
+    [ADDED]
+
+    - forfactored { ... } a,b         loop n=a..b setting $_=n, @_=factor(n)
+    - forsquarefree { ... } a,b       as forfactored, but only square-free n
+    - forsemiprimes { ... } a,b       as forcomposites, but only semiprimes
+    - random_factored_integer(n)      random [1..n] w/ array ref of factors
+    - semiprime_count([lo],hi)        counts semiprimes in range
+
+    [FIXES]
+
+    - Monolithic sieves beyond 30*2^32 (~ 1.2 * 10^11) overflowed.
+
+    - is_semiprime was wrong for five small values since 0.69.  Fixed.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - is_primitive_root much faster (doesn't need to calulate totient,
+      and faster rejection when n has no primitive root).
+
+    - znprimroot and znorder use Montgomery, 1.2x to 2x faster.
+
+    - slightly faster sieve_range for native size inputs (use factor_one).
+
+    - bin/primes.pl faster for palindromic primes and works for 10^17
+
+    [OTHER]
+
+    - Added ability to use -DBENCH_SEG for benchmarking sieves using
+      prime_count and ntheory::_segment_pi without table optimizations.
+
+    - Reorg of main factor loop.  Should be identical from external view.
+
+    - Internal change to is_semiprime and is_catalan_pseudoprime.
+
+
+0.70 2017-12-02
+
+    [FIXES]
+
+    - prime_count(a,b) incorrect for a={3..7} and b < 66000000.
+      First appeared in v0.65 (May 2017).
+      Reported by Trizen.  Fixed.
+
+    - Also impacted were nth_ramanujan_prime and _lower/_upper for
+      small input values.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Some utility functions used prime counts.  Unlink for more isolation.
+
+    - prime_count_approx uses full precision for bigint or string input.
+
+    - LogarithmicIntegral and ExponentialIntegral will try to use
+      our GMP backend if possible.
+
+    - Work around old Math::BigInt::FastCalc (as_int() doesn't work right).
+
+    - prime_memfree also calls GMP's memfree function.  This will clear the
+      cached constants (e.g. Pi, Euler).
+
+    - Calling srand or csrand will also result in the GMP backend CSPRNG
+      functions being called.  This gives more consistent behavior.
+
+    [OTHER]
+
+    - Turned off threads testing unless release or extended testing is used.
+      A few smokers seem to have threads lib that die before we event start.
+
+    - Removed all Math::MPFR code and references.  The latest GMP backend
+      has everything we need.
+
+    - The MPU_NO_XS and MPU_NO_GMP environment variables are documented.
+
+
+0.69 2017-11-08
+
+    [ADDED]
+
+    - is_totient(n)                   true if euler_phi(x) == n for some x
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - is_square_free uses abs(n), like Pari and moebius.
+
+    - is_primitive_root could be wrong with even n on some platforms.
+
+    - euler_phi and moebius with negative range inputs weren't consistent.
+
+    - factorialmod given a large n and m where m was a composite with
+      large square factors was incorrect.  Fixed.
+
+    - numtoperm will accept negative k values (k is always mod n!)
+
+    - Split XS mapping of many primality tests.  Makes more sense and
+      improves performance for some calls.
+
+    - Split final test in PP cluster sieve.
+
+    - Support some new Math::Prime::Util::GMP functions from 0.47.
+
+    - C spigot Pi is 30-60% faster on x86_64 by using 32-bit types.
+
+    - Reworked some factoring code.
+
+    - Remove ISAAC (Perl and C) since we use ChaCha.
+
+    - Each thread allocs a new const array again instead of sharing.
+
+
+0.68 2017-10-19
+
+    [API Changes]
+
+    - forcomb with one argument iterates over the power set, so k=0..n
+      instead of k=n.  The previous behavior was undocumented.  The new
+      behavior matches Pari/GP (forsubset) and Perl6 (combinations).
+
+    [ADDED]
+
+    - factorialmod(n,m)               n! mod m calculated efficiently
+    - is_fundamental(d)               true if d a fundamental discriminant
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Unknown bigint classes no longer return two values after objectify.
+      Thanks to Daniel Șuteu for finding this.
+
+    - Using lastfor inside a formultiperm works correctly now.
+
+    - randperm a little faster for k < n cases, and can handle big n
+      values without running out of memory as long as k << n.
+      E.g. 5000 random native ints without dups:  @r = randperm(~0,5000);
+
+    - forpart with primes pulls min/max values in for a small speedup.
+
+    - forderange 10-20% faster.
+
+    - hammingweight for bigints 3-8x faster.
+
+    - Add Math::GMPq and Math::AnyNum as possible bigint classes.  Inputs
+      of these types will be relied on to stringify correctly, and if this
+      results in an integer string, to intify correctly.  This should give
+      a large speedup for these types.
+
+    - Factoring native integers is 1.2x - 2x faster.  This is due to a
+      number of changes.
+
+    - Add Lehman factoring core.  Since this is not exported or used by
+      default, the API for factor_lehman may change.
+
+    - All new Montgomery math.  Uses mulredc asm from Ben Buhrow.
+      Faster and smaller.  Most primality and factoring code 10% faster.
+
+    - Speedup for factoring by running more Pollard-Rho-Brent, revising
+      SQUFOF, updating HOLF, updating recipe.
+
+
+0.67 2017-09-23
+
+    [ADDED]
+
+    - lastfor                         stops forprimes (etc.) iterations
+    - is_square(n)                    returns 1 if n is a perfect square
+    - is_polygonal(n,k)               returns 1 if n is a k-gonal number
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - shuffle prototype is @ instead of ;@, so matches List::Util.
+
+    - On Perl 5.8 and earlier we will call PP instead of trying
+      direct-to-GMP.  Works around a bug in XS trying to turn the
+      result into an object where 5.8.7 and earlier gets lost.
+
+    - We create more const integers, which speeds up common uses of
+      permutations.
+
+    - CSPRNG now stores context per-thread rather than using a single
+      mutex-protected context.  This speeds up anything using random
+      numbers a fair amount, especially with threaded Perls.
+
+    - With the above two optimizations, randperm(144) is 2.5x faster.
+
+    - threading test has threaded srand/irand test added back in, showing
+      context is per-thread.  Each thread gets its own sequence and calls
+      to srand/csrand and using randomness doesn't impact other threads.
+
+
+0.66 2017-09-12
+
+    [ADDED]
+
+    - random_semiprime                random n-bit semiprime (even split)
+    - random_unrestricted_semiprime   random n-bit semiprime
+    - forderange { ... } n            derangements iterator
+    - numtoperm(n,k)                  returns kth permutation of n elems
+    - permtonum([...])                returns rank of permutation array ref
+    - randperm(n[,k])                 random permutation of n elements
+    - shuffle(...)                    random permutation of an array
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Rewrite sieve marking based on Kim Walisch's new simple mod-30 sieve.
+      Similar in many ways to my old code, but this is simpler and faster.
+
+    - is_pseudoprime, is_euler_pseudoprime, is_strong_pseudoprime changed to
+      better handle the unusual case of base >= n.
+
+    - Speedup for is_carmichael.
+
+    - is_frobenius_underwood_pseudoprime checks for jacobi == 0.  Faster.
+
+    - Updated Montgomery inverse from Robert Gerbicz.
+
+    - Tighter nth prime bounds for large inputs from Axler 2017-06.
+      Redo Ramanujan bounds since they're based on nth prime bounds.
+
+    - chinese objectifies result (i.e. big results are bigints).
+
+    - Internal support for Baillie-Wagstaff (pg 1402) extra Lucas tests.
+
+    - More standardized Lucas parameter selection.  Like other tests and the
+      1980 paper, checks jacobi(D) in the loop, not gcd(D).
+
+    - entropy_bytes, srand, and csrand moved to XS.
+
+    - Add -secure import to disallow all manual seeding.
+
+
+0.65 2017-05-03
+
+    [API Changes]
+
+    - Config options irand and primeinc are deprecated.  They will carp if set.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Add Math::BigInt::Lite to list of known bigint objects.
+
+    - sum_primes fix for certain ranges with results near 2^64.
+
+    - is_prime, next_prime, prev_prime do a lock-free check for a find-in-cache
+      optimization.  This is a big help on on some platforms with many threads.
+
+    - C versions of LogarithmicIntegral and inverse_li rewritten.
+      inverse_li honors the documentation promise within FP representation.
+      Thanks to Kim Walisch for motivation and discussion.
+
+    - Slightly faster XS nth_prime_approx.
+
+    - PP nth_prime_approx uses inverse_li past 1e12, which should run
+      at a reasonable speed now.
+
+    - Adjusted crossover points for segment vs. LMO interval prime_count.
+
+    - Slightly tighter prime_count_lower, nth_prime_upper, and Ramanujan bounds.
+
+
+0.64 2017-04-17
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - inverse_li switched to Halley instead of binary search.  Faster.
+
+    - Don't call pre-0.46 GMP backend directly for miller_rabin_random.
+
+
+0.63 2017-04-16
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Moved miller_rabin_random to separate interface.
+      Make catching of negative bases more explicit.
+
+
+0.62 2017-04-16
+
+    [API Changes]
+
+    - The 'irand' config option is removed, as we now use our own CSPRNG.
+      It can be seeded with csrand() or srand().  The latter is not exported.
+      This removes the use of Bytes::Random::Secure::Tiny.
+
+    - The 'primeinc' config option is deprecated and will go away soon.
+
+    [ADDED]
+
+    - irand()                  Returns uniform random 32-bit integer
+    - irand64()                Returns uniform random 64-bit integer
+    - drand([fmax])            Returns uniform random NV (floating point)
+    - urandomb(n)              Returns uniform random integer less than 2^n
+    - urandomm(n)              Returns uniform random integer in [0, n-1]
+    - random_bytes(nbytes)     Return a string of CSPRNG bytes
+    - csrand(data)             Seed the CSPRNG
+    - srand([UV])              Insecure seed for the CSPRNG (not exported)
+    - entropy_bytes(nbytes)    Returns data from our entropy source
+
+    - :rand                    Exports srand, rand, irand, irand64
+
+    - nth_ramanujan_prime_upper(n)       Upper limit of nth Ramanujan prime
+    - nth_ramanujan_prime_lower(n)       Lower limit of nth Ramanujan prime
+    - nth_ramanujan_prime_approx(n)      Approximate nth Ramanujan prime
+    - ramanujan_prime_count_upper(n)     Upper limit of Ramanujan prime count
+    - ramanujan_prime_count_lower(n)     Lower limit of Ramanujan prime count
+    - ramanujan_prime_count_approx(n)    Approximate Ramanujan prime count
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - vecsum is faster when returning a bigint from native inputs (we
+      construct the 128-bit string in C, then call _to_bigint).
+
+    - Add a simple Legendre prime sum using uint128_t, which means only for
+      modern 64-bit compilers.  It allows reasonably fast prime sums for
+      larger inputs, e.g. 10^12 in 10 seconds.  Kim Walisch's primesum is
+      much more sophisticated and over 100x faster.
+
+    - is_pillai about 10x faster for composites.
+
+    - Much faster Ramanujan prime count and nth prime.  These also now use
+      vastly less memory even with large inputs.
+
+    - small speed ups for cluster sieve.
+
+    - faster PP is_semiprime.
+
+    - Add prime option to forpart restrictions for all prime / non-prime.
+
+    - is_primitive_root needs two args, as documented.
+
+    - We do random seeding ourselves now, so remove dependency.
+
+    - Random primes functions moved to XS / GMP, 3-10x faster.
+
+
+0.61 2017-03-12
+
+    [ADDED]
+
+    - is_semiprime(n)        Returns 1 if n has exactly 2 prime factors
+    - is_pillai(p)           Returns 0 or v wherev v! % n == n-1 and n % v != 1
+    - inverse_li(n)          Integer inverse of Logarithmic Integral
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - is_power(-1,k) now returns true for odd k.
+
+    - RiemannZeta with GMP was not subtracting 1 from results > 9.
+
+    - PP Bernoulli algorithm changed to Seidel from Brent-Harvey.  2x speedup.
+      Math::BigNum is 10x faster, and our GMP code is 2000x faster.
+
+    - LambertW changes in C and PP.  Much better initial approximation, and
+      switch iteration from Halley to Fritsch.  2 to 10x faster.
+
+    - Try to use GMP LambertW for bignums if it is available.
+
+    - Use Montgomery math in more places:
+       = sqrtmod.  1.2-1.7x faster.
+       = is_primitive_root.  Up to 2x faster for some inputs.
+       = p-1 factoring stage 1.
+
+    - Tune AKS r/s selection above 32-bit.
+
+    - primes.pl uses twin_primes function for ~3x speedup.
+
+    - native chinese can handle some cases that used to overflow.  Use Shell
+      sort on moduli to prevent pathological-but-reasonable test case.
+
+    - chinese directly to GMP
+
+    - Switch to Bytes::Random::Secure::Tiny -- fewer dependencies.
+
+    - PP nth_prime_approx has better MSE and uses inverse_li above 10^12.
+
+    - All random prime functions will use GMP versions if possible and
+      if a custom irand has not been configured.
+      They are much faster than the PP versions at smaller bit sizes.
+
+    - is_carmichael and is_pillai small speedups.
+
+
+0.60 2016-10-09
+
+    [ADDED]
+
+    - vecfirstidx { expr } @n             returns first index with expr true
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Expanded and modified prime count sparse tables. Prime counts from 30k
+      to 90M are 1.2x to 2.5x faster.  It has no appreciable effect on the
+      speed of prime counts larger than this size.
+
+    - fromdigits works with bigint first arg, no need to stringify.
+      Slightly faster for bigints, but slower than desired.
+
+    - Various speedups and changes for fromdigits, todigits, todigitstring.
+
+    - vecprod in PP for negative high-bit would return double not bigint.
+
+    - Lah numbers added as Stirling numbers of the third kind.  They've been
+      in the GMP code for almost 2 years now.  Also for big results, directly
+      call the GMP code and objectify the result.
+
+    - Small performance change to AKS (r,s) selection tuning.
+
+    - On x86_64, use Montgomery math for Pollard/Brent Rho.  This speeds up
+      factoring significantly for large native inputs (e.g. 10-20 digits).
+
+    - Use new GMP zeta and riemannr functions if possible, making some of
+      our operations much faster without Math::MPFR.
+
+    - print_primes with large args will try GMP sieve for big speedup.  E.g.
+        use bigint;  print_primes(2e19,2e19+1e7);
+      goes from 37 minutes to 7 seconds.  This also removes a mistaken blank
+      line at the end for certain ranges.
+
+    - PP primes tries to use GMP.  Only for calls from other PP code.
+
+    - Slightly more accuracy in native ExponentialIntegral.
+
+    - Slightly more accuracy in twin_prime_count_approx.
+
+    - nth_twin_prime_approx was incorrect over 1e10 and over 2e16 would
+      infinite loop due to Perl double conversion.
+
+    - nth_twin_prime_approx a little faster and more accurate.
+
+
+0.59 2016-08-03
+
+    [ADDED]
+
+    - is_euler_plumb_pseudoprime  Plumb's Euler Criterion test.
+    - is_prime_power              Returns k if n=p^k for p a prime.
+    - logint(n,b)                 Integer logarithm.  Largest e s.t. b^e <= n.
+    - rootint(n,k)                Integer k-th root.
+    - ramanujan_sum(k,n)          Ramanujan's sum
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Fixes for quadmath:
+      + Fix "infinity" in t/11-primes.t.
+      + Fix native Pi to use quads.
+      + Trim some threading tests.
+
+    - Fix fromdigits memory error with large string.
+
+    - Remove 3 threading tests that were causing issues with Perl -DDEBUGGING.
+
+    - foroddcomposites with some odd start values could index incorrectly.
+
+    - is_primitive_root(1,0) returns 0 instead of fp exception.
+
+    - mertens() uses a little less memory.
+
+    - 2x speedup for znlog with bigint values.
+
+    - is_pseudoprime() and is_euler_pseudoprime() use Montgomery math so are
+      much faster.  They seem to be ~5% faster than Miller-Rabin now.
+
+    - is_catalan_pseudoprime 1.1x to 1.4x faster.
+
+    - is_perrin_pseudoprime over 10x faster.
+      Uses Adams/Shanks doubling and Montgomery math.
+      Single core, odd composites: ~8M range/s.
+
+    - Add restricted Perrin pseudoprimes using an optional argument.
+
+    - Add bloom filters to reject non-perfect cubes, fifths, and sevenths.
+      is_power about 2-3x faster for native inputs.
+
+    - forcomposites / foroddcomposites about 1.2x faster past 64-bit.
+
+    - exp_mangoldt rewritten to use is_prime_power.
+
+    - Integer root code rewritten and now exported.
+
+    - We've been hacking around the problem of older Perls autovivifying
+      functions at compile time.  This makes functions that don't exist
+      return true when asked if they're defined, which causes us distress.
+
+      Store the available GMP functions before loading the PP code.
+
+      XS code knows MPU::GMP version and calls as appropriate.  This works
+      around the auto-vivication, and lets us choose to call the GMP
+      function based on version instead of just existence.
+      E.g. GMP's is_power was added in 0.19, but didn't support negative
+      powers until 0.28.
+
+
+0.58 2016-05-21
+
+    [API Changes]
+
+    - prev_prime($n) where $n <= 2 now returns undef instead of 0.  This
+      may enable catching range errors, and is technically more correct.
+
+    - nth_prime(0) now returns undef instead of 0.  This should help catch
+      cases where the base wasn't understood.  The change is similar for
+      all the nth_* functions (e.g. nth_twin_prime).
+
+    - sumdigits(n,base) will interpret n as a number in the given base,
+      rather than the Pari/GP method of converting decimal n to that base
+      then summing.  This allows sumdigits to easily sum hex strings.
+      The old behavior is easily done with vecsum(todigits(n, base)).
+
+    - binary() was not intended to be released (todigits and todigitstring
+      are supersets), but the documentation got left in.  Remove docs.
+
+    [ADDED]
+
+    - addmod(a, b, n)                     a + b mod n
+    - mulmod(a, b, n)                     a * b mod n
+    - divmod(a, b, n)                     a / b mod n
+    - powmod(a, b, n)                     a ^ b mod n
+    - sqrtmod(a, n)                       modular square root
+    - is_euler_pseudoprime(n,a[...])      Euler test to given bases
+    - is_primitive_root(r, n)             is r a primitive root mod n
+    - is_quasi_carmichael(n)              is n a Quasi-Carmichael number
+    - hclassno(n)                         Hurwitz class number H(n) * 12
+    - sieve_range(n, width, depth)        sieve to given depth, return offsets
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Fixed incorrect table entries for 2^16th Ramanujan prime count and
+      nth_ramanujan_prime(23744).
+
+    - foroddcomposites with certain arguments would start with 10 instead of 9.
+
+    - lucasu and lucasv should return bigint types.
+
+    - vecsum will handle 128-bit sums internally (performance increase).
+
+    - Speedup is_carmichael.
+
+    - Speedup znprimroot, 10% for small inputs, 10x for large composites.
+
+    - Speedup znlog ~2x.  It is now Rho racing an interleaved BSGS.
+
+    - Change AKS to Bernstein 2003 theorem 4.1.
+      5-20x faster than Bornemann, 20000+x faster than V6.
+
+    - sum_primes now uses tables for native sizes (performance increase).
+
+    - ramanujan_tau uses Cohen's hclassno method instead of the sigma
+      calculation.  This is 3-4x faster than the GMP code for inputs > 300k,
+      and much faster than the older PP code.
+
+    - fromdigits much faster for large base-10 arrays.  Timing is better than
+      split plus join when output is a bigint.
+
+
+0.57 2016-01-03
+
+    [ADDED]
+
+    - formultiperm { ... } \@n            loop over multiset permutations
+    - todigits(n[,base[,len]])            convert n to digit array
+    - todigitstring(n[,base[,len]])       convert n to string
+    - fromdigits(\@d[,base])              convert digit array ref to number
+    - fromdigits(str[,base])              convert string to number
+    - ramanujan_prime_count               counts Ramanujan primes in range
+    - vecany { expr } @n                  true if any expr is true
+    - vecall { expr } @n                  true if all expr are true
+    - vecnone { expr } @n                 true if no expr are true
+    - vecnotall { expr } @n               true if not all expr are true
+    - vecfirst { expr } @n                returns first element with expr true
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - nth_ramanujan_prime(997) was wrong.  Fixed.
+
+    - Tighten Ramanujan prime bounds.  Big speedups for large nth Rp.
+
+
+0.56 2015-12-13
+
+    [ADDED]
+
+    - is_carmichael(n)                    Returns 1 if n is a Carmichael number
+    - forcomp { ... } n[,{...}]           loop over compositions
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Faster, nonrecursive divisors_from_factors routine.
+
+    - gcdext(0,0) returns (0,0,0) to match GMP and Pari/GP.
+
+    - Use better prime count lower/upper bounds from Büthe 2015.
+
+    - forpart and forcomp both use lexicographic order (was anti-lexico).
+
+
+0.55 2015-10-19
+
+    - Fixed test that was using a 64-bit number on 32-bit machines.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Speed up PP versions of sieve_prime_cluster, twin_primes,
+      twin_prime_count, nth_twin_prime, primes.
+
+
+0.54 2015-10-14
+
+    [ADDED]
+
+    - sieve_prime_cluster(low,high[,...]) find prime clusters
+
+    [Misc]
+
+    - Certain small primes used to return false with Frobenius and AES Lucas
+      tests when given extra arguments.  Both are unusual cases never used
+      by the main system.  Fixed.
+
+
+0.53 2015-09-05
+
+    [ADDED]
+
+    - ramanujan_tau(n)                    Ramanujan's Tau function
+    - sumdigits(n[,base])                 sum digits of n
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Don't use Math::MPFR unless underlying MPFR library is at least 3.x.
+
+    - Use new Math::Prime::Util::GMP::sigma function for divisor_sum.
+
+    - Use new Math::Prime::Util::GMP::sieve_twin_primes(a,b).
+
+
+0.52 2015-08-09
+
+    [ADDED]
+
+    - is_square_free(n)                   Check for repeated factors
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - print_primes with 2 args was sending to wrong fileno.
+
+    - Double speed of sum_primes.
+
+    - Rewrote some internal sieve-walking code, speeds up next_prime,
+      forprimes, print_primes, and more.
+
+    - Small speedup for forcomposites / foroddcomposites.
+
+    - Small speedup for is_prime with composite 32+ bit inputs.
+
+    - is_frobenius_khashin_pseudoprime now uses Montgomery math for speed.
+
+    - PrimeArray now treats skipping forward by relatively small amounts as
+      forward iteration.  This makes it much more efficient for many cases,
+      but does open up some pathological cases.
+
+    - PrimeArray now allows exporting @primes (and a few others), which
+      saves some typing.
+
+    - PrimeArray now works for indices up to 2^32-1, after which it silently
+      rolls over.  Previously it worked to 2^31-1 then croaked.
+
+    - PrimeIterator now uses small segments instead of always next_prime.
+      A little more memory, but 2-4x faster.
+
+    - factor, divisor, fordivisors and some others should better keep
+      bigint types (e.g. Math::GMPz input yields Math::GMPz output).
+
+    - Faster GCD on some platforms.
+
+    - Peter Dettman supplied a patch for Shawe-Taylor prime generation to
+      make it deterministically match reference implementations.  Thanks!
+
+    [Misc]
+
+    - Check for old MPFR now using C library version, not module version.
+
+    - prime_count_{lower,upper} now uses MPFR to give full precision.
+
+    - Montgomery math and uint128_t enabled on Darwin/clang.
+
+
+0.51 2015-06-21
+
+    [ADDED]
+
+    - sum_primes(lo,hi)                   Summation of primes in range
+    - print_primes(lo,hi[,fd])            Print primes to stdout or fd
+    - is_catalan_pseudoprime(n)           Catalan primality test
+    - is_frobenius_khashin_pseudoprime(n) Khashin's 2013 Frobenius test
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Slightly faster PP sieving using better code from Perlmonks.
+
+    - Lucas sequence works with even valued n.
+
+    - Used idea from Colin Wright to speed up is_perrin_pseudoprime 5x.
+      We can check smaller congruent sequences for composites as a prefilter.
+
+    - is_frobenius_pseudoprime no longer checks for perfect squares, and
+      doesn't bail to BPSW if P,Q,D exceed n.  This makes it produce some
+      pseudoprimes it did not before (but ought to have).
+
+    [Misc]
+
+    - Work with old MPFR (some test failures in older Win32 systems).
+
+    - Don't assert in global destructor if a MemFree object is destroyed.
+
+
+0.50 2015-05-03
+
+    [ADDED]
+
+    - harmfrac(n)               (num,den) of Harmonic number
+    - harmreal(n)               Harmonic number as BigFloat
+    - sqrtint(n)                Integer square root of n
+    - vecextract(\@arr, mask)   Return elements from arr selected by mask
+    - ramanujan_primes(lo,hi)   Ramanujan primes R_n in [lo,hi]
+    - nth_ramanujan_prime(n)    the nth Ramanujan prime R_n
+    - is_ramanujan_prime(n)     1 if n is a Ramanujan prime, 0 otherwise
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Implement single-base hashed M-R for 32-bit inputs, inspired by
+      Forišek and Jančina 2015 as well as last year's tests with
+      2-base (2^49) and 3-base (2^64) hashed solutions for MPU.  Primality
+      testing is 20-40% faster for this size.
+
+    - Small speedups for znlog.
+
+    - PP nth_prime on 32-bit fixed for values over 2^32.
+
+    [Misc]
+
+    - Changes to nth_prime_{lower,upper}.  They use the Axler (2013) bounds,
+      and the XS code will also use inverse prime count bounds for small
+      values.  This gives 2-10x tighter bounds.
+
+    - Tighten prime count bounds using Axler, Kotnik, Büthe.  Thanks to
+      Charles R Greathouse IV for pointing me to these.
+
+
+0.49  2014-11-30
+
+    - Make versions the same in all packages.
+
+
+0.48  2014-11-28
+
+    [ADDED]
+
+    - lucasu(P, Q, k)           U_k for Lucas(P,Q)
+    - lucasv(P, Q, k)           V_k for Lucas(P,Q)
+
+    [Misc]
+
+    - Use Axler (2014) bounds for prime count where they improve on Dusart.
+
+
+0.47  2014-11-18
+
+    [ADDED]
+
+    - is_mersenne_prime(p)      returns 1 iff 2^p-1 is prime
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Standalone compilation (e.g. factoring without Perl installed) is easier.
+
+    - For next_prime and prev_prime with bigints, stay in XS as long as
+      possible to cut overhead.  Up to 1.5x faster.
+
+    - Factoring on 64-bit platforms is faster for 32-bit inputs.
+
+    - AKS is faster for larger than half-word inputs, especially on 64-bit
+      machines with gcc's 128-bit types.
+
+    - is_provable_prime goes through XS first, so can run *much* faster for
+      small inputs.
+
+    [OTHER]
+
+    - NetBSD improperly exports symbols in string.h, including popcount.
+      Rename our internal function to work around it.
+
+    - is_power now takes an optional scalar reference third argument which
+      will be set to the root if found.  It also works for negative n.
+
+    - Changes to trim a little memory use.  lucas_sequence goes from
+      PP->[XS,GMP,PP] to XS[->PP[->GMP]].  ecm_factor is moved out of root.
+      Moved some primality proving logic out of root.
+
+    - primes.pl when given one argument will show primes up to that number.
+
+
+0.46  2014-10-21
+
+    [API Changes]
+
+    - is_pseudoprime has the same signature as is_strong_pseudoprime now.
+      This means it requires one or more bases and has no default base.
+      The documentation had never mentioned the default, so this should
+      have little impact, and the common signature makes more sense.
+
+    [ADDED]
+
+    - hammingweight(n)          Population count (count binary 1s)
+    - vecreduce {...} @v        Reduce/fold, exactly like List::Util::reduce
+
+    [Misc]
+
+    - Syntax fix from Salvatore.
+
+    - vecmin / vecmax in XS, if overflows UV do via strings to avoid PP.
+
+    - Add example for verifying prime gaps, similar to Nicely's cglp4.
+
+    - divisor_sum wasn't running XS code for k=0.  Refactor PP code,
+      includes speedup when input is a non-Math::BigInt (e.g. Math::GMP).
+
+    - Improve test coverage.
+
+    [PP Updates]
+
+    - Large speedup for divisors with bigints in 64-100 bit range.
+
+    - Revamp RiemannZeta.  Fixes some bignum output, but requires RT fixes.
+
+    - Optimization for PP comparison to ~0.
+
+    - PP factoring is faster, especially for small inputs.
+
+
+0.45  2014-09-26
+
+    [ADDED]
+
+    - forcomb { ... } n, k      combinations iterator
+    - forperm { ... } n         permutations iterator
+    - factorial(n)              n!
+    - is_bpsw_prime(n)          primality test with no pretests, just ES BPSW
+    - is_frobenius_pseudoprime  Frobenius quadratic primality test
+    - is_perrin_pseudoprime     Perrin primality test (unrestricted)
+    - vecmin(@list)             minimum of list of integers
+    - vecmax(@list)             maximum of list of integers
+    - vecprod(@list)            product of list of integers
+    - bernfrac(n)               (num,den) of Bernoulli number
+    - bernreal(n)               Bernoulli number as BigFloat
+    - stirling(n,m,[type])      Stirling numbers of first or second kind
+    - LambertW(k)               Solves for W in k = W*exp(W)
+    - Pi([digits])              Pi as NV or with requested digits
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - znorder algorithm changed from Das to Cohen for ~1% speedup.
+
+    - factoring sped up a bit for 15-19 digits.
+
+    - speedup for divisor_sum with very large exponents.
+
+    [OTHER]
+
+    - Alias added for the module name "ntheory".  The module has grown
+      enough that it seems more appropriate.
+
+    - Big build change: Try a GMP compilation and add Math::Prime::Util::GMP
+      to dependency list if it succeeds.
+
+    - Fixed a memory leak in segment_primes / segment_twin_primes introduced
+      in previous release.  Thanks Valgrind!
+
+
+0.43  2014-08-16
+
+    [ADDED]
+
+    - foroddcomposites      like forcomposites, but skips even numbers
+    - twin_primes           as primes but for twin primes
+    - config: use_primeinc  allow the fast but bad PRIMEINC random prime method
+
+    [REMOVED DEPRECATED NAMES]
+
+    - all_factors         replaced in 0.36 by divisors
+    - miller_rabin        replaced in 0.10 by is_strong_pseudoprime
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Divisors sorted with qsort instead of Shell sort.  No appreciable time
+      difference, but slightly less code size.
+
+    - Added Micali-Schnorr generator to examples/csrand.pl.  Made a version
+      of csrand that uses Math::GMP for faster operation.
+
+    - Added synopsis release test.  Thanks to Neil Bowers and Toby Inkster.
+
+    - ranged euler_phi is more efficient when lo < 100.
+
+    - factor for 49 to 64-bit numbers sped up slightly (a small p-1 is tried
+      before SQUFOF for these sizes).
+
+    - HOLF factoring sped up using premultiplier first.
+
+
+0.42  2014-06-18
+
+    [ADDED]
+
+    - gcdext(x,y)                            extended Euclidian algorithm
+    - chinese([a,n],[a,n],...)               Chinese Remainder
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - znlog is *much* faster.  Added BSGS for XS and PP, Rho works better.
+
+    - Another inverse improvement from W. Izykowski, doing 8 bits at a time.
+      A further 1% to 15% speedup in primality testing.
+
+    - A 35% reduction in overhead for forprimes with multicall.
+
+    - prime segment sieving over large ranges will use larger segment sizes
+      when given large bases.  This uses some more memory, but is much faster.
+
+    - An alternate method for calculating RiemannR used when appropriate.
+
+    - RiemannZeta caps at 10M even with MPFR.  This has over 300k leading 0s.
+
+    - RiemannR will use the C code if not a BigFloat or without bignum loaded.
+      The C code should only take a few microseconds for any value.
+
+    - Refactor some PP code: {next,prev}_prime, chebyshev_{theta,psi}.
+      In addition, PP sieving uses less memory.
+
+    - Accelerate nth_twin_prime using the sparse twin_prime_count table.
+
+
+0.41  2014-05-18
+
+    [ADDED]
+
+    - valuation(n,k)                         how many times does k divide n?
+    - invmod(a,n)                            inverse of a modulo n
+    - forpart { ... } n[,{...}]              loop over partitions (Pari 2.6.x)
+    - vecsum(...)                            sum list of integers
+    - binomial(n,k)                          binomial coefficient
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Big speedup for primality testing in range ~2^25 to 2^64, which also
+      affects functions like next_prime, prev_prime, etc.  This is due to two
+      changes in the Montgomery math section -- an improvement to mont_prod64
+      and using a new modular inverse from W. Izykowski based on Arazi (1994).
+
+    - factoring small inputs (n < 20M) is ~10% faster, which speeds up some
+      misc functions (e.g. euler_phi, divisor_sum) for small inputs.
+
+    - Small improvement to twin_prime_count_approx and nth_twin_prime_approx.
+
+    - Better AKS testing in xt/primality-aks.pl.
+
+    - Loosen requirements of lucas_sequence.  More useful for general seqs.
+      Add tests for some common sequences.
+
+    - forcomposites handles beg and end near ~0.
+
+
+0.40  2014-04-21
+
+    [ADDED]
+
+    - random_shawe_taylor_prime              FIPS 186-4 random proven prime
+    - random_shawe_taylor_prime_with_cert    as above with certificate
+    - twin_prime_count                       counts twin primes in range
+    - twin_prime_count_approx                fast approximation to Pi_2(n)
+    - nth_twin_prime                         returns the nth twin prime
+    - nth_twin_prime_approx                  estimates the nth twin prime
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Update PP Frobenius-Underwood test.
+
+    - Speed up exp_mangoldt.
+
+    - nth_prime_approx uses inverse RiemannR in XS code for better accuracy.
+      Cippola 1902 is still used for PP and large values, with a slightly
+      more accurate third order correction.
+
+    - Tighten nth_prime_lower and nth_prime_upper for very small values.
+
+    - Fix legendre_phi when given tiny x and large a (odd test case).
+      Some speedups for huge a, from R. Andrew Ohana.
+
+    - Ranged totient is slightly faster with start of 0.
+
+    - Fix random_prime with a bigint prime high value.
+
+
+0.39  2014-03-01
+
+    - Changed logl to log in AKS.  Critical for FreeBSD and NetBSD.
+
+    - Make sure we don't use Math::BigInt::Pari in threading tests.
+      threads + Math::Pari = segfault on UNIX and Windows.
+
+    - Various minor changes trying to guess what ActiveState is doing.
+
+
+0.38  2014-02-28
+
+    [ADDED]
+
+    - is_power         Returns max k if n=p^k.  See Pari 2.4.x.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Factoring powers (and k*n^m for small k) is much faster.
+
+    - Speed up znprimroot.
+
+    - Add Bernstein+Voloch improvements to AKS.  Much faster than the v6
+      implementation, though still terribly slow vs. BPSW or other proofs.
+
+    [OTHER]
+
+    - Added some Project Euler examples.
+
+    - If using a threaded Perl without EXTENDED_TESTING, thread tests will
+      print diagnostics instead of failing.  This might help find issues
+      with platforms that are currently failing with no indications, and
+      allow installation for non-threaded use.
+
+
+0.37  2014-01-26
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Simplified primes().  No longer takes an optional hashref as first arg,
+      which was awkward and never documented.
+
+    - Dynamically loads the PP code and Math::BigInt only when needed.  This
+      removes a lot of bloat for the usual cases:
+
+        2.0 MB  perl -E 'say 1'
+        4.2 MB  MPU 0.37
+        4.5 MB  Math::Prime::XS + Math::Factor::XS
+        5.3 MB  Math::Pari
+        7.6 MB  MPU 0.34
+        9.6 MB  MPU 0.36
+        9.7 MB  MPU 0.35
+
+    - Combined with the above, this reduces startup overhead a lot (~3x).
+
+    - Adjusted factor script to lower startup costs.  Over 2x faster
+      with native integer (non-expression) arguments.  This is just not
+      loading thousands of lines of Perl code that aren't used, which
+      was more time-consuming than the actual factoring.
+
+    - nth_prime_{lower,upper,approx} and prime_count_{lower,upper,approx}
+      moved to XS->PP.  This helps us slim down and cut startup overhead.
+
+    - Fix doc for znlog:   znlog(a,g,p) finds k s.t. a = g^k mod p
+
+
+0.36  2014-01-13
+
+    [API Changes]
+
+    - factor behavior for 0 and 1 more consistent.  The results for
+      factor, factor_exp, divisors, and divisor_sum now match Pari,
+      and the omega(1)/Omega(1) exception is removed.
+
+      Thanks to Hugo van der Sanden for bringing this up.
+
+    - all_factors changed to divisors.  The old name still remains aliased.
+
+    [ADDED]
+
+    - forcomposites    like forprimes, but on composites.  See Pari 2.6.x.
+    - fordivisors      calls a block for each divisor
+    - kronecker        Kronecker symbol (extension of Jacobi symbol)
+    - znprimroot       Primitive root modulo n
+    - gcd              Greatest common divisor
+    - lcm              Least common multiple
+    - legendre_phi     Legendre's sum
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Win32 fixes from bulk88 / bulkdd.  Thanks!
+
+    - XS redundancy removal and fixes from bulk88 and leont.  Smaller DLL.
+      This almost includes not compiling a number of prime count methods
+      (Legendre, Meissel, Lehmer, and LMOS) that are not used.  Using
+      "-DLEHMER" in the Makefile will compile them, but there should not
+      be any reason to do so.
+
+    - Big XS interface reorg.  Most functions now go straight to XS, which
+      reduces their overhead.  Input number validation is much faster for
+      the general case.  Those two combined meant the '-nobigint' import
+      no longer serves any good purpose.
+
+    - More functions will go from XS directly to the GMP module, bypassing
+      the Perl layer entirely.  The upside is less overhead, both for the
+      case of having GMP, and without.  In the contrived case of having XS
+      turned off but the GMP module enabled, things will run slower since
+      they no longer go to GMP.
+
+    - Test suite should run faster.  Combination of small speedups to hot
+      spots as well as pushing a few slow tasks to EXTENDED_TESTING (these
+      are generally things never used, like pure Perl AKS).
+
+    - Some 5.6.2-is-broken workarounds.
+
+    - Some LMO edge cases:  small numbers that only show up if a #define is
+      changed, and counts > 18440000000000000000.  Tested through 2^64-1 now.
+
+    - LMO much faster if -march=native is used for gcc on a platform with
+      asm popcnt (e.g. Nahalem+, Barcelona+, ARM Neon, SPARC, Power7, etc.).
+
+    - divisors (all_factors) faster for native size numbers with many factors.
+
+    - Switch from mapes to a cached primorial/totient small phi method in
+      lehmer.c.  Significant for LMOS and Legendre (no longer used or compiled,
+      see earlier.  Thanks to Kim Walisch for questioning my earlier decision.
+
+    - Rewrite sieve composite map.  Segment sieving is faster.  It's a little
+      faster than primegen for me, but still slower than primesieve and yafu.
+
+    - znorder uses Carmichael Lambda instead of Euler Phi.  Faster.
+
+    - While Math::BigInt has the bgcd and blcm functions, they are slow for
+      native numbers, even with the Pari or GMP back ends.  The gcd/lcm here
+      are 20-100x faster.  LCM also returns results consistent with Pari.
+
+    - Removed the old SQUFOF code, so the racing version is the only one.  It
+      was already the only one being used.
+
+
+0.35  2013-12-08
+
+    [API Changes]
+
+    - We now use Math::BigInt in the module rather than dynamically loading
+      it, and will switch to BigInts as needed.  The most noticeable effect
+      of this is that next_prime() / prev_prime() will switch between BigInt
+      and native int at the boundary without regard to the input type or
+      whether bigint is in effect, and next_prime will never return 0.
+      Additionally, all functions will convert large decimal number strings
+      to BigInts if needed.
+
+      $pref = primes("1000000000000000000000", "1000000000000000000999");
+      is_prime("882249208105452588824618008529");
+      $a = euler_phi("801294088771394680000412");
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Switched to extended LMO algorithm for prime_count.  Much better memory
+      use and much faster for large values.  Speeds up nth_prime also.  Huge
+      thanks to Christian Bau's excellent paper and examples.
+
+    - Some fixes for 32-bit.
+
+    - prime_count_approx, upper, and lower return exact answers in more cases.
+
+    - Fixed a problem with Lehmer prime_count introduced in 0.34.
+
+    - nth_prime changed from RiemannR to inverse Li (with partial addition).
+      This makes some of the big nth_prime calculations (e.g. 10^15, 10^16)
+      run quite a bit faster as they sieve less on average.
+
+
+0.34  2013-11-19
+
+    - Fixed test that was using a 64-bit number on 32-bit machines.
+
+    - Switch a couple internal arrays from UV to uint32 in prime count.
+      This reduces memory consumption a little with big counts.  Total
+      memory use for counts > 10^15 is about 5x less than in version 0.31.
+
+
+0.33  2013-11-18
+
+    [API Changes]
+
+    - all_factors now includes 1 and n, making it identical to Pari's
+      divisors(n) function, but no longer identical to Math::Factor::XS's
+      factors(n) function.  This change allows consistency between
+      divisor_sum(n,0) and scalar all_factors(n).
+
+    [ADDED]
+
+    - factor_exp    returns factors as ([p,e],[p,e],...)
+    - liouville     -1^(Omega(n)), OEIS A008836
+    - partitions    partition function p(n), OEIS A000041
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - all_factors in scalar context returns sigma_0(n).
+
+    - exp_mangoldt defaults to XS for speed.
+
+    - Fixed Pure Perl 33- to 64-bit is_pseudoprime.
+
+    - prime_count uses Lehmer below a threshold (8000M), LMO above.
+      This keeps good performance while still using low memory.  A small
+      speedup for small (3-6M) inputs has been added.  Overall memory use
+      has been reduced by 2-4x for large inputs.
+
+    - Perl RiemannZeta changes:
+
+      - Borwein Zeta calculations done in BigInt instead of BigFloat (speed).
+
+      - Patch submitted for the frustrating Math::BigFloat defect RT 43692.
+        With the patch applied, we get much, much better accuracy.
+
+      - Accuracy updates, especially with fixed BigFloat.
+
+    - Lucas sequence called with bigints will return bigint objects.
+
+    - prime_iterator_object should now work with Iterator::Simple.
+
+    - chebyshev_theta and chebyshev_psi use segmented sieves.
+
+    - More aggressive pruning of tests with 64-bit Perl 5.6.  I'd like to
+      just kill support for systems that can't even add two numbers
+      correctly, but too many other modules want 5.6 support, and lots of
+      our functionality *does* work (e.g. primes, prime count, etc.).
+
+
+0.32  2013-10-13
+
+    [ADDED]
+
+    - is_provable_prime
+    - is_provable_prime_with_cert
+    - carmichael_lambda
+    - znorder
+    - prime_iterator_object
+    - miller_rabin_random
+
+    [NEW FEATURES]
+
+    - Added Math::Prime::Util::PrimeIterator.  A more feature-rich iterator
+      than the simple closure one from prime_iterator.  Experimental.
+
+    - Make very simple LMO primecount work, and switch prime_count to use it.
+      It is slower for large inputs, but uses much less memory.  For smaller
+      inputs it it as fast or faster.  Lehmer code modified to constrain
+      memory use at the expense of speed (starts taking effect at ~ 10^16).
+      Thanks to Kim Walisch for discussions about this.  Note that this is
+      a very simple implementation -- better code could run 10x faster and
+      use even less memory.
+
+    - divisor_sum can take an integer 'k' in the second argument to compute
+      sigma_k.  This is much faster than using subs, especially when the
+      result can be computed in XS using native precision.  For integer
+      second arguments, the result will automatically be a bigint if needed.
+      It is also much faster for larger inputs.
+
+    - factor() can be called in scalar context to give the number of
+      prime factors.  The XS function was ignoring the context, and now
+      is more consistent.  It also slightly speeds up looking at the
+      number of factors, e.g. Omega(x) A001222.
+
+    [FUNCTIONALITY AND PERFORMANCE]
+
+    - Use MPU::GMP::pn_primorial if we have it.
+
+    - Input validation accepts bigint objects and converts them to scalars
+      entirely in XS.
+
+    - random_nbit_prime now uses Fouque and Tibouchi A1 for 65+ bits.
+      Slightly better uniformity and typically a bit faster.
+
+    - Incorporate Montgomery reduction for primality testing, thanks to
+      Wojciech Izykowski.  This is a 1.3 to 1.5x speedup for is_prob_prime,
+      is_prime, and is_strong_pseudoprime for numbers > 2^32 on x86_64.
+      This also help things like prime_iterator for values > 2^32.
+
+    - Montgomery reduction used in Lucas and Frobenius tests.  Up to 2x
+      speedup for 33 to 64-bit inputs on x86_64/gcc platforms.
+
+    - Some fixes around near maxint primes, forprimes, etc.  Includes
+      more workarounds for Math::BigInt::GMP's constructor sign bug.
+
+    - Bytes::Random::Secure is loaded only when random prime functionality
+      is used.  Shaves a few milliseconds and bytes off of startup.
+
+    - Speedups for Perl (no GMP) primality and random primes.
+
+    [MISC]
+
+    - Primality functions moved to their own file primality.c.
+
+0.31  2013-08-07
+
+    - Change proof certificate documentation to reflect the new text format.
+
+    - Some platforms were using __int128 when it wasn't supported.  Only
+      x86_64 and Power64 use it now.
+
+    - Small speedup for ranged totient internals.
+
+    - Patch MPU::GMP 0.13 giving us not quite what we expected from a small
+      certificate.  Fixed in MPU::GMP 0.14, worked around here regardless.
+
+0.30  2013-08-06
+
+    [API Changes]
+      - Primality proofs now use the new "MPU Certificate" format, which is
+        text rather than a nested Perl data structure.  This is much better
+        for external interaction, especially with non-Perl tools.  It is
+        not quite as convenient for all-Perl manipulation.
+
+    [Functions Added]
+      - is_frobenius_underwood_pseudoprime
+      - is_almost_extra_strong_lucas_pseudoprime
+      - lucas_sequence
+      - pplus1_factor
+
+    [Enhancements]
+      - Documentation and PP is_prime changed to use extra strong Lucas test
+        from the strong test.  This matches what the newest MPU::GMP does.
+        This has no effect at all for numbers < 2^64.  No counter-example is
+        known for the standard, strong, extra strong, or almost extra strong
+        (increment 1 or 2) tests.  The extra strong test is faster than the
+        strong test and produces fewer pseudoprimes.  It retains the residue
+        class properties of the strong Lucas test (where the SPSP-2
+        pseudoprimes favor residue class 1 and the Lucas pseudoprimes favor
+        residue class -1), hence should retain the BPSW test strength.
+
+      - XS code for all 4 Lucas tests.
+
+      - Clean up is_prob_prime, also ~10% faster for n >= 885594169.
+
+      - Small mulmod speedup for non-gcc/x86_64 platforms, and for any platform
+        with gcc 4.4 or newer.
+
+    [Bug Fixes]
+      - Fixed a rare refcount / bignum / callback issue in next_prime.
+
+0.29  2013-05-30
+
+    [Functions Added]
+       - is_pseudoprime (Fermat probable prime test)
+       - is_lucas_pseudoprime (standard Lucas-Selfridge test)
+       - is_extra_strong_lucas_pseudoprime (Mo/Jones/Grantham E.S. Lucas test)
+
+    - Fix a signed vs. unsigned char issue in ranged moebius.  Thanks to the
+      Debian testers for finding this.
+
+    - XS is_prob_prime / is_prime now use a BPSW-style test (SPRP2 plus
+      extra strong Lucas test) for values over 2^32.  This results in up
+      to 2.5x faster performance for large 64-bit values on most machines.
+      All PSP2s have been verified with Jan Feitsma's database.
+
+    - forprimes now uses a segmented sieve.  This (1) allows arbitrary 64-bit
+      ranges with good memory use, and (2) allows nesting on threaded perls.
+
+    - prime_count_approx for very large values (> 10^36) was very slow without
+      Math::MPFR.  Switch to Li+correction for large values if Math::MPFR is
+      not available.
+
+    - Workaround for MSVC compiler.
+
+0.28  2013-05-23
+
+    - An optimization to nth_prime caused occasional threaded Win32 faults.
+      Adjust so this is avoided.
+
+    - Yet another XS micro-speedup (PERL_NO_GET_CONTEXT)
+
+    - forprimes { block } [begin,]end.  e.g.
+        forprimes { say } 100;
+        $sum = 0;  forprimes { $sum += $_ } 1000,50000;  say $sum;
+        forprimes { say if is_prime($_+2) } 10000;  # print twin primes
+
+    - my $it = prime_iterator(10000); say $it->();
+      This is experimental (that is, the interface may change).
+
+0.27  2013-05-20
+
+    - is_prime, is_prob_prime, next_prime, and prev_prime now all go straight
+      to XS if possible.  This makes them much faster for small inputs without
+      having to use the -nobigint flag.
+
+    - XS simple number validation to lower function call overhead.  Still a
+      lot more overhead compared to directly calling the XS functions, but
+      it shaves a little bit of time off every call.
+
+    - Speedup pure Perl factoring of small numbers.
+
+    - is_prob_prime / is_prime about 10% faster for composites.
+
+    - Allow '+N' as the second parameter to primes.pl.  This allows:
+          primes.pl 100 +30
+      to return the primes between 100 and 130.  Or:
+          primes.pl 'nth_prime(1000000000)' +2**8
+
+    - Use EXTENDED_TESTING to turn on extra tests.
+
+0.26  2013-04-21
+
+    [Pure Perl Factoring]
+        - real p-1 -- much faster and more effective
+        - Fermat (no better than HOLF)
+        - speedup for pbrent
+        - simple ECM
+        - redo factoring mix
+
+    [Functions Added]
+        prime_certificate  produces a certificate of primality.
+        verify_prime       checks a primality certificate.
+
+    - Pure perl primality proof now uses BLS75 instead of Lucas, so some
+      numbers will be much faster [n-1 only needs factoring to (n/2)^1/3].
+
+    - Math::Prime::Util::ECAffinePoint and ECProjectivePoint modules for
+      dealing with elliptic curves.
+
+0.25  2013-03-19
+
+    - Speed up p-1 stage 2 factoring.  Combined with some minor changes to the
+      general factoring combination, ~20% faster for 19 digit semiprimes.
+
+    - New internal macro to loop over primary sieve starting at 2.  Simplifies
+      code in quite a few places.
+
+    - Forgot to skip one of the tests with broken 5.6.2.
+
+0.24  2013-03-10
+
+    - Fix compilation with old pre-C99 strict compilers (decl after statement).
+
+    - euler_phi on a range wasn't working right with some ranges.
+
+    - More XS prime count improvements to speed and space.  Add some tables
+      to the sieve count so it runs a bit faster.  Transition from sieve later.
+
+    - PP prime count for 10^9 and larger is ~2x faster and uses much less
+      memory.  Similar impact for nth_prime 10^8 or larger.
+
+    - Let factor.pl accept expressions just like primes.pl.
+
+0.23  2013-03-05
+
+    - Replace XS Zeta for x > 5 with series from Cephes.  It is 1 eps more
+      accurate for a small fraction of inputs.  More importantly, it is much
+      faster in range 5 < x < 10.  This only affects non-integer inputs.
+
+    - PP Zeta code replaced (for no-MPFR, non-bignums) with new series.  The
+      new code is much more accurate for small values, and *much* faster.
+
+    - Add consecutive_integer_lcm function, just like MPU::GMP's (though we
+      define ci_lcm(0) = 0, which should get propogated).
+
+    - Implement binary search on RiemannR for XS nth_prime when n > 2e11.
+      Runs ~2x faster for 1e12, 3x faster for 1e13.  Thanks to Programming
+      Praxis for the idea and motivation.
+
+    - Add the first and second Chebyshev functions (theta and psi).
+
+    - put isqrt(n) in util.h, use it everywhere.
+      put icbrt(n) in lehmer.h, use it there.
+
+    - Start on Lagarias-Miller-Odlyzko prime count.
+
+    - A new data structure for the phi(x,a) function used by all the fast
+      prime count routines.  Quite a bit faster and most importantly, uses
+      half the memory of the old structure.
+
+    [Performance]
+       - Divisor sum with no sub is ~10x faster.
+       - Speed up PP version of exp_mangoldt, create XS version.
+       - Zeta much faster as mentioned above.
+       - faster nth_prime as mentioned above.
+       - AKS about 10% faster.
+       - Unroll a little more in sieve inner loop.  A couple percent faster.
+       - Faster prime_count and nth_prime due to new phi(x,a) (about 1.25x).
+
+0.22  2013-02-26
+
+    - Move main factor loop out of xs and into factor.c.
+
+    - Totient and Moebius now have complete XS implementations.
+
+    - Ranged totient uses less memory when segmented.
+
+    - Switch thread locking to pthreads condition variables.
+
+0.21  2013-02-22
+
+    - Switch to using Bytes::Random::Secure for random primes.  This is a
+      big change in that it is the first non-CORE module used.  However, it
+      gets rid of lots of possible stupidness from system rand.
+
+    - Spelling fixes in documentation.
+
+    - primes.pl: Add circular and Panaitopol primes.
+
+    - euler_phi and moebius now will compute over a range.
+
+    - Add mertens function: 1000+ times faster than summing moebius($_).
+
+    - Add exp_mangoldt function: exponential of von Mangoldt's function.
+
+    - divisor_sum defaults to sigma if no sub is given (i.e. it sums).
+
+    [Performance]
+       - Speedup factoring small numbers.  With -nobigint factoring from
+         1 to 10M, it's 1.2x faster.  1.5x faster than Math::Factor::XS.
+       - Totient and Möbius over a range are much faster than separate calls.
+       - divisor_sum is 2x faster.
+       - primes.pl is much faster with Pillai primes.
+       - Reduce overhead in euler_phi -- about 2x faster for individual calls.
+
+0.20  2013-02-03
+
+    - Speedup for PP AKS, and turn off test on 32-bit machines.
+
+    - Replaced fast sqrt detection in PP.pm with a slightly slower version.
+      The bloom filter doesn't work right in 32-bit Perl.  Having a non-working
+      detector led to really bad performance.  Hence this and the AKS change
+      should speed up testing on some 32-bit machines by a huge amount.
+
+    - Fix is_perfect_power in XS AKS.
+
+0.19  2013-02-01
+
+    - Update MR bases with newest from http://miller-rabin.appspot.com/.
+
+    - Fixed some issues when using bignum and Calc BigInt backend, and bignum
+      and Perl 5.6.
+
+    - Added tests for bigint is_provable_prime.
+
+    - Added a few tests to give better coverage.
+
+    - Adjust some validation subroutines to cut down on overhead.
+
+0.18  2013-01-14
+
+    - Add random_strong_prime.
+
+    - Fix builds with Solaris 9 and older.
+
+    - Add some debug info to perhaps find out why old ActiveState Perls are
+      dying in Math::BigInt::Calc, as if they were using really old versions
+      that run out of memory trying to calculate '2 ** 66'.
+      http://code.activestate.com/ppm/Math-Prime-Util/
+
+0.17  2012-12-20
+
+    - Perl 5.8.1 - 5.8.7 miscalculates 12345 ** 4, which I used in a test.
+
+    - Fix (hopefully) for MSC compilation.
+
+    - Unroll sieve loop for another 20% or so speedup.  It won't have much
+      practical application now that we use Lehmer's method for counts, but
+      there are some cases that can still show speedups.
+
+    - Changed the rand functionality yet again.  Sorry.  This should give
+      better support for plugging in crypto RNG's when used from other
+      modules.
+
+0.16  2012-12-11
+
+    - randbits >= 32 on some 32-bit systems was messing us up.  Restrict our
+      internal randbits to wordsize-1.
+
+0.15  2012-12-09
+
+    [Enhancements to Ei, li, Zeta, R functions]
+       - Native Zeta and R have slightly more accurate results.
+       - For bignums, use Math::MPFR if possible.  MUCH faster.
+         Also allows extended precision while still being fast.
+       - Better accuracy for standard bignums.
+       - All four functions do:
+          - XS if native input.
+          - MPFR to whatever accuracy is desired, if Math::MPFR installed.
+          - BigFloat versions if no MPFR and BigFloat input.
+          - standard version if no MPFR and not a BigFloat.
+
+    [Other Changes]
+    - Add tests for primorial, jordan_totient, and divisor_sum.
+
+    - Revamp of the random_prime internals.  Also fixes some issues with
+      random n-bit and maurer primes.
+
+    - The random prime and primorial functions now will return a Math::BigInt
+      object if the result is greater than the native size.  This includes
+      loading up the Math::BigInt library if necessary.
+
+0.14  2012-11-29
+
+    [Compilation / Test Issues]
+       - Fix compilation on NetBSD
+       - Try to fix compilation on Win32 + MSVC
+       - Speed up some testing, helps a lot with Cygwin on slow machines
+       - Speed up a lot of slow PP areas, especially used by test suite
+
+    [Functions Added]
+       - jordan_totient          generalization of Euler Totient
+       - divisor_sum             run coderef for every divisor
+
+    [Other Changes]
+    - XS AKS extended from half-word to full-word.
+
+    - Allow environment variables MPU_NO_XS and MPU_NO_GMP to turn off XS and
+      GMP support respectively if they are defined and equal to 1.
+
+    - Lehmer prime count for Pure Perl code, including use in nth_prime.
+         prime count 10^9 using sieve:
+            71.9s   PP sieve
+             0.47s  XS sieve
+         prime count 10^9 using Lehmer:
+             0.70s  PP lehmer
+             0.03s  XS lehmer
+
+    - Moved bignum Zeta and R to separate file, only loaded when needed.
+      Helpful to get the big rarely-used tables out of the main loading.
+
+    - Quote arguments to Math::Big{Int,Float} in a few places it wasn't.
+      Math::Big* coerces the input to a signed value if it isn't a string,
+      which causes us all sorts of grief.
+
+0.13  2012-11-19
+
+    - Fix an issue with prime count, and make prime count available as a
+      standalone program using primesieve.
+
+0.12  2012-11-17
+
+    [Programs Added]
+       - bin/primes.pl
+       - bin/factor.pl
+
+    [Functions Added]
+       - primorial               product of primes <= n
+       - pn_primorial            product of first n primes
+       - prime_set_config        set config options
+       - RiemannZeta             export and make accurate for small reals
+       - is_provable_prime       prove primes after BPSW
+       - is_aks_prime            prove prime via AKS
+
+    [Other Changes]
+    - Add 'assume_rh' configuration option (default: false) which can be set
+      to allow functions to assume the Riemann Hypothesis.
+
+    - Use the Schoenfeld bound for Pi(x) (x large) if assume_rh is true.
+
+    - valgrind testing
+
+    - Use long doubles for math functions.
+
+    - Some fixes and speedups for ranged primes().
+
+    - In the PP code, use 2 MR bases for more numbers when possible.
+
+    - Fixup of racing SQUFOF, and switch to use it in factor().
+
+    - Complete rewrite of XS p-1 factor routine, includes second stage.
+
+    - bug fix for prime_count on edge of cache.
+
+    - prime_count will use Lehmer prime counting algorithm for largish
+      sizes (above 4 million).  This is MUCH faster than sieving.
+
+    - nth_prime now uses the fast Lehmer prime count below the lower limit,
+      then sieves up from there.  This makes a big speed difference for inputs
+      over 10^6 or so -- over 100x faster for 10^9 and up.
+
+0.11  2012-07-23
+    - Turn off threading tests on Cygwin, as threads on some Cygwin platforms
+      give random panics (my Win7 64-bit works fine, XP 32-bit does not).
+    - Use pow instead of exp2 -- some systems don't have exp2.
+    - Fix compile issues on MSC, thanks to Sisyphus.
+    - some bigint/bignum changes (next_prime and math functions).
+    - speed up and enhance some tests.
+    - Test version of racing SQUFOF (not used in main code yet).  Also add
+      a little more up-front trial division for main factor routine.
+
+
+0.10  2012-07-16
+    - full bigint support for everything.  Use '-nobigint' as an import to
+      shortcut straight to XS for better speed on some of the very fast functions.
+      This involved moving a lot of functions into Util.pm.
+
+    - added BPSW primality test for large (>2^64) is_prob_prime and is_prime.
+
+    - Add tests for pp and bignum, cleanup of many tests.
+
+    - New bounds for prime_count and nth_prime.  Dusart 2010 for larger
+      values, tuned nth_prime_upper for small values.  Much tighter.
+
+    [Functions Added]
+       - prime_get_config              to get configuration options
+       - is_strong_pseudoprime         better name for miller_rabin
+       - is_strong_lucas_pseudoprime   strong lucas-selfridge psp test
+       - random_nbit_prime             for n-bit primes
+       - random_maurer_prime           provable n-bit primes
+       - moebius                       Mo:bius function
+       - euler_phi                     Euler's phi aka totient
+
+    [Minor Changes]
+       - Make miller_rabin return 0 if given even number.
+       - The XS miller_rabin code now works with large base > n.
+       - factor always returns sorted results
+       - miller_rabin() deprecated.  Use is_strong_pseudoprime instead.
+
+    [Support all functionality of:]
+       - Math::Prime::XS         (MPU: more functions, a bit faster)
+       - Math::Prime::FastSieve  (MPU: more functions, a bit faster)
+       - Math::Prime::TiedArray  (MPU: a *lot* faster)
+       - Math::Factor::XS        (MPU: bignums, faster, missing multiplicity)
+       - Math::Big::Factors      (MPU: orders of magnitude faster)
+       - Math::Primality         (MPU: more portable, fast native, slow bigint)
+                                 (MPU+MPU::GMP: faster)
+       - Crypt::Primes           (MPU: more portable, slower & no fancy options)
+
+    [Support some functionality of:]
+       - Math::Big               (MPU's primes is *much* faster)
+       - Bit::Vector             (MPU's primes is ~10x faster)
+
+0.09  2012-06-25
+    - Pure Perl code added.  Passes all tests.  Used only if the XSLoader
+      fails.  It's 1-120x slower than the C code.  When forced to use the
+      PP code, the test suite is 38x slower on 64-bit, 16x slower on 32-bit
+      (in 64-bit, the test suite runs some large numbers through routines
+      like prime_count and nth_prime that are much faster in C).
+    - Modifications to threading test:
+        - some machines were failing because they use non-TS rand.  Fix by
+          making our own rand.
+        - Win32 was failing because of unique threading issues.  It barfs
+          if you free memory on a different thread than allocated it.
+    - is_prime could return 1 in some cases.  Fixed to only return 0 or 2.
+
+0.08  2012-06-22
+    - Added thread safety and tested good concurrency.
+    - Accuracy improvement and measurements for math functions.
+    - Remove simple sieve -- it wasn't being used, and was just around for
+      performance comparisons.
+    - Static presieve for 7, 11, and 13.  1k of ROM used for prefilling sieve
+      memory, meaning we can skip the 7, 11, and 13 loops.  ~15% speedup.
+    - Add all_factors function and added tests to t/50-factoring.t.
+    - Add tied array module Math::Prime::Util::PrimeArray.
+    - 5.6.2 64-bit now disables the 64-bit factoring tests instead of failing
+      the module.  The main issue is that we can't verify the factors since Perl
+      can't properly multiply them.
+
+0.07  2012-06-17
+    - Fixed a bug in next_prime found by Lou Godio (thank you VERY much!).
+      Added more tests for this.  This had been changed in another area but
+      hadn't been brought into next_prime.
+
+0.06  2012-06-14
+    - Change to New/Safefree from malloc.  Oops.
+
+0.05  2012-06-11
+    - Speed up mulmod: asm for GCC + x86_64, native 64-bit for 32-bit Perl
+      is uint64_t is available, and range tests for others.  This speeds up
+      some of the factoring as well as Miller-Rabin, which in turn speeds up
+      is_prime.  is_prime is used quite commonly, so this is good.
+    - nth_prime routines should now all croak on overflow in the same way.
+    - Segmented prime_count, things like this are reasonably efficient:
+            say prime_count( 10**16,  10**16 + 2**20 )
+    - Add Ei(x), li(x), and R(x) functions.
+    - prime_count_approx uses R(x), making it vastly more accurate.
+    - Let user override rand for random_prime.
+    - Add many more tests with the help of Devel::Cover.
+
+0.04  2012-06-07
+    - Didn't do tests on 32-bit machine before release.  Test suite caught
+      problem with next_prime overflow.
+    - Try to use 64-bit modulo math even when Perl is 32-bit.  It can make
+      is_prime run up to 10x faster (which impacts next_prime, factoring, etc.)
+    - replace all assert with croak indicating an internal error.
+    - Add random_prime and random_ndigit_prime
+    - renamed prime_free to prime_memfree.
+
+0.03  2012-06-06
+    - Speed up factoring.
+    - fixed powmod routine, speedup for smaller numbers
+    - Add Miller-Rabin and deterministic probable prime functions.  These
+      are now used for is_prime and factoring, giving a big speedup for
+      numbers > 32-bit.
+    - Add HOLF factoring (just for demo)
+    - Next prime returns 0 on overflow
+
+0.02  2012-06-05
+    - Back off new_ok to new/isa_ok to keep Test::More requirements low.
+    - Some documentation updates.
+    - I accidently used long in SQUFOF, which breaks LLP64.
+    - Test for broken 64-bit Perl.
+    - Fix overflow issues in segmented sieving.
+    - Switch to using UVuf for croaks.  What I should have done all along.
+    - prime_count uses a segment sieve with 256k chunks (~7.9M numbers).
+      Not memory intensive any more, and faster for large inputs.  The time
+      growth is slightly over linear however, so expect to wait a long
+      time for 10^12 or more.
+    - nth_prime also transitioned to segmented sieve.
+
+0.01  2012-06-04
+    - Initial release

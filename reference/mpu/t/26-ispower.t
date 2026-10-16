@@ -1,0 +1,273 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Test::More;
+use Math::Prime::Util qw/is_power is_prime_power is_square is_sum_of_squares
+                         vecsum/;
+
+my $extra = defined $ENV{EXTENDED_TESTING} && $ENV{EXTENDED_TESTING};
+my $use64 = Math::Prime::Util::prime_get_config->{'maxbits'} > 32;
+
+my @pow1  = (0,0,0,0,2,0,0,0,3,2,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,2,0,3,0,0,0,0,5);
+my @ppow1 = (0,0,1,1,2,1,0,1,3,2,0,1,0,1,0,0,4,1,0,1,0,0,0,1,0,2,0,3,0,1,0,1,5);
+
+my %bpow = (
+  "16926659444736" => [6,17],
+  "100000000000000000" => [10,17],
+  "609359740010496" => [6,19],
+  "789730223053602816" => [6,23],
+  "4611686018427387904" => [2,62],
+  "4738381338321616896" => [6,24],
+  "9223372036854775808" => [2,63],
+  "12157665459056928801" => [3,40],
+  "10000000000000000000" => [10,19],
+);
+
+my %bppow = (
+  "762939453125" => [5,17],
+  "232630513987207" => [7,17],
+  "11398895185373143" => [7,19],
+  "11920928955078125" => [5,23],
+  "68630377364883" => [3,29],
+  "617673396283947" => [3,31],
+  "450283905890997363" => [3,37],
+  "12157665459056928801" => [3,40],
+  "7450580596923828125" => [5,27],
+  "3909821048582988049" => [7,22],
+  "5559917313492231481" => [11,18],
+  "8650415919381337933" => [13,17],
+  "2862423051509815793" => [17,15],
+  "15181127029874798299" => [19,15],
+);
+
+my %powers = (
+  0 => [-2, -1, 0, 1, 2, 3, 5, 6, 7, 10, 11, 12, 13, 14, 15, 17, 18, 19],
+  2 => [4, 9, 25, 36, 49],
+  3 => [8, 27, 125, 343, 17576],
+  4 => [16, 38416],
+  9 => [19683, 1000000000],
+ 11 => [362797056],
+ 13 => [1594323],
+ 17 => [129140163],
+ 40 => [qw/1099511627776 12157665459056928801/],
+);
+if ($use64) {
+  push @{$powers{0}}, 9908918038843197151;
+  push @{$powers{2}}, 18446743927680663841;
+  push @{$powers{3}}, 2250923753991375;
+  push @{$powers{4}}, 1150530828529256001;
+  push @{$powers{9}}, 118587876497;
+  push @{$powers{11}}, 12200509765705829;
+  push @{$powers{13}}, 9904578032905937;
+  push @{$powers{17}}, 232630513987207;
+  push @{$powers{31}}, 617673396283947;
+}
+my @negpowers = (0,0,0,3,0,5,3,7,0,9,5);
+
+plan tests => 0
+            + 2
+            + 2 + 2*$extra
+            + scalar(keys(%bpow))
+            + scalar(keys(%bppow))
+            + 5  # is_power
+            + 2*scalar(keys %powers) + scalar(@negpowers)
+            + 5  # large explicit exponent
+            + 13  # tests for 3,5,7 power
+            + 15 # is_power/is_prime_power interface
+            + 4  # is_square
+            + 7  # is_sum_of_squares
+            + 0;
+
+is_deeply( [map { is_power($_) } 0 .. $#pow1],        \@pow1,  "is_power 0 .. $#pow1" );
+is_deeply( [map { is_prime_power($_) } 0 .. $#ppow1], \@ppow1, "is_prime_power 0 .. $#ppow1" );
+
+is( vecsum(map { is_power(2099*$_+$_+1) } 0..200), 8, "is_power 200 small ints" );
+is( vecsum(map { is_prime_power(2099*$_+$_+1) } 0..200), 77, "is_prime_power 200 small ints" );
+
+if ($extra) {
+  is( vecsum(map { is_power(23*$_+$_) } 0..10000), 122, "is_power 10k small ints" );
+  is( vecsum(map { is_prime_power(23*$_+$_+1) } 0..10000), 2829, "is_prime_power 10k small ints" );
+}
+
+while (my($n, $expect) = each (%bpow)) {
+  my $r;  my $k = is_power($n,0,\$r);
+  is_deeply( $expect, [$r,$k], "ispower($n,0,r) = $r^$k.  Expect ".join("^",@$expect) );
+}
+
+while (my($n, $expect) = each (%bppow)) {
+  my $r;  my $k = is_prime_power($n,\$r);
+  is_deeply( $expect, [$r,$k], "isprimepower  =>  $n = $r^$k (@$expect)" );
+}
+
+{
+  my $r;
+  my $ip = is_power(-8,3,\$r);
+  is( $ip, 1, "-8 is a third power" );
+  is( $r, -2, "-8 is a third power of -2" );
+
+  is( is_power(-8, 4), 0, "-8 is not a fourth power" );
+  is( is_power(-16,4), 0, "-16 is not a fourth power" );
+}
+
+###### is_power
+while (my($e, $vals) = each (%powers)) {
+  my @fail;
+  foreach my $val (@$vals) {
+    push @fail, $val unless is_power($val) == $e;
+  }
+  ok( @fail == 0, (@fail > 0) ? "is_power(n) should return $e for [@fail]" : "is_power(n) returns $e for [@$vals]" );
+
+  my @fail2;
+  my $exp = ($e == 0) ? 0 : 1;
+  foreach my $val (@$vals) {
+    push @fail2, $val unless is_power($val,$e) == $exp;
+  }
+  ok( @fail2 == 0, (@fail2 > 0) ? "is_power(n,$e) should return $exp for [@fail2]" : "is_power(n,$e) returns $exp for [@$vals]" );
+}
+
+is_deeply( [map { is_power($_,1) } -10..10],
+           [map { 1              } -10..10], "Every integer is a first power");
+
+foreach my $e (0 .. $#negpowers) {
+  is( is_power(-7 ** $e), $negpowers[$e], "is_power(-7^$e ) = $negpowers[$e]" );
+}
+is( is_power(-1,5), 1, "-1 is a 5th power" );
+
+{
+  my $huge_even = "1000000000000000000000000000000";
+  my $huge_odd  = "1000000000000000000000000000001";
+  my $wide_native_k = "4294967297";
+  is( is_power(16, $wide_native_k), 0, "16 is not a (2^32+1)-th power" );
+  is( is_power(16, $huge_even), 0, "16 is not a huge-th power" );
+  is( is_power(1,  $huge_even), 1, "1 is a huge-th power" );
+  is( is_power(-1, $huge_odd),  1, "-1 is an odd huge-th power" );
+  is( is_power(-1, $huge_even), 0, "-1 is not an even huge-th power" );
+}
+
+{
+  my($ispow, $root);
+  $ispow = is_power(24, 2, \$root);
+  is( $ispow, 0, "24 isn't a perfect square...");
+  is( $root, undef, "...and the root wasn't set");
+  $ispow = is_power( "1000093002883029791", 3, \$root);
+  is( $ispow, 1, "1000031^3 is a perfect cube...");
+  is( $root, 1000031, "...and the root was set");
+  $ispow = is_power( 36**5 , 0, \$root);
+  is( $ispow, 10, "36^5 is a 10th power...");
+  is( $root, 6, "...and the root is 6");
+}
+
+{
+  my $root;
+  is_deeply( [is_power(16, \$root), $root],
+             [4, 2], "scalar reference requests largest power root return" );
+  $root = undef;
+  is_deeply( [is_power(-8, \$root), $root],
+             [3, -2], "scalar reference root return works for negative powers" );
+  $root = undef;
+  is_deeply( [is_power(17, \$root), $root],
+             [0, undef], "scalar reference root return leaves non-powers alone" );
+
+  is( is_power(16, undef), 4, "undef exponent requests largest power" );
+  is_deeply( [is_power(16, undef, \$root), $root],
+             [4, 2], "undef exponent supports root return" );
+
+  eval { is_power(16, -2); 1 };
+  like($@, qr/non-negative integer/, "is_power rejects negative exponent");
+
+  eval { is_power(16, 2, undef); 1 };
+  like($@, qr/scalar reference/i, "is_power rejects undef root reference for true result");
+
+  eval { is_power(17, 2, undef); 1 };
+  like($@, qr/scalar reference/i, "is_power rejects undef root reference for false result");
+
+  eval { is_power(16, 2, []); 1 };
+  like($@, qr/scalar reference/i, "is_power rejects array root reference for true result");
+
+  eval { is_power(17, 2, []); 1 };
+  like($@, qr/scalar reference/i, "is_power rejects array root reference for false result");
+
+  my $str = "abc";
+  eval { is_power(16, 2, \substr($str,0,1)); 1 };
+  like($@, qr/scalar reference/i, "is_power rejects lvalue root reference");
+
+  eval { is_power(16, 2, \*STDOUT); 1 };
+  like($@, qr/scalar reference/i, "is_power rejects glob root reference");
+
+  eval { is_prime_power(10, undef); 1 };
+  like($@, qr/scalar reference/i, "is_prime_power rejects undef root reference");
+
+  eval { is_prime_power(10, []); 1 };
+  like($@, qr/scalar reference/i, "is_prime_power rejects array root reference");
+
+  eval { is_prime_power(16, \substr($str,0,1)); 1 };
+  like($@, qr/scalar reference/i, "is_prime_power rejects lvalue root reference");
+}
+
+is( is_power(56129,3), 0, "56129 is not a 3rd power" );
+is( is_power(50653,3), 1, "50653 is a 3rd power" );
+is( is_power(76840601,5), 0, "76840601 is not a 5th power" );
+is( is_power(69343957,5), 1, "69343957 is a 5th power" );
+is( is_power(4782969,7), 1, "4782969 is a 7th power" );
+is( is_power(4782971,7), 0, "4782971 is not a 7th power" );
+
+###### is_square
+is_deeply(
+  [map { is_square($_) } (-4 .. 16)],
+  [0,0,0,0,1,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+  "is_square for -4 .. 16"
+);
+is(is_square(603729), 1, "603729 is a square");
+is(is_square("765413284212226299051111674934086564882382225721"), 1, "is_square(<square of 80-bit prime>) = 1");
+is_deeply(
+  [map { is_square($_) } qw/
+    -340282366920938463426481119284349108225
+     340282366920938463426481119284349108224
+     340282366920938463426481119284349108225
+     340282366920938463426481119284349108226
+     340282366920938463463374607431768211455
+     340282366920938463463374607431768211456
+  /],
+  [0, 0, 1, 0, 0, 1],
+  "is_square at the 128-bit boundary"
+);
+
+###### is_sum_of_squares
+is_deeply(
+  [map { is_sum_of_squares($_,0) } (-10 .. 10)],
+  [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
+  "is_sum_of_squares (k=0) for -10 .. 10"
+);
+is_deeply(
+  [map { is_sum_of_squares($_,1) } (-10 .. 10)],
+  [0,1,0,0,0,0,1,0,0,1,1,1,0,0,1,0,0,0,0,1,0],
+  "is_sum_of_squares (k=1) for -10 .. 10"
+);
+is_deeply(
+  [map { is_sum_of_squares($_) } (-10 .. 100)],
+  [1,1,1,0,0,1,1,0,1,1,1,1,1,0,1,1,0,0,1,1,1,0,0,1,0,0,1,1,1,0,1,0,0,0,0,1,1,0,0,1,0,0,1,0,1,0,1,1,0,0,1,1,0,0,0,1,0,0,0,1,1,0,1,1,0,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,1,0,0,0,1,1,0,0,0,0,0,0,1,1,0,1],
+  "is_sum_of_squares (k=2) for -10 .. 100"
+);
+is_deeply(
+  [map { is_sum_of_squares($_,3) } (-10 .. 100)],
+  [1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,1],
+  "is_sum_of_squares (k=3) for -10 .. 100"
+);
+is_deeply(
+  [map { is_sum_of_squares($_,4) } (-10 .. 10)],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  "is_sum_of_squares (k=4) for -10 .. 10"
+);
+
+is_deeply(
+  [map { is_sum_of_squares($_) } (209, 437, 713, 1333, 2021)],
+  [0,0,0,0,0],
+  "is_sum_of_squares (k=2) for selected non-representable integers"
+);
+
+is_deeply(
+  [map { is_sum_of_squares($_,3) } (qw/0 6 7 8 9 1145141919810 245657627368729 12345678987654321 185724285729475816451975/)],
+  [1,1,0,1,1,1,1,1,0],
+  "is_sum_of_squares (k=3) for selected integers"
+);

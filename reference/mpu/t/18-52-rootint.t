@@ -1,0 +1,131 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Test::More;
+use Math::Prime::Util qw/rootint crootint/;
+
+my @roots = (
+  [25,  3, 15625],
+  [13,  4, 28561],
+  [13,  5, 371293],
+  [25,  6, 244140625],
+  [ 7,  7, 823543],
+  [13,  8, 815730721],
+  [ 7,  9, 40353607],
+  [13, 10, "137858491849"],
+  [21, 11, "350277500542221"],
+  [25, 12, "59604644775390625"],
+  [ 7, 13, "96889010407"],
+  [ 7, 14, "678223072849"],
+  [13, 16, "665416609183179841"],
+  [13, 17, "8650415919381337933"],
+  [ 7, 18, "1628413597910449"],
+  [ 6, 19, "609359740010496"],
+  [ 3, 21, "10460353203"],
+  [ 3, 23, "94143178827"],
+  [ 3, 25, "847288609443"],
+  [ 3, 29, "68630377364883"],
+  [ 2, 40, "1099511627776"],
+  [ 3, 40, "12157665459056928801"],
+  [213, 15, "84274086103068221283760416414557757"],
+);
+
+my @rootints = (
+  ["18446744073709551615", 63, 2],
+  ["4544344858450091399", 6, 1286],
+  ["4544344858450091404", 6, 1286],
+  ["4544344858450091408", 6, 1286],
+  ["4544344858450091409", 6, 1287],
+  ["4544344858450091410", 6, 1287],
+  ["4293595042302394368", 5, 5328],
+  ["4444763232114353115", 5, 5364],
+  ["4444763232114353124", 5, 5364],
+  ["4444763232114353125", 5, 5365],
+  ["266667176579895999", 3, 643659],
+  ["11821500311773607999", 3, 2278019],
+  ["11821500311773608000", 3, 2278020],
+  ["11821500311773608001", 3, 2278020],
+  ["18446703239944862784", 3, 2642244],
+  ["18446724184312856125", 3, 2642245],
+  ["18446745128696702936", 3, 2642246],
+  ["18446744073709551615", 17, 13],
+  ["18446744039349813264", 39, 3],
+);
+
+plan tests => 2 + 2 + 3 + 5 + 3 + 2 + 6 + 4 + 4;
+
+ok(!defined eval { rootint(377,0);  }, "rootint(n,0) gives error");
+ok(!defined eval { rootint(-377,2); }, "rootint(-n,k) gives error");
+
+ok(!defined eval { crootint(377,0);  }, "crootint(n,0) gives error");
+ok(!defined eval { crootint(-377,2); }, "crootint(-n,k) gives error");
+
+is(rootint(928342398,1), 928342398, "rootint(928342398,1) returns 928342398");
+is(rootint(88875,3), 44, "rootint(88875,3) returns 44");
+is(rootint("266667176579895999",3), 643659, "integer third root of 266667176579895999 is 643659");
+
+is(crootint(928342398,1), 928342398, "crootint(928342398,1) returns 928342398");
+is(crootint(0,2), 0, "crootint(0,2) = 0");
+is(crootint(88875,3), 45, "ceiling third root of 88875 is 45");
+is(crootint(15625,3), 25, "ceiling third root of perfect cube 15625 is 25");
+is(crootint("266667176579896000",3), 643660, "ceiling third root of 266667176579896000 is 643660");
+{
+  eval { rootint(16, 2, undef); 1 };
+  like($@, qr/scalar reference/i, "rootint rejects undef power reference");
+
+  eval { rootint(16, 2, []); 1 };
+  like($@, qr/scalar reference/i, "rootint rejects array power reference");
+
+  my $str = "abc";
+  eval { rootint(16, 2, \substr($str,0,1)); 1 };
+  like($@, qr/scalar reference/i, "rootint rejects lvalue power reference");
+}
+{
+  my(@got, @expected);
+  for my $arr (@roots) {
+    my($b, $k, $n) = @$arr;
+    push @expected, [$b,$n];
+    my $rk;
+    my $r = rootint($n,$k,\$rk);
+    push @got, ["$r","$rk"];
+  }
+  is_deeply( \@got, \@expected, "rootint on perfect powers where log fails" );
+}
+{
+  my(@got, @expected);
+  for my $arr (@rootints) {
+    my($n, $k, $exp) = @$arr;
+    push @expected, $exp;
+    push @got, map{"$_"} rootint($n,$k);
+  }
+  is_deeply( \@got, \@expected, "rootint on selected 64-bit values" );
+}
+{
+  my $huge_k = "18446744073709551617";
+  my $wide_native_k = "4294967297";
+  my $rk;
+  is(rootint(0, 2), 0, "rootint(0,2) = 0");
+  is(rootint(16, $wide_native_k), 1, "rootint preserves native exponents above 32 bits");
+  is(rootint(16, $huge_k), 1, "rootint with huge k returns 1 without power reference");
+  is(rootint(16, $huge_k, \$rk), 1, "rootint with huge k returns 1 with power reference");
+  is($rk, 1, "rootint huge k power reference is 1");
+  is(rootint("18446744073709551616", 5_000_000), 1,
+     "rootint with bigint n and large native k returns 1");
+}
+{
+  my $huge_k = "18446744073709551617";
+  my $wide_native_k = "4294967297";
+  is(crootint(1, $huge_k), 1, "crootint with huge k returns 1 for n=1");
+  is(crootint(16, $wide_native_k), 2, "crootint preserves native exponents above 32 bits");
+  is(crootint(2, $huge_k), 2, "crootint with huge k returns 2 for n=2");
+  is(crootint(16, $huge_k), 2, "crootint with huge k returns 2 for n=16");
+}
+
+# These make LibTomMath's mp_root_n misbehave badly.
+#is( rootint("43091031920942300256108314560009772304748698124094750326895058640841523270081624169128280918534127523222564290447104831706207227117677890695945149868732770531628297914633063561406978145215542597509491443634033203125",23), 2147483645, "integer 23rd root of a large 23rd power" );
+#is( rootint("43091031920942300256108314560009772304748698124094750326895058640841523270081624169128280918534127523222564290447104831706207227117677890695945149868732770531628297914633063561406978145215542597509491443634033203124",23), 2147483644, "integer 23rd root of almost a large 23rd power" );
+is( rootint("210624581277440375104075455121440552596840260401487569333688203125",7), 2147483645, "integer 7th root of a large 7th power" );
+is( rootint("210624581277440375104075455121440552596840260401487569333688203124",7), 2147483644, "integer 7th root of almost a large 7th power" );
+is( crootint("210624581277440375104075455121440552596840260401487569333688203125",7), 2147483645, "ceiling 7th root of a large 7th power" );
+is( crootint("210624581277440375104075455121440552596840260401487569333688203124",7), 2147483645, "ceiling 7th root of almost a large 7th power" );

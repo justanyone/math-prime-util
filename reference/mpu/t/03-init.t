@@ -1,0 +1,89 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Math::Prime::Util qw/prime_precalc prime_memfree prime_get_config
+                         prime_set_config/;
+use Math::Prime::Util::MemFree;
+
+use Test::More  tests => 3 + 3 + 3 + 6 + 3;
+
+
+# This is still a slightly dubious assumption, that the precalc size _must_
+# go up when we request it.
+
+can_ok( 'Math::Prime::Util', 'prime_get_config' );
+
+{ my $x = Math::Prime::Util::_to_bigint(0); }
+my $config = Math::Prime::Util::prime_get_config();
+my $biclass = $config->{bigintclass};
+
+is(prime_set_config(xs => $config->{xs}), 1,
+   "Setting XS to its current state is allowed");
+eval { prime_set_config(xs => !$config->{xs}) };
+like($@, qr/^prime_set_config: xs cannot be changed at runtime/,
+     "XS selection cannot be changed at runtime");
+is(prime_get_config()->{xs}, $config->{xs},
+   "Rejected XS change preserves the current state");
+
+my $diag = "" .
+  (($config->{xs}) ? "XS" : "PP") .
+  (($config->{gmp})
+    ? ", MPU::GMP $Math::Prime::Util::GMP::VERSION"
+    : "") .
+  ($biclass ? ", BI $biclass" : "") .
+  ".\n";
+diag $diag;
+
+my $intdiag = "Integer types: PP UV=$config->{maxbits}";
+if ($config->{xs}) {
+  my $has_u64  = Math::Prime::Util::_XS_has_uint64()  ? "yes" : "no";
+  my $has_u128 = Math::Prime::Util::_XS_has_uint128() ? "yes" : "no";
+  $intdiag .= "; XS uint64_t=$has_u64, uint128_t=$has_u128";
+}
+diag "$intdiag.";
+
+my $init_size = prime_get_config->{'precalc_to'};
+my $bigsize = $init_size + 50_000;
+
+prime_precalc($bigsize);
+
+cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Internal space grew after large precalc" );
+
+prime_memfree;
+
+is( prime_get_config->{'precalc_to'}, $init_size, "Internal space went back to original size after memfree" );
+
+
+# Now do the object way.
+{
+  #my $mf = new_ok( 'Math::Prime::Util::MemFree');  # Better 0.88+ way
+  my $mf = Math::Prime::Util::MemFree->new;
+  isa_ok $mf, 'Math::Prime::Util::MemFree';
+  prime_precalc($bigsize);
+  cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Internal space grew after large precalc" );
+}
+is( prime_get_config->{'precalc_to'}, $init_size, "Memory released after MemFree object goes out of scope");
+
+# Wrap multiple calls, make sure we wait until the last one is done.
+{
+  my $mf = Math::Prime::Util::MemFree->new;
+  prime_precalc($bigsize);
+  cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Internal space grew after large precalc" );
+  {
+    my $mf2 = Math::Prime::Util::MemFree->new;
+    prime_precalc( 2 * $bigsize );
+  }
+  cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Memory not freed yet because a MemFree object still live." );
+}
+is( prime_get_config->{'precalc_to'}, $init_size, "Memory released after last MemFree object goes out of scope");
+
+# Show how an eval death can leak
+eval { prime_precalc($bigsize); cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Internal space grew after large precalc" ); prime_memfree; };
+is( prime_get_config->{'precalc_to'}, $init_size, "Memory freed after successful eval");
+
+eval { prime_precalc($bigsize); cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Internal space grew after large precalc" ); die; prime_memfree; };
+isnt( prime_get_config->{'precalc_to'}, $init_size, "Memory normally not freed after eval die");
+prime_memfree;
+
+eval { my $mf = Math::Prime::Util::MemFree->new; prime_precalc($bigsize); cmp_ok( prime_get_config->{'precalc_to'}, '>', $init_size, "Internal space grew after large precalc" ); die; };
+is( prime_get_config->{'precalc_to'}, $init_size, "Memory is freed after eval die using object scoper");

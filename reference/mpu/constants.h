@@ -1,0 +1,64 @@
+#ifndef MPU_CONSTANTS_H
+#define MPU_CONSTANTS_H
+
+#include "ptypes.h"
+
+#if BITS_PER_WORD == 32
+ #define MPU_MAX_PRIME          UVCONST(4294967291)
+ #define MPU_MAX_PRIME_IDX      UVCONST(203280221)
+ #define MPU_MAX_TWIN_PRIME     UVCONST(4294965839)
+ #define MPU_MAX_TWIN_PRIME_IDX UVCONST(12739574)
+ #define MPU_MAX_RMJN_PRIME     UVCONST(4294967279)
+ #define MPU_MAX_RMJN_PRIME_IDX UVCONST(98182656)
+ #define MPU_MAX_SEMI_PRIME     UVCONST(4294967294)
+ #define MPU_MAX_SEMI_PRIME_IDX UVCONST(658662065)
+ #define MPU_MAX_POW3           20
+ #define MPU_MAX_PERFECT_POW    UVCONST(4294836225)
+ #define MPU_MAX_PERFECT_POW_IDX UVCONST(67226)
+ #define MPU_MAX_LUCKY          UVCONST(4294967275)
+ #define MPU_MAX_LUCKY_IDX      UVCONST(186812128)
+#else
+ #define MPU_MAX_PRIME          UVCONST(18446744073709551557)
+ #define MPU_MAX_PRIME_IDX      UVCONST(425656284035217743)
+ #define MPU_MAX_TWIN_PRIME     UVCONST(18446744073709550771)
+ #define MPU_MAX_TWIN_PRIME_IDX UVCONST(12975810317986308)    /* Approx */
+ #define MPU_MAX_RMJN_PRIME     UVCONST(18446744073709550771) /* Not correct */
+ #define MPU_MAX_RMJN_PRIME_IDX UVCONST(12975810317986308)    /* Not correct */
+ #define MPU_MAX_SEMI_PRIME     UVCONST(18446744073709551601)
+ #define MPU_MAX_SEMI_PRIME_IDX UVCONST(1701748900850019777)
+ #define MPU_MAX_POW3           40
+ #define MPU_MAX_PERFECT_POW    UVCONST(18446744065119617025)
+ #define MPU_MAX_PERFECT_POW_IDX UVCONST(4297615581)
+ /* Max Lucky Tested through 200000000000, but need to 394961521040845441. */
+ #define MPU_MAX_LUCKY          UVCONST(18446744073709551517) /* Maybe */
+ #define MPU_MAX_LUCKY_IDX      UVCONST(395236168661920929)  /* Not correct */
+#endif
+
+#if HAVE_UINT64
+ #define MPU_MAX_PRIME64        ((uint64_t)UINT64_MAX - 58)
+#endif
+
+/* A hard limit for the random byte generation */
+#define MAX_RANDOM_BYTES        UVCONST(2147483646)
+/* Our chosen maximum for random prime / bits generation */
+#define MAX_RANDOM_BITS         UVCONST(4294967295)
+/* Maximum is identical for simplicity */
+#define MAX_RANDOM_DIGITS       MAX_RANDOM_BITS
+
+
+/* Small table of primes; 0,2,3,5,7,...   primes_small[n] is the nth prime.
+ * Defined in util.c; 306 entries (index 0 + primes 2..2011). */
+extern const unsigned short primes_small[];
+#define NPRIMES_SMALL 306
+
+/****************************************************************************/
+/* Configuration */
+
+/* To avoid thrashing, sieve a little farther than needed */
+#define _MPU_FILL_EXTRA_N (128*30)
+/* The initial cache size.  30k primes per 1k of cache. */
+#define _MPU_INITIAL_CACHE_SIZE ((4096-16)*30 - _MPU_FILL_EXTRA_N)
+/* Where to start using LMO instead of segment sieve */
+#define _MPU_LMO_CROSSOVER 66000000
+
+#endif

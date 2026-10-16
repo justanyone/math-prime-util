@@ -7,7 +7,7 @@ Status: plan v1, 2026-10-16. Nothing below is built yet.
 Reference: Math::Prime::Util (MPU) 0.75, released 2026-08-08, by Dana Jacobsen.
 Source: https://github.com/danaj/Math-Prime-Util (a shallow clone sits in the
 session scratchpad; it will be vendored read-only under `reference/mpu/` as a
-git submodule so every port commit can cite the line it came from).
+vendored copy so every port commit can cite the line it came from).
 
 Measured footprint of the reference:
 
@@ -114,7 +114,7 @@ math-prime-util/
     compat_*.rs           one test file per MPU t/*.t, same name, same cases
   benches/                criterion; mirrors MPU bench/ and primal/num-prime baselines
   tools/                  perl-env.sh, gen_fixtures.pl, bench_vs_perl.pl, coverage.sh
-  reference/mpu/          git submodule, read-only, MPU 0.75 tag
+  reference/mpu/          vendored copy, read-only, MPU 0.75 (commit 581c217)
   PLAN.md  STATUS.md      STATUS.md = the 428-name checklist, one line each
 ```
 
@@ -220,6 +220,6 @@ linux aarch64, macOS, windows}`; nightly job adds Miri, coverage and mutants.
 3. `rustup toolchain install 1.85.0 beta nightly`; `cargo install` the dev tools.
 4. Perl oracle env under `.perl-local/`; MPU 0.75 installed; `tools/gen_fixtures.pl`
    producing fixtures for `t/10-isprime.t` as the proof of the pipeline.
-5. Vendor MPU 0.75 as the `reference/mpu` submodule.
+5. Vendor MPU 0.75 as `reference/mpu` (a plain copy, not a submodule: workers are offline).
 6. First real code: `int/` (mulmod, montmath, isqrt, ilog) with fixtures,
    proptests and benches, as the pattern every later module copies.

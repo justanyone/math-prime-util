@@ -1,0 +1,7 @@
+# MPU-SIEVE worker notes
+
+Will port MPU 0.75 sieve.c, cache.c, and sieve_cluster.c into src/sieve/.
+Public API: primes, next_prime, prev_prime, sieve_range, sieve_prime_cluster, sum_primes, prime_precalc, prime_memfree.
+Shared prime cache uses OnceLock/Mutex and is Send + Sync. No unsafe. No new Cargo.toml deps.
+Cite C file and function in each public doc comment. Match existing int/modular test and bench patterns.
+Next: read PLAN.md sections 5-8, crate patterns, and the C sieve entry points, then implement.

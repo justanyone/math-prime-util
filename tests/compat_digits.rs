@@ -27,7 +27,13 @@ fn run(name: &str, call: impl Fn(&Case) -> Option<String>) {
         {
             return;
         }
-        // Skip bigint arguments or results outside the i128/u64 API.
+        // Skip bigint inputs and results outside the fixed width API for
+        // absint, negint, signint, add1int, sub1int, cmpint, addint,
+        // subint, mulint, muladdint, mulsubint, divint, modint, cdivint,
+        // divrem, tdivrem, fdivrem, cdivrem, lshiftint, rshiftint,
+        // rashiftint, hammingweight, todigits, todigitstring,
+        // reverse_digits, is_palindrome, is_harshad, digital_root,
+        // and mult_digital_root. String APIs retain their long inputs.
         // Each skipped function and argument is recorded by this comment
         // and the fixture case itself; no signed i64 case is skipped.
         if !matches!(name, "sumdigits" | "fromdigits" | "toint")

@@ -9,11 +9,15 @@ fn component(value: Option<i128>) -> String {
 
 #[test]
 fn lucasu_oracle() {
-    each("lucas", "lucasu", |c| c.check(lucasu(c.arg(0), c.arg(1), c.arg(2))));
+    each("lucas", "lucasu", |c| {
+        c.check(lucasu(c.arg(0), c.arg(1), c.arg(2)))
+    });
 }
 #[test]
 fn lucasv_oracle() {
-    each("lucas", "lucasv", |c| c.check(lucasv(c.arg(0), c.arg(1), c.arg(2))));
+    each("lucas", "lucasv", |c| {
+        c.check(lucasv(c.arg(0), c.arg(1), c.arg(2)))
+    });
 }
 #[test]
 fn lucasuv_oracle() {
@@ -24,22 +28,28 @@ fn lucasuv_oracle() {
 }
 #[test]
 fn lucasumod_oracle() {
-    each("lucas", "lucasumod", |c| c.check(lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))));
+    each("lucas", "lucasumod", |c| {
+        c.check(lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)))
+    });
 }
 #[test]
 fn lucasvmod_oracle() {
-    each("lucas", "lucasvmod", |c| c.check(lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))));
+    each("lucas", "lucasvmod", |c| {
+        c.check(lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)))
+    });
 }
 #[test]
 fn lucasuvmod_oracle() {
     each("lucas", "lucasuvmod", |c| {
-        c.check(lucasuvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)).map(|(u,v)| format!("{u} {v}")));
+        c.check(
+            lucasuvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)).map(|(u, v)| format!("{u} {v}")),
+        );
     });
 }
 #[test]
 fn lucas_sequence_oracle() {
     each_may_panic("lucas", "lucas_sequence", |c| {
-        let (u,v,q) = lucas_sequence(c.arg(0), c.arg(1), c.arg(2), c.arg(3));
+        let (u, v, q) = lucas_sequence(c.arg(0), c.arg(1), c.arg(2), c.arg(3));
         Some(format!("{u} {v} {q}"))
     });
 }

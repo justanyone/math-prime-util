@@ -27,7 +27,9 @@ fn exact_pair(p: i128, q: i128, k: u64) -> Option<(i128, i128)> {
     }
     let (u, w) = exact_pair(p, q, k / 2)?;
     let a = u.checked_mul(w.checked_mul(2)?.checked_sub(p.checked_mul(u)?)?)?;
-    let b = w.checked_mul(w)?.checked_sub(q.checked_mul(u.checked_mul(u)?)?)?;
+    let b = w
+        .checked_mul(w)?
+        .checked_sub(q.checked_mul(u.checked_mul(u)?)?)?;
     if k & 1 == 0 {
         Some((a, b))
     } else {
@@ -42,18 +44,28 @@ fn exact(p: i64, q: i64, k: u64) -> (Option<i128>, Option<i128>) {
     }
     if p == 0 {
         return if k & 1 == 0 {
-            (Some(0), power(-q, k / 2).and_then(|v| v.checked_mul(2)).and_then(bounded))
+            (
+                Some(0),
+                power(-q, k / 2)
+                    .and_then(|v| v.checked_mul(2))
+                    .and_then(bounded),
+            )
         } else {
             (power(-q, k / 2).and_then(bounded), Some(0))
         };
     }
     if q == 0 {
-        return (power(p, k - 1).and_then(bounded), power(p, k).and_then(bounded));
+        return (
+            power(p, k - 1).and_then(bounded),
+            power(p, k).and_then(bounded),
+        );
     }
     let Some((u, w)) = exact_pair(p, q, k) else {
         return (None, None);
     };
-    let v = w.checked_mul(2).and_then(|w| p.checked_mul(u).and_then(|pu| w.checked_sub(pu)));
+    let v = w
+        .checked_mul(2)
+        .and_then(|w| p.checked_mul(u).and_then(|pu| w.checked_sub(pu)));
     (bounded(u), v.and_then(bounded))
 }
 

@@ -6,3 +6,4 @@ The reference submodule is empty and local reference search found no C files. Im
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -15 bytes)
 Implemented all nine public APIs and nine oracle tests. Modular arithmetic uses u128 products and binary doubling without division, including even moduli. Next run the focused oracle tests.
+Added recurrence, discriminant, exact/modular agreement, sign, overflow, zero-modulus, and repeated-call tests plus hot-function benchmarks. Functions are stateless, so there is no shared state or launch lifecycle to port.

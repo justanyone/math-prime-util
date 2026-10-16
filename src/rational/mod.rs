@@ -18,6 +18,25 @@ fn gcd(mut a: u128, mut b: u128) -> u128 {
 /// ```
 pub fn contfrac(mut numerator: i128, mut denominator: i128) -> Vec<i128> {
     assert!(denominator > 0, "denominator must be positive");
+    if numerator < 0 {
+        let mut terms = contfrac(
+            numerator.checked_neg().expect("numerator overflow"),
+            denominator,
+        );
+        if terms.len() == 1 {
+            terms[0] = -terms[0];
+        } else {
+            terms[0] = -terms[0] - 1;
+            if terms[1] == 1 {
+                terms.remove(1);
+                terms[1] += 1;
+            } else {
+                terms[1] -= 1;
+                terms.insert(1, 1);
+            }
+        }
+        return terms;
+    }
     let mut terms = Vec::new();
     while denominator != 0 {
         terms.push(numerator.div_euclid(denominator));
@@ -292,7 +311,7 @@ pub fn next_farey(n: u64, a: u64, b: u64) -> Option<(u64, u64)> {
     Some((p, q))
 }
 
-/// Count positive reduced fractions at most `a/b` with denominator at most `n`.
+/// Return the insertion rank of `a/b` in the Farey sequence of order `n`.
 /// Reference: MPU `rational.c`, `farey_rank`.
 /// # Panics
 /// Panics for zero order or denominator, or if the order cannot fit in memory.
@@ -301,6 +320,10 @@ pub fn next_farey(n: u64, a: u64, b: u64) -> Option<(u64, u64)> {
 /// ```
 pub fn farey_rank(n: u64, a: u64, b: u64) -> u128 {
     assert!(n > 0 && b > 0, "positive order and denominator required");
+    let adjustment = u128::from(
+        a > b || (a > 0 && u128::from(b) / gcd(u128::from(a), u128::from(b)) > u128::from(n)),
+    );
+    let a = a.min(b);
     let size = usize::try_from(n).expect("order exceeds address space");
     let mut counts = vec![0_u128; size + 1];
     for (d, count) in counts.iter_mut().enumerate().skip(1) {
@@ -314,5 +337,5 @@ pub fn farey_rank(n: u64, a: u64, b: u64) -> u128 {
             counts[multiple] -= count;
         }
     }
-    rank
+    rank + adjustment
 }

@@ -7,7 +7,7 @@ proptest! {
         let terms = contfrac(a,b);
         let (p,q) = from_contfrac(&terms);
         prop_assert_eq!(p*b,a*q);
-        prop_assert_eq!(convergents(&terms).last(),Some(&(p,q)));
+        prop_assert_eq!(convergents(&terms).last().copied(),Some((p,q)));
     }
     #[test]
     fn tree_roundtrip(n in 1u128..1_000_000) {

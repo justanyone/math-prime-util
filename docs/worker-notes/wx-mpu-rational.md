@@ -17,3 +17,7 @@ Fixed MPU's negative continued-fraction form and Farey insertion-rank endpoint b
 All 14 oracle tests and four property tests pass. The gate passed fmt, all-target clippy, MSRV, and ordinary tests; doctests still used cc, so pass the temporary linker settings to rustdoc as well. Roughly eight minutes remain; missing C so <<cut 45 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 21 bytes)
+Offline validation passed: 14 rational oracle tests, four property/regression tests, all-target clippy, MSRV build, all regular tests, 34 doctests, and docs. tools/gate.sh printed == gate: green with linker settings supplied through environ <<cut 45 chars by kit>>
+Final: PARTIAL. The read-only reference/mpu source is absent. Compare all methods and native bounds with rational.c/rational.h when available; replace the next_farey denominator scan and farey_rank denominator sieve if MPU uses different al <<cut 74 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 71 bytes)

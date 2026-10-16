@@ -1,0 +1,105 @@
+# Fixture family `int`: t/18-50-sqrtint.t, t/18-52-rootint.t, t/18-60-logint.t, t/18-24-powint.t,
+# t/26-ispower.t, t/19-gcd.t and the unsigned half of t/26-modops.t.
+use strict; use warnings;
+
+sub gen_int {
+  my $fh = shift;
+  my @e = edges();
+  # t/18-50-sqrtint.t values plus edges
+  my @sq = (qw/1524155677489 1524158146623 1524155677488 4503599761588224 425822367781739534
+               9223372036854775807 9223372036854775808 18446744065119617024 18446744065119617025
+               18446744073709551615/, 0..100, @e);
+  for my $n (@sq) { emit($fh, 'sqrtint', [$n], sub { sqrtint("$n") }); }
+  for my $n (@sq, map { $_ * $_ } 0..300) { emit($fh, 'is_square', [$n], sub { is_square("$n") ? 1 : 0 }); }
+  # t/18-52-rootint.t
+  my @roots = ([25,3],[13,4],[13,5],[25,6],[7,7],[13,8],[7,9],[13,10],[21,11],[25,12],[7,13],[7,14],
+               [13,16],[13,17],[7,18],[6,19],[3,21],[3,23],[3,25],[3,29],[2,40],[3,40]);
+  for my $rk (@roots) {
+    my ($r, $k) = @$rk;
+    my $p = Math::BigInt->new($r)->bpow($k);
+    for my $n ($p - 1, $p, $p + 1) {
+      next if $n < 0 || $n > Math::BigInt->new('18446744073709551615');
+      emit($fh, 'rootint', [$n, $k], sub { rootint("$n", $k) });
+      emit($fh, 'crootint', [$n, $k], sub { crootint("$n", $k) });
+      emit($fh, 'is_power', [$n, $k], sub { is_power("$n", $k) ? 1 : 0 });
+    }
+  }
+  my @rootints = (['18446744073709551615',63],['4544344858450091399',6],['4544344858450091404',6],
+    ['4544344858450091408',6],['4544344858450091409',6],['4544344858450091410',6],['4293595042302394368',5],
+    ['4444763232114353115',5],['4444763232114353124',5],['4444763232114353125',5],['266667176579895999',3],
+    ['11821500311773607999',3],['11821500311773608000',3],['11821500311773608001',3],['18446703239944862784',3],
+    ['18446724184312856125',3],['18446745128696702936',3],['18446744073709551615',17],['18446744039349813264',39]);
+  for my $nk (@rootints) {
+    my ($n, $k) = @$nk;
+    next if Math::BigInt->new($n) > Math::BigInt->new('18446744073709551615');
+    emit($fh, 'rootint', [$n, $k], sub { rootint($n, $k) });
+    emit($fh, 'crootint', [$n, $k], sub { crootint($n, $k) });
+  }
+  for my $n (@e) {
+    for my $k (0, 1, 2, 3, 4, 5, 6, 7, 10, 15, 16, 31, 32, 33, 40, 41, 63, 64, 65, 100) {
+      emit($fh, 'rootint', [$n, $k], sub { rootint("$n", $k) });
+      emit($fh, 'crootint', [$n, $k], sub { crootint("$n", $k) });
+      emit($fh, 'is_power', [$n, $k], sub { is_power("$n", $k) ? 1 : 0 });
+      emit($fh, 'powint', [$n, $k], sub { my $p = powint("$n", $k); (Math::BigInt->new("$p") > Math::BigInt->new('18446744073709551615')) ? 'undef' : "$p" });
+    }
+    emit($fh, 'is_power_exp', [$n], sub { is_power("$n") });
+  }
+  for my $n (1..300) {
+    emit($fh, 'is_power_exp', [$n], sub { is_power($n) });
+  }
+  for my $k (2..12) {
+    for my $r (2..50) {
+      my $p = Math::BigInt->new($r)->bpow($k);
+      next if $p > Math::BigInt->new('18446744073709551615');
+      emit($fh, 'is_power_exp', ["$p"], sub { is_power("$p") });
+    }
+  }
+  # t/18-60-logint.t
+  for my $b (2, 3, 5, 10, 16) {
+    for my $n (1..200) { emit($fh, 'logint', [$n, $b], sub { logint($n, $b) }); }
+  }
+  emit($fh, 'logint', ['19284098234', 16], sub { logint('19284098234', 16) });
+  emit($fh, 'logint', [58, '18446744073709551615'], sub { logint(58, '18446744073709551615') });
+  for my $n (@e) {
+    for my $b (2, 3, 7, 10, 4294967296, '18446744073709551615') {
+      emit($fh, 'logint', [$n, $b], sub { logint("$n", "$b") });
+    }
+  }
+  # t/19-gcd.t style: gcd / lcm / gcdext
+  my @gcdpairs = ([0,0],[0,1],[1,0],[1,1],[12,18],[2,4],[6,9],[21,31],[8,5],[0,10000],
+                  [23,25],[20,27],[26,3],[27,16],['18446744073709551615','18446744073709551614'],
+                  ['18446744073709551615',2],['9223372036854775808','4611686018427387904'],
+                  ['600851475143','13195'],['12345678901234567','98765432109876543']);
+  for my $ab (@gcdpairs, map { [$_, 240] } @e) {
+    my ($a, $b) = @$ab;
+    emit($fh, 'gcd', [$a, $b], sub { gcd("$a", "$b") });
+    emit($fh, 'lcm', [$a, $b], sub { my $l = lcm("$a", "$b"); (Math::BigInt->new("$l") > Math::BigInt->new('18446744073709551615')) ? 'undef' : "$l" });
+  }
+  for my $ab ([240,46],[46,240],[0,0],[0,5],[5,0],[7,7],[-7,7],[7,-7],[-240,46],[240,-46],
+              ['9223372036854775807','9223372036854775806'],['-9223372036854775807',3],[1,'9223372036854775807']) {
+    my ($a, $b) = @$ab;
+    emit($fh, 'gcdext', [$a, $b], sub { my ($u, $v, $g) = gcdext("$a", "$b"); ($g, $u, $v) });
+  }
+  # t/26-modops.t: u64 (non-negative) cases only; signed cases wait for the Int trait.
+  my @mods = (0, 1, 2, 3, 7, 59, 123, 2017, 28474, 65537, 4294967296, 4294967297,
+              '9223372036854775808', '18446744073709551614', '18446744073709551615');
+  my @vals = (0, 1, 2, 13, 14, 42, 45, 100, 10000, 4294967295, 4294967296,
+              '9223372036854775807', '18446744073709551614', '18446744073709551615');
+  for my $n (@mods) {
+    for my $a (@vals) {
+      emit($fh, 'negmod', [$a, $n], sub { negmod("$a", "$n") });
+      emit($fh, 'invmod', [$a, $n], sub { invmod("$a", "$n") });
+      emit($fh, 'sqrmod', [$a, $n], sub { mulmod("$a", "$a", "$n") });
+      for my $b (0, 1, 7, 45, 4294967295, '18446744073709551615') {
+        emit($fh, 'addmod', [$a, $b, $n], sub { addmod("$a", "$b", "$n") });
+        emit($fh, 'submod', [$a, $b, $n], sub { submod("$a", "$b", "$n") });
+        emit($fh, 'mulmod', [$a, $b, $n], sub { mulmod("$a", "$b", "$n") });
+        emit($fh, 'powmod', [$a, $b, $n], sub { powmod("$a", "$b", "$n") });
+        emit($fh, 'muladdmod', [$a, $b, 5, $n], sub { muladdmod("$a", "$b", 5, "$n") });
+        emit($fh, 'mulsubmod', [$a, $b, 5, $n], sub { mulsubmod("$a", "$b", 5, "$n") });
+      }
+    }
+  }
+}
+
+1;

@@ -183,7 +183,8 @@ pub fn fubini(n: u64) -> Option<u64> {
     for m in 1..=n {
         let mut total = 0_u64;
         for k in 1..=m {
-            let term = binomial(m, k)?.checked_mul(values[(m - k) as usize])?;
+            let previous = values[usize::try_from(m - k).ok()?];
+            let term = binomial(m, k)?.checked_mul(previous)?;
             total = total.checked_add(term)?;
         }
         values.push(total);

@@ -8,3 +8,4 @@ Implemented all public API bodies and direct MPU quicksort/radix sort paths. Pre
 Implementation is now written. Initial generator was truncated by the command interface; replaced it with bounded source lines. Adding oracle tests.
 About five minutes remain: focused oracle test started; added algebraic, concurrency, duplicate-call, callback, and validation regressions plus benchmarks.
 Focused tests found mex validation and Perl scalar spelling differences. Fixed validation; named unrepresentable string skips. Property tests passed.
+All 47 compatibility tests passed. All 7 property/regression tests passed. Fixed Clippy Copy and byte-mask findings; running gate again.

@@ -1,7 +1,12 @@
 //! Vector and integer set operations from MPU 0.75.
+//!
+//! Set inputs may be unsorted. Set results are sorted and unique `Vec<i64>`.
+//! All state is local to each call. Subset predicates keep MPU argument order.
+//! Native sums use `u128` instead of MPU bigint promotion. Products beyond
+//! `u128` and set sums beyond `i64` panic. No bigint API is provided here.
 use std::collections::{HashMap, HashSet};
 
-/// vecsum for integer vectors or sets.
+/// Return the sum as `u128`. Empty input gives zero.
 ///
 /// Port of MPU 0.75 `XS.xs: vecsum`.
 /// Results use `u128`, including sums that exceed `u64`.
@@ -13,7 +18,7 @@ use std::collections::{HashMap, HashSet};
 pub fn vecsum(a: &[u64]) -> u128 {
     a.iter().map(|&x| u128::from(x)).sum()
 }
-/// vecprefixsum for integer vectors or sets.
+/// Return each running sum as `u128`.
 ///
 /// Port of MPU 0.75 `XS.xs: vecprefixsum`.
 /// Results use `u128`, including sums that exceed `u64`.
@@ -31,7 +36,7 @@ pub fn vecprefixsum(a: &[u64]) -> Vec<u128> {
         })
         .collect()
 }
-/// vecprod for integer vectors or sets.
+/// Return the product as `u128`. Empty input gives one. A zero factor gives zero.
 ///
 /// Port of MPU 0.75 `XS.xs: vecprod`.
 ///
@@ -50,7 +55,7 @@ pub fn vecprod(a: &[u64]) -> u128 {
         p.checked_mul(u128::from(x)).expect("product exceeds u128")
     })
 }
-/// vecmin for integer vectors or sets.
+/// Return the minimum, or `None` for empty input.
 ///
 /// Port of MPU 0.75 `XS.xs: vecmin`.
 ///
@@ -61,7 +66,7 @@ pub fn vecprod(a: &[u64]) -> u128 {
 pub fn vecmin<T: Ord + Copy>(a: &[T]) -> Option<T> {
     a.iter().copied().min()
 }
-/// vecmax for integer vectors or sets.
+/// Return the maximum, or `None` for empty input.
 ///
 /// Port of MPU 0.75 `XS.xs: vecmax`.
 ///
@@ -72,7 +77,7 @@ pub fn vecmin<T: Ord + Copy>(a: &[T]) -> Option<T> {
 pub fn vecmax<T: Ord + Copy>(a: &[T]) -> Option<T> {
     a.iter().copied().max()
 }
-/// vecreduce for integer vectors or sets.
+/// Reduce from left to right. Empty input gives `None`.
 ///
 /// Port of MPU 0.75 `XS.xs: vecreduce`.
 ///
@@ -83,7 +88,7 @@ pub fn vecmax<T: Ord + Copy>(a: &[T]) -> Option<T> {
 pub fn vecreduce<T: Clone>(a: &[T], f: impl FnMut(T, T) -> T) -> Option<T> {
     a.iter().cloned().reduce(f)
 }
-/// vecany for integer vectors or sets.
+/// Test if any value matches. Stop at the first match.
 ///
 /// Port of MPU 0.75 `XS.xs: vecany`.
 ///
@@ -94,7 +99,7 @@ pub fn vecreduce<T: Clone>(a: &[T], f: impl FnMut(T, T) -> T) -> Option<T> {
 pub fn vecany<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
     a.iter().any(f)
 }
-/// vecall for integer vectors or sets.
+/// Test if all values match. Empty input gives true.
 ///
 /// Port of MPU 0.75 `XS.xs: vecall`.
 ///
@@ -105,7 +110,7 @@ pub fn vecany<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
 pub fn vecall<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
     a.iter().all(f)
 }
-/// vecnone for integer vectors or sets.
+/// Test if no value matches. Empty input gives true.
 ///
 /// Port of MPU 0.75 `XS.xs: vecnone`.
 ///
@@ -116,7 +121,7 @@ pub fn vecall<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
 pub fn vecnone<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
     !a.iter().any(f)
 }
-/// vecnotall for integer vectors or sets.
+/// Test if at least one value does not match.
 ///
 /// Port of MPU 0.75 `XS.xs: vecnotall`.
 ///
@@ -127,7 +132,7 @@ pub fn vecnone<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
 pub fn vecnotall<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
     !a.iter().all(f)
 }
-/// vecfirst for integer vectors or sets.
+/// Return a reference to the first match, or `None`.
 ///
 /// Port of MPU 0.75 `XS.xs: vecfirst`.
 ///
@@ -138,7 +143,7 @@ pub fn vecnotall<T>(a: &[T], f: impl FnMut(&T) -> bool) -> bool {
 pub fn vecfirst<T>(a: &[T], mut f: impl FnMut(&T) -> bool) -> Option<&T> {
     a.iter().find(|x| f(x))
 }
-/// vecfirstidx for integer vectors or sets.
+/// Return the first matching index, or `None`.
 ///
 /// Port of MPU 0.75 `XS.xs: vecfirstidx`.
 ///
@@ -150,13 +155,14 @@ pub fn vecfirstidx<T>(a: &[T], f: impl FnMut(&T) -> bool) -> Option<usize> {
     a.iter().position(f)
 }
 /// A bit mask or an index list for extraction.
+#[derive(Clone, Copy, Debug)]
 pub enum VecSelection<'a> {
     /// Select set bit positions.
     Mask(u64),
     /// Select indices. Negative indices count from the end.
     Indices(&'a [isize]),
 }
-/// vecextract for integer vectors or sets.
+/// Extract positions in selection order. Missing positions give `None`.
 ///
 /// Port of MPU 0.75 `XS.xs: vecextract`.
 ///
@@ -183,7 +189,7 @@ pub fn vecextract<T: Clone>(a: &[T], selection: VecSelection<'_>) -> Vec<Option<
             .collect(),
     }
 }
-/// vecuniq for integer vectors or sets.
+/// Return unique values in first occurrence order.
 ///
 /// Port of MPU 0.75 `XS.xs: vecuniq`.
 ///
@@ -195,7 +201,7 @@ pub fn vecuniq(a: &[i64]) -> Vec<i64> {
     let mut seen = HashSet::new();
     a.iter().copied().filter(|x| seen.insert(*x)).collect()
 }
-/// vecfreq for integer vectors or sets.
+/// Return sorted value and count pairs.
 ///
 /// Port of MPU 0.75 `XS.xs: vecfreq`.
 ///
@@ -216,7 +222,7 @@ pub fn vecfreq(a: &[i64]) -> Vec<(i64, usize)> {
     }
     out
 }
-/// vecsingleton for integer vectors or sets.
+/// Return values that occur once, in input order.
 ///
 /// Port of MPU 0.75 `XS.xs: vecsingleton`.
 ///
@@ -231,7 +237,7 @@ pub fn vecsingleton(a: &[i64]) -> Vec<i64> {
     }
     a.iter().copied().filter(|x| count[x] == 1).collect()
 }
-/// vecsort for integer vectors or sets.
+/// Return integers sorted from low to high.
 ///
 /// Port of MPU 0.75 `sort.c: sort_iv_array, _qs_iv, _radixsort`.
 ///
@@ -244,7 +250,7 @@ pub fn vecsort(a: &[i64]) -> Vec<i64> {
     vecsorti(&mut r);
     r
 }
-/// vecrsort for integer vectors or sets.
+/// Return integers sorted from high to low.
 ///
 /// Port of MPU 0.75 `sort.c: sort_iv_array, _qs_iv, _radixsort`.
 ///
@@ -257,7 +263,7 @@ pub fn vecrsort(a: &[i64]) -> Vec<i64> {
     r.reverse();
     r
 }
-/// vecsorti for integer vectors or sets.
+/// Sort integers in place from low to high.
 ///
 /// Port of MPU 0.75 `sort.c: sort_iv_array, _qs_iv, _radixsort`.
 ///
@@ -268,7 +274,7 @@ pub fn vecrsort(a: &[i64]) -> Vec<i64> {
 pub fn vecsorti(a: &mut [i64]) {
     sort_signed(a);
 }
-/// vecrsorti for integer vectors or sets.
+/// Sort integers in place from high to low.
 ///
 /// Port of MPU 0.75 `sort.c: sort_iv_array, _qs_iv, _radixsort`.
 ///
@@ -280,7 +286,7 @@ pub fn vecrsorti(a: &mut [i64]) {
     sort_signed(a);
     a.reverse();
 }
-/// vecequal for integer vectors or sets.
+/// Test vector equality, including order and repeats.
 ///
 /// Port of MPU 0.75 `XS.xs: vecequal`.
 ///
@@ -291,7 +297,7 @@ pub fn vecrsorti(a: &mut [i64]) {
 pub fn vecequal<T: PartialEq>(a: &[T], b: &[T]) -> bool {
     a == b
 }
-/// vecmex for integer vectors or sets.
+/// Return the first missing nonnegative integer.
 ///
 /// Port of MPU 0.75 `XS.xs: vecmex`.
 ///
@@ -306,7 +312,7 @@ pub fn vecmex(a: &[i64]) -> usize {
     assert!(a.iter().all(|&x| x >= 0), "values must be nonnegative");
     mex(a, 0)
 }
-/// vecpmex for integer vectors or sets.
+/// Return the first missing positive integer.
 ///
 /// Port of MPU 0.75 `XS.xs: vecpmex`.
 ///
@@ -321,7 +327,7 @@ pub fn vecpmex(a: &[i64]) -> usize {
     assert!(a.iter().all(|&x| x > 0), "values must be positive");
     mex(a, 1)
 }
-/// vecslide for integer vectors or sets.
+/// Map a closure over adjacent pairs.
 ///
 /// Port of MPU 0.75 `XS.xs: vecslide`.
 ///
@@ -332,7 +338,7 @@ pub fn vecpmex(a: &[i64]) -> usize {
 pub fn vecslide<T, R>(a: &[T], mut f: impl FnMut(&T, &T) -> R) -> Vec<R> {
     a.windows(2).map(|w| f(&w[0], &w[1])).collect()
 }
-/// vecpairwise for integer vectors or sets.
+/// Map pairs up to the shorter input. Flatten closure results.
 ///
 /// Port of MPU 0.75 `XS.xs: vecpairwise`.
 ///
@@ -347,7 +353,7 @@ pub fn vecpairwise<T, U, R, I: IntoIterator<Item = R>>(
 ) -> Vec<R> {
     a.iter().zip(b).flat_map(|(a, b)| f(a, b)).collect()
 }
-/// vecwindow for integer vectors or sets.
+/// Map full windows with a fixed step. Flatten closure results.
 ///
 /// Port of MPU 0.75 `XS.xs: vecwindow`.
 ///
@@ -367,7 +373,7 @@ pub fn vecwindow<T, R, I: IntoIterator<Item = R>>(
     assert!(step > 0 && size > 0, "step and size must be positive");
     a.windows(size).step_by(step).flat_map(f).collect()
 }
-/// toset for integer vectors or sets.
+/// Return sorted unique integers.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_op`.
 ///
@@ -380,7 +386,7 @@ pub fn toset(a: &[i64]) -> Vec<i64> {
     r.dedup();
     r
 }
-/// setunion for integer vectors or sets.
+/// Return values in either set.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_op`.
 ///
@@ -391,7 +397,7 @@ pub fn toset(a: &[i64]) -> Vec<i64> {
 pub fn setunion(a: &[i64], b: &[i64]) -> Vec<i64> {
     merge(&toset(a), &toset(b), 0)
 }
-/// setintersect for integer vectors or sets.
+/// Return values common to both sets.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_op`.
 ///
@@ -402,7 +408,7 @@ pub fn setunion(a: &[i64], b: &[i64]) -> Vec<i64> {
 pub fn setintersect(a: &[i64], b: &[i64]) -> Vec<i64> {
     merge(&toset(a), &toset(b), 1)
 }
-/// setminus for integer vectors or sets.
+/// Return values in the first set that are absent from the second.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_op`.
 ///
@@ -413,7 +419,7 @@ pub fn setintersect(a: &[i64], b: &[i64]) -> Vec<i64> {
 pub fn setminus(a: &[i64], b: &[i64]) -> Vec<i64> {
     merge(&toset(a), &toset(b), 2)
 }
-/// setdelta for integer vectors or sets.
+/// Return values present in exactly one set.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_op`.
 ///
@@ -424,10 +430,9 @@ pub fn setminus(a: &[i64], b: &[i64]) -> Vec<i64> {
 pub fn setdelta(a: &[i64], b: &[i64]) -> Vec<i64> {
     merge(&toset(a), &toset(b), 3)
 }
-/// setinsert for integer vectors or sets.
+/// Insert query values. Return the number of new values.
 ///
 /// Port of MPU 0.75 `XS.xs: setinsert`.
-/// Return the count added, count removed, or signed size change, respectively.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -438,10 +443,9 @@ pub fn setinsert(a: &mut Vec<i64>, b: &[i64]) -> i128 {
     *a = setunion(a, b);
     a.len() as i128 - old
 }
-/// setremove for integer vectors or sets.
+/// Remove query values. Return the number of removed values.
 ///
 /// Port of MPU 0.75 `XS.xs: setremove`.
-/// Return the count added, count removed, or signed size change, respectively.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -452,10 +456,9 @@ pub fn setremove(a: &mut Vec<i64>, b: &[i64]) -> i128 {
     *a = setminus(a, b);
     old - a.len() as i128
 }
-/// setinvert for integer vectors or sets.
+/// Toggle query values. Return the signed change in set length.
 ///
 /// Port of MPU 0.75 `XS.xs: setinvert`.
-/// Return the count added, count removed, or signed size change, respectively.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -466,7 +469,7 @@ pub fn setinvert(a: &mut Vec<i64>, b: &[i64]) -> i128 {
     *a = setdelta(a, b);
     a.len() as i128 - old
 }
-/// setcontains for integer vectors or sets.
+/// Test if all query values are present.
 ///
 /// Port of MPU 0.75 `XS.xs: setcontains`.
 ///
@@ -478,7 +481,7 @@ pub fn setcontains(a: &[i64], b: &[i64]) -> bool {
     let a = toset(a);
     b.iter().all(|x| a.binary_search(x).is_ok())
 }
-/// setcontainsany for integer vectors or sets.
+/// Test if any query value is present.
 ///
 /// Port of MPU 0.75 `XS.xs: setcontainsany`.
 ///
@@ -490,7 +493,7 @@ pub fn setcontainsany(a: &[i64], b: &[i64]) -> bool {
     let a = toset(a);
     b.iter().any(|x| a.binary_search(x).is_ok())
 }
-/// setbinop for integer vectors or sets.
+/// Apply a closure to each pair. Return sorted unique results.
 ///
 /// Port of MPU 0.75 `XS.xs: setbinop`.
 ///
@@ -507,7 +510,7 @@ pub fn setbinop(a: &[i64], b: &[i64], mut f: impl FnMut(i64, i64) -> i64) -> Vec
     }
     toset(&seen.into_iter().collect::<Vec<_>>())
 }
-/// sumset for integer vectors or sets.
+/// Return sorted unique pair sums. Pass the same input twice for a self sumset.
 ///
 /// Port of MPU 0.75 `XS.xs: sumset`.
 ///
@@ -521,7 +524,7 @@ pub fn setbinop(a: &[i64], b: &[i64], mut f: impl FnMut(i64, i64) -> i64) -> Vec
 pub fn sumset(a: &[i64], b: &[i64]) -> Vec<i64> {
     setbinop(a, b, |x, y| x.checked_add(y).expect("sum exceeds i64"))
 }
-/// is sidon set for integer vectors or sets.
+/// Test if unordered pair sums are distinct. Negative values give false.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_is_sidon_set`.
 ///
@@ -544,7 +547,7 @@ pub fn is_sidon_set(a: &[i64]) -> bool {
     }
     true
 }
-/// is sumfree set for integer vectors or sets.
+/// Test if no unordered pair sum is in the set.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_is_sumfree_set`.
 ///
@@ -565,7 +568,7 @@ pub fn is_sumfree_set(a: &[i64]) -> bool {
     }
     true
 }
-/// set is disjoint for integer vectors or sets.
+/// Test if the sets have no common values.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
 ///
@@ -576,7 +579,7 @@ pub fn is_sumfree_set(a: &[i64]) -> bool {
 pub fn set_is_disjoint(a: &[i64], b: &[i64]) -> bool {
     setintersect(a, b).is_empty()
 }
-/// set is equal for integer vectors or sets.
+/// Test if the sets have the same values.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
 ///
@@ -587,10 +590,9 @@ pub fn set_is_disjoint(a: &[i64], b: &[i64]) -> bool {
 pub fn set_is_equal(a: &[i64], b: &[i64]) -> bool {
     toset(a) == toset(b)
 }
-/// set is subset for integer vectors or sets.
+/// Test if the second set is contained in the first.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
-/// MPU tests whether the second set is a subset or superset of the first.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -599,10 +601,9 @@ pub fn set_is_equal(a: &[i64], b: &[i64]) -> bool {
 pub fn set_is_subset(a: &[i64], b: &[i64]) -> bool {
     setcontains(a, b)
 }
-/// set is proper subset for integer vectors or sets.
+/// Test if the second set is a strict subset of the first.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
-/// MPU tests whether the second set is a subset or superset of the first.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -611,10 +612,9 @@ pub fn set_is_subset(a: &[i64], b: &[i64]) -> bool {
 pub fn set_is_proper_subset(a: &[i64], b: &[i64]) -> bool {
     setcontains(a, b) && toset(a).len() > toset(b).len()
 }
-/// set is superset for integer vectors or sets.
+/// Test if the second set contains the first.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
-/// MPU tests whether the second set is a subset or superset of the first.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -623,10 +623,9 @@ pub fn set_is_proper_subset(a: &[i64], b: &[i64]) -> bool {
 pub fn set_is_superset(a: &[i64], b: &[i64]) -> bool {
     setcontains(b, a)
 }
-/// set is proper superset for integer vectors or sets.
+/// Test if the second set is a strict superset of the first.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
-/// MPU tests whether the second set is a subset or superset of the first.
 ///
 /// ```
 /// use math_prime_util::*;
@@ -635,7 +634,7 @@ pub fn set_is_superset(a: &[i64], b: &[i64]) -> bool {
 pub fn set_is_proper_superset(a: &[i64], b: &[i64]) -> bool {
     setcontains(b, a) && toset(b).len() > toset(a).len()
 }
-/// set is proper intersection for integer vectors or sets.
+/// Test for a nonempty intersection smaller than both sets.
 ///
 /// Port of MPU 0.75 `xs_set.c: xs_set_relation`.
 ///
@@ -836,7 +835,7 @@ fn sort_signed(a: &mut [i64]) {
     }
     buffer.resize(a.len(), 0);
     for shift in (0..=signshift).step_by(8) {
-        if vary >> shift & 255 == 0 {
+        if (vary >> shift).trailing_zeros() >= 8 {
             continue;
         }
         let sign = if shift == signshift { 128 } else { 0 };

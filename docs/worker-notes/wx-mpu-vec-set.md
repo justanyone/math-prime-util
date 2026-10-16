@@ -10,3 +10,5 @@ About five minutes remain: focused oracle test started; added algebraic, concurr
 Focused tests found mex validation and Perl scalar spelling differences. Fixed validation; named unrepresentable string skips. Property tests passed.
 All 47 compatibility tests passed. All 7 property/regression tests passed. Fixed Clippy Copy and byte-mask findings; running gate again.
 Gate cleared production Clippy checks. Fixed benchmark macro lint and focused test formatting findings; next gate run includes MSRV and all docs.
+Final gate printed == gate: green (fmt, pedantic Clippy, MSRV 1.85, all tests, docs). Final tools/test.sh passed offline. All 47 APIs, fixtures tests, laws, and benchmarks are written; no tooling, fixture, STATUS, or git metadata edits.
+Remaining limits are named fixture skips for bigint, signed unsigned-only inputs, and Perl string scalar spellings. Reference vector callbacks and helpers reside in XS.xs; docs cite those entry points rather than nonexistent util.c vector functions. Finished without network or git writes.

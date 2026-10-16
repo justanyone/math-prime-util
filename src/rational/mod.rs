@@ -12,7 +12,7 @@ fn gcd(mut a: u128, mut b: u128) -> u128 {
 /// Expand a rational as a simple continued fraction.
 /// Reference: MPU `rational.c`, `contfrac`.
 /// # Panics
-/// Panics if the denominator is not positive.
+/// Panics if the denominator is not positive or the numerator is `i128::MIN`.
 /// ```
 /// assert_eq!(math_prime_util::contfrac(67, 29), vec![2, 3, 4, 2]);
 /// ```

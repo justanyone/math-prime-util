@@ -13,3 +13,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The direct-ld attempt reached dependency compilation but startup objects broke proc-macro loading. A temporary driver under ignored target/ now adds startup objects only for executables; rerunning the two focused suites and full gate offlin <<cut 2 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -21 bytes)
+Fixed MPU's negative continued-fraction form and Farey insertion-rank endpoint behavior. Fixed the property borrow and benchmark lint findings; focused suites and the gate were rerun.
+All 14 oracle tests and four property tests pass. The gate passed fmt, all-target clippy, MSRV, and ordinary tests; doctests still used cc, so pass the temporary linker settings to rustdoc as well. Roughly eight minutes remain; missing C so <<cut 45 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 21 bytes)

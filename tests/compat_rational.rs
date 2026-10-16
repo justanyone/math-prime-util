@@ -15,6 +15,9 @@ fn check(name: &str) {
         .filter(|c| c.func == name || (name == "convergents" && c.func == "convergents_list"))
     {
         // Skip MPU bigint fallback cases whose arguments or results exceed i128/u128.
+        // These are contfrac/convergents for 280571172992510140037611932413038677189525
+        // over 453973694165307953197296969697410619233826, and from_contfrac /
+        // convergents_list cases whose Fibonacci or pi convergents exceed i128/u128.
         let unsupported_args = name != "bestrational"
             && c.args
                 .iter()

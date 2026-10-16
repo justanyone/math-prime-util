@@ -4,8 +4,48 @@
 
 mod common;
 
+use std::sync::Mutex;
+
 use common::{each, each_may_panic};
 use math_prime_util::*;
+
+/// Serializes the configuration tests in this file.
+static CONFIG_LOCK: Mutex<()> = Mutex::new(());
+
+#[test]
+fn compat_int_prime_set_config_rejects_maxbits() {
+    // MPU 0.75 prime_set_config croaks on maxbits: it has no setter for it.
+    let _guard = CONFIG_LOCK.lock().unwrap();
+    let err = prime_set_config(&[("maxbits", 1)]).unwrap_err();
+    assert_eq!(
+        err,
+        ConfigError::UnknownKey {
+            key: "maxbits".to_owned()
+        }
+    );
+}
+
+#[test]
+fn compat_int_prime_set_config_accepts_rh_aliases() {
+    // MPU 0.75 accepts these spellings for assume_rh (the RH patterns in prime_set_config).
+    let _guard = CONFIG_LOCK.lock().unwrap();
+    for key in [
+        "rh",
+        "grh",
+        "erh",
+        "assume rh",
+        "assume_grh",
+        "assume erh",
+        "assumerh",
+        "riemann hypothesis",
+        "riemannh",
+    ] {
+        let on = prime_set_config(&[(key, 1)]).unwrap();
+        assert!(on.assume_rh, "alias {key} should set assume_rh");
+        let off = prime_set_config(&[(key, 0)]).unwrap();
+        assert!(!off.assume_rh, "alias {key} should clear assume_rh");
+    }
+}
 
 #[test]
 fn sqrtint_oracle() {

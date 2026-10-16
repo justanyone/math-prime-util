@@ -22,8 +22,63 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![forbid(unsafe_code)]
 
+// One line per module, written once: a port row adds its functions to its module and never edits this file.
+// Each module re-exports its public functions at the crate root (`pub use`), MPU-style flat names.
+pub mod arith;
+pub mod bigint;
+pub mod combinat;
+pub mod config;
+pub mod count;
+pub mod digits;
+pub mod factor;
+pub mod families;
 pub mod int;
+pub mod iter;
+pub mod lucas;
 pub mod modular;
+pub mod primality;
+pub mod proving;
+pub mod random;
+pub mod rational;
+pub mod real;
+pub mod sieve;
+pub mod vec;
 
-pub use int::{crootint, gcd, gcdext, is_power, is_square, lcm, logint, powint, rootint, sqrtint};
-pub use modular::{addmod, invmod, muladdmod, mulmod, mulsubmod, negmod, powmod, sqrmod, submod};
+#[allow(unused_imports)] // until the module has public items
+pub use arith::*;
+#[allow(unused_imports)] // until the module has public items
+pub use bigint::*;
+#[allow(unused_imports)] // until the module has public items
+pub use combinat::*;
+#[allow(unused_imports)] // until the module has public items
+pub use config::*;
+#[allow(unused_imports)] // until the module has public items
+pub use count::*;
+#[allow(unused_imports)] // until the module has public items
+pub use digits::*;
+#[allow(unused_imports)] // until the module has public items
+pub use factor::*;
+#[allow(unused_imports)] // until the module has public items
+pub use families::*;
+#[allow(unused_imports)] // until the module has public items
+pub use int::*;
+#[allow(unused_imports)] // until the module has public items
+pub use iter::*;
+#[allow(unused_imports)] // until the module has public items
+pub use lucas::*;
+#[allow(unused_imports)] // until the module has public items
+pub use modular::*;
+#[allow(unused_imports)] // until the module has public items
+pub use primality::*;
+#[allow(unused_imports)] // until the module has public items
+pub use proving::*;
+#[allow(unused_imports)] // until the module has public items
+pub use random::*;
+#[allow(unused_imports)] // until the module has public items
+pub use rational::*;
+#[allow(unused_imports)] // until the module has public items
+pub use real::*;
+#[allow(unused_imports)] // until the module has public items
+pub use sieve::*;
+#[allow(unused_imports)] // until the module has public items
+pub use vec::*;

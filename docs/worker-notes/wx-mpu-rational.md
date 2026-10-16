@@ -10,3 +10,6 @@ Library clippy found two manual ilog2 expressions; replaced them with ilog2. Tes
 All 14 requested APIs have implementations, examples, and status ticks. Library clippy passes. Source fidelity, the C native bounds, and Farey performance still need review against the missing reference before this can count as a faithful p <<cut 4 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -19 bytes)
+The direct-ld attempt reached dependency compilation but startup objects broke proc-macro loading. A temporary driver under ignored target/ now adds startup objects only for executables; rerunning the two focused suites and full gate offlin <<cut 2 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -21 bytes)

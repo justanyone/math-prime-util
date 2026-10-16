@@ -91,9 +91,12 @@ pub fn prime_get_config() -> Config {
 /// Each entry is a key and a value. Keys are matched without regard to case,
 /// as MPU does with `lc`. The valid keys are:
 ///
-/// - `maxbits`: an integer from 1 to [`_uvbits`]. A larger value is an error.
 /// - `verbose`: an integer that fits in `u32`.
-/// - `assume_rh`: `0` for `false`, any other value for `true`.
+/// - `assume_rh`, or one of the spellings MPU accepts for it (`rh`, `grh`,
+///   `erh`, `assume rh`, `assume_grh`, `riemann hypothesis`, ...): `0` for
+///   `false`, any other value for `true`.
+///
+/// `maxbits` is not settable: MPU rejects it as an unknown key.
 ///
 /// The update is all or nothing. If any entry is invalid, no setting
 /// changes and the error names the bad key.
@@ -117,23 +120,35 @@ pub fn prime_set_config(params: &[(&str, u64)]) -> Result<Config, ConfigError> {
     let mut config = write_lock();
     let mut next = *config;
     for &(key, value) in params {
-        match key.to_ascii_lowercase().as_str() {
-            "maxbits" => {
-                next.maxbits = u32::try_from(value)
-                    .ok()
-                    .filter(|&bits| (1..=_uvbits()).contains(&bits))
-                    .ok_or(ConfigError::BadValue { key: "maxbits" })?;
-            }
-            "verbose" => {
-                next.verbose =
-                    u32::try_from(value).map_err(|_| ConfigError::BadValue { key: "verbose" })?;
-            }
-            "assume_rh" => next.assume_rh = value != 0,
-            _ => return Err(ConfigError::UnknownKey { key: key.to_owned() }),
+        let key_lower = key.to_ascii_lowercase();
+        if key_lower == "verbose" {
+            next.verbose =
+                u32::try_from(value).map_err(|_| ConfigError::BadValue { key: "verbose" })?;
+        } else if is_rh_key(&key_lower) {
+            next.assume_rh = value != 0;
+        } else {
+            return Err(ConfigError::UnknownKey { key: key.to_owned() });
         }
     }
     *config = next;
     Ok(next)
+}
+
+/// Whether a lower-case key names the Riemann hypothesis setting.
+///
+/// Port of the `assume_rh` branch in `prime_set_config` in
+/// `reference/mpu/lib/Math/Prime/Util.pm`: `/^(assume[_ ]?)?[ge]?rh$/` or
+/// `/riemann\s*h/`.
+fn is_rh_key(key: &str) -> bool {
+    let rest = match key.strip_prefix("assume") {
+        Some(after) => after.strip_prefix(['_', ' ']).unwrap_or(after),
+        None => key,
+    };
+    if matches!(rest, "rh" | "grh" | "erh") {
+        return true;
+    }
+    key.find("riemann")
+        .is_some_and(|at| key[at + "riemann".len()..].trim_start().starts_with('h'))
 }
 
 /// An error from [`prime_set_config`].

@@ -5,3 +5,4 @@ Leave tools, fixtures, crate root, and generated STATUS unchanged as required by
 The reference submodule is empty and local reference search found no C files. Implement binary Lucas arithmetic against existing fixtures; signed results need an i128 container with u64 magnitude bounds. Exact C-method verification remains  <<cut 8 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -15 bytes)
+Implemented all nine public APIs and nine oracle tests. Modular arithmetic uses u128 products and binary doubling without division, including even moduli. Next run the focused oracle tests.

@@ -19,6 +19,23 @@ phases and [STATUS.md](STATUS.md) for the per-function checklist (428 names).
   against MPU's pure-Perl implementation and other Rust crates, a 95 % line
   coverage gate, mutation testing, and Miri on any `unsafe`.
 
+## Milestones
+
+Each line is ticked, with its date, by the milestone row of the build board when every requirement of that milestone is done.
+The phases are described in `PLAN.md` section 6.
+
+- [ ] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration)
+- [ ] Milestone 2: factoring and number theory ported and benchmarked against Perl
+- [ ] Release 0.1.0 published on crates.io
+- [ ] Milestone 3: prime counting, nth prime and prime sums ported
+- [ ] Milestone 4: prime families ported
+- [ ] Milestone 5: digits, rationals, combinatorics and inverse sigma ported
+- [ ] Milestone 6: vector and set operations ported
+- [ ] Milestone 7: iterators and the for-family ported
+- [ ] Milestone 8: random primes and the random number generator ported
+- [ ] Milestone 9: primality proving, real functions and the bigint backend ported
+- [ ] Release 1.0.0 published on crates.io
+
 ## Minimum Rust version
 
 1.85 (edition 2024).

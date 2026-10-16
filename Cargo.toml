@@ -1,0 +1,41 @@
+[package]
+name = "math-prime-util"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Rust port of Perl's Math::Prime::Util: primality, sieves, factoring, number theory"
+license = "GPL-1.0-or-later OR Artistic-1.0-Perl"
+repository = "https://github.com/justanyone/math-prime-util"
+documentation = "https://docs.rs/math-prime-util"
+readme = "README.md"
+keywords = ["prime", "number-theory", "factoring", "sieve", "primality"]
+categories = ["mathematics", "algorithms"]
+publish = false
+exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
+
+[dependencies]
+
+[dev-dependencies]
+proptest = "1"
+criterion = { version = "0.5", default-features = false }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+
+[profile.bench]
+inherits = "release"
+debug = true
+
+[lints.rust]
+unsafe_code = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+# Number theory code names its variables after the formulas.
+many_single_char_names = "allow"
+similar_names = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"

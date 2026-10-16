@@ -147,8 +147,13 @@ fn is_rh_key(key: &str) -> bool {
     if matches!(rest, "rh" | "grh" | "erh") {
         return true;
     }
-    key.find("riemann")
-        .is_some_and(|at| key[at + "riemann".len()..].trim_start().starts_with('h'))
+    // The pattern is unanchored, so every occurrence of "riemann" is a candidate:
+    // "riemannXriemannh" matches through the second one.
+    key.match_indices("riemann").any(|(at, _)| {
+        key[at + "riemann".len()..]
+            .trim_start_matches(|c: char| matches!(c, ' ' | '\t' | '\n' | '\r' | '\x0c' | '\x0b'))
+            .starts_with('h')
+    })
 }
 
 /// An error from [`prime_set_config`].

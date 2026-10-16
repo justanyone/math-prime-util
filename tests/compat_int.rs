@@ -48,6 +48,26 @@ fn compat_int_prime_set_config_accepts_rh_aliases() {
 }
 
 #[test]
+fn compat_int_prime_set_config_rh_match_scans_every_riemann() {
+    // MPU 0.75 /riemann\s*h/ is unanchored: a later "riemann" can still match.
+    // Positive cases: the second occurrence matches. Negative: no "h" follows any occurrence.
+    let _guard = CONFIG_LOCK.lock().unwrap();
+    for key in ["riemannXriemannh", "riemann riemann h", "riemannxriemann\th"] {
+        let on = prime_set_config(&[(key, 1)]).unwrap_or_else(|e| panic!("{key}: {e:?}"));
+        assert!(on.assume_rh, "key {key} should set assume_rh");
+    }
+    for key in ["riemannXriemannx", "riemann_riemann"] {
+        let err = prime_set_config(&[(key, 1)]).unwrap_err();
+        assert_eq!(
+            err,
+            ConfigError::UnknownKey {
+                key: key.to_owned()
+            }
+        );
+    }
+}
+
+#[test]
 fn sqrtint_oracle() {
     each("int", "sqrtint", |c| c.check(Some(sqrtint(c.arg(0)))));
 }

@@ -1,0 +1,2 @@
+- Plan: fix open finding 5 (is_rh_key scans only first 'riemann' occurrence) with test; finding 4 needs gen_fixtures registration + config.tsv + compat test if feasible. Notes appended as I go.
+- Fixed finding 5 in src/config/mod.rs is_rh_key (match_indices) + test compat_int_prime_set_config_rh_match_scans_every_riemann. Running mw-test tests/compat_int.rs next.

@@ -1,3 +1,0 @@
-- Plan: fix open finding 5 (is_rh_key scans only first 'riemann' occurrence) with test; finding 4 needs gen_fixtures registration + config.tsv + compat test if feasible. Notes appended as I go.
-- Fixed finding 5 in src/config/mod.rs is_rh_key (match_indices) + test compat_int_prime_set_config_rh_match_scans_every_riemann. Running mw-test tests/compat_int.rs next.
-- Finding 4 BLOCKED: tools/gen_fixtures.pl needs .perl-local (MPU 0.75 oracle), which is absent; bootstrap needs network (forbidden), and direct perl calls were permission-denied. Did not hand-write config.tsv. Consumer test not written: it would fail without the TSV. mw-test broken (passes --collect-only); used tools/test.sh. Full gate not run (time limit).

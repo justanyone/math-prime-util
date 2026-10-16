@@ -1,6 +1,6 @@
 //! Oracle checks for the rational family.
 mod common;
-use math_prime_util::*;
+use math_prime_util as mpu;
 
 fn pairs<T: std::fmt::Display>(values: Vec<(T, T)>) -> String {
     values
@@ -35,7 +35,7 @@ fn check(name: &str) {
                 (a.parse::<u64>().unwrap(), b.parse::<u64>().unwrap())
             };
             Some(match name {
-                "contfrac" => contfrac(i(0), i(1))
+                "contfrac" => mpu::contfrac(i(0), i(1))
                     .iter()
                     .map(ToString::to_string)
                     .collect::<Vec<_>>()
@@ -46,7 +46,7 @@ fn check(name: &str) {
                         .iter()
                         .map(|s| s.parse().unwrap())
                         .collect::<Vec<_>>();
-                    let (a, b) = from_contfrac(&v);
+                    let (a, b) = mpu::from_contfrac(&v);
                     format!("{a} {b}")
                 }
                 "convergents" => {
@@ -55,35 +55,35 @@ fn check(name: &str) {
                     } else if c.args.is_empty() {
                         Vec::new()
                     } else {
-                        contfrac(i(0), i(1))
+                        mpu::contfrac(i(0), i(1))
                     };
-                    pairs(convergents(&v))
+                    pairs(mpu::convergents(&v))
                 }
                 "bestrational" => {
-                    let (a, b) = bestrational(c.args[0].parse().unwrap_or(f64::NAN), c.arg(1));
+                    let (a, b) = mpu::bestrational(c.args[0].parse().unwrap_or(f64::NAN), c.arg(1));
                     format!("{a} {b}")
                 }
                 "next_calkin_wilf" => {
-                    let (a, b) = next_calkin_wilf(u(0), u(1));
+                    let (a, b) = mpu::next_calkin_wilf(u(0), u(1));
                     format!("{a} {b}")
                 }
                 "next_stern_brocot" => {
-                    let (a, b) = next_stern_brocot(u(0), u(1));
+                    let (a, b) = mpu::next_stern_brocot(u(0), u(1));
                     format!("{a} {b}")
                 }
-                "calkin_wilf_n" => calkin_wilf_n(u(0), u(1)).to_string(),
-                "stern_brocot_n" => stern_brocot_n(u(0), u(1)).to_string(),
+                "calkin_wilf_n" => mpu::calkin_wilf_n(u(0), u(1)).to_string(),
+                "stern_brocot_n" => mpu::stern_brocot_n(u(0), u(1)).to_string(),
                 "nth_calkin_wilf" => {
-                    let (a, b) = nth_calkin_wilf(u(0));
+                    let (a, b) = mpu::nth_calkin_wilf(u(0));
                     format!("{a} {b}")
                 }
                 "nth_stern_brocot" => {
-                    let (a, b) = nth_stern_brocot(u(0));
+                    let (a, b) = mpu::nth_stern_brocot(u(0));
                     format!("{a} {b}")
                 }
-                "nth_stern_diatomic" => nth_stern_diatomic(u(0)).to_string(),
+                "nth_stern_diatomic" => mpu::nth_stern_diatomic(u(0)).to_string(),
                 "farey" => {
-                    let v = farey(c.arg(0));
+                    let v = mpu::farey(c.arg(0));
                     if c.args.len() == 1 {
                         pairs(v)
                     } else {
@@ -92,11 +92,11 @@ fn check(name: &str) {
                 }
                 "next_farey" => {
                     let (a, b) = pair();
-                    return next_farey(c.arg(0), a, b).map(|(a, b)| format!("{a} {b}"));
+                    return mpu::next_farey(c.arg(0), a, b).map(|(a, b)| format!("{a} {b}"));
                 }
                 "farey_rank" => {
                     let (a, b) = pair();
-                    farey_rank(c.arg(0), a, b).to_string()
+                    mpu::farey_rank(c.arg(0), a, b).to_string()
                 }
                 _ => unreachable!(),
             })

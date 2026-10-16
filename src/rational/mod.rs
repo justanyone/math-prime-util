@@ -86,11 +86,12 @@ pub fn bestrational(value: f64, limit: u64) -> (i128, u64) {
     let mut rem = x;
     loop {
         let a = rem.floor();
-        if a > limit as f64
-            || q1
-                .checked_mul(a as u64)
-                .and_then(|v| v.checked_add(q0))
-                .is_none_or(|q| q > limit)
+        if q1 != 0
+            && (a > limit as f64
+                || q1
+                    .checked_mul(a as u64)
+                    .and_then(|v| v.checked_add(q0))
+                    .is_none_or(|q| q > limit))
         {
             break;
         }

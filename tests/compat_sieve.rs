@@ -4,31 +4,47 @@ use common::{each, each_may_panic};
 use math_prime_util::*;
 
 fn list(values: Vec<u64>) -> String {
-    values.iter().map(u64::to_string).collect::<Vec<_>>().join(" ")
+    values
+        .iter()
+        .map(u64::to_string)
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 fn bounds(c: &common::Case) -> (u64, u64) {
-    if c.args.len() == 1 { (0, c.arg(0)) } else { (c.arg(0), c.arg(1)) }
+    if c.args.len() == 1 {
+        (0, c.arg(0))
+    } else {
+        (c.arg(0), c.arg(1))
+    }
 }
 
 #[test]
 fn primes_oracle() {
     each("sieve", "primes", |c| {
         // Signed primes arguments (-4, 2 -4, -10 7, -10 -4) cannot enter the u64 API.
-        if c.args.iter().any(|a| a.starts_with('-')) { return; }
+        if c.args.iter().any(|a| a.starts_with('-')) {
+            return;
+        }
         let (lo, hi) = bounds(c);
         c.check(Some(list(primes(lo, hi))));
     });
 }
 #[test]
-fn next_prime_oracle() { each("sieve", "next_prime", |c| c.check(next_prime(c.arg(0)))); }
+fn next_prime_oracle() {
+    each("sieve", "next_prime", |c| c.check(next_prime(c.arg(0))));
+}
 #[test]
-fn prev_prime_oracle() { each("sieve", "prev_prime", |c| c.check(prev_prime(c.arg(0)))); }
+fn prev_prime_oracle() {
+    each("sieve", "prev_prime", |c| c.check(prev_prime(c.arg(0))));
+}
 #[test]
 fn sieve_range_oracle() {
     each("sieve", "sieve_range", |c| {
         // Width or depth 18446744073709551617 exceeds the u64 API.
-        if c.args.iter().any(|a| a.parse::<u64>().is_err()) { return; }
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            return;
+        }
         c.check(Some(list(sieve_range(c.arg(0), c.arg(1), c.arg(2)))));
     });
 }

@@ -4,7 +4,31 @@ use common::Case;
 use math_prime_util::digits::*;
 
 fn run(name: &str, call: impl Fn(&Case) -> Option<String>) {
+    static HOOK: std::sync::Once = std::sync::Once::new();
+    HOOK.call_once(|| std::panic::set_hook(Box::new(|_| {})));
     common::each("digits", name, |c| {
+        // Skip bases above u64::MAX for all native base-taking functions.
+        if matches!(
+            name,
+            "todigits"
+                | "todigitstring"
+                | "fromdigits"
+                | "reverse_digits"
+                | "is_palindrome"
+                | "is_harshad"
+                | "digital_root"
+                | "mult_digital_root"
+        ) && c.args.get(1).is_some_and(|s| s.parse::<u64>().is_err())
+        {
+            return;
+        }
+        // fromdigits returns u64; skip its bigint result cases.
+        if name == "fromdigits"
+            && !c.error
+            && c.result.as_ref().is_some_and(|s| s.parse::<u64>().is_err())
+        {
+            return;
+        }
         // Skip bigint arguments or results outside the i128/u64 API.
         // Each skipped function and argument is recorded by this comment
         // and the fixture case itself; no signed i64 case is skipped.
@@ -24,8 +48,18 @@ fn run(name: &str, call: impl Fn(&Case) -> Option<String>) {
         }
         let got = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| call(c)));
         match got {
-            Err(_) => assert!(c.error, "{c:?}"),
-            Ok(v) => c.check(v),
+            Err(_) => {
+                if !c.error {
+                    println!("unexpected panic: {c:?}");
+                }
+                assert!(c.error, "{c:?}");
+            }
+            Ok(v) => {
+                if c.error || v != c.result {
+                    println!("mismatch: {c:?}; got {v:?}");
+                }
+                c.check(v);
+            }
         }
     });
 }

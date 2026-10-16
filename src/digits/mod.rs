@@ -401,7 +401,7 @@ pub fn mulint(a: i128, b: i128) -> Option<i128> {
 /// assert_eq!(muladdint(2,3,4),Some(10));
 /// ```
 pub fn muladdint(a: i128, b: i128, c: i128) -> Option<i128> {
-    a.checked_mul(b)?.checked_add(c)
+    mulcombine(a, b, c, false)
 }
 
 /// Multiply then combine. Return `None` on overflow.
@@ -413,7 +413,7 @@ pub fn muladdint(a: i128, b: i128, c: i128) -> Option<i128> {
 /// assert_eq!(mulsubint(2,3,4),Some(2));
 /// ```
 pub fn mulsubint(a: i128, b: i128, c: i128) -> Option<i128> {
-    a.checked_mul(b)?.checked_sub(c)
+    mulcombine(a, b, c, true)
 }
 
 /// Return quotient and remainder. Return `None` on overflow.
@@ -768,6 +768,26 @@ pub fn toint(text: &str) -> Option<i128> {
         n.checked_mul(u128::from(base))?
             .checked_add(u128::from(c.to_digit(base)?))
     })?;
+    if negative && magnitude == 1_u128 << 127 {
+        Some(i128::MIN)
+    } else {
+        let n = i128::try_from(magnitude).ok()?;
+        if negative { n.checked_neg() } else { Some(n) }
+    }
+}
+
+fn mulcombine(a: i128, b: i128, c: i128, subtract: bool) -> Option<i128> {
+    let product = a.unsigned_abs().checked_mul(b.unsigned_abs())?;
+    let product_negative = (a < 0) != (b < 0);
+    let c_negative = (c < 0) != subtract;
+    let c = c.unsigned_abs();
+    let (magnitude, negative) = if product_negative == c_negative {
+        (product.checked_add(c)?, product_negative)
+    } else if product >= c {
+        (product - c, product_negative)
+    } else {
+        (c - product, c_negative)
+    };
     if negative && magnitude == 1_u128 << 127 {
         Some(i128::MIN)
     } else {

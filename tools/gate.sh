@@ -7,8 +7,8 @@ cd "$(dirname "$0")/.." || exit 2
 set -e
 step() { echo "== gate: $*"; }
 step fmt;    cargo fmt --all --check
-step clippy; cargo clippy --all-targets --all-features -- -D warnings
-step msrv;   cargo +1.85.0 build --all-features
-step test;   cargo test --all-features
-step doc;    RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
+step clippy; cargo clippy --offline --all-targets --all-features -- -D warnings
+step msrv;   cargo +1.85.0 build --offline --all-features
+step test;   cargo test --offline --all-features
+step doc;    RUSTDOCFLAGS="-D warnings" cargo doc --offline --no-deps --all-features
 echo "== gate: green"

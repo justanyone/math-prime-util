@@ -27,3 +27,6 @@ rustc-ice-*.txt
 .perl-local/
 # generated
 lcov.info
+
+# CodeGraph index that the factory workers create in their worktree
+.codegraph/

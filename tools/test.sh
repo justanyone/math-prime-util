@@ -18,4 +18,5 @@ for a in "$@"; do
   esac
 done
 # shellcheck disable=SC2086
-exec timeout 900 nice -n 10 cargo test --all-features $args 2>&1 | tail -60
+# --offline: worker hosts have no network in the sandbox; the maintainer runs `cargo fetch` on each host after a Cargo.lock change.
+exec timeout 900 nice -n 10 cargo test --offline --all-features $args 2>&1 | tail -60

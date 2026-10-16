@@ -17,11 +17,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `almost_prime_count_lower`
 - [ ] `almost_prime_count_upper`
 - [ ] `almost_primes`
-- [ ] `bell_number`
+- [x] `bell_number`
 - [ ] `bernfrac`
 - [ ] `bernreal`
 - [ ] `bestrational`
-- [ ] `binomial`
+- [x] `binomial`
 - [ ] `binomialmod`
 - [ ] `bitand`
 - [ ] `bitandnot`
@@ -36,7 +36,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `bitxor`
 - [ ] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
-- [ ] `catalan_number`
+- [x] `catalan_number`
 - [ ] `cdivint`
 - [ ] `cdivrem`
 - [ ] `cheb_factor`
@@ -45,7 +45,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `chinese`
 - [ ] `chinese2`
 - [ ] `cmpint`
-- [ ] `consecutive_integer_lcm`
+- [x] `consecutive_integer_lcm`
 - [ ] `contfrac`
 - [ ] `convergents`
 - [ ] `cornacchia`
@@ -95,7 +95,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `from_contfrac`
 - [ ] `fromdigits`
 - [ ] `fromzeckendorf`
-- [ ] `fubini`
+- [x] `fubini`
 - [x] `gcd`
 - [x] `gcdext`
 - [ ] `goldbach_pair_count`
@@ -270,7 +270,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `Pi`
 - [ ] `pisano_period`
 - [ ] `pminus1_factor`
-- [ ] `pn_primorial`
+- [x] `pn_primorial`
 - [ ] `powerfree_count`
 - [ ] `powerfree_part`
 - [ ] `powerfree_part_sum`
@@ -305,7 +305,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `primes`
 - [ ] `prime_set_config`
 - [ ] `prime_signature`
-- [ ] `primorial`
+- [x] `primorial`
 - [ ] `print_primes`
 - [ ] `qnr`
 - [ ] `ramanujan_prime_count`

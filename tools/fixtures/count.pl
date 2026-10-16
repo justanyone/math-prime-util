@@ -1,6 +1,7 @@
 # Fixture family `count`: prime counting and nth-prime functions.
 # Covers MPU t/13-primecount.t, t/14-nthprime.t, t/19-legendrephi.t, t/19-chebyshev.t, t/11-sumprimes.t.
 # Floating results (chebyshev_*) are emitted exactly as MPU prints them.
+# sum_primes results above u64 print as `undef` (u64_or_undef).
 use strict; use warnings;
 
 sub gen_count {
@@ -85,8 +86,8 @@ sub gen_count {
     20705000000,29505444490,29505444491);
   push @sp, (['18446744073709551557','18446744073709551600'],['18446744073709551558',$max],[0,0],[5,3],[2,2],[3,3],
              [1,1],[1000,100],[$max,$max]);
-  for my $lh (@sp) { my($l,$h)=@$lh; emit($fh, 'sum_primes', [$l,$h], sub { sum_primes("$l","$h") }); }
+  for my $lh (@sp) { my($l,$h)=@$lh; emit($fh, 'sum_primes', [$l,$h], sub { u64_or_undef(sum_primes("$l","$h")) }); }
   # single-argument form
-  for my $n (0..200, 1000, 65535, 1000000, 100000000) { emit($fh, 'sum_primes', [$n], sub { sum_primes($n) }); }
+  for my $n (0..200, 1000, 65535, 1000000, 100000000) { emit($fh, 'sum_primes', [$n], sub { u64_or_undef(sum_primes($n)) }); }
 }
 1;

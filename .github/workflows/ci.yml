@@ -72,11 +72,3 @@ jobs:
           alert-threshold: "110%"
           comment-on-alert: true
           fail-on-alert: true
-  miri:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@nightly
-        with: { components: miri }
-      - run: cargo miri setup
-      - run: cargo miri test --lib

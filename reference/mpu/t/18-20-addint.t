@@ -1,0 +1,124 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Test::More;
+use Math::Prime::Util qw/addint subint add1int sub1int mulint vecall/;
+
+my @vals = (
+  [qw/-123456789 -987654321 -1111111110/],
+  [qw/123456789 -987654321 -864197532/],
+  [qw/-12345678983 12345678987 4/],
+
+  [qw/4294967294 1 4294967295/],
+  [qw/4294967294 2 4294967296/],
+  [qw/4294967296 1 4294967297/],
+  [qw/4294967296 -1 4294967295/],
+  [qw/4294967295 -1 4294967294/],
+
+  [qw/18446744073709551614 1 18446744073709551615/],   #  8
+  [qw/18446744073709551614 2 18446744073709551616/],   #  9
+  [qw/18446744073709551616 1 18446744073709551617/],   # 10
+  [qw/18446744073709551616 -1 18446744073709551615/],  # 11
+  [qw/18446744073709551615 -1 18446744073709551614/],  # 12
+
+  [qw/2147483647 -2147483648 -1/],
+  [qw/2147483647 -2147483647 0/],
+  [qw/9223372036854775807 -9223372036854775808 -1/],
+  [qw/9223372036854775807 -9223372036854775807 0/],
+  [qw/9223372036854775808 -9223372036854775808 0/],
+  [qw/9223372036854775809 -9223372036854775809 0/],
+
+  [qw/1178630961471601951655862 827639478068904540012 1179458600949670856195874/],
+  [qw/-2555488174170453670799 1726145541361106236340 -829342632809347434459/],
+  [qw/9223372036854775808 9223372036854775808 18446744073709551616/],
+  [qw/1177803321993533047115850 827639478068904540012 1178630961471601951655862/],
+  [qw/-4281633715531559907139 1726145541361106236340 -2555488174170453670799/],
+  [qw/18446744073709551616 -9223372036854775808 9223372036854775808/],
+);
+
+plan tests =>
+            + 2  # trivial addint, subint
+            + 1  # addint/subint on test array
+            + 2  # add1int and sub1int
+            + 1  # add/sub 0
+            + 1  # vecall nested addint/mulint regression
+            ;
+
+###### addint
+{ my(@addgot,@subgot,@addexp,@subexp);
+  for my $a (-3 .. 3) {
+    for my $b (-3 .. 3) {
+      push @addgot, addint($a,$b);
+      push @subgot, subint($a,$b);
+      push @addexp, $a+$b;
+      push @subexp, $a-$b;
+    }
+  }
+  is_deeply( \@addgot, \@addexp, "addint( -3 .. 3, -3 .. 3)" );
+  is_deeply( \@subgot, \@subexp, "subint( -3 .. 3, -3 .. 3)" );
+}
+
+subtest 'selected test values', sub {
+  is_deeply( [map { "".addint($_->[0],$_->[1]) } @vals],
+             [map { $_->[2] } @vals],
+             "addint a+b=c" );
+  is_deeply( [map { "".addint($_->[1],$_->[0]) } @vals],
+             [map { $_->[2] } @vals],
+             "addint b+a=c" );
+  is_deeply( [map { "".subint($_->[2],$_->[1]) } @vals],
+             [map { $_->[0] } @vals],
+             "subint c-b=a" );
+  is_deeply( [map { "".subint($_->[2],$_->[0]) } @vals],
+             [map { $_->[1] } @vals],
+             "subint c-a=b" );
+  is_deeply( [map { "".addint($_->[0],$_->[1])} @vals],
+             [map { "".addint($_->[1],$_->[0])} @vals],
+             "addint is commutative" );
+
+  my $add  = \&Math::Prime::Util::addint;
+  my $add1 = \&Math::Prime::Util::add1int;
+  my $n = "7899999999999959999999996";
+  is_deeply([map { "".$add->($n,$_) } 0..4],
+            [qw/7899999999999959999999996
+                7899999999999959999999997
+                7899999999999959999999998
+                7899999999999959999999999
+                7899999999999960000000000/],
+            "addint function reference retains nested bigint return shape");
+  is_deeply([map { "".$add1->($_) } @{$vals[19]}[0,1]],
+            [qw/1178630961471601951655863 827639478068904540013/],
+            "add1int function reference retains nested bigint return shape");
+};
+
+###### add1int / sub1int
+{
+  my @N = (-17 .. 17,
+           "4294967295", "4294967296", "4294967297",
+           "9223372036854775807", "9223372036854775808", "9223372036854775809",
+           "18446744073709551615", "18446744073709551616", "18446744073709551617",
+           "158456325028528675187087900671");
+  is_deeply([map {"".add1int($_)} @N], [map {"".addint($_,1)} @N], "add1int");
+  is_deeply([map {"".sub1int($_)} @N], [map {"".subint($_,1)} @N], "sub1int");
+}
+
+subtest 'add and subtract 0 on large values', sub {
+    my @big = qw/4294967295 4294967296 9223372036854775807 9223372036854775808
+                 18446744073709551615 18446744073709551616
+                 1178630961471601951655862/;
+    is_deeply([map{"".addint($_,0)} @big], \@big,    "addint(n,0) == n for large n");
+    is_deeply([map{"".addint(0,$_)} @big], \@big,    "addint(0,n) == n for large n");
+    is_deeply([map{"".subint($_,0)} @big], \@big,    "subint(n,0) == n for large n");
+    is_deeply([map{"".subint($_,$_)}@big],[(0)x@big],"subint(n,n) == 0 for large n");
+    is_deeply([map{"".subint(0,$_)} @big],
+              [map{"-$_"} @big],                     "subint(0,n) == -n for large n");
+};
+
+{
+  # Perl XS custom ops were introduced in 5.14.  In 5.18.x (only) there is a
+  # regression when used with a $_ argument.  We protect against this in the
+  # code.  Check.
+  my $n = "7899999999999959999999996";
+  my $pass = vecall { mulint(2,addint($n,$_)) } 0..5;
+  is($pass, 1, "vecall nested mulint(addint(\$n,\$_))");
+}

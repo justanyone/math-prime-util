@@ -1,0 +1,447 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Test::More;
+use Math::Prime::Util qw/factor factor_exp divisors divisor_sum is_prime
+                         prime_bigomega prime_omega
+                         prime_signature sopfr sopf
+                         prime_get_config/;
+
+my $extra = defined $ENV{EXTENDED_TESTING} && $ENV{EXTENDED_TESTING};
+my $use64  = prime_get_config->{'maxbits'} > 32;
+my $usexs  = prime_get_config->{'xs'};
+my $usegmp = prime_get_config->{'gmp'};
+
+my @testn = qw/7 8 16 57 64 377 9592 78498 664579 5761455
+               114256942 2214143 999999929 50847534 455052511 2147483647
+               4118054813
+               30 210 2310 30030 510510 9699690 223092870
+               1363 989 779 629 403
+               547308031
+               808 2727 12625 34643 134431 221897 496213 692759 1228867
+               2231139 2463289 3008891 5115953 6961021 8030207 10486123
+               10893343 12327779 701737021
+               549900 10000142
+               392498
+              /;
+
+my @testn64 = qw/37607912018 346065536839 600851475143
+                 3204941750802 29844570422669
+                 279238341033925 2623557157654233 24739954287740860
+                 3369738766071892021 10023859281455311421
+                 9007199254740991 9007199254740992 9007199254740993
+                 6469693230 200560490130 7420738134810 304250263527210
+                 13082761331670030 614889782588491410
+                 440091295252541 5333042142001571
+                 79127989298
+                 2339796554687
+                /;
+
+push @testn64, "124838608575421729"   if $usegmp || $usexs;
+push @testn64, "1434569741817480287"  if $usegmp || $usexs;
+push @testn64, "1256490565186616147"  if $usegmp || $usexs;
+push @testn64, "13356777177440210791" if $usegmp || $usexs;
+
+push @testn, @testn64 if $use64;
+
+push @testn, qw/9999986200004761 99999989237606677 999999866000004473/
+      if $use64 && $extra;
+
+# For time savings, trim these if we're pure Perl.
+if (    !$extra
+     && !prime_get_config->{'xs'}
+     && !prime_get_config->{'gmp'} ) {
+  @testn = grep {    $_ != 10023859281455311421
+                  && $_ != 3369738766071892021
+                } @testn;
+}
+
+my @testdivisors = (
+  [         0,],
+  [         1,1],
+  [         2,1,2],
+  [         3,1,3],
+  [         4,1,2,4],
+  [         5,1,5],
+  [         6,1,2,3,6],
+  [         7,1,7],
+  [         8,1,2,4,8],
+  [         9,1,3,9],
+  [        10,1,2,5,10],
+  [        12,1,2,3,4,6,12],
+  [        16,1,2,4,8,16],
+  [        42,1,2,3,6,7,14,21,42],
+  [     30107,1,7,11,17,23,77,119,161,187,253,391,1309,1771,2737,4301,30107],
+  [    115553,1,115553],
+  [    123456,1,2,3,4,6,8,12,16,24,32,48,64,96,192,643,1286,1929,2572,3858,5144,7716,10288,15432,20576,30864,41152,61728,123456],
+  [    456789,1,3,43,129,3541,10623,152263,456789],
+  [   4567890,1,2,3,5,6,10,15,30,43,86,129,215,258,430,645,1290,3541,7082,10623,17705,21246,35410,53115,106230,152263,304526,456789,761315,913578,1522630,2283945,4567890],
+  [1032924637,1,6469,159673,1032924637],
+  [1234567890,1,2,3,5,6,9,10,15,18,30,45,90,3607,3803,7214,7606,10821,11409,18035,19015,21642,22818,32463,34227,36070,38030,54105,57045,64926,68454,108210,114090,162315,171135,324630,342270,13717421,27434842,41152263,68587105,82304526,123456789,137174210,205761315,246913578,411522630,617283945,1234567890],
+);
+
+plan tests => 1      # factor and factor_exp
+            + 1      # details of factor and factor_exp
+            + 1      # divisors
+            + 1      # individual algorithms
+            + 1      # more factoring for code coverage
+            + 1      # XS 128-bit
+            + 1      # omega and bigomega
+            + 1      # prime_signature
+            + 1      # sopfr
+            + 1;     # sopf
+
+####  factor(n)  factor_exp(n)  scalar of each
+subtest 'basic factor and factor_exp', sub {
+  my @testfactors = (
+    [         0, [0] ],
+    [         1, [] ],
+    [         2, [2] ],
+    [         3, [3] ],
+    [         4, [2,2] ],
+    [         5, [5] ],
+    [         6, [2,3] ],
+    [     30107, [7,11,17,23] ],
+    [    115553, [115553] ],
+    [    123456, [2,2,2,2,2,2,3,643] ],
+    [    456789, [3,43,3541] ],
+    [ 174636000, [2,2,2,2,2,3,3,3,3,5,5,5,7,7,11] ],
+  );
+  my @nvals = map { $_->[0] } @testfactors;
+  is_deeply([map { scalar factor($_) } @nvals],
+            [map { scalar @{$_->[1]} } @testfactors],
+            "scalar factors(n) for @nvals");
+  is_deeply([map { [factor($_)] } @nvals],
+            [map { $_->[1] } @testfactors],
+            "factors(n) for @nvals");
+  is_deeply([map { scalar factor_exp($_) } @nvals],
+            [map { scalar linear_to_exp(@{$_->[1]}) } @testfactors],
+            "scalar factor_exp(n) for @nvals");
+  is_deeply([map { [factor_exp($_)] } @nvals],
+            [map { [linear_to_exp(@{$_->[1]})] } @testfactors],
+            "factor_exp(n) for @nvals");
+  #is_deeply([map { scalar factor($_) } 0..6,30107,174636000],
+  #          [1,0,1,1,2,1,2,4,15], "scalar_factor(n) for 0..6,30107,174636000");
+};
+
+subtest 'check factor and factor_exp outputs', sub {
+  foreach my $n (@testn) {
+    my @f = factor($n);
+    my $facstring = join(' * ',@f);
+    my($ispr,$prod,$inorder) = (1,1,1);
+    for my $f (@f) {
+      $ispr = 0 unless is_prime($f);
+      $prod *= $f;
+    }
+    for (1..$#f) { $inorder = 0 if $f[$_] < $f[$_-1]; }
+    ok($ispr && $inorder && $prod == $n, "factor($n): $n = $facstring, all sorted primes");
+
+    # Does factor_exp return the appropriate rearrangement?
+    is_deeply([factor_exp($n)], [linear_to_exp(@f)], "factor_exp($n)" );
+  }
+};
+
+
+
+subtest 'divisors', sub {
+  ####  divisors and scalar(divisors), simple divisor_sum
+  foreach my $dinfo (@testdivisors) {
+    my($n,@divisors) = @$dinfo;
+    my $nd = scalar @divisors;
+    is_deeply([scalar divisors($n),[divisors($n)]],
+              [scalar @divisors,\@divisors], "divisors($n)");
+
+    my $sum = 0;  $sum += $_ for @divisors;
+    is_deeply([divisor_sum($n,0),divisor_sum($n)],[$nd,$sum],"divisor_sum($n)");
+  }
+
+  ####  divisors with a second argument
+  is_deeply( [divisors(5040, 120)],
+             [1,2,3,4,5,6,7,8,9,10,12,14,15,16,18,20,21,24,28,30,35,36,40,42,45,48,56,60,63,70,72,80,84,90,105,112,120],
+             "divisors(5040, 120)" );
+  #is_deeply( [divisors("340282366920938463463374607431768211455", 5040)],
+  #           [1,3,5,15,17,51,85,255,257,641,771,1285,1923,3205,3855,4369],
+  #           "divisors(2^128-1, 5040)" );
+  is_deeply( [divisors("1208925819614629174706175", 128)],
+             [1,3,5,11,15,17,25,31,33,41,51,55,75,85,93,123],
+             "divisors(2^80-1, 128)" );
+  is_deeply( [ [divisors( 0,0)], [divisors( 0,1)],
+               [divisors( 1,0)], [divisors( 1,1)], [divisors( 1,2)],
+               [divisors(12,0)], [divisors(12,1)], [divisors(12,4)] ],
+             [ [], [],   [], [1], [1],  [], [1], [1,2,3,4] ],
+             "divisors for n 0,1,12 and k 0,1,x" );
+};
+
+
+subtest 'specific factoring algorithms', sub {
+  ####  test each of the underlying algorithms
+  extra_factor_test("trial_factor",  sub {Math::Prime::Util::trial_factor(shift)});
+  extra_factor_test("fermat_factor", sub {Math::Prime::Util::fermat_factor(shift)});
+  extra_factor_test("holf_factor",   sub {Math::Prime::Util::holf_factor(shift)});
+  extra_factor_test("squfof_factor", sub {Math::Prime::Util::squfof_factor(shift)});
+  extra_factor_test("pbrent_factor", sub {Math::Prime::Util::pbrent_factor(shift)});
+  extra_factor_test("prho_factor",   sub {Math::Prime::Util::prho_factor(shift)});
+  extra_factor_test("pminus1_factor",sub {Math::Prime::Util::pminus1_factor(shift)});
+  extra_factor_test("pplus1_factor", sub {Math::Prime::Util::pplus1_factor(shift)});
+  extra_factor_test("cheb_factor", sub {Math::Prime::Util::cheb_factor(shift)});
+  SKIP: {
+    skip "No lehman_factor in PP", 10 unless $usexs;
+    extra_factor_test("lehman_factor", sub {Math::Prime::Util::lehman_factor(shift)});
+  }
+  SKIP: {
+    skip "Old GMP", 10 if defined $Math::Prime::Util::GMP::VERSION && $Math::Prime::Util::GMP::VERSION < 0.22;
+    extra_factor_test("ecm_factor", sub {Math::Prime::Util::ecm_factor(shift)});
+  }
+
+  ok(!eval { Math::Prime::Util::trial_factor("18446744073709551616", "10foo"); 1 },
+     "trial_factor rejects invalid limit");
+  ok(!eval { Math::Prime::Util::pbrent_factor(91, "10foo"); 1 },
+     "pbrent_factor rejects invalid rounds");
+  ok(!eval { Math::Prime::Util::pbrent_factor(91, 4, "10foo"); 1 },
+     "pbrent_factor rejects invalid parameter");
+};
+
+subtest 'specific cases for factoring code coverage', sub {
+  is_deeply( [Math::Prime::Util::trial_factor(5514109)], [2203,2503], "trial factor 2203 * 2503" );
+  is_deeply( [Math::Prime::Util::trial_factor(1819015037140)], [2,2,5,7,7,1856137793], "trial_factor(1819015037140) fully factors");
+  is_deeply( [map { "$_" } Math::Prime::Util::trial_factor("553402322211286548450",1)],
+             [qw/2 3 3 5 5 1229782938247303441/],
+             "bigint trial_factor always removes 2, 3, and 5" );
+  is_deeply( [map { "$_" } Math::Prime::Util::trial_factor("000018446744073709551629",100)],
+             [qw/18446744073709551629/],
+             "bigint trial_factor canonicalizes an unchanged cofactor" );
+  is_deeply( [map { "$_" } Math::Prime::Util::trial_factor("74823443504107725093378623",2011)],
+             [qw/2011 37207082796672165635693/],
+             "bigint trial_factor using primes_small" );
+  is_deeply( [map { "$_" } Math::Prime::Util::trial_factor("74823443504107725093378623",2017)],
+             [qw/2011 2017 18446744073709551629/],
+             "bigint trial_factor using generated primes" );
+  SKIP: {
+    skip "holf_factor for 64-bit input", 1 unless $use64 || !$usexs;
+    is_deeply( [Math::Prime::Util::holf_factor(3747785838079,80000)], [1935281,1936559], "holf factor 1935281 * 1936559" );
+  }
+  SKIP: {
+    skip "fermat_factor full-UV arithmetic", 1 unless $use64 && $usexs;
+    is_deeply( [Math::Prime::Util::fermat_factor("18446743979220271189",10)],
+               [4294967279,4294967291], "fermat factor near UV_MAX" );
+  }
+  is_deeply( [Math::Prime::Util::pminus1_factor(166213)], [347,479], "p-1 factor 347 * 479" );
+  is_deeply( [Math::Prime::Util::pminus1_factor("18450931744652885087",100,1000)],
+             [4294976731,4295932877], "p-1 bigint stage 2 after native residue" );
+  SKIP: {
+    skip "p-1 tests for C code", 3 unless $usexs;
+    is_deeply( [Math::Prime::Util::pminus1_factor(899,20)], [29,31], "p-1 factor 29 * 31 with tiny B1" );
+    is_deeply( [Math::Prime::Util::pminus1_factor(667,1000)], [23,29], "p-1 factor 23 * 29 with small B1" );
+    is_deeply( [Math::Prime::Util::pminus1_factor(563777293,1000,20000)], [23099,24407], "p-1 factor 23099 * 24407 using stage 2" );
+  }
+  SKIP: {
+    skip "p+1 test for C code", 1 unless $usexs;
+    is_deeply( [Math::Prime::Util::pplus1_factor(11009,5)], [101,109], "p+1 exponent bit scan" );
+  }
+  # GMP still has some issues with this
+  #is_deeply( [Math::Prime::Util::cheb_factor("13581893559735945553",1500)], [3453481411,3932812123], "cheb factor 3453481411 * 3932812123" );
+  SKIP: {
+    skip "cheb_factor for 64-bit input", 1 unless $use64 || !$usexs;
+    is_deeply( [Math::Prime::Util::cheb_factor("2466600463243213733",1000)], [1552318819,1588978007], "cheb factor 1552318819 * 1588978007" );
+  }
+  SKIP: {
+    skip "cheb_factor native initial value", 1 unless $usexs;
+    my $uvmax = $use64 ? "18446744073709551615" : "4294967295";
+    is_deeply( [Math::Prime::Util::cheb_factor(221,100,$uvmax)], [13,17],
+               "cheb factor reduces its initial value modulo n" );
+  }
+  SKIP: {
+    skip "tinyecm64 C path", 4 unless $use64 && $usexs && !$usegmp;
+    is_deeply( [Math::Prime::Util::ecm_factor(1111,10,10,1)], [11,101], "tinyecm64 setup denominator factor" );
+    is_deeply( [Math::Prime::Util::ecm_factor("13356777177440210791",2000,0,3)], [3289045043,4060989437], "tinyecm64 64-bit Montgomery reduction" );
+    is_deeply( [Math::Prime::Util::ecm_factor("13356777177440210791",2000,40000,3)], [3289045043,4060989437], "tinyecm64 explicit B2 path" );
+    is_deeply( [Math::Prime::Util::ecm_factor("2949544710425713",500,600,30)], [7051211,418303283], "tinyecm64 stage 2 path" );
+  }
+};
+
+subtest '128-bit factoring', sub {
+  my $use128 = prime_get_config->{'xs_factor_bits'} >= 128;
+  plan skip_all => 'Only run with fast 128-bit factoring (GMP or XS)'
+    unless $usegmp || $use128;
+
+  # Unless noted, the times are measured on a 32-bit x86 Linode using _BitInt(128).
+  # The 64-bit MacBook M1 Pro is over 20x faster with the same code.
+
+  my @F = (
+   ["P-1",      qw/            36803912137803496523   4284736327   8589539549/],
+   ["SQUFOF",   qw/            36832540935240707603   4293801221   8578073143/],
+   # 2k/40k S1 and S2   About 0.07s each
+   ["ECM small",qw/           595424139679831880741  17380103011  34258953431/],
+   ["ECM small",qw/           594225194063012351347  17560455931  33838824937/],
+   # 128-bit semiprime found using p-1
+   ["128-bit",   qw/283587383656828693023910077800818570783 16647189274036065961 17035151038928128903/],
+  );
+  my @FE = (
+   # 10k/200k S1 and S2   About 0.5s each
+   ["ECM med",  qw/        1089212718153507466819331 1027240161683 1060329179857/],
+   ["ECM med",  qw/         633285935952110634787381  690039519251  917753140631/],
+   # 40k/800k S1 and S2   About 4s each
+   ["ECM large",qw/666990960260555102271878892149 593153825656687 1124482269876827/],
+   ["ECM large",qw/656453519625451131082760093587 609245576335859 1077485902439393/],
+   # 128-bit semiprime found in 2k and 10k, under 1s each
+   ["128-bit",   qw/202911193152450441348811714985016716279 13317945721813380433 15235922821047653063/],
+   ["128-bit",   qw/190679727396645892209093738603288294803 11380290391720129549 16755260264305494047/],
+   # 128-bit semiprime found in 40k, about 3s
+   ["128-bit",   qw/261494182449180232705536704374585802681 15834395446087662167 16514314255918738543/],
+  );
+  my @FEX = (
+   # 80k/1600k S1 and S2   About 12s on 32-bit, 0.5s on 64-bit M1
+   ["ECM large",qw/27472741160798616695873962979660569 99436968832429321 276282970844531089/],
+   ["ECM large",qw/840809497004077622751679943344853 25419935138988661 33076775861416673/],
+   # 100k/4000k S1 and S2   About 30s on 32-bit, 1.3s on 64-bit M1
+   ["ECM large",qw/24576794968578622952378370421223630191 3212192823439675819 7651095783926611789/],
+   ["ECM large",qw/28992672452459948542899787829179895803 3193923767889680941 9077446601556259783/],
+  );
+  for my $f (@F) {
+    my($name,$N,@factors) = @$f;
+    is_deeply([factor($N)], \@factors, "$N  ($name)");
+  }
+  for my $f (@FE) {
+    my($name,$N,@factors) = @$f;
+    is_deeply([factor($N)], \@factors, "$N  ($name)")  if $extra;
+  }
+  for my $f (@FEX) {
+    my($name,$N,@factors) = @$f;
+    is_deeply([factor($N)], \@factors, "$N  ($name)")  if $extra && ($use64 || $usegmp);
+  }
+};
+
+sub extra_factor_test {
+  my $fname = shift;
+  my $fsub = shift;
+  is_deeply( [ $fsub->(1)   ], [],        "$fname(1)" );
+  is_deeply( [ $fsub->(4)   ], [2, 2],    "$fname(4)" );
+  is_deeply( [ $fsub->(9)   ], [3, 3],    "$fname(9)" );
+  is_deeply( [ $fsub->(11)  ], [11],      "$fname(11)" );
+  is_deeply( [ $fsub->(25)  ], [5, 5],    "$fname(25)" );
+  is_deeply( [ $fsub->(30)  ], [2, 3, 5], "$fname(30)" );
+  is_deeply( [ $fsub->(210) ], [2,3,5,7], "$fname(210)" );
+  is_deeply( [ $fsub->(175) ], [5, 5, 7], "$fname(175)" );
+  is_deeply( [ $fsub->(403) ], [13, 31],  "$fname(403)" );
+  is_deeply( [ $fsub->(549900) ], [2,2,3,3,5,5,13,47],  "$fname(549900)" );
+}
+
+sub linear_to_exp {
+  my %exponents;
+  my @factors = grep { !$exponents{$_}++ } @_;
+  return (map { [$_, $exponents{$_}] } @factors);
+}
+
+subtest 'prime_omega and prime_bigomega', sub {
+  my @omegai = (qw/0 1 2 36 102 392 8593952 820681752040947471423/);
+  my @omegao = (qw/1 0 1 2  3   2   3       6/);
+  my @omegab = (qw/1 0 1 4  3   5   7       8/);
+  is_deeply([map { prime_omega($_)     } @omegai],\@omegao,"prime_omega(n)");
+  is_deeply([map { prime_bigomega($_)  } @omegai],\@omegab,"prime_bigomega(n)");
+  is_deeply([map {prime_omega('-'.$_)  } @omegai],\@omegao,"prime_omega(-n)");
+  is_deeply([map {prime_bigomega('-'.$_)}@omegai],\@omegab,"prime_bigomega(-n)");
+};
+
+subtest 'prime_signature', sub {
+  # Array context: exponents in descending order
+  my @sig0to15 = (
+    [1],[],[1],[1],[2],[1],[1,1],[1],[3],[2],[1,1],[1],[2,1],[1],[1,1],[1,1]
+  );
+  is_deeply( [map { [prime_signature($_)] } 0..15], \@sig0to15,
+             "prime_signature(0..15) array context" );
+
+  # Scalar context: smallest integer with the same signature (A025487)
+  is_deeply( [map { scalar prime_signature($_) } 0..15],
+             [2,0,2,2,4,2,6,2,8,4,6,2,12,2,6,6],
+             "prime_signature(0..15) scalar context" );
+
+  # Numbers with the same signature share the same scalar value
+  is( scalar prime_signature(12), 12, "prime_signature(12) scalar = 12" );
+  is( scalar prime_signature(18), 12, "prime_signature(18) scalar = 12 (same shape as 12)" );
+  is( scalar prime_signature(20), 12, "prime_signature(20) scalar = 12 (same shape as 12)" );
+
+  # A025487 fixed points: n == scalar prime_signature(n)
+  for my $n (2, 4, 6, 12, 24, 60, 120, 360) {
+    is( scalar prime_signature($n), $n, "A025487: prime_signature($n) scalar = $n" );
+  }
+
+  # 28-bit: 174636000 = 2^5 * 3^4 * 5^3 * 7^2 * 11
+  is_deeply( [prime_signature(174636000)], [5,4,3,2,1],
+             "prime_signature(174636000) = (5,4,3,2,1)" );
+  is( scalar prime_signature(174636000), 174636000,
+      "prime_signature(174636000) scalar = 174636000 (A025487 member)" );
+
+  # 40-bit: 926269344000 = 2^8 * 3^5 * 5^3 * 7^2 * 11 * 13 * 17
+  is_deeply( [prime_signature(926269344000)], [8,5,3,2,1,1,1],
+             "prime_signature(926269344000)" );
+  is( "" . scalar prime_signature(926269344000), 926269344000,
+      "prime_signature(926269344000) scalar is A025487 member" );
+
+  if ($use64) {
+    # 68-bit: 224409867525043200000 = 2^13 * 3^7 * 5^5 * 7^3 * 11^2 * 13 * 17 * 19 * 23
+    is_deeply( [prime_signature("224409867525043200000")], [13,7,5,3,2,1,1,1,1],
+               "prime_signature(68-bit) array context" );
+    is( "".scalar(prime_signature("224409867525043200000")),
+        "224409867525043200000",
+        "prime_signature(68-bit) scalar is A025487 member" );
+  }
+};
+
+subtest 'sopfr', sub {
+  # A001414 starting at n=1: sopfr(1)=0 (empty sum)
+  is_deeply( [map { sopfr($_) } 0..15],
+             [0,0,2,3,4,5,5,7,6,6,7,11,7,13,9,8],
+             "sopfr(0..15)" );
+
+  # Prime: sopfr(p) = p
+  is( sopfr(97),        97, "sopfr(97) = 97" );
+  is( sopfr(999999937), 999999937, "sopfr of large prime" );
+
+  # Prime power: sopfr(p^k) = k*p
+  is( sopfr(32),  10, "sopfr(2^5) = 10" );
+  is( sopfr(1024), 20, "sopfr(2^10) = 20" );
+
+  # Squarefree: sopfr(n) = sopf(n)
+  is( sopfr(30), 10, "sopfr(2*3*5) = 10" );
+
+  # 28-bit: 174636000 = 2^5*3^4*5^3*7^2*11 => 5*2+4*3+3*5+2*7+11 = 10+12+15+14+11 = 62
+  is( sopfr(174636000),   62, "sopfr(174636000)" );
+
+  # 40-bit: 926269344000 = 2^8*3^5*5^3*7^2*11*13*17 => 16+15+15+14+11+13+17 = 101
+  is( sopfr(926269344000), 101, "sopfr(926269344000)" );
+
+  if ($use64) {
+    # 68-bit: sopfr = 13*2+7*3+5*5+3*7+2*11+13+17+19+23 = 26+21+25+21+22+13+17+19+23 = 187
+    is( "".sopfr("224409867525043200000"), "187", "sopfr(68-bit smooth)" );
+  }
+};
+
+subtest 'sopf', sub {
+  # A008472 starting at n=1: sopf(1)=0
+  is_deeply( [map { sopf($_) } 0..15],
+             [0,0,2,3,2,5,5,7,2,3,7,11,5,13,9,8],
+             "sopf(0..15)" );
+
+  # Prime: sopf(p) = p
+  is( sopf(97),        97, "sopf(97) = 97" );
+  is( sopf(999999937), 999999937, "sopf of large prime" );
+
+  # Prime power: sopf(p^k) = p (only distinct primes)
+  is( sopf(32),   2, "sopf(2^5) = 2" );
+  is( sopf(1024),  2, "sopf(2^10) = 2" );
+
+  # Squarefree: sopf(n) = sopfr(n)
+  is( sopf(30), 10, "sopf(2*3*5) = 10" );
+
+  # 28-bit: 174636000 = 2^5*3^4*5^3*7^2*11 => 2+3+5+7+11 = 28
+  is( sopf(174636000),   28, "sopf(174636000)" );
+
+  # 40-bit: 926269344000 = 2^8*3^5*5^3*7^2*11*13*17 => 2+3+5+7+11+13+17 = 58
+  is( sopf(926269344000), 58, "sopf(926269344000)" );
+
+  if ($use64) {
+    # 68-bit: 2+3+5+7+11+13+17+19+23 = 100
+    is( "".sopf("224409867525043200000"), "100", "sopf(68-bit smooth)" );
+  }
+};

@@ -27,3 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: EmbarkStudios/cargo-deny-action@v2
+  miri:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with: { components: miri }
+      # rust-toolchain.toml pins stable, so the nightly toolchain is named on every command.
+      - run: cargo +nightly miri setup
+      - run: cargo +nightly miri test --lib

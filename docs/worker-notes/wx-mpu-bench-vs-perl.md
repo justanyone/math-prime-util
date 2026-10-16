@@ -9,3 +9,6 @@ Added all nine existing benchmark IDs, including both root degrees. XS is missin
 Compat int: 12 passed. Property int: 9 passed. The gate is running. Added regression cases for invalid samples, exact inputs and counts, and concurrent sample isolation.
 Tooling checks found a timing-sensitive fake-data assertion. Increased fake Rust times so the report-only threshold case is deterministic. All fixture and property checks remain unchanged.
 The explicit tooling regression suite passes through tools/test.sh. It also checks u64 input precision, backend/version refusal, failed Cargo runs, and cleanup. Final gate is green.
+The plain user command correctly refuses the absent MPU install without network access. Hardened sample validation for non-object JSON. Waiting for the optimized real Rust benchmark build.
+Library, fixture, and STATUS files were not changed. The only Rust test addition is an ignored tooling entry point, so default fixture tests still need no Perl.
+Finished: the real offline Rust wrapper ran all 36 cases, sample validation passed, tooling regressions passed, and tools/gate.sh printed == gate: green. Real C timing remains unrun because local MPU 0.75 XS is absent; no network was used.

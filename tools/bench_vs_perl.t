@@ -10,7 +10,7 @@ require "$FindBin::Bin/bench_vs_perl.pl";
 
 is_deeply([sample_iterations({iters => [2, 3], times => [8, 18]})],
     [5, 5.2], 'weighted nanoseconds use the exact measured call count');
-for my $bad ({}, {iters => [], times => []}, {iters => [0], times => [1]},
+for my $bad (undef, [], {}, {iters => [], times => []}, {iters => [0], times => [1]},
     {iters => [1], times => []}, {iters => ['NaN'], times => [1]},
     {iters => [1], times => [-1]}) {
     eval { sample_iterations($bad) };

@@ -24,6 +24,7 @@ sub read_text {
 
 sub sample_iterations {
     my ($sample) = @_;
+    die "Invalid Criterion sample\n" unless ref($sample) eq 'HASH';
     my $iters = $sample->{iters};
     my $times = $sample->{times};
     die "Invalid Criterion sample\n" unless ref($iters) eq 'ARRAY'

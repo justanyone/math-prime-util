@@ -3,7 +3,7 @@ mod common;
 use common::{each, each_may_panic};
 use math_prime_util::*;
 
-fn list(values: Vec<u64>) -> String {
+fn list(values: &[u64]) -> String {
     values
         .iter()
         .map(u64::to_string)
@@ -27,7 +27,7 @@ fn primes_oracle() {
             return;
         }
         let (lo, hi) = bounds(c);
-        c.check(Some(list(primes(lo, hi))));
+        c.check(Some(list(&primes(lo, hi))));
     });
 }
 #[test]
@@ -45,14 +45,14 @@ fn sieve_range_oracle() {
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             return;
         }
-        c.check(Some(list(sieve_range(c.arg(0), c.arg(1), c.arg(2)))));
+        c.check(Some(list(&sieve_range(c.arg(0), c.arg(1), c.arg(2)))));
     });
 }
 #[test]
 fn sieve_prime_cluster_oracle() {
     each_may_panic("sieve", "sieve_prime_cluster", |c| {
         let offsets: Vec<u64> = c.args[2..].iter().map(|v| v.parse().unwrap()).collect();
-        Some(list(sieve_prime_cluster(c.arg(0), c.arg(1), &offsets)))
+        Some(list(&sieve_prime_cluster(c.arg(0), c.arg(1), &offsets)))
     });
 }
 #[test]

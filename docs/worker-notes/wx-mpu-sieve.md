@@ -9,3 +9,5 @@ Focused compatibility and property tests launched offline. Next check formatting
 Formatting completed. Focused tests and gate are still running; the gate waits on the Cargo build lock. Exact C port remains blocked by absent sources.
 Gate found numeric separator lints and an infallible segment-size conversion doc lint. Corrected both; also widened the prime-sum triangular-number addition before adding one.
 All eight compatibility tests and four property/regression tests passed offline. Added direct cache state tests for duplicate requests, growth, reset, retained snapshots, and Send + Sync.
+Direct cache-state test passed. Fixed benchmark semicolons and made the fixture list helper borrow a slice. Final gate next; exact wheel and cluster C ports remain incomplete.
+Final verification is in progress. All focused tests passed; no oracle generation was attempted because tools and fixtures are read-only and network use is prohibited.

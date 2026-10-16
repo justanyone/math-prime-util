@@ -39,6 +39,15 @@ fn check(f: &str) {
         count += 1;
         csrand(&unhex(&c.args[0]));
         match f {
+            "mixed_seq" => {
+                let a = irand();
+                let b = irand64();
+                let bytes = hex(&random_bytes(3));
+                let d = irand32();
+                let bits = urandomb(5);
+                let last = irand();
+                c.check(Some(format!("{a} {b} {bytes} {d} {bits} {last}")));
+            }
             "irand" | "srand42_irand" | "blake_irand" => c.check(Some(irand())),
             "irand32" => c.check(Some(irand32())),
             "irand64" | "tag_irand64" => c.check(Some(irand64())),
@@ -109,6 +118,7 @@ fn check(f: &str) {
                 c.check(Some(irand()));
             }
             "blake_drand_after_irand" => {
+                random_bytes(7);
                 irand();
                 floats(&c, &[drand(1.0)]);
             }
@@ -182,6 +192,7 @@ fn rand_oracle() {
 }
 #[test]
 fn random_bytes_oracle() {
+    check("mixed_seq");
     for f in [
         "random_bytes",
         "random_bytes_seq",
@@ -208,4 +219,33 @@ fn urandomm_oracle() {
 #[test]
 fn urandomr_oracle() {
     check("urandomr");
+}
+
+#[test]
+fn cipher_vectors() {
+    let plain = "Now I’m not gonna make a lot of extravagant claims for this little machine. Sure, it’ll change your whole life for the better, but that’s all.".as_bytes();
+    let mut count = 0;
+    for c in common::load("random")
+        .into_iter()
+        .filter(|c| c.func.starts_with("cipher_"))
+    {
+        count += 1;
+        csrand(&unhex(&c.args[0]));
+        let stream = random_bytes(c.arg(1));
+        assert_eq!(stream.len(), plain.len());
+        let cipher: Vec<_> = stream.iter().zip(plain).map(|(a, b)| a ^ b).collect();
+        if c.func.ends_with("_L") {
+            c.check(Some(u32::from_le_bytes(cipher[..4].try_into().unwrap())));
+        } else {
+            c.check(Some(hex(&cipher)));
+        }
+        csrand(&unhex(&c.args[0]));
+        let decoded: Vec<_> = random_bytes(cipher.len())
+            .iter()
+            .zip(cipher)
+            .map(|(a, b)| a ^ b)
+            .collect();
+        assert_eq!(decoded, plain);
+    }
+    assert_eq!(count, 6);
 }

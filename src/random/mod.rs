@@ -244,12 +244,14 @@ pub fn rand(limit: f64) -> f64 {
 
 /// Returns stream bytes. MPU `csprng.c`: `csprng_rand_bytes`.
 /// # Panics
+/// Panics if `len` exceeds MPU's limit of 2,147,483,646 bytes.
 /// Panics if an unseeded thread cannot read OS entropy.
 /// ```
 /// math_prime_util::srand(15);
 /// assert_eq!(math_prime_util::random_bytes(4), [0x54, 0x6d, 0x61, 0x08]);
 /// ```
 pub fn random_bytes(len: usize) -> Vec<u8> {
+    assert!(len <= 2_147_483_646, "byte count exceeds MPU limit");
     let mut bytes = vec![0; len];
     if len > 0 {
         with_stream(|stream| stream.fill(&mut bytes));
@@ -262,12 +264,15 @@ pub fn random_bytes(len: usize) -> Vec<u8> {
 /// # Errors
 /// Returns an I/O error if neither device can supply the requested bytes.
 /// Platforms without these devices return an error. No seed state is changed.
+/// # Panics
+/// Panics if `len` exceeds MPU's limit of 2,147,483,646 bytes.
 /// ```
 /// # fn main() -> std::io::Result<()> {
 /// assert_eq!(math_prime_util::entropy_bytes(0)?, Vec::<u8>::new());
 /// # Ok(()) }
 /// ```
 pub fn entropy_bytes(len: usize) -> io::Result<Vec<u8>> {
+    assert!(len <= 2_147_483_646, "byte count exceeds MPU limit");
     let mut bytes = vec![0; len];
     if len == 0 {
         return Ok(bytes);

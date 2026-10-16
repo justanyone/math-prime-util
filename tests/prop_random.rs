@@ -80,3 +80,30 @@ fn excessive_bits() {
 fn zero_modulus() {
     urandomm(0);
 }
+#[test]
+#[should_panic(expected = "byte count exceeds MPU limit")]
+fn excessive_random_bytes() {
+    random_bytes(2_147_483_647);
+}
+#[test]
+#[should_panic(expected = "byte count exceeds MPU limit")]
+fn excessive_entropy_bytes() {
+    let _ = entropy_bytes(2_147_483_647);
+}
+#[test]
+fn empty_and_short_seeds_repeat() {
+    for length in 0..=41 {
+        let seed = vec![3; length];
+        csrand(&seed);
+        let expected = random_bytes(1030);
+        csrand(&seed);
+        assert_eq!(random_bytes(1030), expected);
+    }
+}
+#[test]
+fn long_seeds_use_first_forty_bytes() {
+    csrand(&[9; 40]);
+    let expected = random_bytes(1050);
+    csrand(&[9; 100]);
+    assert_eq!(random_bytes(1050), expected);
+}

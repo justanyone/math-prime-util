@@ -85,3 +85,28 @@ fn input_validation() {
         assert!(std::panic::catch_unwind(|| toint(invalid)).is_err());
     }
 }
+
+#[test]
+fn fused_cancellation_and_signed_division_edges() {
+    assert_eq!(muladdint(i128::MAX, 2, -i128::MAX), Some(i128::MAX));
+    assert_eq!(mulsubint(i128::MIN, -1, 1), Some(i128::MAX));
+    assert_eq!(mulsubint(i128::MIN, 1, 0), Some(i128::MIN));
+    assert_eq!(muladdint(i128::MAX, i128::MAX, i128::MIN), None);
+    for (a, b) in [
+        (i128::MIN, 1),
+        (i128::MIN, i128::MAX),
+        (i128::MAX, i128::MIN),
+        (1, i128::MIN),
+        (-1, i128::MIN),
+    ] {
+        for op in [divrem, tdivrem, fdivrem, cdivrem] {
+            let (q, r) = op(a, b).unwrap();
+            // Identity can need one extra bit in its intermediate product.
+            assert_eq!(muladdint(q, b, r), Some(a));
+            assert!(r.unsigned_abs() < b.unsigned_abs());
+        }
+    }
+    assert_eq!(toint("1e-1000"), Some(0));
+    assert_eq!(toint("1e1000"), None);
+    assert_eq!(toint("0e1000"), Some(0));
+}

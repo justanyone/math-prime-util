@@ -347,12 +347,10 @@ pub fn signint(n: i128) -> i128 {
 /// assert_eq!(cmpint(2,3),-1);
 /// ```
 pub fn cmpint(a: i128, b: i128) -> i8 {
-    if a < b {
-        -1
-    } else if a == b {
-        0
-    } else {
-        1
+    match a.cmp(&b) {
+        core::cmp::Ordering::Less => -1,
+        core::cmp::Ordering::Equal => 0,
+        core::cmp::Ordering::Greater => 1,
     }
 }
 

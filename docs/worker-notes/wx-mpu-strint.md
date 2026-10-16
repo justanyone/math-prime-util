@@ -8,3 +8,4 @@ Confirmed floor, ceiling, truncating and Euclidean division differ. Shift counts
 Wrote the public helpers and exact decimal parser. Generating compatibility tests next; fixtures contain extra powint/logint cases owned by the int module.
 Focused compatibility run started offline. Added algebraic, overflow, validation and shift tests plus criterion benchmarks. Helpers have no shared state or launch paths.
 About five minutes remain. Compatibility passes 33 of 34 tests; checking the fromdigits default-base mismatch, then running properties and the full gate. Fixed fused arithmetic cancellation overflow.
+All 34 digit oracle tests and six property/boundary tests pass offline. Added four predicate oracle tests using the existing combinat fixture. First gate found comparison-chain lint; corrected it.

@@ -4,8 +4,6 @@ use common::Case;
 use math_prime_util::digits::*;
 
 fn run(name: &str, call: impl Fn(&Case) -> Option<String>) {
-    static HOOK: std::sync::Once = std::sync::Once::new();
-    HOOK.call_once(|| std::panic::set_hook(Box::new(|_| {})));
     common::each("digits", name, |c| {
         // Skip bases above u64::MAX for all native base-taking functions.
         if matches!(
@@ -32,11 +30,13 @@ fn run(name: &str, call: impl Fn(&Case) -> Option<String>) {
         // Skip bigint arguments or results outside the i128/u64 API.
         // Each skipped function and argument is recorded by this comment
         // and the fixture case itself; no signed i64 case is skipped.
-        if c.args.iter().any(|a| {
-            a.parse::<i128>().is_err()
-                && a.bytes()
-                    .all(|b| b.is_ascii_digit() || b == b'-' || b == b'+')
-        }) {
+        if !matches!(name, "sumdigits" | "fromdigits" | "toint")
+            && c.args.iter().any(|a| {
+                a.parse::<i128>().is_err()
+                    && a.bytes()
+                        .all(|b| b.is_ascii_digit() || b == b'-' || b == b'+')
+            })
+        {
             return;
         }
         if c.result.as_ref().is_some_and(|s| {
@@ -268,6 +268,10 @@ fn sumdigits_oracle() {
 #[test]
 fn fromdigits_oracle() {
     run("fromdigits", |c| {
+        // The shared loader drops the empty first argument in " 10".
+        if c.args == ["10"] && c.result.as_deref() == Some("0") {
+            return fromdigits(&[], 10).map(|v| v.to_string());
+        }
         let b = base(c);
         let d: Vec<_> = c.args[0]
             .chars()
@@ -311,4 +315,41 @@ fn fromzeckendorf_oracle() {
             Ok(v) => c.check(v),
         }
     });
+}
+
+fn predicate_oracle(name: &str, call: impl Fn(&[i128]) -> bool) {
+    common::each("combinat", name, |c| {
+        // Skip is_divisible varargs: the Rust helper takes one divisor.
+        if name == "is_divisible" && c.args.len() != 2 {
+            return;
+        }
+        // Skip is_odd, is_even, is_divisible and is_congruent bigint
+        // arguments outside i128. Signed i64 cases are all supported.
+        let Ok(args) = c
+            .args
+            .iter()
+            .map(|s| s.parse())
+            .collect::<Result<Vec<i128>, _>>()
+        else {
+            return;
+        };
+        c.check(Some(u8::from(call(&args))));
+    });
+}
+
+#[test]
+fn is_odd_oracle() {
+    predicate_oracle("is_odd", |a| is_odd(a[0]));
+}
+#[test]
+fn is_even_oracle() {
+    predicate_oracle("is_even", |a| is_even(a[0]));
+}
+#[test]
+fn is_divisible_oracle() {
+    predicate_oracle("is_divisible", |a| is_divisible(a[0], a[1]));
+}
+#[test]
+fn is_congruent_oracle() {
+    predicate_oracle("is_congruent", |a| is_congruent(a[0], a[1], a[2]));
 }

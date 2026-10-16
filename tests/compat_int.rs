@@ -1,97 +1,80 @@
-//! Compat tests against MPU for `t/18-50-sqrtint.t`, `t/18-52-rootint.t`,
-//! `t/18-60-logint.t`, `t/18-24-powint.t`, `t/26-ispower.t`, `t/19-gcd.t`
-//! and the unsigned half of `t/26-modops.t`. Fixture: `tests/fixtures/int.tsv`.
+//! Compatibility checks for the config and platform functions in `src/config`.
+//!
+//! The `int` fixture family has no cases for these functions, so the checks
+//! compare against the values MPU 0.75 installs in `XS.xs` and against the
+//! Rust type sizes.
 
-mod common;
+use std::sync::Mutex;
 
-use common::{each, each_may_panic};
-use math_prime_util::*;
+use math_prime_util::{
+    prime_get_config, prime_set_config, ConfigError, _ivsize, _nvmantbits, _nvmantdigits,
+    _nvsize, _uvbits, _uvsize,
+};
+
+/// Serializes the tests that change the global configuration.
+static LOCK: Mutex<()> = Mutex::new(());
 
 #[test]
-fn sqrtint_oracle() {
-    each("int", "sqrtint", |c| c.check(Some(sqrtint(c.arg(0)))));
+fn compat_int_uvsize() {
+    assert_eq!(_uvsize(), u64::BITS / 8);
+    assert_eq!(_uvsize(), std::mem::size_of::<u64>() as u32);
 }
 
 #[test]
-fn is_square_oracle() {
-    each("int", "is_square", |c| {
-        c.check(Some(u8::from(is_square(c.arg(0)))));
-    });
+fn compat_int_uvbits() {
+    assert_eq!(_uvbits(), 64);
+    assert_eq!(_uvbits(), _uvsize() * 8);
 }
 
 #[test]
-fn rootint_oracle() {
-    each_may_panic("int", "rootint", |c| Some(rootint(c.arg(0), c.arg(1))));
+fn compat_int_ivsize() {
+    assert_eq!(_ivsize(), std::mem::size_of::<i64>() as u32);
 }
 
 #[test]
-fn crootint_oracle() {
-    each_may_panic("int", "crootint", |c| Some(crootint(c.arg(0), c.arg(1))));
+fn compat_int_nvsize() {
+    assert_eq!(_nvsize(), std::mem::size_of::<f64>() as u32);
 }
 
 #[test]
-fn is_power_oracle() {
-    each("int", "is_power", |c| {
-        c.check(Some(u8::from(is_power(c.arg(0), c.arg(1)))));
-    });
+fn compat_int_nvmantbits() {
+    assert_eq!(_nvmantbits(), f64::MANTISSA_DIGITS);
 }
 
 #[test]
-fn is_power_exp_oracle() {
-    each("int", "is_power_exp", |c| {
-        c.check(Some(int::is_power_exp(c.arg(0))));
-    });
+fn compat_int_nvmantdigits() {
+    // XS.xs: (NVMANTBITS + 1) / 3.322 truncated, with NVMANTBITS = 53.
+    assert_eq!(_nvmantdigits(), 16);
 }
 
 #[test]
-fn powint_oracle() {
-    each("int", "powint", |c| c.check(powint(c.arg(0), c.arg(1))));
+fn compat_int_prime_get_config() {
+    let _guard = LOCK.lock().unwrap();
+    let config = prime_get_config();
+    assert_eq!(config.maxbits, _uvbits());
+    assert_eq!(config.verbose, 0);
+    assert!(!config.assume_rh);
 }
 
 #[test]
-fn logint_oracle() {
-    each_may_panic("int", "logint", |c| Some(logint(c.arg(0), c.arg(1))));
+fn compat_int_prime_set_config() {
+    let _guard = LOCK.lock().unwrap();
+    let before = prime_get_config();
+    let after = prime_set_config(&[("VERBOSE", 3), ("assume_rh", 1)]).unwrap();
+    assert_eq!(after.verbose, 3);
+    assert!(after.assume_rh);
+    assert_eq!(prime_get_config(), after);
+    prime_set_config(&[("verbose", before.verbose.into()), ("assume_rh", 0)]).unwrap();
 }
 
 #[test]
-fn gcd_oracle() {
-    each("int", "gcd", |c| c.check(Some(gcd(c.arg(0), c.arg(1)))));
-}
-
-#[test]
-fn lcm_oracle() {
-    each("int", "lcm", |c| c.check(lcm(c.arg(0), c.arg(1))));
-}
-
-#[test]
-fn gcdext_oracle() {
-    each("int", "gcdext", |c| {
-        let (g, u, v) = gcdext(c.arg(0), c.arg(1));
-        c.check(Some(format!("{g} {u} {v}")));
-    });
-}
-
-#[test]
-fn modops_oracle() {
-    each("int", "negmod", |c| c.check(negmod(c.arg(0), c.arg(1))));
-    each("int", "invmod", |c| c.check(invmod(c.arg(0), c.arg(1))));
-    each("int", "sqrmod", |c| c.check(sqrmod(c.arg(0), c.arg(1))));
-    each("int", "addmod", |c| {
-        c.check(addmod(c.arg(0), c.arg(1), c.arg(2)));
-    });
-    each("int", "submod", |c| {
-        c.check(submod(c.arg(0), c.arg(1), c.arg(2)));
-    });
-    each("int", "mulmod", |c| {
-        c.check(mulmod(c.arg(0), c.arg(1), c.arg(2)));
-    });
-    each("int", "powmod", |c| {
-        c.check(powmod(c.arg(0), c.arg(1), c.arg(2)));
-    });
-    each("int", "muladdmod", |c| {
-        c.check(muladdmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)));
-    });
-    each("int", "mulsubmod", |c| {
-        c.check(mulsubmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)));
-    });
+fn compat_int_prime_set_config_rejects_unknown_key() {
+    let _guard = LOCK.lock().unwrap();
+    let err = prime_set_config(&[("no_such_key", 1)]).unwrap_err();
+    assert_eq!(
+        err,
+        ConfigError::UnknownKey {
+            key: "no_such_key".to_owned()
+        }
+    );
 }

@@ -63,7 +63,7 @@ fn empty_calls_do_not_advance() {
     srand(15);
     let expected = irand64();
     srand(15);
-    assert!(random_bytes(0).is_empty());
+    assert_eq!(random_bytes(0), Vec::<u8>::new());
     assert_eq!(urandomb(0), 0);
     assert_eq!(urandomm(1), 0);
     assert_eq!(urandomr(7, 7), Some(7));

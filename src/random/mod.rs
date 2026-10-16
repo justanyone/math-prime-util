@@ -1,4 +1,4 @@
-//! MPU's ChaCha20 random stream with one state per thread.
+//! MPU's `ChaCha20` random stream with one state per thread.
 //!
 //! Seeded calls match MPU 0.75 on a 64-bit host. Seeds are not shared between
 //! threads. The first draw on a thread reads OS entropy. Reseed after a fork.

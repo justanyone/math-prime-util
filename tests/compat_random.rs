@@ -33,6 +33,7 @@ fn floats(c: &Case, values: &[f64]) {
         );
     }
 }
+#[allow(clippy::too_many_lines)] // Keep the fixture dispatch in one match.
 fn check(f: &str) {
     let mut count = 0;
     for c in common::load("random").into_iter().filter(|c| c.func == f) {

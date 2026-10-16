@@ -78,7 +78,7 @@ for my $name (qw(sqrtint rootint3 rootint7 is_power_exp logint10 gcd mulmod powm
         my $dir = "$base/$group/$name/$n/new";
         make_path($dir);
         open my $fh, '>', "$dir/sample.json" or die $!;
-        print {$fh} encode_json({iters => [2, 3], times => [2000, 3000]});
+        print {$fh} encode_json({iters => [2, 3], times => [2000000000, 3000000000]});
         close $fh;
     }
 }

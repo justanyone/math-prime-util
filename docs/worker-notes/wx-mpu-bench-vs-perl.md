@@ -6,3 +6,5 @@ MPU is not installed on this host. Focused tests are running offline. Use isolat
 Checked the existing int tests and benches. The reference submodule is empty; the comparison must use the installed XS module without network bootstrap.
 Added the Perl driver and a Cargo wrapper. Private manifests enable Criterion without changing Cargo.toml; private sample paths prevent duplicate launches from mixing results.
 Added all nine existing benchmark IDs, including both root degrees. XS is missing locally; add offline regression checks with fake processes, then verify the real Rust runner and gate.
+Compat int: 12 passed. Property int: 9 passed. The gate is running. Added regression cases for invalid samples, exact inputs and counts, and concurrent sample isolation.
+Tooling checks found a timing-sensitive fake-data assertion. Increased fake Rust times so the report-only threshold case is deterministic. All fixture and property checks remain unchanged.

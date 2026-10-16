@@ -8,6 +8,7 @@ fn list<T: Display>(a: impl IntoIterator<Item = T>) -> String {
         .collect::<Vec<_>>()
         .join(" ")
 }
+#[allow(clippy::too_many_lines)] // One dispatch arm per oracle function.
 fn oracle(name: &str) {
     let cases = common::load("vec");
     let mut checked = 0;

@@ -44,8 +44,11 @@ fn empty_and_overflow() {
 fn windows_and_extraction() {
     assert!(std::panic::catch_unwind(|| vecwindow(&[1], 0, 1, |_| [1])).is_err());
     assert!(std::panic::catch_unwind(|| vecwindow(&[1], 1, 0, |_| [1])).is_err());
-    assert!(vecwindow(&[1], 1, 2, |_| [1]).is_empty());
-    assert_eq!(vecwindow(&[1, 2, 3, 4], 2, 2, |w| w.to_vec()), [1, 2, 3, 4]);
+    assert_eq!(vecwindow(&[1], 1, 2, |_| [1]), [] as [i32; 0]);
+    assert_eq!(
+        vecwindow(&[1, 2, 3, 4], 2, 2, <[i32]>::to_vec),
+        [1, 2, 3, 4]
+    );
     assert_eq!(
         vecextract(&[1, 2], VecSelection::Indices(&[-1, -3, 2, 0])),
         [Some(2), None, None, Some(1)]

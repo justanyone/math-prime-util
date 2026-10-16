@@ -9,3 +9,4 @@ Implementation is now written. Initial generator was truncated by the command in
 About five minutes remain: focused oracle test started; added algebraic, concurrency, duplicate-call, callback, and validation regressions plus benchmarks.
 Focused tests found mex validation and Perl scalar spelling differences. Fixed validation; named unrepresentable string skips. Property tests passed.
 All 47 compatibility tests passed. All 7 property/regression tests passed. Fixed Clippy Copy and byte-mask findings; running gate again.
+Gate cleared production Clippy checks. Fixed benchmark macro lint and focused test formatting findings; next gate run includes MSRV and all docs.

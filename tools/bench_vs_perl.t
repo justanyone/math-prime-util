@@ -38,6 +38,9 @@ my %expected = (
 for my $name (sort keys %expected) {
     is(scalar xs_call($name, 1000003)->(), $expected{$name}, "$name uses the Rust arguments");
 }
+is(scalar xs_call('powmod', '18446744073709551557')->(),
+    'powmod:18446744073709539212:18446744073709551556:18446744073709551557',
+    'large inputs retain all 64 bits in Perl arithmetic');
 my $calls = 0;
 ok(time_xs(sub { ++$calls }, 17) > 0, 'monotonic timer advances');
 is($calls, 17, 'XS loop runs the exact count');
@@ -55,9 +58,9 @@ sub write_text {
 }
 write_text("$tmp/Math/Prime/Util.pm", <<'MODULE');
 package Math::Prime::Util;
-our $VERSION = '0.75';
-sub prime_get_config { return { xs => 1, maxbits => 64 } }
-sub prime_set_config { }
+our $VERSION = $ENV{BENCH_TEST_VERSION} // '0.75';
+sub prime_get_config { return { xs => !($ENV{BENCH_TEST_NO_XS} // 0), maxbits => 64 } }
+sub prime_set_config { die 'GMP was not disabled' unless @_ == 2 && $_[0] eq 'gmp' && $_[1] == 0 }
 sub AUTOLOAD { return 1 }
 1;
 MODULE
@@ -68,6 +71,7 @@ use warnings;
 use File::Path qw(make_path);
 use JSON::PP qw(encode_json);
 die 'wrong command' unless join(' ', @ARGV) =~ /bench --offline --locked .*--output-format bencher/;
+exit 3 if $ENV{BENCH_TEST_CARGO_FAIL};
 my $base = $ENV{CRITERION_HOME};
 open my $log, '>>', $ENV{BENCH_TEST_LOG} or die $!;
 print {$log} "$base\n";
@@ -112,5 +116,27 @@ for my $i (1 .. 2) {
     is(scalar @rows, 36, 'all workload rows are present');
     like($output, qr/1\.2x bar/, 'performance bar is reported');
     like($output, qr/above/, 'slow ratios do not fail the command');
+}
+for my $path (@paths) {
+    ok(!-d $path, 'private samples are cleaned after success');
+}
+for my $case (
+    ['BENCH_TEST_VERSION', '0.74', qr/Need Math::Prime::Util 0.75/],
+    ['BENCH_TEST_NO_XS', '1', qr/Need the 64-bit MPU XS backend/],
+    ['BENCH_TEST_CARGO_FAIL', '1', qr/Rust benchmark failed/],
+) {
+    local $ENV{$case->[0]} = $case->[1];
+    my $pid = fork();
+    die $! unless defined $pid;
+    if (!$pid) {
+        open STDOUT, '>', "$tmp/failure-output" or die $!;
+        open STDERR, '>', "$tmp/failure-error" or die $!;
+        exec $^X, "$FindBin::Bin/bench_vs_perl.pl", 'int';
+        die $!;
+    }
+    waitpid($pid, 0);
+    isnt($?, 0, "$case->[0] fails with no ratio report");
+    like(read_text("$tmp/failure-error"), $case->[2], 'failure names its cause');
+    unlike(read_text("$tmp/failure-output"), qr/Rust ns/, 'no partial report on failure');
 }
 done_testing();

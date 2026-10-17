@@ -4,3 +4,4 @@ The checkout is the base, so candidate conclusions use the digest and targeted g
 Will write a FAIL review for unmet acceptance criteria, then run the required available checks.
 Confirmed zero-count oracle mismatch and missing C fast paths; wrote FAIL with four open findings, including removed tests and incomplete ports. Next run focused checks and gate on the base only.
 The initial name filter selected no tests; corrected to tools/test.sh tests/compat_arith.rs, which passed all 15 base tests. Gate is running; candidate mismatch remains established by its diff and committed oracle.
+Gate passed fmt, clippy, and MSRV; its full test phase is still in compat_count. Review is complete, and no candidate source or existing tests were modified.

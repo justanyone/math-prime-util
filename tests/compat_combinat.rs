@@ -36,20 +36,20 @@ fn fubini_oracle() {
 #[test]
 fn factorial_oracle() {
     each("combinat", "factorial", |c| {
-        check_native(c, |a| factorial(a[0]))
+        check_native(c, |a| factorial(a[0]));
     });
 }
 
 #[test]
 fn multifactorial_oracle() {
     each("combinat", "multifactorial", |c| {
-        check_native(c, |a| multifactorial(a[0], a[1]))
+        check_native(c, |a| multifactorial(a[0], a[1]));
     });
 }
 
 #[test]
 fn subfactorial_oracle() {
     each("combinat", "subfactorial", |c| {
-        check_native(c, |a| subfactorial(a[0]))
+        check_native(c, |a| subfactorial(a[0]));
     });
 }

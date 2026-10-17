@@ -6,7 +6,7 @@ use math_prime_util::{factorial, fubini, multifactorial, subfactorial};
 fn bench_combinat(c: &mut Criterion) {
     c.bench_function("factorial/20", |b| b.iter(|| factorial(black_box(20))));
     c.bench_function("subfactorial/20", |b| {
-        b.iter(|| subfactorial(black_box(20)))
+        b.iter(|| subfactorial(black_box(20)));
     });
     c.bench_function("multifactorial/33/2", |b| {
         b.iter(|| multifactorial(black_box(33), black_box(2)));

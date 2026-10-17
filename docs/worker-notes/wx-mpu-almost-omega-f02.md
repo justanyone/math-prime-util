@@ -14,3 +14,4 @@ Shared build lock has not cleared. Started the focused oracle tests in a worktre
 Offline validation remains running. No fixture or tool changes were made; all test cases outside the native u64 API are explicitly skipped.
 About five minutes remain. Both Cargo target directories still have pending builds, so no validation result is available yet.
 Formatting passes. Gate and focused tests remain pending behind Cargo compilation; native count recursion currently omits the C prime-count cache optimization.
+Independent compilation found u32/u64 mismatches at is_almost_prime calls; fixed with lossless conversions and restarted focused tests.

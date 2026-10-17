@@ -627,7 +627,7 @@ proptest! {
     #[test]
     fn almost_omega_bounds(k in 1_u32..9, n in 1_u64..150) {
         let value=nth_almost_prime(k,n).unwrap();
-        prop_assert!(is_almost_prime(k,value));
+        prop_assert!(is_almost_prime(u64::from(k),value));
         prop_assert!(nth_almost_prime_lower(k,n).unwrap()<=value);
         prop_assert!(almost_prime_count_upper(k,value)>=n);
         prop_assert!(nth_almost_prime_approx(k,n).is_some());

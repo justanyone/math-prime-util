@@ -76,7 +76,7 @@ pub fn nth_almost_prime(k: u32, n: u64) -> Option<u64> {
     }
     let lo = super::nth_almost_prime_lower(k, n)?;
     let mut hi = inverse(lo, 0, n, |x| exact_count(k, x));
-    while !crate::is_almost_prime(k, hi) {
+    while !crate::is_almost_prime(u64::from(k), hi) {
         hi -= 1;
     }
     Some(hi)
@@ -128,18 +128,18 @@ fn interpolate_approx(k: u32, n: u64) -> u64 {
     if count < n {
         while count < n {
             guess += 1;
-            while !crate::is_almost_prime(k, guess) {
+            while !crate::is_almost_prime(u64::from(k), guess) {
                 guess += 1;
             }
             count += 1;
         }
     } else {
-        while !crate::is_almost_prime(k, guess) {
+        while !crate::is_almost_prime(u64::from(k), guess) {
             guess -= 1;
         }
         while count > n {
             guess -= 1;
-            while !crate::is_almost_prime(k, guess) {
+            while !crate::is_almost_prime(u64::from(k), guess) {
                 guess -= 1;
             }
             count -= 1;

@@ -19,6 +19,9 @@ pub fn factorialmod(n: u64, m: u64) -> Option<u64> {
     if n <= 1 {
         return Some(1);
     }
+    if n <= 10 {
+        return Some((2..=n).fold(1, |r, i| mulmod_u(r, i, m)));
+    }
     let prime = is_prime(m) != 0;
     let d = if prime && n > m / 2 { m - n - 1 } else { n };
     if d < 2 {

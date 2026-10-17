@@ -1,2 +1,3 @@
 - Continue MPU-ITERATORS: finish forsemiprimes, foralmostprimes, forfactored, forsquarefree, forsquarefreeint, fordivisors; then gate.
 - 03:42 read iter/mod.rs and compat_iter.rs; no pub factor fn found yet; checking src/factor
+- 03:43 appended factor_pairs, almost/factored/squarefree/divisors iterators and for* fns to src/iter/mod.rs; next: fixture dispatch in compat_iter.rs, then tools/test.sh compat_iter

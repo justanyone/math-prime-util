@@ -142,22 +142,12 @@ pub fn powerful_numbers(lo: u64, hi: u64, k: u32) -> Vec<u64> {
 }
 
 fn power_sum(n: u64, k: u32) -> u128 {
-    // Finite differences sum powers without a loop over the root.
-    let mut row: Vec<i128> = (0..=k + 1).map(|i| i128::from(i).pow(k)).collect();
-    let mut binomial = 1_u128;
-    let mut sum = 0;
-    for j in 0..=k {
-        binomial = binomial * (u128::from(n) + 1 - u128::from(j)) / u128::from(j + 1);
-        sum += binomial * u128::try_from(row[0]).expect("positive difference");
-        for i in 0..row.len() - 1 {
-            row[i] = row[i + 1] - row[i];
-        }
-        row.pop();
-        if u64::from(j) >= n {
-            break;
-        }
+    let wide = u128::from(n);
+    match k {
+        2 => wide * (wide + 1) * (2 * wide + 1) / 6,
+        3 => (wide * (wide + 1) / 2).pow(2),
+        _ => (1..=n).map(|i| u128::from(i).pow(k)).sum(),
     }
-    sum
 }
 
 fn sum_rec(n: u64, k: u32, flags: &[bool], m: u64, r: u32) -> u128 {

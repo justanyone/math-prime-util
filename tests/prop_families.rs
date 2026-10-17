@@ -1,77 +1,69 @@
-//! Algebraic laws for lucky-number ranks and membership.
+//! Algebraic laws for powerful and powerfree integers.
 use math_prime_util::*;
 use proptest::prelude::*;
 
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
-    fn lucky_rank_inverse(k in 1u64..5000) {
-        let n = nth_lucky(k).unwrap();
-        prop_assert!(is_lucky(n));
-        prop_assert_eq!(lucky_count(n), k);
-        prop_assert_eq!(lucky_count(n - 1), k - 1);
-        prop_assert!(nth_lucky_lower(k).unwrap() <= n);
-        prop_assert!(n <= nth_lucky_upper(k).unwrap());
+    fn counts_and_sums(n in 1_u64..2000, k in 2_u32..8) {
+        let powerful=powerful_numbers(1,n,k);
+        prop_assert_eq!(powerful_count(n,k),powerful.len() as u64);
+        prop_assert_eq!(sumpowerful(n,k),powerful.iter().map(|&v| u128::from(v)).sum::<u128>());
+        let free: Vec<_>=(1..=n).filter(|&i| is_powerfree(i,k)).collect();
+        prop_assert_eq!(powerfree_count(n,k),free.len() as u64);
+        prop_assert_eq!(powerfree_sum(n,k),free.iter().map(|&v| u128::from(v)).sum::<u128>());
+        prop_assert_eq!(powerfree_part_sum(n,k),(1..=n).map(|i| u128::from(powerfree_part(i,k))).sum::<u128>());
     }
     #[test]
-    fn lucky_sieve_membership(n in 0u64..10000) {
-        let values = lucky_numbers(0, n);
-        prop_assert_eq!(values.len() as u64, lucky_count(n));
-        prop_assert_eq!(values.last() == Some(&n), is_lucky(n));
-        prop_assert!(values.windows(2).all(|w| w[0] < w[1]));
-        prop_assert!(lucky_count_lower(n) <= lucky_count(n));
-        prop_assert!(lucky_count(n) <= lucky_count_upper(n));
+    fn parts_and_inverse(n in 1_u64..1000, k in 2_u32..7) {
+        let part=powerfree_part(n,k);
+        prop_assert!(is_powerfree(part,k));
+        prop_assert_eq!(n%part,0);
+        prop_assert!(is_power(n/part,k));
+        let p=nth_powerful(n,k).unwrap();
+        prop_assert_eq!(powerful_count(p,k),n);
+        prop_assert!(is_powerful(p,k));
+        let q=nth_powerfree(n,k).unwrap();
+        prop_assert_eq!(powerfree_count(q,k),n);
+        prop_assert!(is_powerfree(q,k));
     }
 }
 
 #[test]
-fn independent_and_concurrent_calls() {
-    let expected = lucky_numbers(0, 300_000);
+fn boundaries_and_repeat_calls() {
+    assert!(!is_powerful(0, 0));
+    assert!(is_powerful(1, 100));
+    assert!(!is_powerful(2, 64));
+    assert_eq!(powerful_count(0, 100), 0);
+    assert_eq!(powerful_count(10, 100), 1);
+    assert!(powerful_numbers(10, 1, 2).is_empty());
+    assert!(powerful_numbers(2, 100, 64).is_empty());
+    assert_eq!(powerful_numbers(0, 100, 64), vec![1]);
+    assert_eq!(sumpowerful(10, 0), 0);
+    assert_eq!(nth_powerful(0, 2), None);
+    assert_eq!(nth_powerful(2, 64), None);
+    assert_eq!(nth_powerful(10, 1), Some(10));
+    assert_eq!(nth_powerfree(0, 2), None);
+    assert_eq!(nth_powerfree(5, 1), None);
+    assert_eq!(nth_powerfree(u64::MAX, 2), None);
+    assert_eq!(nth_powerfree(u64::MAX, 64), Some(u64::MAX));
+    for k in [0, 1, 2, 3, 64, 100] {
+        assert_eq!(powerfree_count(0, k), 0);
+        assert_eq!(powerfree_sum(0, k), 0);
+        assert_eq!(powerfree_part(0, k), 0);
+        assert_eq!(powerfree_part_sum(0, k), 0);
+    }
     let threads: Vec<_> = (0..4)
-        .map(|_| std::thread::spawn(|| lucky_numbers(0, 300_000)))
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(powerful_numbers(1, 10, 2), vec![1, 4, 8, 9]);
+                    assert_eq!(powerfree_count(10, 2), 7);
+                }
+            })
+        })
         .collect();
     for thread in threads {
-        assert_eq!(thread.join().unwrap(), expected);
-    }
-    assert_eq!(lucky_numbers(10, 1), []);
-    assert_eq!(lucky_numbers(0, 0), []);
-    assert_eq!(nth_lucky(0), None);
-    assert_eq!(nth_lucky_approx(0), None);
-    assert_eq!(nth_lucky_lower(0), None);
-    assert_eq!(nth_lucky_upper(0), None);
-    assert!(!is_lucky(u64::MAX));
-}
-
-proptest! {
-    #![proptest_config(ProptestConfig::with_cases(64))]
-    #[test]
-    fn prime_power_rank_and_bounds(k in 1u64..20_000) {
-        let n = nth_prime_power(k).unwrap();
-        let count = |x| prime_count(x) + (2..=x.ilog2()).map(|e| prime_count(rootint(x,e))).sum::<u64>();
-        prop_assert_eq!(count(n), k);
-        prop_assert_eq!(count(n-1), k-1);
-        prop_assert!(nth_prime_power_lower(k).unwrap() <= n);
-        prop_assert!(nth_prime_power_upper(k).unwrap() >= n);
-        prop_assert!(nth_prime_power_approx(k).is_some());
-    }
-}
-
-#[test]
-fn prime_power_repeated_and_concurrent_calls() {
-    for f in [
-        nth_prime_power,
-        nth_prime_power_approx,
-        nth_prime_power_lower,
-        nth_prime_power_upper,
-    ] {
-        assert_eq!(f(0), None);
-        let expected = f(4096);
-        let threads: Vec<_> = (0..4)
-            .map(|_| std::thread::spawn(move || f(4096)))
-            .collect();
-        for thread in threads {
-            assert_eq!(thread.join().unwrap(), expected);
-        }
-        assert_eq!(f(4096), expected);
+        thread.join().unwrap();
     }
 }

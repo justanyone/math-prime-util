@@ -9,6 +9,10 @@ mod kronecker;
 pub use kronecker::kronecker;
 mod chinese;
 pub use chinese::chinese;
+mod ramanujan_sum;
+pub use ramanujan_sum::ramanujan_sum;
+mod valuation;
+pub use valuation::valuation;
 
 use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
 use std::collections::HashMap;
@@ -608,45 +612,6 @@ pub fn is_totient(n: u64) -> bool {
     } else {
         totpred(n, n)
     }
-}
-
-/// Return Ramanujan's sum. Port of `XS.xs::ramanujan_sum`.
-/// ```
-/// assert_eq!(math_prime_util::ramanujan_sum(12,36), 4);
-/// ```
-#[allow(clippy::missing_panics_doc)] // The residue is less than 2^64.
-pub fn ramanujan_sum(k: u64, n: u64) -> i64 {
-    if k == 0 || n == 0 {
-        return 0;
-    }
-    let g = k / gcd(k, n);
-    let m = moebius(g);
-    let v = i128::from(m) * i128::from(euler_phi(k) / euler_phi(g));
-    i64::from_ne_bytes(
-        u64::try_from(v.rem_euclid(1_i128 << 64))
-            .unwrap()
-            .to_ne_bytes(),
-    )
-}
-
-/// Return the exponent of `k` in `n`, or `None` when `n` is zero.
-/// Port of `util.c::valuation` and the XS argument checks.
-/// # Panics
-/// Panics when `k` is less than two.
-/// ```
-/// assert_eq!(math_prime_util::valuation(72, 3), Some(2));
-/// ```
-pub fn valuation(mut n: u64, k: u64) -> Option<u64> {
-    assert!(k >= 2, "valuation base must be at least two");
-    if n == 0 {
-        return None;
-    }
-    let mut v = 0;
-    while n % k == 0 {
-        v += 1;
-        n /= k;
-    }
-    Some(v)
 }
 
 fn sigma(n: u64, k: u64) -> Option<u128> {

@@ -9,6 +9,19 @@
     clippy::cast_sign_loss
 )]
 
+mod exponential_integral;
+mod lambert_w;
+mod logarithmic_integral;
+mod pi;
+mod riemann_r;
+mod riemann_zeta;
+pub use exponential_integral::ExponentialIntegral;
+pub use lambert_w::LambertW;
+pub use logarithmic_integral::LogarithmicIntegral;
+pub use pi::Pi;
+pub use riemann_r::RiemannR;
+pub use riemann_zeta::RiemannZeta;
+
 const EULER: f64 = 0.577215664901532860606512090082402431;
 const LI2: f64 = 1.045163780117492784844588889194613136;
 const EPS: f64 = f64::EPSILON;

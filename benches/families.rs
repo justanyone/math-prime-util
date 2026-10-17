@@ -1,11 +1,135 @@
 #![allow(missing_docs)]
-//! Benchmarks for native perfect powers.
+//! Benchmarks for the lucky-number, prime-power, twin prime and semiprime functions.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    is_perfect_power, next_perfect_power, perfect_power_count, prev_perfect_power,
+    goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_perfect_power,
+    is_prime_power, is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair,
+    next_chen_prime, next_perfect_power, next_prime_power, nth_lucky, nth_ramanujan_prime,
+    nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx,
+    nth_twin_prime, nth_twin_prime_approx, perfect_power_count, powerfree_count, powerful_count,
+    powerful_numbers, prev_perfect_power, prev_prime_power, prime_powers,
+    ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
+    twin_prime_count, twin_prime_count_approx, twin_primes,
 };
-
 fn bench_families(c: &mut Criterion) {
+    c.bench_function("prime_powers", |b| {
+        b.iter(|| prime_powers(0, black_box(100_000)));
+    });
+    c.bench_function("is_prime_power", |b| {
+        b.iter(|| is_prime_power(black_box(1_000_000_014_000_000_049)));
+    });
+    c.bench_function("next_prime_power", |b| {
+        b.iter(|| next_prime_power(black_box(1_000_000)));
+    });
+    c.bench_function("prev_prime_power", |b| {
+        b.iter(|| prev_prime_power(black_box(1_000_000)));
+    });
+    for (name, f) in [
+        (
+            "nth_prime_power",
+            math_prime_util::nth_prime_power as fn(u64) -> Option<u64>,
+        ),
+        (
+            "nth_prime_power_approx",
+            math_prime_util::nth_prime_power_approx,
+        ),
+        (
+            "nth_prime_power_lower",
+            math_prime_util::nth_prime_power_lower,
+        ),
+        (
+            "nth_prime_power_upper",
+            math_prime_util::nth_prime_power_upper,
+        ),
+    ] {
+        c.bench_function(name, |b| b.iter(|| f(black_box(100_000))));
+    }
+    c.bench_function("lucky_numbers", |b| {
+        b.iter(|| lucky_numbers(0, black_box(1_000_000)));
+    });
+    c.bench_function("lucky_count", |b| {
+        b.iter(|| lucky_count(black_box(1_000_000)));
+    });
+    c.bench_function("nth_lucky", |b| b.iter(|| nth_lucky(black_box(100_000))));
+    c.bench_function("is_lucky", |b| b.iter(|| is_lucky(black_box(971_011))));
+    c.bench_function("twin_primes", |b| {
+        b.iter(|| twin_primes(0, black_box(100_000)));
+    });
+    c.bench_function("twin_prime_count", |b| {
+        b.iter(|| twin_prime_count(black_box(100_000)));
+    });
+    c.bench_function("twin_prime_count_approx", |b| {
+        b.iter(|| twin_prime_count_approx(black_box(1_000_000_000)));
+    });
+    c.bench_function("nth_twin_prime", |b| {
+        b.iter(|| nth_twin_prime(black_box(1000)));
+    });
+    c.bench_function("nth_ramanujan_prime", |b| {
+        b.iter(|| nth_ramanujan_prime(black_box(1000)));
+    });
+    c.bench_function("nth_ramanujan_prime_approx", |b| {
+        b.iter(|| nth_ramanujan_prime_approx(black_box(1000)));
+    });
+    c.bench_function("nth_ramanujan_prime_lower", |b| {
+        b.iter(|| nth_ramanujan_prime_lower(black_box(1000)));
+    });
+    c.bench_function("ramanujan_prime_count_upper", |b| {
+        b.iter(|| ramanujan_prime_count_upper(black_box(10000)));
+    });
+    c.bench_function("powerful_count", |b| {
+        b.iter(|| powerful_count(black_box(1_000_000_000), 2));
+    });
+    c.bench_function("powerful_numbers", |b| {
+        b.iter(|| powerful_numbers(1, black_box(1_000_000), 2));
+    });
+    c.bench_function("sumpowerful", |b| {
+        b.iter(|| sumpowerful(black_box(1_000_000_000), 2));
+    });
+    c.bench_function("powerfree_count", |b| {
+        b.iter(|| powerfree_count(black_box(1_000_000_000), 2));
+    });
+    c.bench_function("nth_twin_prime_approx", |b| {
+        b.iter(|| nth_twin_prime_approx(black_box(100_000)));
+    });
+    c.bench_function("semi_primes", |b| {
+        b.iter(|| semi_primes(black_box(1_000_000), black_box(1_001_000)));
+    });
+    c.bench_function("semiprime_count", |b| {
+        b.iter(|| semiprime_count(black_box(1_000_000)));
+    });
+    c.bench_function("semiprime_count_approx", |b| {
+        b.iter(|| semiprime_count_approx(black_box(1_000_000)));
+    });
+    c.bench_function("nth_semiprime", |b| {
+        b.iter(|| nth_semiprime(black_box(100_000)));
+    });
+    c.bench_function("nth_semiprime_approx", |b| {
+        b.iter(|| nth_semiprime_approx(black_box(100)));
+    });
+}
+fn bench_goldbach_misc(c: &mut Criterion) {
+    c.bench_function("minimal_goldbach_pair", |b| {
+        b.iter(|| minimal_goldbach_pair(black_box(60_119_912)));
+    });
+    c.bench_function("goldbach_pair_count", |b| {
+        b.iter(|| goldbach_pair_count(black_box(1_000_000)));
+    });
+    c.bench_function("goldbach_pairs", |b| {
+        b.iter(|| goldbach_pairs(black_box(100_000)));
+    });
+    c.bench_function("next_chen_prime", |b| {
+        b.iter(|| next_chen_prime(black_box(10_000_000_000_000_000)));
+    });
+}
+fn bench_squares(c: &mut Criterion) {
+    c.bench_function("is_gaussian_prime", |b| {
+        b.iter(|| is_gaussian_prime(black_box(519_880), black_box(2_265_929)));
+    });
+    c.bench_function("is_sum_of_squares", |b| {
+        b.iter(|| is_sum_of_squares(black_box(18_446_744_073_709_551_557), 2));
+    });
+}
+fn bench_perfect_powers(c: &mut Criterion) {
     let mut group = c.benchmark_group("perfect_powers");
     for n in [1_000_003, 4_294_967_296, 1 << 63, u64::MAX] {
         group.bench_with_input(BenchmarkId::new("is_perfect_power", n), &n, |b, &n| {
@@ -23,5 +147,11 @@ fn bench_families(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group!(benches, bench_families);
+criterion_group!(
+    benches,
+    bench_families,
+    bench_goldbach_misc,
+    bench_squares,
+    bench_perfect_powers
+);
 criterion_main!(benches);

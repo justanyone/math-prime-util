@@ -8,3 +8,4 @@ Focused algebraic tests pass. Compatibility exposed Perl wrapper behavior for de
 Thirteen compatibility tests now pass. Remaining work is tau values beyond the C table and the documented signed-input skip for oversized discriminants; abundance now matches the XS signed-word conversion.
 All fifteen compatibility tests and six property/edge tests pass offline. Tau now uses MPU's PP fallback beyond its C table; the gate is checking lint and toolchain compatibility.
 All oracle cases supported by the native signatures pass. Fixed pedantic formatting findings; added tau multiplicativity and concurrent repeat-call checks before the final validation.
+The focused suite passes all 23 tests, including concurrent calls. The gate passed fmt, pedantic clippy, and the MSRV build and is running repository tests; the required whole-suite wrapper run has started.

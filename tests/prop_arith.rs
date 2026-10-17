@@ -192,7 +192,6 @@ proptest! {
     }
 }
 
-<<<<<<< HEAD
 #[test]
 fn tau_prime_does_not_require_the_prime_power_term() {
     // From the q-series recurrence for Delta, independent of the class-number path.
@@ -211,7 +210,9 @@ proptest! {
         if gcd(a, b) == 1 {
             prop_assert_eq!(divisor_sum(a * b, k), Some(divisor_sum(a, k).unwrap() * divisor_sum(b, k).unwrap()));
         }
-=======
+    }
+}
+
 proptest! {
     #[test]
     fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
@@ -236,12 +237,10 @@ proptest! {
     #[test]
     fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
         prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn divisor_sum_native_boundaries_and_prime_powers() {
     assert_eq!(divisor_sum(1, u64::MAX), Some(1));
     assert_eq!(divisor_sum(2, 63), Some((1_u64 << 63) + 1));
@@ -274,7 +273,9 @@ fn divisor_sums_have_no_shared_call_state() {
             });
         }
     });
-=======
+}
+
+#[test]
 fn divisor_sums_native_edges() {
     for (n, repeated, distinct) in [
         (0, 0, 0),
@@ -347,5 +348,4 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
     for thread in threads {
         thread.join().unwrap();
     }
->>>>>>> origin/dev-001
 }

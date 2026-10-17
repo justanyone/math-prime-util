@@ -3,6 +3,9 @@ use crate::int::{gcd, is_square, mont::Mont};
 use crate::lucas::lucas_sequence;
 use crate::modular::{addmod_u, mulmod_u, powmod_u};
 
+mod perrin;
+pub use perrin::*;
+
 fn jacobi(mut a: u64, mut n: u64) -> i8 {
     let mut sign = 1;
     while a != 0 {

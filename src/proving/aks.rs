@@ -10,7 +10,7 @@ fn log_gamma(x: f64) -> f64 {
     let coefficients = [
         0.999_999_999_999_809_9,
         676.520_368_121_885_1,
-        -1259.139_216_722_402_8,
+        -1_259.139_216_722_402_8,
         771.323_428_777_653_1,
         -176.615_029_162_140_6,
         12.507_343_278_686_905,
@@ -101,6 +101,9 @@ fn test_anr(a: u64, n: u64, r: usize) -> bool {
 ///
 /// Port of `aks.c::is_aks_prime` with `IMPL_BERN41`, including its bounds.
 /// This deterministic polynomial test can be slow for large primes.
+///
+/// # Panics
+/// Panics if the search exhausts the native prime range.
 ///
 /// ```
 /// assert!(math_prime_util::is_aks_prime(101));

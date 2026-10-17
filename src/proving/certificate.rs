@@ -98,7 +98,8 @@ fn check(kind: &str, fields: &BTreeMap<String, u64>) -> Result<bool, String> {
     let s = r_total / (2 * f);
     let r = r_total % (2 * f);
     // Saturation preserves this comparison with a u64 n, even when F^3 exceeds u128.
-    let inner = (2 * f * f)
+    let inner = (2 * f)
+        .saturating_mul(f)
         .saturating_add(r * f)
         .saturating_sub(f)
         .saturating_add(1);
@@ -197,4 +198,98 @@ pub fn verify_prime(certificate: &str) -> Result<bool, String> {
     }
     let n = target.ok_or("Missing target")?;
     Ok(seen_proof && is_prime(n) != 0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn fields(pairs: &[(&str, u64)]) -> BTreeMap<String, u64> {
+        pairs.iter().map(|&(k, v)| (k.to_string(), v)).collect()
+    }
+    #[test]
+    fn theorem_boundaries() {
+        assert!(
+            check(
+                "BLS5",
+                &fields(&[
+                    ("N", 18_446_744_069_414_584_321),
+                    ("Q[1]", 3),
+                    ("Q[2]", 5),
+                    ("Q[3]", 17),
+                    ("Q[4]", 257),
+                    ("Q[5]", 65537),
+                    ("A[0]", 7),
+                    ("A[1]", 7),
+                    ("A[2]", 7),
+                    ("A[3]", 7),
+                    ("A[4]", 7),
+                    ("A[5]", 7)
+                ])
+            )
+            .is_ok()
+        );
+        for kind in ["BLS3", "POCKLINGTON"] {
+            assert_eq!(
+                check(kind, &fields(&[("N", 23), ("Q", 11), ("A", 5)])),
+                Ok(true)
+            );
+            for pairs in [
+                vec![("N", 0)],
+                vec![("N", 23), ("Q", 0), ("A", 5)],
+                vec![("N", 23), ("Q", 11), ("A", 1)],
+                vec![("N", 23), ("Q", 4), ("A", 5)],
+            ] {
+                assert_eq!(check(kind, &fields(&pairs)), Ok(false));
+            }
+            assert!(check(kind, &fields(&[("N", 23)])).is_err());
+        }
+        assert_eq!(check("BLS5", &fields(&[("N", 3)])), Ok(false));
+        assert_eq!(check("BLS5", &fields(&[("N", 101)])), Ok(false));
+        assert_eq!(
+            check(
+                "BLS5",
+                &fields(&[("N", 31), ("Q[1]", 3), ("A[0]", 3), ("A[1]", 3)])
+            ),
+            Ok(true)
+        );
+        assert_eq!(
+            check("LUCAS", &fields(&[("N", 101), ("Q[1]", 2), ("A", 2)])),
+            Ok(false)
+        );
+        assert_eq!(
+            check("LUCAS", &fields(&[("N", 101), ("Q[1]", 2), ("A", 4)])),
+            Ok(false)
+        );
+        assert!(coprime_power(0, 2, 7));
+    }
+    #[test]
+    fn parser_boundaries() {
+        let header = "[MPU - Primality Certificate]\n";
+        for suffix in [
+            "Proof for:\nN 101\nProof for:\nN 101",
+            "Proof for:\nN x",
+            "Type Small\nN 2",
+            "Proof for:\nN 101\nType BLS5\nN 101\nQ[1] x",
+            "Base 16",
+            "Version 1.0",
+            "Proof for:\nN 101\nType BLS5\nN 101 extra",
+        ] {
+            assert!(
+                verify_prime(&format!("{header}{suffix}")).is_err(),
+                "{suffix}"
+            );
+        }
+        assert_eq!(
+            verify_prime(&format!(
+                "{header}# comment\nBase 10\nProof for:\nN 23\nType BLS3\nN 23\nQ 11\nA 5\n"
+            )),
+            Ok(true)
+        );
+        assert_eq!(
+            verify_prime(&format!(
+                "{header}Proof for:\nN 23\nType POCKLINGTON\nN 23\nQ 11\nA 5\n"
+            )),
+            Ok(true)
+        );
+    }
 }

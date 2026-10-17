@@ -11,3 +11,4 @@ Next: read PLAN.md sections 5–8, the combinat module, and the C sources for th
 - 2026-10-17T07:02:54Z launcher: no commit for 61 s; 273 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-f07-a1.md.
 - 2026-10-17T07:03:54Z launcher: no commit for 60 s; 333 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-f07-a1.md.
 - 2026-10-17T07:04:54Z launcher: no commit for 60 s; 393 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-f07-a1.md.
+Tried: read util.c npartitions, npartitionsq, perm_to_num and the combinat fixtures. Next: fmt and focused tests.

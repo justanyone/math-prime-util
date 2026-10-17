@@ -1,6 +1,8 @@
 //! Benchmarks for the four native combinat functions.
 use criterion::{Criterion, black_box};
-use math_prime_util::{bernfrac, harmfrac, pn_primorial, primorial};
+use math_prime_util::{
+    bernfrac, harmfrac, partitions, partitionsq, permtonum, pn_primorial, primorial,
+};
 
 #[test]
 fn combinat() {
@@ -11,5 +13,11 @@ fn combinat() {
     c.bench_function("pn_primorial_15", |b| {
         b.iter(|| pn_primorial(black_box(15)));
     });
+    c.bench_function("partitions_200", |b| b.iter(|| partitions(black_box(200))));
+    c.bench_function("partitionsq_400", |b| {
+        b.iter(|| partitionsq(black_box(400)));
+    });
+    let perm: Vec<u64> = (0..20).rev().collect();
+    c.bench_function("permtonum_20", |b| b.iter(|| permtonum(black_box(&perm))));
     c.final_summary();
 }

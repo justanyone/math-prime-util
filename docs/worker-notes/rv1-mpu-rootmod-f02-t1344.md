@@ -7,3 +7,5 @@ Confirmed missing C fast paths and removed regression tests; wrote FAIL review. 
 The review records four open findings: missing Cornacchia reference paths, removed tests, unchecked status entries, and unrelated notes deletion. Validation is running on the base only; it cannot certify the candidate.
 Focused compat tests are still compiling and gate waits on Cargo's lock. No implementation was changed; findings are supported by the digest and reference branches, independently of base test results.
 - 2026-10-17T18:47:47Z launcher: no commit for 60 s; 157 s elapsed. Files changed so far: docs/reviews/rev-mpu-rootmod-f02-1.md, docs/worker-notes/rv1-mpu-rootmod-f02-t1344.md.
+Review is complete with FAIL. Base validation remains in progress without test output; gate has passed formatting and is waiting to run clippy after the focused build releases its lock.
+Focused base compat_modular validation passed all four existing oracle tests. These are exactly the tests removed by the candidate; candidate correctness remains assessed from the digest. Gate is continuing.

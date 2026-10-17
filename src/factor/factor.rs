@@ -67,7 +67,7 @@ fn holf(n: u64) -> Option<u64> {
 }
 
 fn split(n: u64) -> u64 {
-    if n <= u64::from(u32::MAX) {
+    if u32::try_from(n).is_ok() {
         if let Some(f) = holf(n) {
             return f;
         }
@@ -91,6 +91,7 @@ fn split(n: u64) -> u64 {
 }
 
 // MPU factor.c::pbrent_factor, non-Montgomery u128 arithmetic path.
+#[allow(clippy::cast_possible_truncation)] // A residue modulo a u64 fits u64.
 fn brent(n: u64, mut rounds: u64, mut a: u64) -> Option<u64> {
     let inner = if n <= 4_000_000_000 { 32 } else { 160 };
     let mut fails = 6;

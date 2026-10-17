@@ -1,5 +1,6 @@
 //! factor: see PLAN.md section 5. Filled by the port rows; the crate root re-exports `pub use factor::*`.
 
+#[allow(clippy::module_inception)] // Keep each function in its own named file.
 mod factor;
 pub use factor::factor;
 

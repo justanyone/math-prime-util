@@ -141,9 +141,107 @@ pub fn legendre_phi(x: u64, a: u64) -> u64 {
     counter.phi(x, index)
 }
 
+/// Return the `n`th prime, with the first prime as index 1.
+///
+/// Port of MPU 0.75 `prime_counts.c`, `nth_prime`. MPU narrows the
+/// search with table lookups and a segment sieve. This port uses a
+/// binary search on the exact count from [`prime_count`].
+///
+/// Returns `None` for `n = 0`, where MPU returns `undef`.
+///
+/// ```
+/// use math_prime_util::nth_prime;
+/// assert_eq!(nth_prime(1), Some(2));
+/// assert_eq!(nth_prime(100), Some(541));
+/// assert_eq!(nth_prime(0), None);
+/// ```
+#[must_use]
+pub fn nth_prime(n: u64) -> Option<u64> {
+    const SMALL: [u64; 5] = [2, 3, 5, 7, 11];
+    if n == 0 {
+        return None;
+    }
+    if let Some(&p) = usize::try_from(n - 1).ok().and_then(|i| SMALL.get(i)) {
+        return Some(p);
+    }
+    // Rosser's bound: p_n < n (ln n + ln ln n) for n >= 6.
+    #[allow(clippy::cast_precision_loss)]
+    let fnn = n as f64;
+    let ln = fnn.ln();
+    let mut lo = SMALL[4] + 1;
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let mut hi = (fnn * (ln + ln.ln())) as u64 + 1;
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if prime_count(mid) < n {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    Some(lo)
+}
+
+/// Return the sum of `ln p` over the primes `p <= n`, the Chebyshev theta function.
+///
+/// Port of MPU 0.75 `real.c`, `chebyshev_theta`. MPU sums in long double.
+/// This port sums in `f64`, so results can differ in the last digits.
+///
+/// ```
+/// use math_prime_util::chebyshev_theta;
+/// assert!((chebyshev_theta(10) - 210.0_f64.ln()).abs() < 1e-12);
+/// ```
+#[must_use]
+pub fn chebyshev_theta(n: u64) -> f64 {
+    primes(2, n).iter().map(|&p| ln_u64(p)).sum()
+}
+
+/// Return the Chebyshev psi function, the sum of `theta(n^(1/k))` over `k >= 1`.
+///
+/// Port of MPU 0.75 `real.c`, `chebyshev_psi`. The sum runs over
+/// `k = log2(n)` down to `1`, as in MPU.
+///
+/// ```
+/// use math_prime_util::{chebyshev_psi, chebyshev_theta};
+/// let psi = chebyshev_psi(100);
+/// assert!(psi > 80.0 && psi < 100.0);
+/// assert!(chebyshev_theta(100) < psi);
+/// ```
+#[must_use]
+pub fn chebyshev_psi(n: u64) -> f64 {
+    if n < 2 {
+        return 0.0;
+    }
+    (1..=n.ilog2())
+        .rev()
+        .map(|k| chebyshev_theta(rootint(n, k)))
+        .sum()
+}
+
+#[allow(clippy::cast_precision_loss)]
+fn ln_u64(n: u64) -> f64 {
+    (n as f64).ln()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn nth_prime_known_values() {
+        for (n, p) in [(1, 2), (5, 11), (6, 13), (100, 541), (10_000, 104_729)] {
+            assert_eq!(nth_prime(n), Some(p));
+        }
+        assert_eq!(nth_prime(0), None);
+    }
+
+    #[test]
+    fn chebyshev_known_values() {
+        assert_eq!(chebyshev_theta(1), 0.0);
+        assert_eq!(chebyshev_psi(1), 0.0);
+        assert_eq!(chebyshev_psi(0), 0.0);
+        assert!((chebyshev_theta(10) - 210.0_f64.ln()).abs() < 1e-12);
+    }
 
     #[test]
     fn count_known_values() {

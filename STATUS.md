@@ -66,7 +66,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `ExponentialIntegral`
 - [ ] `factor`
 - [ ] `factor_exp`
-- [ ] `factorial`
+- [x] `factorial`
 - [x] `factorialmod`
 - [ ] `falling_factorial`
 - [x] `farey`
@@ -95,7 +95,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `from_contfrac`
 - [x] `fromdigits`
 - [x] `fromzeckendorf`
-- [ ] `fubini`
+- [x] `fubini`
 - [x] `gcd`
 - [x] `gcdext`
 - [ ] `goldbach_pair_count`
@@ -212,7 +212,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `mulsubint`
 - [x] `mulsubmod`
 - [x] `mult_digital_root`
-- [ ] `multifactorial`
+- [x] `multifactorial`
 - [x] `negint`
 - [x] `negmod`
 - [x] `next_calkin_wilf`
@@ -378,7 +378,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `stern_brocot_n`
 - [x] `stirling`
 - [x] `sub1int`
-- [ ] `subfactorial`
+- [x] `subfactorial`
 - [x] `subint`
 - [x] `submod`
 - [x] `sumdigits`

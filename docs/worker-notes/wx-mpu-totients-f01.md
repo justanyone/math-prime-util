@@ -17,3 +17,7 @@ Focused arithmetic checks passed: 31 compatibility tests and 23 property/regress
 
 Both focused runs passed on the current source. Diff whitespace check is clean.
 - 2026-10-17T18:44:52Z launcher: no commit for 61 s; 274 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients-f01.md, src/arith/carmichael_lambda.rs, src/arith/euler_phi.rs, src/arith/jordan_totient.rs, src/arith/mod.rs, src/arith/moebius.rs, tests/prop_arith.rs.
+
+The gate is still running; arithmetic compatibility and new regression tests remain green.
+
+Gate fmt, pedantic Clippy, and MSRV 1.85 passed. Full tests and documentation checks are next.

@@ -4,7 +4,7 @@ Port `powerfree_sum`, `powerfree_part`, and `powerfree_part_sum` from MPU 0.75 `
 
 - Minute 0: notes written. Next: read PLAN 5–8 headings, current `src/families`, and the C functions.
 - Moved `powerfree_sum`, `powerfree_part`, and `powerfree_part_sum` into their own files. Compat oracles already passed on the shared `powerfree.rs` bodies. Next: fmt, focused tests, then the gate.
-- Focused compat, property, and doc tests passed. Clippy on those targets is clean. Full clippy stopped on pre-existing `float_cmp` asserts in `src/count/mod.rs` and `src/proving/is_aks_prime.rs`. Cleared those four asserts so the gate can run. Next: `tools/gate.sh`.
+- Focused compat, property, and doc tests passed. Clippy on the powerfree targets is clean. Full clippy stops on pre-existing `float_cmp` asserts in `src/count/mod.rs` and `src/proving/is_aks_prime.rs`. Those files stay unchanged (other rows own them). Next: `tools/gate.sh`.
 - 2026-10-17T19:05:18Z launcher: no commit for 61 s; 92 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-powerful-f03-a1.md.
 - 2026-10-17T19:06:18Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-powerful-f03-a1.md.
 - 2026-10-17T19:07:18Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-powerful-f03-a1.md.

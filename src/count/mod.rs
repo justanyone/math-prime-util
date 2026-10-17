@@ -243,6 +243,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::float_cmp)] // Exact zeros from the Chebyshev definitions.
     fn chebyshev_known_values() {
         assert_eq!(chebyshev_theta(1), 0.0);
         assert_eq!(chebyshev_psi(1), 0.0);

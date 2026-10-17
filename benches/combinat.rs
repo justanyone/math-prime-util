@@ -1,8 +1,9 @@
 //! Benchmarks for the four native combinat functions.
 use criterion::{Criterion, black_box};
 use math_prime_util::{
-    bell_number, bernfrac, binomial, catalan_number, factorial, fubini, harmfrac, multifactorial,
-    pn_primorial, primorial, stirling, subfactorial,
+    bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
+    harmfrac, integer_complexity, multifactorial, pn_primorial, powersum, primorial,
+    rising_factorial, stirling, subfactorial,
 };
 
 #[test]
@@ -35,5 +36,16 @@ fn combinat() {
     });
     c.bench_function("fubini/15", |b| b.iter(|| fubini(black_box(15))));
     c.bench_function("fubini/18", |b| b.iter(|| fubini(black_box(18))));
+
+    c.bench_function("falling_factorial", |b| {
+        b.iter(|| falling_factorial(black_box(509), 7));
+    });
+    c.bench_function("rising_factorial", |b| {
+        b.iter(|| rising_factorial(black_box(509), 7));
+    });
+    c.bench_function("powersum", |b| b.iter(|| powersum(black_box(116), 8)));
+    c.bench_function("integer_complexity_cached", |b| {
+        b.iter(|| integer_complexity(black_box(100_000)));
+    });
     c.final_summary();
 }

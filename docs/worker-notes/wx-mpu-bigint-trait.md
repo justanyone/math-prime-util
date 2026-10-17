@@ -16,3 +16,7 @@ The gate continues with no reported failures after factor and iterator compatibi
 Gate is waiting on the existing forsquarefreeint compatibility test, which reports running longer than 60 seconds. No failure has appeared; continue waiting within the session limit.
 The full gate remains in forsquarefreeint with no failure or new output. Native implementation work is complete; arbitrary precision and full-gate confirmation remain outstanding.
 - 2026-10-17T20:05:17Z launcher: no commit for 60 s; 517 s elapsed. Files changed so far: Cargo.toml, README.md, benches/primality.rs, docs/worker-notes/wx-mpu-bigint-trait.md, src/bigint/mod.rs, tests/compat_primality.rs, tests/prop_primality.rs.
+With about five minutes left, the gate is still in the unrelated forsquarefreeint test. Run the new Int doctests separately so their validation is not hidden behind that delay.
+Final: 11 new focused tests and all 6 Int doctests passed; fmt, clippy, and MSRV passed. Stopped the full gate while the existing forsquarefreeint test was still running, so no green marker or coverage result is claimed. Remaining work: opt <<cut 134 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 109 bytes)

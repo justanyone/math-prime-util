@@ -7,3 +7,4 @@ Implemented all four entry points and private count estimates/interpolation; add
 Fixed primality return-type mismatch; focused fixture tests and the first gate run are in progress offline.
 All 292 target fixture cases and both prime-power property tests pass. Corrected generated table literal style; rerunning the offline gate.
 Fixture and property checks are green; added formula-transition and interpolation regressions and matched prime-power membership to MPU maximal perfect-power roots.
+Focused unit tests pass across bound formula transitions, interpolation plateaus/jumps, and native limits; the final gate is running.

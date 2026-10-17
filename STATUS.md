@@ -318,18 +318,18 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `rand`
 - [x] `random_bytes`
 - [x] `random_factored_integer`
-- [ ] `random_maurer_prime`
+- [x] `random_maurer_prime`
 - [ ] `random_maurer_prime_with_cert`
 - [x] `random_nbit_prime`
 - [x] `random_ndigit_prime`
 - [x] `random_prime`
-- [ ] `random_proven_prime`
-- [ ] `random_proven_prime_with_cert`
+- [x] `random_proven_prime`
+- [x] `random_proven_prime_with_cert`
 - [x] `random_safe_prime`
 - [ ] `random_semiprime`
 - [ ] `random_shawe_taylor_prime`
 - [ ] `random_shawe_taylor_prime_with_cert`
-- [ ] `random_strong_prime`
+- [x] `random_strong_prime`
 - [x] `random_unrestricted_semiprime`
 - [x] `randperm`
 - [x] `rashiftint`

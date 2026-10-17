@@ -141,3 +141,60 @@ fn random_nbit_prime_oracle() {
 fn random_safe_prime_oracle() {
     check_prime("random_safe_prime");
 }
+
+// MPU's native Maurer and proven paths are aliases of random_nbit_prime.
+// random.tsv has no separate rows for these three names. Its nbit rows
+// supply the native oracle without requiring Perl at test time.
+fn native_proven_oracle(generate: impl Fn(u32) -> Option<u64>) {
+    common::each("random", "random_nbit_prime", |case| {
+        let bits: u32 = case.arg(1);
+        csrand(&unhex(&case.args[0]));
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| generate(bits)));
+        if case.error {
+            assert!(result.is_err(), "fixture line {}", case.line);
+        } else if bits > 64 {
+            // Bigint random_nbit_prime cases are not native u64 inputs yet.
+            assert_eq!(result.unwrap(), None);
+        } else {
+            case.check(result.unwrap());
+        }
+    });
+}
+
+#[test]
+fn random_maurer_prime_oracle() {
+    native_proven_oracle(random_maurer_prime);
+}
+
+#[test]
+fn random_proven_prime_oracle() {
+    native_proven_oracle(random_proven_prime);
+}
+
+#[test]
+fn random_proven_prime_with_cert_oracle() {
+    native_proven_oracle(|bits| {
+        random_proven_prime_with_cert(bits).map(|(prime, cert)| {
+            assert_eq!(cert, format!(
+                "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {prime}\n\nType Small\nN {prime}\n"
+            ));
+            prime
+        })
+    });
+}
+
+#[test]
+fn random_strong_prime_oracle() {
+    common::each("random", "random_strong_prime", |case| {
+        let bits = case.arg(1);
+        let result = std::panic::catch_unwind(|| random_strong_prime(bits));
+        if case.error {
+            assert!(result.is_err());
+        } else {
+            // All valid random_strong_prime fixture cases require bigint
+            // (128, 129, 200, 247, or 256 bits), beyond this native row.
+            assert!(bits > 64);
+            assert_eq!(result.unwrap(), None);
+        }
+    });
+}

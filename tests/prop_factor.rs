@@ -4,7 +4,7 @@ use math_prime_util::{
     is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime,
     is_prime_u128, is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
     pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
-    squfof_factor, trial_factor,
+    rough_count, squarefree_kernel, squfof_factor, trial_factor,
 };
 use proptest::prelude::*;
 
@@ -470,6 +470,65 @@ proptest! {
         if n >> 100 == 0 || prime {
             let factors = factor_u128(n).unwrap();
             prop_assert_eq!(prime, factors.len() == 1 && n > 1);
+        }
+    }
+}
+
+#[test]
+fn rough_count_is_bounded_by_n() {
+    for n in 0..200 {
+        for k in 0..12 {
+            assert!(rough_count(n, k) <= n, "n={n} k={k}");
+        }
+    }
+}
+
+#[test]
+fn rough_count_is_monotone_in_n() {
+    for k in 0..10 {
+        for n in 0..200 {
+            assert!(rough_count(n, k) <= rough_count(n + 1, k), "n={n} k={k}");
+        }
+    }
+}
+
+#[test]
+fn rough_count_grows_as_k_shrinks() {
+    // Fewer excluded primes never lowers the count.
+    for n in 0..150 {
+        for k in 3..12 {
+            assert!(rough_count(n, k) <= rough_count(n, k - 1), "n={n} k={k}");
+        }
+    }
+}
+
+#[test]
+fn squarefree_kernel_divides_n() {
+    for n in 1..2000 {
+        assert_eq!(n % squarefree_kernel(n), 0, "n={n}");
+    }
+}
+
+#[test]
+fn squarefree_kernel_is_idempotent() {
+    for n in 0..2000 {
+        let s = squarefree_kernel(n);
+        assert_eq!(squarefree_kernel(s), s, "n={n}");
+    }
+}
+
+#[test]
+fn squarefree_kernel_is_multiplicative_on_coprimes() {
+    // gcd(a, b) = 1 gives kernel(a * b) = kernel(a) * kernel(b).
+    for a in 1..60u64 {
+        for b in 1..60u64 {
+            if gcd(a, b) == 1 {
+                assert_eq!(
+                    squarefree_kernel(a * b),
+                    squarefree_kernel(a) * squarefree_kernel(b),
+                    "a={a} b={b}"
+                );
+            }
         }
     }
 }

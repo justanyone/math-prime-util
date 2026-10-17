@@ -9,7 +9,7 @@ use math_prime_util::{
     is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime_u128,
     is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
     pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
-    squfof_factor, trial_factor,
+    rough_count, squarefree_kernel, squfof_factor, trial_factor,
 };
 
 fn check(name: &str, method: impl Fn(u64, Option<u64>) -> Vec<u64>) {
@@ -354,6 +354,13 @@ fn u128_paths_agree_with_u64_on_the_fixtures() {
 }
 
 #[test]
+fn rough_count_oracle() {
+    each("factor", "rough_count", |c| {
+        c.check(Some(rough_count(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
 fn factor_u128_ecm_medium() {
     // "ECM med" and "128-bit" cases of t/50-factoring.t (extra tests there).
     let cases: [(u128, [u128; 2]); 3] = [
@@ -373,4 +380,14 @@ fn factor_u128_ecm_medium() {
     for (n, expect) in cases {
         assert_eq!(factor_u128(n), Ok(expect.to_vec()), "{n}");
     }
+}
+
+#[test]
+fn squarefree_kernel_oracle() {
+    each("factor", "squarefree_kernel", |c| {
+        // Skip the bigint arguments above u64::MAX.
+        if c.args[0].parse::<u64>().is_ok() {
+            c.check(Some(squarefree_kernel(c.arg(0))));
+        }
+    });
 }

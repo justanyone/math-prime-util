@@ -13,9 +13,9 @@ pub fn prime_bigomega(n: u64) -> u32 {
 
 // Private dependency until the sibling factor/factor_exp port is available.
 // Uses the trial division and recursive splitting of factor.c, factor.
-pub(super) fn exponents(mut n: u64) -> Vec<u32> {
+pub(crate) fn sorted_factors(mut n: u64) -> Vec<u64> {
     if n < 2 {
-        return if n == 0 { vec![1] } else { Vec::new() };
+        return if n == 0 { vec![0] } else { Vec::new() };
     }
     let mut factors = Vec::new();
     for p in [2, 3, 5] {
@@ -32,6 +32,14 @@ pub(super) fn exponents(mut n: u64) -> Vec<u32> {
     }
     split(n, &mut factors);
     factors.sort_unstable();
+    factors
+}
+
+pub(super) fn exponents(n: u64) -> Vec<u32> {
+    if n == 0 {
+        return vec![1];
+    }
+    let factors = sorted_factors(n);
     let mut result = Vec::new();
     let mut previous = 0;
     for p in factors {

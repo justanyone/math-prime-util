@@ -37,6 +37,10 @@ name = "combinat"
 harness = false
 
 [[bench]]
+name = "count"
+harness = false
+
+[[bench]]
 name = "digits"
 harness = false
 
@@ -79,6 +83,13 @@ harness = false
 [[bench]]
 name = "vec"
 harness = false
+
+# Tests sieve and count over large ranges: unoptimised builds make the gate take tens of minutes. Overflow checks and debug assertions stay on.
+[profile.dev]
+opt-level = 2
+
+[profile.test]
+opt-level = 2
 
 [profile.release]
 lto = "fat"

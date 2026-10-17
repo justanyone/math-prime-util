@@ -17,6 +17,18 @@ use math_prime_util::{
     ramanujan_primes,
 };
 fn bench_families(c: &mut Criterion) {
+    c.bench_function("nth_almost_prime_upper", |b| {
+        b.iter(|| math_prime_util::nth_almost_prime_upper(4, black_box(5678)))
+    });
+    c.bench_function("omega_primes", |b| {
+        b.iter(|| math_prime_util::omega_primes(3, 1, black_box(100_000)))
+    });
+    c.bench_function("omega_prime_count", |b| {
+        b.iter(|| math_prime_util::omega_prime_count(3, black_box(100_000)))
+    });
+    c.bench_function("nth_omega_prime", |b| {
+        b.iter(|| math_prime_util::nth_omega_prime(3, black_box(1000)))
+    });
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
     });

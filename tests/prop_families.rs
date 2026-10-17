@@ -33,6 +33,49 @@ fn zero_and_repeat_calls() {
 }
 
 proptest! {
+    #![proptest_config(ProptestConfig::with_cases(256))]
+    #[test]
+    fn prime_power_exponent(n in any::<u64>()) {
+        let k = is_prime_power(n);
+        if k > 0 {
+            let p = rootint(n, k);
+            prop_assert_eq!(is_prob_prime(p), 2);
+            prop_assert_eq!(p.checked_pow(k), Some(n));
+        }
+    }
+
+    #[test]
+    fn prime_power_ranges(lo in 0u64..20_000, width in 0u64..200) {
+        let hi = lo + width;
+        let expected: Vec<_> = (lo..=hi).filter(|&n| is_prime_power(n) > 0).collect();
+        prop_assert_eq!(prime_powers(lo, hi), expected);
+    }
+
+    #[test]
+    fn prime_power_neighbors(n in 2u64..1_000_000) {
+        let next = next_prime_power(n).unwrap();
+        prop_assert!(next > n);
+        prop_assert!(is_prime_power(next) > 0);
+        prop_assert!((n+1..next).all(|v| is_prime_power(v) == 0));
+        prop_assert_eq!(prev_prime_power(next + 1), Some(next));
+        if let Some(prev) = prev_prime_power(n) {
+            prop_assert!(prev < n);
+            prop_assert!(is_prime_power(prev) > 0);
+            prop_assert!((prev+1..n).all(|v| is_prime_power(v) == 0));
+            prop_assert_eq!(next_prime_power(prev - 1), Some(prev));
+        }
+    }
+
+    #[test]
+    fn known_prime_powers(index in 0usize..8, k in 1u32..64) {
+        let p: u64 = [2, 3, 5, 7, 11, 13, 17, 101][index];
+        if let Some(n) = p.checked_pow(k) {
+            prop_assert_eq!(is_prime_power(n), k);
+        }
+    }
+}
+
+proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
     fn prime_power_rank_and_bounds(k in 1u64..20_000) {
@@ -44,6 +87,43 @@ proptest! {
         prop_assert!(nth_prime_power_upper(k).unwrap() >= n);
         prop_assert!(nth_prime_power_approx(k).is_some());
     }
+}
+
+#[test]
+fn prime_power_boundaries_and_repeated_calls() {
+    const MAX_PRIME: u64 = 18_446_744_073_709_551_557;
+    assert_eq!(next_prime_power(MAX_PRIME - 1), Some(MAX_PRIME));
+    assert_eq!(next_prime_power(MAX_PRIME), None);
+    assert_eq!(next_prime_power(u64::MAX), None);
+    assert_eq!(prev_prime_power(u64::MAX), Some(MAX_PRIME));
+    assert_eq!(prev_prime_power(0), None);
+    assert_eq!(prev_prime_power(1), None);
+    assert_eq!(prev_prime_power(2), None);
+    assert_eq!(prime_powers(0, 1), []);
+    assert_eq!(prime_powers(20, 10), []);
+    assert_eq!(prime_powers(10, 20), [11, 13, 16, 17, 19]);
+    assert_eq!(prime_powers(0, 10), [2, 3, 4, 5, 7, 8, 9]);
+    assert_eq!(prime_powers(0, 2), [2]);
+    assert_eq!(prime_powers(82, 96), [83, 89]);
+    assert_eq!(prime_powers(MAX_PRIME, u64::MAX), [MAX_PRIME]);
+    for k in 2..64 {
+        let n = 1u64 << k;
+        assert_eq!(next_prime_power(n - 1), Some(n));
+        assert_eq!(prev_prime_power(n + 1), Some(n));
+    }
+    // A composite root must not be accepted as a prime root.
+    assert_eq!(is_prime_power(121 * 169), 0);
+    for p in [3u64, 5, 7] {
+        assert_eq!(is_prime_power(p * 11), 0);
+    }
+    let expected = prime_powers(0, 10_000);
+    let threads: Vec<_> = (0..4)
+        .map(|_| std::thread::spawn(|| prime_powers(0, 10_000)))
+        .collect();
+    for thread in threads {
+        assert_eq!(thread.join().unwrap(), expected);
+    }
+    assert_eq!(prime_powers(0, 10_000), expected);
 }
 
 #[test]

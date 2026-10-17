@@ -1,0 +1,2 @@
+- Plan: port nth_semiprime and nth_semiprime_approx from reference/mpu/semi_primes.c into src/families/, add compat/prop tests and bench.
+- 01:48:32 wrote nth_semiprime.rs (table empty placeholder, trial-division scan). Next: fill table, approx, tests.

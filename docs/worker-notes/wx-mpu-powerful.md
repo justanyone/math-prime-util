@@ -14,3 +14,7 @@ The gate has passed fmt, clippy, and the offline Rust 1.85 build and is running 
 The full suite remains active after the count compatibility tests; waiting for the gate rather than launching a second whole-suite run.
 The gate is still running the existing prime-count oracle tests. Nth-prime completed; no failures reported. Continue waiting for this single full-suite run.
 - 2026-10-17T08:23:43Z launcher: no commit for 60 s; 514 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-powerful.md, src/families/mod.rs, src/families/powerfree.rs, src/families/powerful.rs, tests/compat_families.rs, tests/prop_families.rs.
+About five minutes remain in the session budget. All task code and focused tests are complete; the repository gate is still pending in unrelated long-running tests.
+Finished: tools/gate.sh printed == gate: green. All offline tests, doctests, fmt, clippy, MSRV build, and docs passed. All eleven requested APIs, compatibility tests, property tests, and benchmark source are complete; unsupported signed/big <<cut 74 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 50 bytes)

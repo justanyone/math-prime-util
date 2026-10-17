@@ -17,3 +17,6 @@ Private bound edge tests and all 197 doc examples pass. Added more C bound thres
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 72 bytes)
 The gate now reaches test-only pedantic lint checks; fixing literal formatting and empty-vector assertions. The full offline suite was launched once. STATUS stays untouched as required by the task-specific read-only instruction.
+All known pedantic lint findings in the new code have been fixed. Final gate and full-suite runs are still active. The remaining implementation work is extended-precision prime-count estimation and bounds for the maximum native input; no or <<cut 38 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 14 bytes)

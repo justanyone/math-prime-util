@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 //! Benchmarks for the assigned perfect-power functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{

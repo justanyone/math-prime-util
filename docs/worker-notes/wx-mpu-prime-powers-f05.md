@@ -6,3 +6,4 @@ Implemented the exact Möbius count and the C nth approximation, interpolation, 
 Added four oracle tests, full-width count and inverse laws, small exhaustive checks, repeat/concurrency checks, and hot-function benchmarks. Focused offline tests are running.
 Oracle exposed undef at index zero; changed nth to Option. The single bigint result at index 4,297,615,582 is explicitly skipped; native C saturation is covered separately.
 Native unit checks pass, including largest representable powers. A combined command accidentally filtered integration tests; rerunning them without the library filter. The gate is running offline.
+All four oracle tests and four property/exhaustive/concurrency tests pass. Clippy found Criterion-generated missing docs; applied the existing benchmark convention and rerun the gate.

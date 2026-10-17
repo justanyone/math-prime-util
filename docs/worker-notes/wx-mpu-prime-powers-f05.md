@@ -7,3 +7,4 @@ Added four oracle tests, full-width count and inverse laws, small exhaustive che
 Oracle exposed undef at index zero; changed nth to Option. The single bigint result at index 4,297,615,582 is explicitly skipped; native C saturation is covered separately.
 Native unit checks pass, including largest representable powers. A combined command accidentally filtered integration tests; rerunning them without the library filter. The gate is running offline.
 All four oracle tests and four property/exhaustive/concurrency tests pass. Clippy found Criterion-generated missing docs; applied the existing benchmark convention and rerun the gate.
+Final offline gate and the requested standalone whole-suite command are running. Diff whitespace checks pass; no dependencies, fixture files, tooling, or read-only files were changed.

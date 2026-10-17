@@ -502,3 +502,28 @@ fn small_sieve_every_n_is_a_prefix_of_the_reference() {
         assert_eq!(got.len(), reference.partition_point(|&x| x <= n), "len {n}");
     }
 }
+
+#[test]
+fn lucky_numbers_single_point_ranges() {
+    assert_eq!(lucky_numbers(7, 7), vec![7]);
+    assert_eq!(lucky_numbers(8, 8), Vec::<u64>::new());
+    assert_eq!(lucky_numbers(241, 241), vec![241]);
+    assert_eq!(lucky_numbers(300_001, 300_001), Vec::<u64>::new());
+}
+
+#[test]
+fn is_lucky_needs_several_sieve_rounds() {
+    // Large n make is_lucky grow its sieve more than once.
+    let list = lucky_numbers(0, 3_000_000);
+    let set: std::collections::HashSet<u64> = list.iter().copied().collect();
+    for &n in list.iter().rev().take(200) {
+        assert!(is_lucky(n), "{n}");
+    }
+    for n in (2_999_000..3_000_000u64).step_by(3) {
+        assert_eq!(is_lucky(n), set.contains(&n), "{n}");
+    }
+    for &n in list.iter().step_by(4001) {
+        assert!(is_lucky(n), "{n}");
+        assert!(!is_lucky(n + 2) || set.contains(&(n + 2)), "{}", n + 2);
+    }
+}

@@ -841,4 +841,118 @@ mod tests {
         // A function that always fails reads as zero.
         assert_eq!(inverse(0, 10, 3, |_| None), 10);
     }
+
+    // Characterization of the C search path: results AND the number of calls
+    // made to the function are folded into a checksum, so a change that only
+    // alters the interpolation path (not the answer) is also detected.
+    thread_local! {
+        static CALLS: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+    }
+    fn fold(h: u64, v: u64) -> u64 {
+        (h ^ v).wrapping_mul(0x0100_0000_01b3).rotate_left(17)
+    }
+    fn counted(f: fn(u64) -> Option<u64>, x: u64) -> Option<u64> {
+        CALLS.with(|c| c.set(c.get() + 1));
+        f(x)
+    }
+    fn run(cases: impl Iterator<Item = (u64, u64, u64)>, f: fn(u64) -> Option<u64>, h: &mut u64) {
+        for (lo, hi, n) in cases {
+            CALLS.with(|c| c.set(0));
+            // The wrapper cannot capture f, so dispatch on a static table.
+            let r = match f as usize {
+                _ if f as usize == nth_lucky_approx as fn(u64) -> Option<u64> as usize => {
+                    inverse(lo, hi, n, |x| counted(nth_lucky_approx, x))
+                }
+                _ if f as usize == nth_lucky_lower as fn(u64) -> Option<u64> as usize => {
+                    inverse(lo, hi, n, |x| counted(nth_lucky_lower, x))
+                }
+                _ => inverse(lo, hi, n, |x| counted(nth_lucky_upper, x)),
+            };
+            *h = fold(fold(*h, r), CALLS.with(std::cell::Cell::get));
+        }
+    }
+    fn spread(from: f64, to: f64, step: f64) -> Vec<u64> {
+        let mut v = Vec::new();
+        let mut x = from;
+        while x < to {
+            v.push(x as u64);
+            x *= step;
+        }
+        v
+    }
+
+    #[test]
+    fn estimator_search_paths_are_stable() {
+        let ns = spread(48.0, 1.8e19, 1.07);
+        let (mut a, mut l, mut u) = (0, 0, 0);
+        run(
+            ns.iter().map(|&n| (simple_lower(n), simple_upper(n), n)),
+            nth_lucky_approx,
+            &mut a,
+        );
+        run(
+            ns.iter()
+                .filter(|&&n| n >= 9000)
+                .map(|&n| (simple_lower(n), simple_upper(n), n)),
+            nth_lucky_upper,
+            &mut l,
+        );
+        run(
+            ns.iter()
+                .filter(|&&n| (40_000_000..=18_428_297_000_000_000_000).contains(&n))
+                .map(|&n| {
+                    (
+                        simple_lower(n),
+                        1 + (simple_upper(n) as f64 * 1.001) as u64,
+                        n,
+                    )
+                }),
+            nth_lucky_lower,
+            &mut u,
+        );
+        assert_eq!(
+            (a, l, u),
+            (
+                5_194_117_231_429_512_229,
+                8_850_244_357_012_257_229,
+                6_923_120_440_977_194_347
+            )
+        );
+    }
+
+    #[test]
+    fn synthetic_search_paths_are_stable() {
+        fn lin(x: u64) -> Option<u64> {
+            Some(x / 3)
+        }
+        fn sq(x: u64) -> Option<u64> {
+            Some(x.saturating_mul(x) / 7)
+        }
+        fn rt(x: u64) -> Option<u64> {
+            Some(((x as f64).sqrt() * 5.0) as u64)
+        }
+        fn lg(x: u64) -> Option<u64> {
+            Some(((x as f64 + 1.0).ln() * 1000.0) as u64)
+        }
+        let mut h = 0;
+        for f in [lin, sq, rt, lg] {
+            for n in (1..400u64).chain(spread(400.0, 1e9, 1.3)) {
+                CALLS.with(|c| c.set(0));
+                let r = match f as usize {
+                    _ if f as usize == lin as fn(u64) -> Option<u64> as usize => {
+                        inverse(0, 5_000_000_000, n, |x| counted(lin, x))
+                    }
+                    _ if f as usize == sq as fn(u64) -> Option<u64> as usize => {
+                        inverse(0, 5_000_000_000, n, |x| counted(sq, x))
+                    }
+                    _ if f as usize == rt as fn(u64) -> Option<u64> as usize => {
+                        inverse(0, 5_000_000_000, n, |x| counted(rt, x))
+                    }
+                    _ => inverse(0, 5_000_000_000, n, |x| counted(lg, x)),
+                };
+                h = fold(fold(h, r), CALLS.with(std::cell::Cell::get));
+            }
+        }
+        assert_eq!(h, 2_309_520_481_190_442_195);
+    }
 }

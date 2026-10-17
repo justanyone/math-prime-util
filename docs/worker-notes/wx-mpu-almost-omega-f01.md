@@ -7,3 +7,4 @@ Added range generation, the prime-power window sieve, four oracle tests, partiti
 Focused tests are compiling offline. Range code now uses the C second-largest-factor bound and 262144-entry windows; coefficient and maximum tables came directly from the C source.
 Added fit-boundary and high-window checks, including forced powers of two and window transitions. Guarded window index increments for 32-bit usize overflow.
 The first offline build is still running; gate is queued on Cargo's build lock. Tests now cover C fit transitions, native maxima, small ranges, and two sieve windows.
+No test result yet: tools/test.sh emits only the final log tail, so build progress is hidden. No network, fixture changes, or changes to readonly paths were needed.

@@ -38,3 +38,5 @@ Added bounded repeated-factor sieving for narrow almost-prime ranges, matching t
 All 26 family compatibility tests pass in 1.73 seconds. All nine family property tests pass. Final gate is running against the current source; generated status, fixtures, tools, and crate root remain unchanged.
 
 About five minutes remain. The complete family oracle suite passes; compensated RiemannR now also follows the reference large-input Moebius/Li branch. The full gate spends minutes in existing count compatibility tests.
+
+Final focused verification includes all 26 compatibility tests and a new large-input estimate-bound test to exercise both compensated RiemannR paths. Full gate passed fmt, clippy, and MSRV and is running existing count fixtures.

@@ -156,3 +156,13 @@ fn almost_omega_boundaries_and_concurrency() {
     assert_eq!(almost_primes(3, 0, 2000), expected.0);
     assert_eq!(omega_primes(3, 0, 2000), expected.1);
 }
+
+#[test]
+fn large_prime_estimates_stay_in_their_bounds() {
+    for n in [1u64 << 53, 1u64 << 60, 10_000_000_000_000_000_000, u64::MAX] {
+        let estimate = almost_prime_count_approx(1, n);
+        assert!(almost_prime_count_lower(1, n) <= estimate);
+        assert!(estimate <= almost_prime_count_upper(1, n));
+        assert!(almost_prime_count_approx(1, n / 2) < estimate);
+    }
+}

@@ -48,7 +48,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `consecutive_integer_lcm`
 - [x] `contfrac`
 - [x] `convergents`
-- [ ] `cornacchia`
+- [x] `cornacchia`
 - [x] `crootint`
 - [x] `csrand`
 - [x] `dedekind_psi`
@@ -56,7 +56,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `divint`
 - [x] `divisors`
 - [x] `divisor_sum`
-- [ ] `divmod`
+- [x] `divmod`
 - [x] `divrem`
 - [x] `drand`
 - [x] `ecm_factor`

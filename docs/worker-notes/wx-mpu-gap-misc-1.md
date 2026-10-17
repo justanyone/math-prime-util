@@ -12,3 +12,5 @@ Focused compilation found that is_prime returns u8; fixed the property predicate
 Oracle, four property tests, and six unit tests passed offline. The full gate is running; Higgs remains blocked by its absent reference.
 
 The gate found two pedantic test-style lints. Replaced string collection and empty assertions; rerun the gate next.
+
+Fixed the benchmark macro documentation lint. Final full-suite tests and the gate are running offline.

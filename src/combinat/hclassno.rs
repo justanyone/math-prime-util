@@ -25,7 +25,7 @@ pub fn hclassno(n: u64) -> Option<i128> {
     let mut b = n & 1;
     let mut b2 = (n + 1) >> 2;
     let square = crate::is_square(b2);
-    let mut h = u64::try_from(divisors(b2).len()).expect("divisor count fits u64") >> 1;
+    let mut h = divisors(b2).len() as u64 >> 1;
     if b == 1 {
         h = 1 + u64::from(square) + ((h - 1) << 1);
     }

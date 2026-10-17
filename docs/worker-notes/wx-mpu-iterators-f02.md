@@ -16,3 +16,4 @@ Added unwind/relaunch, u64 endpoint, and cube-root sieve regression cases. Waiti
 Started focused tests with CARGO_TARGET_DIR=target/iter-verify to avoid the shared build-directory lock. No dependencies or build scripts changed.
 Final source review retained the C thresholds and maximum table, and simplified the private factor-value type for pedantic lint. Isolated focused compilation is still pending.
 Verification is pending: the original gate remains blocked on Cargo's lock, while the isolated test run has not returned output. No test success is claimed.
+The isolated build directory has populated (75 MB), confirming compilation is progressing. Started the gate against that same local directory to obtain final lint and MSRV diagnostics.

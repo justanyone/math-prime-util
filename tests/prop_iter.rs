@@ -289,3 +289,13 @@ fn requested_iterator_unwind_and_relaunch() {
         assert_eq!(factors, math_prime_util::factor_exp(n));
     }
 }
+
+proptest! {
+    #[test]
+    fn squarefree_integer_sieve_matches_factorization(lo in 0_u64..500, len in 0_u64..100) {
+        let expected: Vec<_> = (lo..=lo + len).filter(|&n| {
+            n > 0 && math_prime_util::factor_exp(n).iter().all(|&(_, e)| e == 1)
+        }).collect();
+        prop_assert_eq!(squarefree_integers_in(lo..=lo + len).collect::<Vec<_>>(), expected);
+    }
+}

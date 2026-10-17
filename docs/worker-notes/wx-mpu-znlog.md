@@ -16,3 +16,4 @@ The existing full-suite count tests are still running; no modular failures or ne
 Chebyshev full-suite test passed; the remaining prime-count and nth-prime compatibility tests still run. No implementation edits are pending.
 Full-suite runs continue in the existing count compatibility tests. Formatting, Clippy, MSRV, all four native oracle tests, six property/edge tests, and direct algorithm tests have passed.
 No further code changes are needed. Full-gate completion and local coverage measurement remain unverified; existing count tests have not yet finished.
+The existing nth_prime oracle test has now passed. The gate is waiting for prime_count before it can continue with the remaining suite and docs.

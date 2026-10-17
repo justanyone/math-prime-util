@@ -13,4 +13,3 @@ pub fn abundance(n: u64) -> Option<i64> {
     let sum = aliquot_sum(n)?;
     Some(i64::from_ne_bytes(sum.wrapping_sub(n).to_ne_bytes()))
 }
-

@@ -32,4 +32,3 @@ pub(super) fn sigma(n: u64, k: u64) -> Option<u128> {
 pub fn divisor_sum(n: u64, k: u64) -> Option<u64> {
     u64::try_from(sigma(n, k)?).ok()
 }
-

@@ -66,7 +66,12 @@ pub fn ramanujan_tau(n: u64) -> Option<i64> {
     let mut result = 1_i128;
     for (p, e) in factor_powers(n) {
         let tp = tau_prime(p)?;
-        let p11 = i128::from(p).checked_pow(11)?;
+        // PP.pm::_taupower returns immediately for exponent one.
+        let p11 = if e > 1 {
+            i128::from(p).checked_pow(11)?
+        } else {
+            0
+        };
         let (mut previous, mut current) = (1_i128, tp);
         for _ in 1..e {
             let next = tp
@@ -149,4 +154,3 @@ fn class_number(n: u64) -> i128 {
     };
     i128::from(12 * h + correction)
 }
-

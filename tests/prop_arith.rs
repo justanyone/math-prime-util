@@ -226,7 +226,7 @@ fn divisor_sum_native_boundaries_and_prime_powers() {
     assert_eq!(aliquot_sum(1_u64 << 63), Some((1_u64 << 63) - 1));
     assert_eq!(aliquot_sum(18_446_744_073_709_551_557), Some(1));
     // Sigma exceeds u64, but the proper divisor sum still fits.
-    assert_eq!(aliquot_sum(3_u64 << 62), Some(23_058_430_092_136_939_772_u128 as u64));
+    assert_eq!(aliquot_sum(5_u64 << 61), Some(16_140_901_064_495_857_658));
 }
 
 #[test]
@@ -238,7 +238,7 @@ fn divisor_sums_have_no_shared_call_state() {
                     assert_eq!(divisor_sum(12, 2), Some(210));
                     assert_eq!(aliquot_sum(27), Some(13));
                     assert_eq!(abundance(28), Some(0));
-                    assert_eq!(ramanujan_tau(49), Some(-16_991_628_512));
+                    assert_eq!(ramanujan_tau(49), Some(-1696965207));
                 }
             });
         }

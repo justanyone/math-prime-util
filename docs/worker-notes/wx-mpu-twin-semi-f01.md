@@ -24,3 +24,4 @@ Prime-count oracle remains active late in the time budget. Run the focused famil
 All 14 families doc tests passed, including all four new runnable examples. Focused compatibility/property/unit tests, fmt, clippy, and MSRV checks passed. The full gate has not printed green because the existing prime-count oracle test is  <<cut 64 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 40 bytes)
+- 2026-10-17T07:01:09Z launcher: about 60 s to the time limit of 14 minutes; 788 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-twin-semi-f01.md, src/families/mod.rs, src/families/nth_twin_prime.rs, src/families/twin_prime_count.rs, src/families/twin_prime_count_approx.rs, src/families/twin_primes.rs, tests/compat_families.rs, tests/prop_families.rs.

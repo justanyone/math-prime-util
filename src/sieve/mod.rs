@@ -8,8 +8,8 @@ mod wheel;
 use std::sync::{Mutex, OnceLock};
 
 use wheel::{
-    build_sieve, is_prime, next_in_sieve, pad_limit, prev_in_sieve, wheel_next, wheel_prev,
-    MPU_MAX_PRIME,
+    MPU_MAX_PRIME, build_sieve, is_prime, next_in_sieve, pad_limit, prev_in_sieve, wheel_next,
+    wheel_prev,
 };
 
 /// Largest prime that fits in a `u64`. `constants.h` `MPU_MAX_PRIME`.
@@ -227,7 +227,10 @@ fn sieve_bool(lo: u64, hi: u64) -> Vec<u64> {
         p += 1;
     }
     let start = usize::try_from(lo).unwrap_or(0).max(2);
-    (start..=n).filter(|&i| !comp[i]).map(|i| i as u64).collect()
+    (start..=n)
+        .filter(|&i| !comp[i])
+        .map(|i| i as u64)
+        .collect()
 }
 
 fn primes_walk(lo: u64, hi: u64) -> Vec<u64> {
@@ -550,7 +553,12 @@ fn sum_leq(n: u64) -> u128 {
         return sum_interval(2, n);
     }
     let memo = sum_memo();
-    if let Some(hit) = memo.lock().unwrap_or_else(|e| e.into_inner()).get(&n).copied() {
+    if let Some(hit) = memo
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get(&n)
+        .copied()
+    {
         return hit;
     }
     let value = sum_leq_lucy(n);
@@ -636,8 +644,8 @@ mod tests {
         assert_eq!(
             primes(0, 100),
             vec![
-                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
-                79, 83, 89, 97
+                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,
+                83, 89, 97
             ]
         );
         assert_eq!(next_prime(97), Some(101));
@@ -666,8 +674,8 @@ mod tests {
         assert_eq!(
             primes(0, 100),
             vec![
-                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
-                79, 83, 89, 97
+                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,
+                83, 89, 97
             ]
         );
         assert_eq!(primes(0, 30), primes_in(0..=30).collect::<Vec<_>>());
@@ -693,10 +701,7 @@ mod tests {
                 assert_eq!(next_prime(90), Some(97));
                 assert_eq!(prev_prime(90), Some(89));
                 assert_eq!(primes(14, 18), vec![17]);
-                assert_eq!(
-                    sieve_prime_cluster(0, 30, &[2]),
-                    vec![3, 5, 11, 17, 29]
-                );
+                assert_eq!(sieve_prime_cluster(0, 30, &[2]), vec![3, 5, 11, 17, 29]);
             }));
         }
         for join in joins {

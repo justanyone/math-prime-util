@@ -7,7 +7,7 @@
 
 mod common;
 
-use common::{each, each_may_panic, Case};
+use common::{Case, each, each_may_panic};
 use math_prime_util::*;
 
 fn unrepresentable(c: &Case) -> bool {
@@ -17,10 +17,7 @@ fn unrepresentable(c: &Case) -> bool {
 }
 
 fn fmt_list(v: &[u64]) -> String {
-    v.iter()
-        .map(u64::to_string)
-        .collect::<Vec<_>>()
-        .join(" ")
+    v.iter().map(u64::to_string).collect::<Vec<_>>().join(" ")
 }
 
 #[test]
@@ -110,5 +107,8 @@ fn cache_state_repeat_and_threads() {
         join.join().expect("cache thread");
     }
     prime_memfree();
-    assert_eq!(sieve_range(0, 20, 2), vec![2, 3, 5, 7, 9, 11, 13, 15, 17, 19]);
+    assert_eq!(
+        sieve_range(0, 20, 2),
+        vec![2, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+    );
 }

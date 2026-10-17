@@ -271,7 +271,7 @@ pub(crate) fn is_prime(n: u64) -> bool {
         return true;
     }
     miller_rabin(n)
-
+}
 
 const MR_BASES: [u64; 7] = [2, 325, 9375, 28_178, 450_775, 9_780_504, 1_795_265_022];
 

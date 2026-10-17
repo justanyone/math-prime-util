@@ -1,0 +1,1 @@
+- Plan: port MPU verify_prime (aks.c/PrimalityProving.pm) into src/proving/, add compat/prop tests, run gate.

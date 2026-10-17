@@ -1,4 +1,8 @@
-#![allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 use super::fermat_factor::attempt;
 use crate::{gcd, is_prime, is_square_root, rootint};
 
@@ -26,21 +30,31 @@ fn split(n: u64, do_trial: bool) -> u64 {
         // primes_small in MPU contains primes through 2011.
         for p in (3..=2011).step_by(2).filter(|&p| is_prime(p) != 0) {
             trial_start = p;
-            if p >= first_cut { break; }
-            if n % p == 0 { return p; }
+            if p >= first_cut {
+                break;
+            }
+            if n % p == 0 {
+                return p;
+            }
         }
     }
-    if n >= 8_796_393_022_207 { return n; }
+    if n >= 8_796_393_022_207 {
+        return n;
+    }
     let reduced = (bound as f64 / (tune * tune * tune)) as u64;
     let bound_squared = bound * bound;
     let mut kn = 0;
     for k in 1..=reduced {
         let (inc, r) = if k & 1 != 0 { (4, (k + n) % 4) } else { (2, 1) };
         kn += n;
-        if kn >= 1_152_921_504_606_846_976 { return n; }
+        if kn >= 1_152_921_504_606_846_976 {
+            return n;
+        }
         let mut x = (kn as f64).sqrt();
         let a = x as u64;
-        if a * a == kn { return gcd(a, n); }
+        if a * a == kn {
+            return gcd(a, n);
+        }
         x *= 2.0;
         let a = (x + 0.999_999_966_5) as u64;
         let b = a + (inc + r - a % inc) % inc;
@@ -48,14 +62,18 @@ fn split(n: u64, do_trial: bool) -> u64 {
         let upper = (x + bound_squared as f64 / (2.0 * x)) as u64;
         let mut a = b;
         while a <= upper {
-            if let Some(b) = is_square_root(c) { return gcd(a + b, n); }
+            if let Some(b) = is_square_root(c) {
+                return gcd(a + b, n);
+            }
             c += inc * (a + a + inc);
             a += inc;
         }
     }
     if do_trial {
         for p in (trial_start..=bound.min(65535)).step_by(2) {
-            if n % p == 0 { return p; }
+            if n % p == 0 {
+                return p;
+            }
         }
     }
     n

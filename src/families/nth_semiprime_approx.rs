@@ -24,6 +24,11 @@ const MAX_SEMI_PRIME_IDX: u64 = 1_701_748_900_850_019_777;
 /// assert_eq!(nth_semiprime_approx(0), None);
 /// ```
 #[must_use]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)] // An estimate: f64 rounding is accepted, and `est` is positive and below u64::MAX here.
 pub fn nth_semiprime_approx(n: u64) -> Option<u64> {
     if n == 0 {
         return None;
@@ -83,14 +88,25 @@ mod tests {
     fn table_and_bounds() {
         assert_eq!(nth_semiprime_approx(0), None);
         assert_eq!(nth_semiprime_approx(2), Some(6));
-        assert_eq!(nth_semiprime_approx(MAX_SEMI_PRIME_IDX), Some(MAX_SEMI_PRIME));
+        assert_eq!(
+            nth_semiprime_approx(MAX_SEMI_PRIME_IDX),
+            Some(MAX_SEMI_PRIME)
+        );
         assert_eq!(nth_semiprime_approx(MAX_SEMI_PRIME_IDX + 1), Some(0));
     }
 
     #[test]
     fn estimate_branches() {
         // Covers the low, blend low-mid, mid, blend mid-high and high ranges.
-        for n in [1000u64, 1 << 26, (1 << 26) + 1, 1 << 27, 1 << 40, 1 << 50, 1 << 60] {
+        for n in [
+            1000u64,
+            1 << 26,
+            (1 << 26) + 1,
+            1 << 27,
+            1 << 40,
+            1 << 50,
+            1 << 60,
+        ] {
             let v = nth_semiprime_approx(n).unwrap();
             assert!(v > n, "estimate for {n} is {v}");
         }

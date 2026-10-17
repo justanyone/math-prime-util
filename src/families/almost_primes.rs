@@ -21,6 +21,11 @@ fn generate(k: u64, lo: u64, hi: u64, m: u64, begin: u64, list: &mut Vec<u64>) {
 
 // almost_primes.c: range_almost_prime_sieve. Count prime powers in a window.
 fn sieve(k: u64, lo: u64, hi: u64) -> Vec<u64> {
+    if hi - lo < 39 {
+        return (lo..=hi)
+            .filter(|&n| crate::is_almost_prime(k, n))
+            .collect();
+    }
     // Reduce the factor count when every result has a forced power of two.
     let mut reduced = k;
     let mut top = hi;
@@ -52,6 +57,9 @@ fn sieve(k: u64, lo: u64, hi: u64) -> Vec<u64> {
                         let Ok(step) = usize::try_from(power) else {
                             break;
                         };
+                        if step >= products.len() - i {
+                            break;
+                        }
                         i += step;
                     }
                 }

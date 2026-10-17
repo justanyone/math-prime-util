@@ -674,3 +674,62 @@ fn almost_edges_and_parallel_calls() {
         );
     }
 }
+
+#[test]
+fn almost_high_ranges_and_fit_boundaries() {
+    for (k, lo, hi) in [
+        (3, 1_000_000_000_000, 1_000_000_000_010),
+        (4, 1_000_000_000_000, 1_000_000_000_100),
+        (30, 1_000_000_000_000, 1_000_000_000_100),
+        (3, 1_000_000_000_000, 1_000_000_262_150),
+    ] {
+        let list = almost_primes(k, lo, hi);
+        assert!(list.iter().all(|&n| is_almost_prime(k, n)));
+        // Factor independently at both ends of a sieve window.
+        for n in (lo..=lo + 50.min(hi - lo)).chain(hi - 50.min(hi - lo)..=hi) {
+            assert_eq!(list.binary_search(&n).is_ok(), is_almost_prime(k, n));
+        }
+    }
+    for n in [
+        102,
+        638,
+        639,
+        1544,
+        1545,
+        1926,
+        1927,
+        1928,
+        486586,
+        486587,
+        500194,
+        500195,
+        1913680,
+        1913681,
+        22347532,
+        22347533,
+        295_000_000,
+        295_000_001,
+        3_184_393_786,
+        3_184_393_787,
+        4_200_000_000,
+        4_200_000_001,
+        70_700_000_000,
+        70_700_000_001,
+        1_360_000_000_000,
+        1_360_000_000_001,
+        41_000_000_000_000,
+        41_000_000_000_001,
+        920_000_000_000_000,
+        920_000_000_000_001,
+        u64::MAX,
+    ] {
+        let lower = almost_prime_count_lower(3, n);
+        assert!(almost_prime_count_approx(3, n) >= lower);
+    }
+    for k in 0..64 {
+        assert!(almost_prime_count_lower(k, u64::MAX) <= almost_prime_count_approx(k, u64::MAX));
+    }
+    assert_eq!(almost_prime_count(1, u64::MAX), 425_656_284_035_217_743);
+    assert_eq!(almost_prime_count(2, u64::MAX), 1_701_748_900_850_019_777);
+    assert_eq!(almost_prime_count(3, u64::MAX), 3_167_597_434_038_354_478);
+}

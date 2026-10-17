@@ -2,3 +2,4 @@ Implement the native proving API from MPU 0.75 and use the existing primality or
 Read PLAN sections 5–8 before editing. Keep tools, fixtures, crate root, and STATUS unchanged.
 Check certificate validation and repeated calls with focused offline tests.
 Run the gate and report any incomplete algorithms or blocked checks.
+Read the native certificate and Bernstein AKS paths. Existing fixtures omit the three certificate APIs; add direct compatibility examples without editing fixtures.

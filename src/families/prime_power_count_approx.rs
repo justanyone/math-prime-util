@@ -60,6 +60,23 @@ fn count(n: u64) -> u64 {
         }
         return value.integer(true);
     }
+    if n > (1_u64 << 53) {
+        let log = log_n(n);
+        let mut value = Wide(1.0, 0.0);
+        let mut part = Wide(1.0, 0.0);
+        for k in 1..=10_000 {
+            let k = f64::from(k);
+            part = part.mul(log).div(Wide(k, 0.0));
+            let denominator =
+                Wide(k, 0.0).add(Wide(k, 0.0).mul(Wide(crate::riemann_zeta(k + 1.0), 0.0)));
+            let term = part.div(denominator);
+            value = value.add(term);
+            if term.0.abs() <= 1e-6 {
+                break;
+            }
+        }
+        return value.integer(true);
+    }
     for k in 1..=10_000 {
         let k = f64::from(k);
         part *= x.ln() / k;
@@ -118,8 +135,8 @@ impl Wide {
 
 // MPU real.c, _ei_series_convergent and _Li for the large native inputs.
 // Small inputs use the existing real module; large values retain two components.
-#[allow(clippy::cast_precision_loss)]
-pub(super) fn li(n: u64) -> Wide {
+#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation)]
+fn log_n(n: u64) -> Wide {
     let high = n as f64;
     let low = (i128::from(n) - high as i128) as f64;
     let e = n.ilog2();
@@ -136,6 +153,11 @@ pub(super) fn li(n: u64) -> Wide {
     log = log.mul(Wide(2.0, 0.0)).add(
         Wide(std::f64::consts::LN_2, 2.319_046_813_846_299_6e-17).mul(Wide(f64::from(e), 0.0)),
     );
+    log
+}
+
+pub(super) fn li(n: u64) -> Wide {
+    let log = log_n(n);
     let mut factorial_term = Wide(1.0, 0.0);
     let mut sum = Wide(0.577_215_664_901_532_9 + log.0.ln(), 0.0);
     for k in 1..=300 {

@@ -1,4 +1,4 @@
-/// Bound the prime powers less than or equal to `n`.
+/// Return a lower bound for the number of prime powers at most `n`.
 ///
 /// Port of MPU 0.75 `prime_powers.c`, `prime_power_count_lower`.
 /// Sum the prime counts at each integer root, including exponent one.

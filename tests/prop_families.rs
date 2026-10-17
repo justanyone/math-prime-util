@@ -37,3 +37,23 @@ fn small_counts_and_repeat_calls() {
         }
     }
 }
+
+#[test]
+fn large_estimates_and_concurrent_calls() {
+    let inputs = [
+        10_000_000_000_000_001,
+        1_000_000_000_000_000_000,
+        10_000_000_000_000_000_000,
+        u64::MAX,
+    ];
+    std::thread::scope(|scope| {
+        for n in inputs {
+            scope.spawn(move || {
+                let estimate = prime_power_count_approx(n);
+                assert!(prime_power_count_lower(n) <= estimate);
+                assert!(estimate <= prime_power_count_upper(n));
+                assert_eq!(prime_power_count_approx(n), estimate);
+            });
+        }
+    });
+}

@@ -126,7 +126,11 @@ fn split(n: u64) -> u64 {
             return f;
         }
     }
-    // MPU factor.c::trial_factor, final exact fallback.
+    trial_split(n)
+}
+
+// MPU factor.c::trial_factor, final exact fallback after the small table.
+fn trial_split(n: u64) -> u64 {
     let mut p = 2017;
     while p <= n / p {
         if n % p == 0 {
@@ -154,4 +158,26 @@ pub(super) fn factors(n: u64) -> Vec<u64> {
     collect(n, &mut out);
     out.sort_unstable();
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{factors, rho, split, trial_split};
+
+    #[test]
+    fn factoring_support() {
+        assert_eq!(factors(0), [] as [u64; 0]);
+        assert_eq!(factors(1), [] as [u64; 0]);
+        assert_eq!(factors(2 * 3 * 3 * 17), [2, 3, 3, 17]);
+        assert_eq!(split(2027), 2027);
+        assert_eq!(trial_split(2017 * 2027), 2017);
+        assert_eq!(trial_split(2027 * 2029), 2027);
+        assert_eq!(trial_split(2027), 2027);
+        assert_eq!(rho(13, 1), None);
+        assert_eq!(rho(18_446_744_073_709_551_557, 1), None);
+        let n = 1_000_003 * 1_000_033;
+        let f = rho(n, 1).expect("composite splits");
+        assert!(f > 1 && f < n && n % f == 0);
+        assert_eq!(factors(n), [1_000_003, 1_000_033]);
+    }
 }

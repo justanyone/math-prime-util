@@ -19,3 +19,4 @@ Verification is pending: the original gate remains blocked on Cargo's lock, whil
 The isolated build directory has populated (75 MB), confirming compilation is progressing. Started the gate against that same local directory to obtain final lint and MSRV diagnostics.
 Added an independent property: prime-square sieve output equals the unit-exponent factorization predicate over arbitrary small intervals. Gates remain queued behind compilation.
 No further source changes planned while compilation finishes. Both gate attempts have reached fmt and are waiting for Cargo build access; final results remain unverified.
+- 2026-10-17T18:54:44Z launcher: no commit for 62 s; 641 s elapsed. Files changed so far: benches/iter.rs, docs/worker-notes/wx-mpu-iterators-f02.md, src/iter/foralmostprimes.rs, src/iter/forfactored.rs, src/iter/forsquarefree.rs, src/iter/forsquarefreeint.rs, src/iter/mod.rs, tests/compat_iter.rs, tests/prop_iter.rs.

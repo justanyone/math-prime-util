@@ -21,3 +21,5 @@ Gate passed fmt, pedantic Clippy, and MSRV. The existing compatibility suite is 
 - 2026-10-17T09:44:06Z launcher: no commit for 60 s; 332 s elapsed. Files changed so far: STATUS.md, benches/misc_gap.rs, docs/worker-notes/wx-mpu-gap-misc-1.md, src/lib.rs, src/misc_gap/floor_sum.rs, src/misc_gap/mod.rs, src/misc_gap/print_primes.rs, src/misc_gap/remove_factors.rs, src/misc_gap/remove_factors_exp.rs, tests/compat_misc_gap.rs, tests/prop_misc_gap.rs.
 
 The full runs are still in the existing count oracle tests; focused misc-gap tests already passed. No new code changes are needed.
+
+Chebyshev and nth-prime oracle tests passed. Waiting for prime-count verification before the gate can finish.

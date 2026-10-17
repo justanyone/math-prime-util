@@ -12,3 +12,6 @@ Arithmetic edge and bounded-splitter unit tests pass. Re-running fixture and pro
 All 448 factor oracle cases pass, including the three u128 inputs. Gate clippy found one new unreadable literal (fixed) and three existing float_cmp failures in src/count/mod.rs:240-242, outside task scope. Running the full offline suite no <<cut 39 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)
+Final scope: factor_u128, is_prime_u128 and a u64 factor wrapper are implemented with runnable examples. The API reports an unsplit cofactor instead of claiming complete factorization. Remaining work is the C p-1/SQUFOF/ECM dispatcher, Mont <<cut 66 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 42 bytes)

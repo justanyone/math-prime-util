@@ -25,29 +25,14 @@ fn gcddiv(a: u64, b: u64, n: u64) -> u64 {
     divmod(a / g, b / g, n).unwrap_or(0)
 }
 
-// Factor only after the primality test, as in MPU factorint.
-fn factors(mut n: u64) -> Vec<(u64, u32)> {
-    let mut out = Vec::new();
-    if n > 1 && is_prime(n) != 0 {
-        return vec![(n, 1)];
+// rootmod.c calls `factorint` (`factor.h`, `factor.c` `factorintp`).
+// `n < 2` is not a prime power; `factor_exp(0)` is the pair `(0, 1)`.
+fn factors(n: u64) -> Vec<(u64, u32)> {
+    if n < 2 {
+        Vec::new()
+    } else {
+        crate::factor_exp(n)
     }
-    let mut p = 2;
-    while n > 1 {
-        if n % p == 0 {
-            let mut e = 0;
-            while n % p == 0 {
-                n /= p;
-                e += 1;
-            }
-            out.push((p, e));
-            if n > 1 && is_prime(n) != 0 {
-                out.push((n, 1));
-                break;
-            }
-        }
-        p = if p == 2 { 3 } else { p + 2 };
-    }
-    out
 }
 
 // rootmod.c, _sqrtmod_prime (native arithmetic path).

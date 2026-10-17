@@ -89,6 +89,17 @@ fn square_root_count_limit() {
 }
 
 #[test]
+fn semiprime_square_root_factors_with_brent() {
+    // Two 20-bit primes: trial division would walk up to the smaller prime.
+    let n = 1_000_003_u64 * 1_000_033;
+    let a = mulmod(1_000_019, 1_000_019, n).unwrap();
+    assert_ne!(sqrtint(a) * sqrtint(a), a);
+    let root = sqrtmod(a, n).unwrap();
+    assert_eq!(mulmod(root, root, n), Some(a));
+    assert_eq!(factor_exp(n), vec![(1_000_003, 1), (1_000_033, 1)]);
+}
+
+#[test]
 fn large_composite_cornacchia() {
     let n = 5_u64.pow(24);
     let (x, y) = cornacchia(1, n).unwrap();

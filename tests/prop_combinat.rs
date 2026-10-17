@@ -1,15 +1,9 @@
-<<<<<<< HEAD
 //! Algebraic laws and native boundary regressions for combinatorics.
-use math_prime_util::{bell_number, binomial, catalan_number, stirling};
-=======
-//! Algebraic laws and native overflow boundaries.
-use math_prime_util::{bernfrac, harmfrac, pn_primorial, primorial};
->>>>>>> origin/dev-001
+use math_prime_util::{bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling};
 use proptest::prelude::*;
 
 proptest! {
     #[test]
-<<<<<<< HEAD
     fn binomial_symmetry_and_pascal(n in 1_u64..60, seed in any::<u64>()) {
         let k = seed % n;
         prop_assert_eq!(binomial(n, k), binomial(n, n - k));
@@ -42,7 +36,9 @@ proptest! {
     fn bell_binomial_transform(n in 0_u64..24) {
         let sum: u64 = (0..=n).map(|k| binomial(n, k).unwrap() * bell_number(k).unwrap()).sum();
         prop_assert_eq!(bell_number(n + 1), Some(sum));
-=======
+    }
+
+    #[test]
     fn odd_bernoulli_vanishes(k in 1..u64::MAX / 2) {
         prop_assert_eq!(bernfrac(2 * k + 1), Some((0, 1)));
     }
@@ -61,12 +57,10 @@ proptest! {
         let prime = (2..n).all(|d| n % d != 0);
         let previous = primorial(n - 1).unwrap();
         prop_assert_eq!(primorial(n), Some(previous * if prime { n } else { 1 }));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn native_boundaries() {
     assert_eq!(binomial(u64::MAX, 0), Some(1));
     assert_eq!(binomial(u64::MAX, 1), Some(u64::MAX));
@@ -90,7 +84,10 @@ fn native_boundaries() {
             if kind == 2 { Some(1) } else { None }
         );
         assert_eq!(stirling(100, 50, kind), None);
-=======
+    }
+}
+
+#[test]
 fn prime_index_products() {
     let primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
     let mut product = 1;
@@ -99,16 +96,17 @@ fn prime_index_products() {
         product *= prime;
         assert_eq!(pn_primorial(u64::try_from(i + 1).unwrap()), Some(product));
         assert_eq!(primorial(prime), Some(product));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn invalid_stirling_kind() {
     for kind in [0, 4, u64::MAX] {
         assert!(std::panic::catch_unwind(|| stirling(0, 0, kind)).is_err());
-=======
+    }
+}
+
+#[test]
 fn native_boundaries_and_repeat_calls() {
     for _ in 0..2 {
         assert_eq!(harmfrac(0), Some((0, 1)));
@@ -123,12 +121,10 @@ fn native_boundaries_and_repeat_calls() {
         assert_eq!(primorial(u64::MAX), None);
         assert_eq!(pn_primorial(16), None);
         assert_eq!(pn_primorial(u64::MAX), None);
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn stirling_cancellation_regressions() {
     assert_eq!(stirling(18, 2, 1), Some(1_223_405_590_579_200));
     assert_eq!(stirling(64, 62, 2), Some(1_947_792));
@@ -141,8 +137,8 @@ fn stirling_cancellation_regressions() {
 }
 
 #[test]
-fn independent_calls_are_repeatable() {
-    let calls: Vec<_> = (0..4)
+fn concurrent_calls() {
+    let workers: Vec<_> = (0..4)
         .map(|_| {
             std::thread::spawn(|| {
                 (
@@ -150,6 +146,10 @@ fn independent_calls_are_repeatable() {
                     catalan_number(36),
                     stirling(22, 12, 1),
                     bell_number(25),
+                    bernfrac(58),
+                    harmfrac(60),
+                    primorial(52),
+                    pn_primorial(15),
                 )
             })
         })
@@ -159,19 +159,12 @@ fn independent_calls_are_repeatable() {
         catalan_number(36),
         stirling(22, 12, 1),
         bell_number(25),
+        bernfrac(58),
+        harmfrac(60),
+        primorial(52),
+        pn_primorial(15),
     );
-    for call in calls {
-        assert_eq!(call.join().unwrap(), expected);
-=======
-fn concurrent_calls() {
-    let workers: Vec<_> = (0..4)
-        .map(|_| {
-            std::thread::spawn(|| (bernfrac(58), harmfrac(60), primorial(52), pn_primorial(15)))
-        })
-        .collect();
-    let expected = (bernfrac(58), harmfrac(60), primorial(52), pn_primorial(15));
     for worker in workers {
         assert_eq!(worker.join().unwrap(), expected);
->>>>>>> origin/dev-001
     }
 }

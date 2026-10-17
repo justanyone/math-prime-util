@@ -9,3 +9,5 @@ Focused checks found bigint binomial inputs to skip and Stirling cancellation be
 Added the first-kind direct recurrence used by MPU PP.pm after C overflow, plus its second-kind near-diagonal shortcut. Focused fixtures now rerunning after the cancellation fix.
 Near-diagonal review found fitting second-kind values beyond the C intermediate range. Added a capped positive recurrence fallback and regression cases; it stops on proven result overflow.
 Near-diagonal and concurrent-repeat tests are complete. Corrected a hand-calculated regression constant; added a constant-time overflow check for deficit one to avoid billions of recurrence steps on u64::MAX.
+All 12 focused tests passed. The final offline gate is running. The checkout has no origin/dev ref, so a base diff cannot be shown; git status is clean after launcher snapshots.
+Finished: all 12 focused tests, the offline full suite, and the final gate passed; the gate printed == gate: green. No implementation work remains; cross-platform coverage remains for CI. Tools, fixtures, STATUS.md, and dependencies were unchanged.

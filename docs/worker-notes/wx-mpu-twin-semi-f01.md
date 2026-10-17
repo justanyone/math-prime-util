@@ -21,3 +21,6 @@ About five minutes remain in the worker budget. Implementation and focused valid
 No gate failure has appeared. Existing nth-prime and prime-count compatibility tests still run; do not change unrelated code or start a second suite.
 The existing nth-prime oracle test passed. The gate still waits on prime_count_oracle. All new APIs, examples, compatibility tests, properties, and benchmarks are written.
 Prime-count oracle remains active late in the time budget. Run the focused families doc tests separately to validate runnable examples without duplicating the full suite.
+All 14 families doc tests passed, including all four new runnable examples. Focused compatibility/property/unit tests, fmt, clippy, and MSRV checks passed. The full gate has not printed green because the existing prime-count oracle test is  <<cut 64 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 40 bytes)

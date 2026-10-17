@@ -305,7 +305,12 @@ fn nth(k: u32, n: u64, kind: u8) -> Option<u64> {
         return (n == MAX_COUNTS[k as usize]).then_some(u64::MAX - OFFSETS[k as usize]);
     }
     if k == 1 {
-        return crate::nth_prime(n);
+        return match kind {
+            1 => Some(super::nth_prime_power_approx::prime_bound(n, false)),
+            2 => Some(super::nth_prime_power_approx::prime_bound(n, true)),
+            3 => Some(inverse(2, n, prime_approx)),
+            _ => crate::nth_prime(n),
+        };
     }
     if k == 2 && kind == 3 && n < 206 {
         return nth(k, n, 0);

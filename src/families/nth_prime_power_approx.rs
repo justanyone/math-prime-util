@@ -96,7 +96,7 @@ pub(super) fn count(n: u64, kind: u8) -> u64 {
 }
 
 // MPU prime_counts.c: simple_nth_limits and nth_prime_lower/upper.
-fn prime_bound(n: u64, upper: bool) -> u64 {
+pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
     if n < SMALL_LEN {
         return nth_prime(n).unwrap_or(0);
     }

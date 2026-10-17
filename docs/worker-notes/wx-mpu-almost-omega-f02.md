@@ -8,3 +8,5 @@ Implemented bounds tables, reductions, count inversion, and the four public func
 Added native oracle checks, property tests, concurrency checks, and benchmarks. Focused tests are compiling offline.
 Focused tests and gate are waiting on the Cargo build lock. Next inspect failures once compilation finishes.
 Corrected the prime approximation branch to use MPU real.c Halley inverse R. Exact nth search still lacks the C approximation-assisted optimization.
+Added the C approximation-assisted nth search for k=3 and k=4 with tolerance 20000. Cargo commands still wait on the shared build lock.
+Shared build lock has not cleared. Started the focused oracle tests in a worktree-local target directory to get independent offline validation.

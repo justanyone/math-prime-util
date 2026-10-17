@@ -501,63 +501,6 @@ pub fn exp_mangoldt(n: u64) -> u64 {
     if f.len() == 1 { f[0].0 } else { 1 }
 }
 
-/// Sum Euler's totient through `n`, or return `None` on native overflow.
-/// Port of `totients.c::sumtotient` and `_sumt`.
-/// ```
-/// assert_eq!(math_prime_util::sumtotient(10), Some(32));
-/// ```
-pub fn sumtotient(n: u64) -> Option<u64> {
-    fn sumt(n: u64, prefix: &[u64], cache: &mut HashMap<u64, u64>) -> u64 {
-        if let Ok(i) = usize::try_from(n) {
-            if let Some(&v) = prefix.get(i) {
-                return v;
-            }
-        }
-        if let Some(&v) = cache.get(&n) {
-            return v;
-        }
-        let s = sqrtint(n);
-        let lim = n / (s + 1);
-        let mut v = u128::from(n) * u128::from(n + 1) / 2 - u128::from(n - n / 2);
-        for k in 2..=lim {
-            v -= u128::from(sumt(n / k, prefix, cache));
-            v -= u128::from(n / k - n / (k + 1)) * u128::from(sumt(k, prefix, cache));
-        }
-        if s > lim {
-            v -= u128::from(n / s - n / (s + 1)) * u128::from(sumt(s, prefix, cache));
-        }
-        let v = u64::try_from(v).unwrap();
-        cache.insert(n, v);
-        v
-    }
-    if n > 7_790_208_950 {
-        return None;
-    }
-    let mut prefix = euler_phi_range(0, rootint(n, 3).pow(2).max(2));
-    for i in 2..prefix.len() {
-        prefix[i] += prefix[i - 1];
-    }
-    Some(sumt(n, &prefix, &mut HashMap::new()))
-}
-
-/// Return Dedekind's psi, or `None` on overflow.
-/// Port of `totients.c::dedekind_psi`.
-/// ```
-/// assert_eq!(math_prime_util::dedekind_psi(12), Some(24));
-/// ```
-pub fn dedekind_psi(n: u64) -> Option<u64> {
-    if n == 0 {
-        return Some(0);
-    }
-    let mut v = 1_u64;
-    for (p, e) in factors(n) {
-        v = v
-            .checked_mul(p.checked_add(1)?)?
-            .checked_mul(p.pow(e - 1))?;
-    }
-    Some(v)
-}
-
 fn divisors(n: u64) -> Vec<u64> {
     let mut d = vec![1];
     for (p, e) in factors(n) {
@@ -572,116 +515,6 @@ fn divisors(n: u64) -> Vec<u64> {
     }
     d.sort_unstable();
     d
-}
-
-/// List all native integers with totient `n`.
-/// Port of `totients.c::inverse_totient_list`; returns an empty list if none exist.
-/// ```
-/// assert_eq!(math_prime_util::inverse_totient(4), [5,8,10,12]);
-/// ```
-pub fn inverse_totient(n: u64) -> Vec<u64> {
-    if n == 1 {
-        return vec![1, 2];
-    }
-    if n == 0 || n % 2 == 1 {
-        return Vec::new();
-    }
-    let divs = divisors(n);
-    let mut sets: HashMap<u64, Vec<u64>> = HashMap::from([(1, vec![1])]);
-    for &d in divs.iter().rev() {
-        let Some(p) = d.checked_add(1) else {
-            continue;
-        };
-        if is_prime(p) == 0 {
-            continue;
-        }
-        let (mut dp, mut pp) = (d, p);
-        let mut additions: HashMap<u64, Vec<u64>> = HashMap::new();
-        loop {
-            let nd = n / dp;
-            for &d2 in &divs {
-                if d2 > nd {
-                    break;
-                }
-                if nd % d2 != 0 || (d == 1 && d2 * dp != n) {
-                    continue;
-                }
-                if let Some(vals) = sets.get(&d2) {
-                    for &v in vals {
-                        if let Some(v) = v.checked_mul(pp) {
-                            additions.entry(d2 * dp).or_default().push(v);
-                        }
-                    }
-                }
-            }
-            if nd % p != 0 {
-                break;
-            }
-            dp *= p;
-            let Some(next) = pp.checked_mul(p) else {
-                break;
-            };
-            pp = next;
-        }
-        for (k, v) in additions {
-            sets.entry(k).or_default().extend(v);
-        }
-    }
-    let mut result = sets.remove(&n).unwrap_or_default();
-    result.sort_unstable();
-    result.dedup();
-    result
-}
-
-fn totpred(n: u64, maxd: u64) -> bool {
-    if n & 1 == 1 {
-        return false;
-    }
-    if n.is_power_of_two() {
-        return true;
-    }
-    let n = n / 2;
-    if n < maxd
-        && n.checked_mul(2)
-            .and_then(|v| v.checked_add(1))
-            .is_some_and(|p| is_prime(p) != 0)
-    {
-        return true;
-    }
-    for d in divisors(n) {
-        if d >= maxd {
-            break;
-        }
-        let Some(p) = d.checked_mul(2).and_then(|v| v.checked_add(1)) else {
-            continue;
-        };
-        if is_prime(p) == 0 {
-            continue;
-        }
-        let mut r = n / d;
-        loop {
-            if r == p || totpred(r, d) {
-                return true;
-            }
-            if r % p != 0 {
-                break;
-            }
-            r /= p;
-        }
-    }
-    false
-}
-
-/// Test whether `n` is a totient. Port of `totients.c::is_totient` and `_totpred`.
-/// ```
-/// assert!(math_prime_util::is_totient(12));
-/// ```
-pub fn is_totient(n: u64) -> bool {
-    if n == 0 || n & 1 == 1 {
-        n == 1
-    } else {
-        totpred(n, n)
-    }
 }
 
 /// Return Ramanujan's sum. Port of `XS.xs::ramanujan_sum`.
@@ -1318,3 +1151,12 @@ pub fn is_qr(a: u64, n: u64) -> bool {
 
 mod inverse_sigma0;
 pub use inverse_sigma0::*;
+
+mod sumtotient;
+pub use sumtotient::sumtotient;
+mod dedekind_psi;
+pub use dedekind_psi::dedekind_psi;
+mod inverse_totient;
+pub use inverse_totient::inverse_totient;
+mod is_totient;
+pub use is_totient::is_totient;

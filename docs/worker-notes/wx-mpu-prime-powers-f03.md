@@ -14,3 +14,4 @@ The full-suite runs remain in existing prime-count tests; all new focused tests 
 Still waiting for the pre-existing compat_count suite; no failures have been reported and all targeted tests remain green.
 - 2026-10-17T06:54:48Z launcher: no commit for 62 s; 427 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f03.md, src/families/mod.rs, src/families/nth_prime_power.rs, src/families/nth_prime_power_approx.rs, src/families/nth_prime_power_lower.rs, src/families/nth_prime_power_upper.rs, tests/compat_families.rs, tests/prop_families.rs.
 No new gate result yet; the only outstanding work is completion of the full repository tests and documentation gate.
+Full-suite execution is still pending in existing prime-count tests; implementation, focused verification, formatting, Clippy, and MSRV build are complete.

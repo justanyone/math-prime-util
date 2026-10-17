@@ -67,3 +67,6 @@ pub use prime_omega::prime_omega;
 pub use prime_signature::prime_signature;
 pub use smooth_count::smooth_count;
 pub use squfof_factor::squfof_factor;
+
+mod factor128;
+pub use factor128::{factor_u128, is_prime_u128};

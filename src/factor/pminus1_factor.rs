@@ -1,5 +1,6 @@
 use super::prho_factor::{dispatch, multiply, split};
-use crate::{gcd, powmod, primes_in};
+use crate::int::mont::Mont;
+use crate::{gcd, primes_in};
 
 /// Splits `n` with Pollard p-1 and two stages.
 ///
@@ -18,8 +19,11 @@ pub fn pminus1_factor(n: u64, b1: Option<u64>, b2: Option<u64>) -> Vec<u64> {
     dispatch(n, |n| pminus1(n, b1, b2))
 }
 
+/// `a^k mod n` with one Montgomery context (`PMINUS1_APPLY_POWER` in
+/// `factor.c` when `USE_MONTMATH` is set). `n` is odd.
 fn power(a: u64, k: u64, n: u64) -> u64 {
-    powmod(a, k, n).unwrap()
+    let mont = Mont::new(n);
+    mont.recover(mont.pow(mont.to_mont(a % n), k))
 }
 
 fn prime_power(q: u64, bound: u64) -> u64 {

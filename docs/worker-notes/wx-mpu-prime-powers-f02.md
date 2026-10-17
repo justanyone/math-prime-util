@@ -18,3 +18,4 @@ At roughly six minutes remaining, the implementation and regression tests are wr
 The rounding regression passes. Existing count oracles have run for several minutes in debug mode. Start the final gate with CARGO_PROFILE_TEST_OPT_LEVEL=2 to finish the same tests faster without changing repository tooling or test semantic <<cut 2 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -21 bytes)
+About five minutes remain. All four ports, docs, benchmarks, preserved lucky cases, and new regressions are on disk. The optimized final gate is compiling its test profile; earlier gates passed fmt, clippy, and MSRV.

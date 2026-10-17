@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 //! Algebraic laws for multiplicative arithmetic.
+//! Arithmetic identities and boundary regressions.
 use math_prime_util::*;
 use proptest::prelude::*;
 
@@ -21,10 +21,8 @@ proptest! {
             prop_assert_eq!(dedekind_psi(a*b),Some(dedekind_psi(a).unwrap()*dedekind_psi(b).unwrap()));
         }
         prop_assert_eq!(liouville(a*b),liouville(a)*liouville(b));
-=======
-//! Arithmetic identities and boundary regressions.
-use math_prime_util::*;
-use proptest::prelude::*;
+    }
+}
 proptest! {
     #[test]
     fn divisor_identities(n in 1_u64..10000) {
@@ -84,12 +82,10 @@ proptest! {
         if gcd(a,b) == 1 {
             prop_assert_eq!(ramanujan_tau(a*b), Some(ramanujan_tau(a).unwrap()*ramanujan_tau(b).unwrap()));
         }
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn range_and_prefix_agree() {
     for (lo, hi) in [
         (0, 0),
@@ -156,7 +152,9 @@ fn reversed_mu_range() {
 #[should_panic(expected = "invalid or oversized range")]
 fn oversized_range() {
     moebius_range(0, u64::MAX);
-=======
+}
+
+#[test]
 fn nonresidues_and_parallel_calls() {
     for n in 3..300 {
         let a = qnr(n).unwrap();
@@ -171,5 +169,4 @@ fn nonresidues_and_parallel_calls() {
             });
         }
     });
->>>>>>> origin/dev-001
 }

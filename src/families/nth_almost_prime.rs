@@ -1,21 +1,29 @@
+#![allow(clippy::cast_possible_truncation)]
 use super::almost_prime_count_upper::{max_count, max_nth, reduce_count};
 use super::nth_almost_prime_lower::{inverse, reduction, small};
 use crate::{prime_count, primes_in, rootint, sqrtint};
 
 // MPU almost_primes.c: _cs and _final_sum. Prime products are nondecreasing.
-fn recursive_count(n: u64, lo: u64, k: u32) -> u64 {
+fn cached_count(n: u64, cache: &[u64]) -> u64 {
+    if cache.last().is_some_and(|&last| n <= last) {
+        cache.partition_point(|&p| p <= n) as u64
+    } else {
+        prime_count(n)
+    }
+}
+fn recursive_count(n: u64, lo: u64, k: u32, cache: &[u64]) -> u64 {
     if k == 2 {
-        let mut index = prime_count(lo) - 1;
+        let mut index = cached_count(lo, cache) - 1;
         return primes_in(lo..=sqrtint(n))
             .map(|p| {
-                let value = prime_count(n / p) - index;
+                let value = cached_count(n / p, cache) - index;
                 index += 1;
                 value
             })
             .sum();
     }
     primes_in(lo..=rootint(n, k))
-        .map(|p| recursive_count(n / p, p, k - 1))
+        .map(|p| recursive_count(n / p, p, k - 1, cache))
         .sum()
 }
 pub(super) fn exact_count(k: u32, n: u64) -> u64 {
@@ -33,7 +41,33 @@ pub(super) fn exact_count(k: u32, n: u64) -> u64 {
         0 => n,
         1 => prime_count(n),
         2 => crate::semiprime_count(n),
-        _ => recursive_count(n, 2, k),
+        _ => {
+            #[allow(
+                clippy::cast_precision_loss,
+                clippy::cast_possible_truncation,
+                clippy::cast_sign_loss
+            )]
+            let size = if k == 3 {
+                (n as f64).powf(0.72) as u64
+            } else {
+                let mut size = (n >> (k - 2)).max(32);
+                if size > 16 * 1024 {
+                    size = n >> (k + 2);
+                }
+                if size > 128 * 1024 {
+                    size = n >> (k + 4);
+                }
+                if size > 1024 * 1024 {
+                    size = n >> (k + 6);
+                }
+                if size >> 32 >= 3 {
+                    size >>= 1;
+                }
+                size
+            };
+            let cache = crate::primes(2, size);
+            recursive_count(n, 2, k, &cache)
+        }
     }
 }
 /// Return the `n`th integer with `k` prime factors, with multiplicity.

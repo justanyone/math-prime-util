@@ -6,3 +6,4 @@ The existing families module is empty. Fixtures cover range calls, zero-index un
 Implemented the C tables, block-copy small sieve, compressed bit sieve with a rank tree, forward/backward rank algorithms, and estimator formulas. Added all ten fixture tests, rank/membership properties, concurrent repeat-call checks, and b <<cut 46 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 22 bytes)
+All ten oracle tests and three property/concurrency tests pass offline. The first gate stopped on numeric literal formatting and two Clippy style findings; correcting these before rerunning it.

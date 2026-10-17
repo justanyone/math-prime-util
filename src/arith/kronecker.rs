@@ -1,34 +1,4 @@
-fn kronecker_unsigned(a: u64, mut b: u64) -> i32 {
-    if b == 0 {
-        return i32::from(a == 1);
-    }
-    let mut s = 1;
-    let r = b.trailing_zeros();
-    if r > 0 {
-        if a % 2 == 0 {
-            return 0;
-        }
-        if r % 2 == 1 && matches!(a % 8, 3 | 5) {
-            s = -s;
-        }
-        b >>= r;
-    }
-    kronecker_odd(a, b, s)
-}
-fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
-    while a != 0 {
-        let r = a.trailing_zeros();
-        if r % 2 == 1 && matches!(b % 8, 3 | 5) {
-            s = -s;
-        }
-        a >>= r;
-        if a & b & 2 != 0 {
-            s = -s;
-        }
-        (a, b) = (b % a, a);
-    }
-    if b == 1 { s } else { 0 }
-}
+use super::{kronecker_odd, kronecker_unsigned};
 
 /// Return the signed Kronecker symbol (a/b).
 ///

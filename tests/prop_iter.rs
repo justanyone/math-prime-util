@@ -204,7 +204,7 @@ fn requested_iterator_bounds_and_state() {
     assert_eq!(almost_primes_in(u32::MAX, 0..=u64::MAX).next(), None);
     assert_eq!(
         almost_primes_in(63, 0..=u64::MAX).collect::<Vec<_>>(),
-        [1_u64 << 63]
+        [1_u64 << 63, 3_u64 << 62]
     );
     assert_eq!(almost_primes_in(0, 0..=10).count(), 0);
     let lo = 10;

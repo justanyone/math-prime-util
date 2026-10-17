@@ -102,8 +102,7 @@ fn factor_segment(lo: u64, hi: u64) -> Vec<(u64, Vec<(u64, u32)>)> {
             while i <= hi - lo {
                 let j = usize::try_from(i).expect("bounded factor segment");
                 let factors: &mut Vec<(u64, u32)> = &mut values[j].1;
-                if let Some((last, exponent)) = factors.last_mut().filter(|(last, _)| *last == p) {
-                    let _ = last;
+                if let Some((_, exponent)) = factors.last_mut().filter(|(last, _)| *last == p) {
                     *exponent += 1;
                 } else {
                     factors.push((p, 1));

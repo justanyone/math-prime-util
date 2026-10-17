@@ -97,11 +97,11 @@ pub(super) fn parts(n: u64, options: PartitionOptions, composition: bool) -> Par
     let nmin = options.nmin.or(options.n).unwrap_or(1).max(1);
     let nmax = options.nmax.or(options.n).unwrap_or(n).min(n);
     if options.prime == Some(true) {
-        let prev = crate::prev_prime(amax + 1);
+        let prev = crate::prev_prime(amax + 1).unwrap_or(0);
         let next = if amin <= 2 {
             2
         } else {
-            crate::next_prime(amin - 1)
+            crate::next_prime(amin - 1).unwrap_or(u64::MAX)
         };
         amin = amin.max(next);
         amax = amax.min(prev);

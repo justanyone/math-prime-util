@@ -11,3 +11,4 @@ Three fixture tests pass. The final approximation case needs C mixed precision: 
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -15 bytes)
 All committed twin fixtures now pass, including the largest native estimate. Matched the C packed wheel masks and added direct checks for every table entry and each nth-estimate bound. Lint fixes are limited to new files.
+Focused compatibility, property, and families unit tests pass offline. The final gate is running with output captured under /tmp; no fixture regeneration, dependency change, or git write was needed.

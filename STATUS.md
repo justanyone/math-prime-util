@@ -117,7 +117,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `irand64`
 - [ ] `is_aks_prime`
 - [x] `is_almost_extra_strong_lucas_pseudoprime`
-- [ ] `is_almost_prime`
+- [x] `is_almost_prime`
 - [x] `is_bpsw_prime`
 - [x] `is_carmichael`
 - [ ] `is_catalan_pseudoprime`
@@ -143,7 +143,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_lucky`
 - [x] `is_mersenne_prime`
 - [x] `is_odd`
-- [ ] `is_omega_prime`
+- [x] `is_omega_prime`
 - [x] `is_palindrome`
 - [x] `is_perfect_number`
 - [ ] `is_perfect_power`
@@ -166,11 +166,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_ramanujan_prime`
 - [ ] `is_rough`
 - [x] `is_safe_prime`
-- [ ] `is_semiprime`
+- [x] `is_semiprime`
 - [x] `is_sidon_set`
 - [ ] `is_smooth`
 - [x] `is_square`
-- [ ] `is_square_free`
+- [x] `is_square_free`
 - [x] `is_strong_lucas_pseudoprime`
 - [x] `is_strong_pseudoprime`
 - [x] `is_sumfree_set`

@@ -151,8 +151,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_pillai`
 - [ ] `is_polygonal`
 - [x] `is_power`
-- [ ] `is_powerfree`
-- [ ] `is_powerful`
+- [x] `is_powerfree`
+- [x] `is_powerful`
 - [ ] `is_practical`
 - [x] `is_prime`
 - [ ] `is_prime_power`
@@ -236,8 +236,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_perfect_power_approx`
 - [x] `nth_perfect_power_lower`
 - [x] `nth_perfect_power_upper`
-- [ ] `nth_powerfree`
-- [ ] `nth_powerful`
+- [x] `nth_powerfree`
+- [x] `nth_powerful`
 - [x] `nth_prime`
 - [ ] `nth_prime_approx`
 - [ ] `nth_prime_lower`
@@ -271,12 +271,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `pisano_period`
 - [x] `pminus1_factor`
 - [x] `pn_primorial`
-- [ ] `powerfree_count`
-- [ ] `powerfree_part`
-- [ ] `powerfree_part_sum`
-- [ ] `powerfree_sum`
-- [ ] `powerful_count`
-- [ ] `powerful_numbers`
+- [x] `powerfree_count`
+- [x] `powerfree_part`
+- [x] `powerfree_part_sum`
+- [x] `powerfree_sum`
+- [x] `powerful_count`
+- [x] `powerful_numbers`
 - [x] `powersum`
 - [x] `powint`
 - [x] `powmod`
@@ -383,7 +383,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `submod`
 - [x] `sumdigits`
 - [x] `sumliouville`
-- [ ] `sumpowerful`
+- [x] `sumpowerful`
 - [x] `sum_primes`
 - [x] `sumset`
 - [x] `sumtotient`

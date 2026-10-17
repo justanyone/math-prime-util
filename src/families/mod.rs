@@ -35,3 +35,10 @@ mod twin_prime_count_approx;
 pub use twin_prime_count_approx::twin_prime_count_approx;
 mod nth_twin_prime;
 pub use nth_twin_prime::nth_twin_prime;
+
+mod powerfree;
+mod powerful;
+pub use powerfree::{
+    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
+};
+pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};

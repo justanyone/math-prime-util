@@ -3,6 +3,14 @@
 mod lucky;
 pub use lucky::*;
 
+mod is_prime_power;
+pub use is_prime_power::is_prime_power;
+mod next_prime_power;
+pub use next_prime_power::next_prime_power;
+mod prev_prime_power;
+pub use prev_prime_power::prev_prime_power;
+mod prime_powers;
+pub use prime_powers::prime_powers;
 mod nth_ramanujan_prime;
 pub use nth_ramanujan_prime::nth_ramanujan_prime;
 mod nth_ramanujan_prime_approx;
@@ -35,3 +43,10 @@ mod twin_prime_count_approx;
 pub use twin_prime_count_approx::twin_prime_count_approx;
 mod nth_twin_prime;
 pub use nth_twin_prime::nth_twin_prime;
+
+mod powerfree;
+mod powerful;
+pub use powerfree::{
+    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
+};
+pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};

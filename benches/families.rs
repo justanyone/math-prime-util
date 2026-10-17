@@ -2,8 +2,9 @@
 //! Benchmarks for the lucky-number, prime-power and twin prime functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    is_lucky, lucky_count, lucky_numbers, nth_lucky, nth_twin_prime, twin_prime_count,
-    twin_prime_count_approx, twin_primes,
+    is_lucky, lucky_count, lucky_numbers, nth_lucky, nth_ramanujan_prime,
+    nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_twin_prime,
+    ramanujan_prime_count_upper, twin_prime_count, twin_prime_count_approx, twin_primes,
 };
 fn bench_families(c: &mut Criterion) {
     for (name, f) in [
@@ -45,6 +46,18 @@ fn bench_families(c: &mut Criterion) {
     });
     c.bench_function("nth_twin_prime", |b| {
         b.iter(|| nth_twin_prime(black_box(1000)));
+    });
+    c.bench_function("nth_ramanujan_prime", |b| {
+        b.iter(|| nth_ramanujan_prime(black_box(1000)));
+    });
+    c.bench_function("nth_ramanujan_prime_approx", |b| {
+        b.iter(|| nth_ramanujan_prime_approx(black_box(1000)));
+    });
+    c.bench_function("nth_ramanujan_prime_lower", |b| {
+        b.iter(|| nth_ramanujan_prime_lower(black_box(1000)));
+    });
+    c.bench_function("ramanujan_prime_count_upper", |b| {
+        b.iter(|| ramanujan_prime_count_upper(black_box(10000)));
     });
 }
 criterion_group!(benches, bench_families);

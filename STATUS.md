@@ -246,9 +246,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_prime_power_lower`
 - [x] `nth_prime_power_upper`
 - [ ] `nth_prime_upper`
-- [ ] `nth_ramanujan_prime`
-- [ ] `nth_ramanujan_prime_approx`
-- [ ] `nth_ramanujan_prime_lower`
+- [x] `nth_ramanujan_prime`
+- [x] `nth_ramanujan_prime_approx`
+- [x] `nth_ramanujan_prime_lower`
 - [ ] `nth_ramanujan_prime_upper`
 - [ ] `nth_semiprime`
 - [ ] `nth_semiprime_approx`
@@ -311,7 +311,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `ramanujan_prime_count`
 - [ ] `ramanujan_prime_count_approx`
 - [ ] `ramanujan_prime_count_lower`
-- [ ] `ramanujan_prime_count_upper`
+- [x] `ramanujan_prime_count_upper`
 - [ ] `ramanujan_primes`
 - [ ] `ramanujan_sum`
 - [x] `ramanujan_tau`

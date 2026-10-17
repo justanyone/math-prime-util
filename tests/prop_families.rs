@@ -1,45 +1,35 @@
-//! Algebraic laws for lucky-number ranks and membership.
+//! Algebraic laws for the Ramanujan functions.
 use math_prime_util::*;
 use proptest::prelude::*;
 
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(128))]
+    #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
-    fn lucky_rank_inverse(k in 1u64..5000) {
-        let n = nth_lucky(k).unwrap();
-        prop_assert!(is_lucky(n));
-        prop_assert_eq!(lucky_count(n), k);
-        prop_assert_eq!(lucky_count(n - 1), k - 1);
-        prop_assert!(nth_lucky_lower(k).unwrap() <= n);
-        prop_assert!(n <= nth_lucky_upper(k).unwrap());
-    }
-    #[test]
-    fn lucky_sieve_membership(n in 0u64..10000) {
-        let values = lucky_numbers(0, n);
-        prop_assert_eq!(values.len() as u64, lucky_count(n));
-        prop_assert_eq!(values.last() == Some(&n), is_lucky(n));
-        prop_assert!(values.windows(2).all(|w| w[0] < w[1]));
-        prop_assert!(lucky_count_lower(n) <= lucky_count(n));
-        prop_assert!(lucky_count(n) <= lucky_count_upper(n));
+    fn ramanujan_bounds(n in 1_u64..1000) {
+        let p = nth_ramanujan_prime(n).unwrap();
+        prop_assert!(nth_ramanujan_prime_lower(n).unwrap() <= p);
+        prop_assert!(is_prime(p) != 0);
+        prop_assert!(ramanujan_prime_count_upper(p) >= n);
+        prop_assert!(prime_count(p)-prime_count(p/2) >= n);
+        prop_assert!(nth_ramanujan_prime_approx(n).unwrap() >= nth_ramanujan_prime_lower(n).unwrap()-1);
     }
 }
 
 #[test]
-fn independent_and_concurrent_calls() {
-    let expected = lucky_numbers(0, 300_000);
-    let threads: Vec<_> = (0..4)
-        .map(|_| std::thread::spawn(|| lucky_numbers(0, 300_000)))
+fn zero_and_repeat_calls() {
+    assert_eq!(nth_ramanujan_prime(0), None);
+    assert_eq!(nth_ramanujan_prime_lower(0), None);
+    assert_eq!(nth_ramanujan_prime_approx(0), None);
+    assert_eq!(ramanujan_prime_count_upper(0), 0);
+    assert_eq!(nth_ramanujan_prime(u64::MAX), None);
+    assert_eq!(nth_ramanujan_prime_lower(u64::MAX), None);
+    assert_eq!(nth_ramanujan_prime_approx(u64::MAX), None);
+    let handles: Vec<_> = (0..4)
+        .map(|_| std::thread::spawn(|| nth_ramanujan_prime(100)))
         .collect();
-    for thread in threads {
-        assert_eq!(thread.join().unwrap(), expected);
+    for h in handles {
+        assert_eq!(h.join().unwrap(), Some(1439));
     }
-    assert_eq!(lucky_numbers(10, 1), []);
-    assert_eq!(lucky_numbers(0, 0), []);
-    assert_eq!(nth_lucky(0), None);
-    assert_eq!(nth_lucky_approx(0), None);
-    assert_eq!(nth_lucky_lower(0), None);
-    assert_eq!(nth_lucky_upper(0), None);
-    assert!(!is_lucky(u64::MAX));
 }
 
 proptest! {

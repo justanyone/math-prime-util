@@ -9,3 +9,4 @@ Added Criterion benchmarks. Gate passed fmt, clippy, and MSRV and is running all
 State, concurrency, validation, and duplicate-launch risks do not apply to these pure total u64 operations; edge tests cover the full bit width.
 All five unit tests and all five 4000-case property tests pass; the benchmark target compiles offline.
 The generated checklist is current and git diff --check passes. Waiting for the gate's existing compatibility tests.
+Gate remains active in the existing counting compatibility tests; no failure has been reported.

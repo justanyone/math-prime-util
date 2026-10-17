@@ -1,4 +1,4 @@
-use super::{addmod_u, invmod, mulmod_u, powmod_u};
+use super::{invmod, mulmod_u, powmod_u};
 use crate::{gcd, is_prime};
 
 // reference/mpu/factor.c: pbrent_factor, non-Montgomery path.

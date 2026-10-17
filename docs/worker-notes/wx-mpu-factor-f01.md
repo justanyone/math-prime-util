@@ -11,3 +11,4 @@ Final validation window: fixture tests passed; gate rerun includes fixed-table t
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 12 bytes)
 The gate caught an incorrect helper-test expectation: MPU extracts 3 and 5 before applying its square-root stop, leaving 2. Corrected the test to [3, 5, 2]; rerunning the gate.
+Final gate has passed formatting, pedantic clippy, MSRV build, unit tests, and earlier fixture families. Waiting for the bounded trial oracle and the remaining suite; no network or fixture regeneration is needed.

@@ -12,3 +12,4 @@ Final gate passed formatting, clippy, and the MSRV build. The full offline test 
 The full gate is still in existing count compatibility tests with no failure reported. Proving compatibility and property tests passed separately; waiting for the gate before the final report.
 Time-budget checkpoint: final verification remains. The gate is still running long existing count tests; no failures reported. Coverage is unmeasured, and no tools, fixtures, dependencies, or crate-root changes were made.
 - 2026-10-17T08:57:59Z launcher: no commit for 61 s; 454 s elapsed. Files changed so far: benches/primality.rs, docs/worker-notes/wx-mpu-aks-proving.md, src/proving/aks.rs, src/proving/certificate.rs, src/proving/mod.rs, tests/compat_primality.rs, tests/prop_primality.rs.
+Full-suite gate remains active; implementation is frozen while it runs. The final result must distinguish the focused passing tests from pending full-suite and coverage checks.

@@ -10,3 +10,4 @@ Added direct polynomial regressions for sparse, dense, zero, native, and u64-bou
 Focused runs and the gate are active; the gate currently waits for the Cargo build lock. No dependency, fixture, verifier, or tooling changes were needed.
 Added the product-compositeness law for all proving and certificate APIs, with unsigned input limits documented in the oracle tests.
 Initial offline oracle and property runs passed (12 compatibility tests and 11 property tests); the final optimized implementation is now building for unit and lint checks.
+All requested code is written. Native certificates keep the MPU text format; no bigint or ECPP work is needed for this slice. Final compatibility, property, benchmark-build, and gate checks are in progress.

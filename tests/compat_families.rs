@@ -1,17 +1,20 @@
-//! Lucky-number compatibility with the committed MPU 0.75 oracle.
+//! Oracle checks for the assigned Ramanujan functions.
 mod common;
 use common::each;
-use math_prime_util::*;
+use math_prime_util::{
+    ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
+    ramanujan_primes,
+};
 
 #[test]
-fn lucky_numbers_oracle() {
-    each("families", "lucky_numbers", |c| {
+fn ramanujan_primes_oracle() {
+    each("families", "ramanujan_primes", |c| {
         let (lo, hi) = if c.args.len() == 1 {
             (0, c.arg(0))
         } else {
             (c.arg(0), c.arg(1))
         };
-        let values = lucky_numbers(lo, hi);
+        let values = ramanujan_primes(lo, hi);
         c.check(if values.is_empty() {
             None
         } else {
@@ -25,57 +28,35 @@ fn lucky_numbers_oracle() {
         });
     });
 }
+
 #[test]
-fn is_lucky_oracle() {
-    each("families", "is_lucky", |c| {
-        c.check(Some(u8::from(is_lucky(c.arg(0)))));
-    });
-}
-#[test]
-fn lucky_count_oracle() {
-    each("families", "lucky_count", |c| {
-        let (lo, hi): (u64, u64) = if c.args.len() == 1 {
-            (0, c.arg(0))
+fn ramanujan_prime_count_oracle() {
+    each("families", "ramanujan_prime_count", |c| {
+        let count = if c.args.len() == 1 {
+            ramanujan_prime_count(c.arg(0))
         } else {
-            (c.arg(0), c.arg(1))
-        };
-        let count = if lo > hi {
-            0
-        } else {
-            lucky_count(hi) - if lo == 0 { 0 } else { lucky_count(lo - 1) }
+            let lo: u64 = c.arg(0);
+            let hi: u64 = c.arg(1);
+            if hi < lo {
+                0
+            } else {
+                ramanujan_prime_count(hi) - ramanujan_prime_count(lo.saturating_sub(1))
+            }
         };
         c.check(Some(count));
     });
 }
-macro_rules! oracle {
-    ($name:ident) => {
-        #[test]
-        fn $name() {
-            each("families", stringify!($name), |c| {
-                c.check(math_prime_util::$name(c.arg(0)));
-            });
-        }
-    };
-}
-oracle!(nth_lucky);
-oracle!(nth_lucky_approx);
-oracle!(nth_lucky_lower);
-oracle!(nth_lucky_upper);
+
 #[test]
-fn lucky_count_approx_oracle() {
-    each("families", "lucky_count_approx", |c| {
-        c.check(Some(lucky_count_approx(c.arg(0))));
+fn ramanujan_prime_count_approx_oracle() {
+    each("families", "ramanujan_prime_count_approx", |c| {
+        c.check(Some(ramanujan_prime_count_approx(c.arg(0))))
     });
 }
+
 #[test]
-fn lucky_count_lower_oracle() {
-    each("families", "lucky_count_lower", |c| {
-        c.check(Some(lucky_count_lower(c.arg(0))));
-    });
-}
-#[test]
-fn lucky_count_upper_oracle() {
-    each("families", "lucky_count_upper", |c| {
-        c.check(Some(lucky_count_upper(c.arg(0))));
+fn ramanujan_prime_count_lower_oracle() {
+    each("families", "ramanujan_prime_count_lower", |c| {
+        c.check(Some(ramanujan_prime_count_lower(c.arg(0))))
     });
 }

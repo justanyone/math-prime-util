@@ -5,3 +5,4 @@ Keep STATUS.md, tools, fixtures, and crate exports unchanged as required by the 
 Existing implementations and oracle tests were present; identified missing C table fast paths, memory bounds, and prime-power detection. Splitting the functions and retaining shared sieve dependencies.
 Ported the four files with C small tables, 32 KiB Moebius segments, prefix memory clamps, and prime-power detection. Added summatory difference, boundary, and concurrent repeated-call checks plus benchmarks; focused offline tests started.
 Focused tests are still building; the gate has started offline. Reviewing the Mertens prefix storage against the C short-array and bounded cache before final validation.
+Matched C storage more closely: signed 16-bit prefix entries and an eight-probe bounded cache with collision tests. Gate waits on the Cargo build lock; focused tests have not returned yet.

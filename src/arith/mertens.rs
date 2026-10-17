@@ -1,7 +1,6 @@
 use super::{moebius, moebius_range};
 use crate::{rootint, sqrtint};
 
-
 // MPU moebius.c::_mertens_context_create clamps the prefix allocation.
 #[allow(
     clippy::cast_precision_loss,
@@ -52,8 +51,12 @@ impl Mertens {
         let mut index = usize::try_from(n % u64::try_from(self.cache.len()).unwrap()).unwrap();
         for _ in 0..8 {
             let (key, value) = self.cache[index];
-            if key == 0 { return None; }
-            if key == n { return Some(value); }
+            if key == 0 {
+                return None;
+            }
+            if key == n {
+                return Some(value);
+            }
             index = (index + 1) % self.cache.len();
         }
         None
@@ -137,9 +140,14 @@ mod tests {
 
     #[test]
     fn bounded_cache_collisions() {
-        let mut ctx = Mertens { prefix: vec![], cache: vec![(0, 0); 11] };
+        let mut ctx = Mertens {
+            prefix: vec![],
+            cache: vec![(0, 0); 11],
+        };
         assert_eq!(ctx.cached(10), None);
-        for k in 0..8 { ctx.insert(10 + 11 * k, -1); }
+        for k in 0..8 {
+            ctx.insert(10 + 11 * k, -1);
+        }
         assert_eq!(ctx.cached(87), Some(-1));
         assert_eq!(ctx.cached(98), None);
         ctx.insert(87, 2);
@@ -153,7 +161,10 @@ mod tests {
     fn segmented_prefix() {
         let ctx = Mertens::new(8_000_000);
         assert_eq!(ctx.prefix.len(), 40_001);
-        assert_eq!(ctx.prefix[40_000], -10);
+        assert_eq!(
+            i64::from(ctx.prefix[40_000]),
+            (1..=40_000).map(|n| i64::from(moebius(n))).sum::<i64>()
+        );
     }
 
     #[test]

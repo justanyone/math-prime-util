@@ -5,6 +5,9 @@ use super::ramanujan_primes::{SMALL, count_bound, nth_bound};
 /// Port of MPU 0.75 `ramanujan_primes.c`, `ramanujan_prime_count_lower`.
 /// It inverts the upper bound on the nth Ramanujan prime.
 ///
+/// This port uses `f64` for the real-valued bounds. At large inputs,
+/// its integer result can differ from the C long-double result.
+///
 /// ```
 /// assert_eq!(math_prime_util::ramanujan_prime_count_lower(1000), 71);
 /// ```

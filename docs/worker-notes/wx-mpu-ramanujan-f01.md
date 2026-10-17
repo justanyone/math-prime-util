@@ -13,3 +13,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 All four property tests pass, including repeated and concurrent calls. Generation and exact-count fixture tests pass; lower and approximate counts each fail only at u64::MAX. A shared /tmp log name collided with another worker; the gate now <<cut 26 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 2 bytes)
+Private bound edge tests and all 197 doc examples pass. Added more C bound thresholds to the unit tests and changed generation to invert the C lower nth bound for its upper index. Two active oracle failures at u64::MAX remain: lower 1418854 <<cut 96 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 72 bytes)
+The gate now reaches test-only pedantic lint checks; fixing literal formatting and empty-vector assertions. The full offline suite was launched once. STATUS stays untouched as required by the task-specific read-only instruction.

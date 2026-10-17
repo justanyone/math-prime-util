@@ -393,7 +393,7 @@ mod tests {
 
     #[test]
     fn private_bound_edges() {
-        assert!(range(3, 2).is_empty());
+        assert_eq!(range(3, 2), Vec::<u64>::new());
         assert_eq!(nth_bound(0, true), 0);
         assert_eq!(
             prime_nth_bound(425_656_284_035_217_743, true),
@@ -414,9 +414,9 @@ mod tests {
             34816,
             76400,
             82883,
-            280816,
-            316314,
-            915887,
+            280_816,
+            316_314,
+            915_887,
             1_000_001,
             4_000_001,
             16_000_001,

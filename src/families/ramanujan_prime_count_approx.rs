@@ -5,6 +5,9 @@ use super::ramanujan_primes::SMALL;
 /// Port of MPU 0.75 `ramanujan_primes.c`, `ramanujan_prime_count_approx`.
 /// It subtracts two prime-count estimates. The estimate need not be monotone.
 ///
+/// This port uses `f64` for the real-valued bounds. At large inputs,
+/// its integer result can differ from the C long-double result.
+///
 /// ```
 /// assert_eq!(math_prime_util::ramanujan_prime_count_approx(1000), 73);
 /// ```

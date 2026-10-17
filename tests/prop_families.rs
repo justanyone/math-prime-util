@@ -25,9 +25,9 @@ proptest! {
 
 #[test]
 fn empty_and_singleton_ranges() {
-    assert!(ramanujan_primes(10, 2).is_empty());
-    assert!(ramanujan_primes(0, 1).is_empty());
-    assert!(ramanujan_primes(242, 250).is_empty());
+    assert_eq!(ramanujan_primes(10, 2), Vec::<u64>::new());
+    assert_eq!(ramanujan_primes(0, 1), Vec::<u64>::new());
+    assert_eq!(ramanujan_primes(242, 250), Vec::<u64>::new());
     assert_eq!(ramanujan_primes(263, 263), vec![263]);
 }
 

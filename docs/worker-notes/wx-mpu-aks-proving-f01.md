@@ -13,3 +13,4 @@ Initial offline oracle and property runs passed (12 compatibility tests and 11 p
 All requested code is written. Native certificates keep the MPU text format; no bigint or ECPP work is needed for this slice. Final compatibility, property, benchmark-build, and gate checks are in progress.
 The proving unit tests passed, and clippy completed with -D warnings. The gate has advanced to the offline MSRV build.
 Final focused oracle/property tests passed, benchmark compilation passed, and Rust 1.85 build passed. Full-suite and gate test stages remain active.
+- 2026-10-17T18:52:24Z launcher: no commit for 60 s; 366 s elapsed. Files changed so far: benches/primality.rs, docs/worker-notes/wx-mpu-aks-proving-f01.md, src/proving/is_aks_prime.rs, src/proving/is_provable_prime.rs, src/proving/is_provable_prime_with_cert.rs, src/proving/mod.rs, src/proving/prime_certificate.rs, tests/compat_primality.rs, tests/prop_primality.rs.

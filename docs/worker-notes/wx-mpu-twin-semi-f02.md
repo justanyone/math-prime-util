@@ -11,3 +11,4 @@ The first gate reached clippy. Fixed reference-table literal lint allowances and
 Focused offline validation passed: all 4 compatibility tests and all 4 property/regression tests. The gate is rerunning after clippy fixes.
 Added the C bounded prime-list cache to exact counting. Fixed test-only lint findings. The gate also reports three pre-existing float_cmp errors in src/count/mod.rs; that file is outside this task.
 Fixed criterion macro documentation lint and benchmark statement semicolons. Full-suite results are pending; no out-of-scope baseline files were changed.
+Final canonical gate passes fmt and reports only the existing three src/count/mod.rs float_cmp errors. All new files pass clippy; full offline suite is still running.

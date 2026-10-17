@@ -108,8 +108,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
-- [ ] `inverse_sigma0`
-- [ ] `inverse_sigma0_count`
+- [x] `inverse_sigma0`
+- [x] `inverse_sigma0_count`
 - [x] `inverse_totient`
 - [x] `invmod`
 - [x] `irand`

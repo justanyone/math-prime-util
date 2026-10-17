@@ -1,7 +1,18 @@
 //! Integers in a range with a given divisor count.
 //!
-//! Port of MPU 0.75 `inverse_sigma0.c`, sieve path (`tau_sieve`). The
-//! generator and prime-signature paths are not ported yet.
+//! Port of MPU 0.75 `inverse_sigma0.c`: the divisor-count sieve (`tau_sieve`)
+//! for narrow ranges and the prime-signature enumeration (`by_signature`)
+//! for wide ranges. The signature path is also used for counting wide
+//! ranges, where the C code uses the faster `count_sig` recursion.
+
+use crate::{crootint, prime_count, rootint};
+
+/// Largest range width the divisor-count sieve handles, as in the C code.
+const TAU_MAX_WIDTH: u64 = 10_000_000;
+/// Largest width for the chunked sieve at large `lo`.
+const TAU_MAX_CHUNKED_WIDTH: u64 = 100_000_000;
+/// Smallest `lo` for which the chunked sieve is used.
+const TAU_CHUNK_MIN_LO: u64 = 100_000_000_000;
 
 /// Width of one sieve segment. The C code uses 10^7 with 16-bit counts.
 /// This port uses 2^20 to bound memory. Segmenting does not change results.
@@ -42,6 +53,10 @@ pub fn inverse_sigma0_count(k: u64, lo: u64, hi: u64) -> Option<u64> {
     if k == 0 {
         return Some(0);
     }
+    if k == 2 && lo <= hi {
+        let below = lo.max(1) - 1;
+        return Some(prime_count(hi) - prime_count(below));
+    }
     let mut count = 0;
     for_each_match(k, lo, hi, |_| count += 1);
     Some(count)
@@ -63,11 +78,213 @@ fn for_each_match(k: u64, lo: u64, hi: u64, mut emit: impl FnMut(u64)) {
         }
         return;
     }
+    if k == 2 {
+        for_each_prime(lo.max(2), hi, emit);
+        return;
+    }
+    if !use_tau_sieve(lo, hi, k) {
+        let mut list = by_signature(k, lo, hi);
+        list.sort_unstable();
+        list.dedup();
+        list.into_iter().for_each(emit);
+        return;
+    }
     let primes = primes_up_to(isqrt(hi));
     let mut seglo = lo;
     loop {
         let seghi = hi.min(seglo.saturating_add(SEGMENT - 1));
         sieve_segment(&primes, k, seglo, seghi, &mut emit);
+        if seghi == hi {
+            break;
+        }
+        seglo = seghi + 1;
+    }
+}
+
+/// `use_tau_sieve` in `inverse_sigma0.c`.
+fn use_tau_sieve(lo: u64, hi: u64, k: u64) -> bool {
+    let width = hi - lo + 1;
+    k <= 65_535
+        && (width <= TAU_MAX_WIDTH || (lo >= TAU_CHUNK_MIN_LO && width <= TAU_MAX_CHUNKED_WIDTH))
+}
+
+/// `by_signature`: all `n` in `lo..=hi` with `k` divisors, unsorted, found
+/// by splitting `k` into factors `e + 1` and placing primes under each exponent.
+fn by_signature(k: u64, lo: u64, hi: u64) -> Vec<u64> {
+    // Only factors up to 64 can be `e + 1` for `n < 2^64`.
+    let divs: Vec<u64> = (2..=64).filter(|d| k % d == 0).collect();
+    let mut out = Vec::new();
+    let mut parts = Vec::new();
+    partitions(&divs, k, 2, &mut parts, (lo, hi), &mut out);
+    out
+}
+
+/// `partitions`: factor `rem` into non-decreasing parts, each at least `min_d`.
+fn partitions(
+    divs: &[u64],
+    rem: u64,
+    min_d: u64,
+    parts: &mut Vec<u64>,
+    range: (u64, u64),
+    out: &mut Vec<u64>,
+) {
+    for &d in divs {
+        if d < min_d {
+            continue;
+        }
+        if d > rem / d {
+            break;
+        }
+        if rem % d == 0 {
+            parts.push(d);
+            partitions(divs, rem / d, d, parts, range, out);
+            parts.pop();
+        }
+    }
+    if rem >= min_d {
+        parts.push(rem);
+        process_signature(parts, range, out);
+        parts.pop();
+    }
+}
+
+/// `process_signature`: turn the parts into descending exponents and recurse.
+fn process_signature(parts: &[u64], (lo, hi): (u64, u64), out: &mut Vec<u64>) {
+    let max_exp = u64::from(hi.ilog2());
+    let mut exps = Vec::with_capacity(parts.len());
+    for &part in parts.iter().rev() {
+        let e = part - 1;
+        if e == 0 || e > max_exp {
+            return;
+        }
+        exps.push(u32::try_from(e).expect("exponent is at most 63"));
+    }
+    if !min_signature_le_hi(&exps, hi) {
+        return;
+    }
+    let mut used = Vec::new();
+    recurse(&exps, 0, 1, &mut used, (lo, hi), out);
+}
+
+/// `min_signature_le_hi`: the smallest number with this signature is at most `hi`.
+fn min_signature_le_hi(exps: &[u32], hi: u64) -> bool {
+    let mut n = 1_u64;
+    let mut p = 1_u64;
+    for &e in exps {
+        p = crate::next_prime(p).expect("small primes exist");
+        match mul_pow_limit(n, p, e, hi) {
+            Some(v) => n = v,
+            None => return false,
+        }
+    }
+    true
+}
+
+/// `mul_pow_limit`: `m * p^e`, or `None` if it exceeds `limit`.
+fn mul_pow_limit(mut m: u64, p: u64, e: u32, limit: u64) -> Option<u64> {
+    for _ in 0..e {
+        if m > limit / p {
+            return None;
+        }
+        m *= p;
+    }
+    Some(m)
+}
+
+/// `prime_upper_bound`: largest prime that may sit at `exps[idx]`, given that
+/// the later primes are each at least as large.
+fn prime_upper_bound(exps: &[u32], idx: usize, maxpow: u64) -> u64 {
+    let e = exps[idx];
+    let same = exps[idx..].iter().take_while(|&&x| x == e).count();
+    let lower_sum: u32 = exps[idx + same..].iter().sum();
+    if lower_sum >= 64 {
+        return 0;
+    }
+    let base = maxpow >> lower_sum;
+    if base == 0 {
+        return 0;
+    }
+    rootint(base, e * u32::try_from(same).expect("signature is short"))
+}
+
+/// `recurse`: choose distinct primes for `exps[idx..]` with product `n * ...` in range.
+fn recurse(
+    exps: &[u32],
+    idx: usize,
+    n: u64,
+    used: &mut Vec<u64>,
+    (lo, hi): (u64, u64),
+    out: &mut Vec<u64>,
+) {
+    let e = exps[idx];
+    let last = idx + 1 == exps.len();
+    let maxpow = hi / n;
+    let mut pl = 2;
+    let ph;
+    if last {
+        let minpow = if n >= lo { 1 } else { lo.div_ceil(n) };
+        pl = if e == 1 { minpow } else { crootint(minpow, e) }.max(2);
+        ph = if e == 1 { maxpow } else { rootint(maxpow, e) };
+    } else {
+        ph = rootint(maxpow, e).min(prime_upper_bound(exps, idx, maxpow));
+    }
+    if idx > 0 && e == exps[idx - 1] && pl <= used[idx - 1] {
+        pl = used[idx - 1] + 1;
+    }
+    if pl > ph {
+        return;
+    }
+    for_each_prime(pl, ph, |p| {
+        if used.contains(&p) {
+            return;
+        }
+        let Some(v) = mul_pow_limit(n, p, e, hi) else {
+            return;
+        };
+        if last {
+            if v >= lo {
+                out.push(v);
+            }
+        } else {
+            used.push(p);
+            recurse(exps, idx + 1, v, used, (lo, hi), out);
+            used.pop();
+        }
+    });
+}
+
+/// Call `visit` for each prime in `lo..=hi`, in order, by segmented sieve.
+///
+/// Costs time in the width of the range, not in `hi` (after `range_prime_sieve`).
+fn for_each_prime(lo: u64, hi: u64, mut visit: impl FnMut(u64)) {
+    let lo = lo.max(2);
+    if lo > hi {
+        return;
+    }
+    let base = primes_up_to(isqrt(hi));
+    let mut seglo = lo;
+    loop {
+        let seghi = hi.min(seglo.saturating_add(SEGMENT - 1));
+        let len = usize::try_from(seghi - seglo + 1).expect("segment fits usize");
+        let mut flags = vec![true; len];
+        for &p in &base {
+            if p > seghi / p {
+                break;
+            }
+            let mut m = seglo.div_ceil(p).saturating_mul(p).max(p * p);
+            while m <= seghi {
+                flags[usize::try_from(m - seglo).expect("offset fits usize")] = false;
+                match m.checked_add(p) {
+                    Some(next) => m = next,
+                    None => break,
+                }
+            }
+        }
+        for (i, &is_p) in flags.iter().enumerate() {
+            if is_p {
+                visit(seglo + i as u64);
+            }
+        }
         if seghi == hi {
             break;
         }
@@ -188,6 +405,72 @@ mod tests {
         // pi(2^21) = 155611 and the segment width is 2^20.
         assert_eq!(inverse_sigma0_count(2, 1, 1 << 21), Some(155_611));
         assert_eq!(inverse_sigma0_count(1, 1, 1 << 21), Some(1));
+    }
+
+    fn sieved(k: u64, lo: u64, hi: u64) -> Vec<u64> {
+        let mut out = Vec::new();
+        let primes = primes_up_to(isqrt(hi));
+        sieve_segment(&primes, k, lo, hi, &mut |n| out.push(n));
+        out
+    }
+
+    #[test]
+    fn signature_path_matches_sieve() {
+        for k in [3, 4, 6, 8, 9, 12, 16, 18, 24, 30, 36, 48, 64, 100, 128] {
+            let mut got = by_signature(k, 1, 20_000);
+            got.sort_unstable();
+            got.dedup();
+            assert_eq!(got, sieved(k, 1, 20_000), "k={k}");
+            let mut got = by_signature(k, 5_000, 12_345);
+            got.sort_unstable();
+            got.dedup();
+            assert_eq!(got, sieved(k, 5_000, 12_345), "k={k} sub-range");
+        }
+    }
+
+    #[test]
+    fn signature_edges() {
+        assert_eq!(by_signature(2u64.pow(40), 1, 1000), Vec::<u64>::new());
+        assert!(by_signature(65, 1, 1 << 40).len() > 1);
+        assert_eq!(mul_pow_limit(1, 2, 70, u64::MAX), None);
+        assert_eq!(prime_upper_bound(&[1, 1, 1], 0, 0), 0);
+        assert_eq!(prime_upper_bound(&[1, 63, 2], 0, u64::MAX), 0);
+    }
+
+    #[test]
+    fn wide_ranges_use_signatures() {
+        assert!(!use_tau_sieve(1, 10_000_001, 8));
+        assert!(use_tau_sieve(1, 10_000_000, 8));
+        assert!(use_tau_sieve(200_000_000_000, 200_050_000_000, 8));
+        assert!(!use_tau_sieve(1, 10, 70_000));
+        let wide = inverse_sigma0(4, 1, 10_000_001).unwrap();
+        assert_eq!(wide, sieved(4, 1, 10_000_001));
+        assert_eq!(
+            inverse_sigma0_count(4, 1, 10_000_001),
+            Some(wide.len() as u64)
+        );
+        let lo = 1_u64 << 40;
+        let mut high = by_signature(48, lo, lo + 3_000_000);
+        high.sort_unstable();
+        high.dedup();
+        assert_eq!(high, sieved(48, lo, lo + 3_000_000));
+    }
+
+    #[test]
+    fn for_each_prime_edges() {
+        let mut got = Vec::new();
+        for_each_prime((1 << 40) - 100, 1 << 40, |p| got.push(p));
+        assert_eq!(got, vec![(1 << 40) - 87]);
+        for_each_prime(10, 5, |_| panic!("empty range"));
+    }
+
+    #[test]
+    fn k_two_uses_primes() {
+        assert_eq!(inverse_sigma0(2, 0, 1), Some(vec![]));
+        assert_eq!(inverse_sigma0_count(2, 0, 1), Some(0));
+        assert_eq!(inverse_sigma0_count(2, 5, 4), Some(0));
+        assert_eq!(inverse_sigma0(2, 0, 10), Some(vec![2, 3, 5, 7]));
+        assert_eq!(inverse_sigma0_count(2, 0, 10), Some(4));
     }
 
     #[test]

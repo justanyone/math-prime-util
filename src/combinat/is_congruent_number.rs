@@ -64,3 +64,58 @@ fn tunnell(n: u64) -> bool {
     }
     solutions[0] == solutions[1]
 }
+
+#[cfg(test)]
+mod tests {
+    use super::tunnell;
+
+    /// Number of integer triples with `a*x^2 + b*y^2 + c*z^2 == m`.
+    fn count(a: i64, b: i64, c: i64, m: i64) -> i64 {
+        let mut total = 0;
+        let bound = |k: i64| (0..).take_while(|t| k * t * t <= m).last().unwrap_or(0);
+        for x in -bound(a)..=bound(a) {
+            for y in -bound(b)..=bound(b) {
+                for z in -bound(c)..=bound(c) {
+                    if a * x * x + b * y * y + c * z * z == m {
+                        total += 1;
+                    }
+                }
+            }
+        }
+        total
+    }
+
+    /// Tunnell's criterion straight from the theorem, for squarefree `n`.
+    fn reference(n: i64) -> bool {
+        if n % 2 == 1 {
+            count(1, 2, 8, n) == 2 * count(1, 2, 32, n)
+        } else {
+            count(4, 1, 8, n / 2) == 2 * count(4, 1, 32, n / 2)
+        }
+    }
+
+    fn squarefree(n: u64) -> bool {
+        (2..).take_while(|d| d * d <= n).all(|d| n % (d * d) != 0)
+    }
+
+    #[test]
+    fn tunnell_matches_the_theorem() {
+        for n in 1..=250_u64 {
+            if squarefree(n) {
+                assert_eq!(tunnell(n), reference(i64::try_from(n).unwrap()), "n={n}");
+            }
+        }
+    }
+
+    #[test]
+    fn tunnell_known_values() {
+        for n in [
+            5_u64, 6, 7, 13, 14, 15, 21, 22, 23, 29, 30, 31, 34, 37, 38, 39,
+        ] {
+            assert!(tunnell(n), "{n}");
+        }
+        for n in [1_u64, 2, 3, 10, 11, 17, 19, 25, 26, 33, 35] {
+            assert!(!tunnell(n), "{n}");
+        }
+    }
+}

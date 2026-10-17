@@ -21,4 +21,3 @@ pub fn foroddcomposites<B>(
 ) -> ControlFlow<B> {
     odd_composites_in(range).try_for_each(f)
 }
-

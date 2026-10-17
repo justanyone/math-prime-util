@@ -33,4 +33,3 @@ pub fn forcomposites<B>(
 ) -> ControlFlow<B> {
     composites_in(range).try_for_each(f)
 }
-

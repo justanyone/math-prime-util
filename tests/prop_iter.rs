@@ -198,7 +198,6 @@ proptest! {
     }
 }
 
-
 proptest! {
     #[test]
     fn range_loop_laws(lo in 0_u64..500, width in 0_u64..200) {
@@ -217,22 +216,38 @@ fn range_loops_stop_and_keep_local_state() {
     let loops: [Loop; 4] = [forprimes, forcomposites, foroddcomposites, forsemiprimes];
     for (run, first) in loops.into_iter().zip([2, 4, 9, 4]) {
         assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
-        assert_eq!(run(30..=0, |_| panic!("empty callback")), ControlFlow::Continue(()));
+        assert_eq!(
+            run(30..=0, |_| panic!("empty callback")),
+            ControlFlow::Continue(())
+        );
         assert!(std::panic::catch_unwind(|| run(0..=30, |_| panic!("callback"))).is_err());
         assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
     }
     let mut outer = Vec::new();
     let result: ControlFlow<()> = forsemiprimes(0..=10, |n| {
         outer.push(n);
-        assert_eq!(forsemiprimes(0..=10, ControlFlow::Break), ControlFlow::Break(4));
+        assert_eq!(
+            forsemiprimes(0..=10, ControlFlow::Break),
+            ControlFlow::Break(4)
+        );
         ControlFlow::Continue(())
     });
     assert!(result.is_continue());
     assert_eq!(outer, [4, 6, 9, 10]);
-    let workers: Vec<_> = (0..4).map(|_| std::thread::spawn(|| {
-        (composites_in(0..=100).count(), odd_composites_in(0..=100).count(), semiprimes_in(0..=100).count())
-    })).collect();
-    for worker in workers { assert_eq!(worker.join().unwrap(), (74, 25, 34)); }
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    composites_in(0..=100).count(),
+                    odd_composites_in(0..=100).count(),
+                    semiprimes_in(0..=100).count(),
+                )
+            })
+        })
+        .collect();
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), (74, 25, 34));
+    }
 }
 
 #[test]

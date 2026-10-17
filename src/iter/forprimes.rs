@@ -14,4 +14,3 @@ pub fn forprimes<B>(
 ) -> ControlFlow<B> {
     crate::sieve::primes_in(range).try_for_each(f)
 }
-

@@ -24,7 +24,9 @@ impl Iterator for SemiprimesIn {
 #[must_use]
 pub fn semiprimes_in(range: RangeInclusive<u64>) -> SemiprimesIn {
     let (lo, hi) = range.into_inner();
-    SemiprimesIn { range: lo.max(4)..=hi.min(18_446_744_073_709_551_601) }
+    SemiprimesIn {
+        range: lo.max(4)..=hi.min(18_446_744_073_709_551_601),
+    }
 }
 
 /// Visit each semiprime in an inclusive range. See `XS.xs`, `forsemiprimes`.
@@ -43,4 +45,3 @@ pub fn forsemiprimes<B>(
 ) -> ControlFlow<B> {
     semiprimes_in(range).try_for_each(f)
 }
-

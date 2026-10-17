@@ -1,4 +1,5 @@
 //! Native iterator compatibility with the frozen MPU 0.75 oracle.
+//! The oracle caps list callbacks at 2,000; count properties test full streams.
 mod common;
 use math_prime_util::iter::*;
 use std::fmt::Display;
@@ -6,12 +7,14 @@ use std::fmt::Display;
 fn joined<T: Display>(values: impl IntoIterator<Item = T>, sep: &str) -> String {
     values
         .into_iter()
+        .take(2000)
         .map(|v| v.to_string())
         .collect::<Vec<_>>()
         .join(sep)
 }
 fn tuples<T: Display>(values: impl Iterator<Item = Vec<T>>, sep: &str) -> String {
     values
+        .take(2000)
         .map(|v| {
             if v.is_empty() {
                 "()".into()
@@ -108,17 +111,31 @@ fn check(name: &str) {
                 {
                     continue;
                 }
-                joined(math_prime_util::prime_iterator_object(start).take(expected), " ")
+                joined(
+                    math_prime_util::prime_iterator_object(start).take(expected),
+                    " ",
+                )
             }
             _ => unreachable!(),
         };
         let expected = c.result.as_deref().unwrap();
         if got != expected {
-            let i = got.bytes().zip(expected.bytes()).position(|(a,b)| a != b)
+            let i = got
+                .bytes()
+                .zip(expected.bytes())
+                .position(|(a, b)| a != b)
                 .unwrap_or(got.len().min(expected.len()));
-            panic!("line {} {} args {:?}: lengths {} {}, difference at {}: {:?} / {:?}",
-                c.line, name, c.args, got.len(), expected.len(), i,
-                &got[i..got.len().min(i+60)], &expected[i..expected.len().min(i+60)]);
+            panic!(
+                "line {} {} args {:?}: lengths {} {}, difference at {}: {:?} / {:?}",
+                c.line,
+                name,
+                c.args,
+                got.len(),
+                expected.len(),
+                i,
+                &got[i..got.len().min(i + 60)],
+                &expected[i..expected.len().min(i + 60)]
+            );
         }
     }
 }

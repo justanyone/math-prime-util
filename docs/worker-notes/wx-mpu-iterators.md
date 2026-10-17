@@ -6,3 +6,4 @@ Dependency review: sieve primitives exist; factor range support is absent. Port 
 Implemented independent closure control flow, native prime/composite ranges, RuleAsc partitions/compositions, combinations, permutations, and product state.
 Focused tests started. A truncated long generated match line caused a syntax error; repairing the test source before rerunning.
 Native fixtures exposed output truncation in some oracle rows and a partition-option edge. Added compact mismatch diagnostics to avoid printing large fixture values.
+Focused offline tests pass: 13 compatibility tests and 7 property/state tests. Gate is running; factor-based loops and full PrimeIterator object methods remain outside the implemented subset.

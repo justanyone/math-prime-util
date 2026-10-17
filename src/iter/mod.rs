@@ -95,7 +95,7 @@ pub struct PartitionOptions {
     pub prime: Option<bool>,
 }
 
-/// RuleAsc state from `XS.xs`, `forpart` and `forcomp`.
+/// `RuleAsc` state from `XS.xs`, `forpart` and `forcomp`.
 #[derive(Debug, Clone)]
 pub struct PartitionsOf {
     a: Vec<u64>,
@@ -182,7 +182,7 @@ fn parts(n: u64, options: PartitionOptions, composition: bool) -> PartitionsOf {
     }
 }
 
-/// Iterate over ascending partitions. See `XS.xs`, `forpart`, RuleAsc.
+/// Iterate over ascending partitions. See `XS.xs`, `forpart`, `RuleAsc`.
 /// # Panics
 /// Panics if `n > u64::MAX - 2` or the state cannot fit in memory.
 /// ```
@@ -192,7 +192,7 @@ fn parts(n: u64, options: PartitionOptions, composition: bool) -> PartitionsOf {
 pub fn partitions_of(n: u64, options: PartitionOptions) -> PartitionsOf {
     parts(n, options, false)
 }
-/// Iterate over ordered compositions. See `XS.xs`, `forcomp`, RuleAsc.
+/// Iterate over ordered compositions. See `XS.xs`, `forcomp`, `RuleAsc`.
 /// # Panics
 /// Panics if `n > u64::MAX - 2` or the state cannot fit in memory.
 /// ```

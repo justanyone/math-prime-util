@@ -12,3 +12,5 @@ Replaced permutation filtering with the C derangement initializer and skip trans
 Prime iterators now use the reference 10k-prime batch-size estimate and an owned buffer. Native exhaustion uses Option and cannot wrap.
 Added full-stream closure equivalence, clone independence, native top-bound exhaustion, and derangement cross-checks against all small permutations.
 The gate reached pre-existing count compatibility tests; nth_prime_oracle and prime_count_oracle exceed 60 seconds. Iterator-only validation continues independently.
+Final-head gate started after all implementation edits. The completed subset has 13 fixture tests, 9 property/state tests, runnable examples, and four benchmark workloads.
+Remaining port work: forsemiprimes, foralmostprimes, forfactored, forsquarefree, forsquarefreeint, fordivisors; these require faithful factor/family algorithms, not trial-division substitutes.

@@ -17,11 +17,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `almost_prime_count_lower`
 - [ ] `almost_prime_count_upper`
 - [ ] `almost_primes`
-- [ ] `bell_number`
+- [x] `bell_number`
 - [x] `bernfrac`
 - [x] `bernreal`
 - [x] `bestrational`
-- [ ] `binomial`
+- [x] `binomial`
 - [x] `binomialmod`
 - [ ] `bitand`
 - [ ] `bitandnot`
@@ -36,7 +36,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `bitxor`
 - [x] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
-- [ ] `catalan_number`
+- [x] `catalan_number`
 - [x] `cdivint`
 - [x] `cdivrem`
 - [ ] `cheb_factor`
@@ -376,7 +376,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`
-- [ ] `stirling`
+- [x] `stirling`
 - [x] `sub1int`
 - [ ] `subfactorial`
 - [x] `subint`

@@ -12,3 +12,4 @@ No extra dependencies. No STATUS.md edits. No fixture hand-edits.
 - 2026-10-17T07:10:49Z launcher: no commit for 60 s; 332 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ramanujan-f03-a1.md.
 - 2026-10-17T07:11:49Z launcher: no commit for 60 s; 392 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ramanujan-f03-a1.md.
 - 2026-10-17T07:12:50Z launcher: no commit for 61 s; 454 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ramanujan-f03-a1.md.
+read C bounds, axler, Noe sieve, fixtures (upper 89, is 1007). nth_prime_upper is not in the crate; port it private. next: write the two source files and tests.

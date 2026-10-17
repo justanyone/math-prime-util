@@ -23,3 +23,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Full offline suite reached compat_families: 54 passed and the two known k=1 maximum-input precision cases failed. Fixed the benchmark macro registration after clippy caught the unused benchmark helper. Rerunning gate for final lint/MSRV evi <<cut 6 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -17 bytes)
+Final fmt, clippy across all targets/features, and MSRV 1.85 build passed. All four new public doctests passed (8 almost-related doctests total). Gate reached tests; the exact unsigned oracle failures still prevent a green result.
+Stopped with four ports, exact oracle assertions, property regressions, doctests, and benchmarks on disk. Gate fails only the two observed k=1,u64::MAX precision cases in compat_families; its later doc-generation step and coverage were not  <<cut 174 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 149 bytes)

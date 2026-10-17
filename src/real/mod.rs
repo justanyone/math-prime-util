@@ -670,3 +670,89 @@ pub fn pi(digits: u32) -> String {
     bytes.insert(1, b'.');
     String::from_utf8(bytes).expect("decimal digits")
 }
+
+/// Return the Bernoulli number, with B1 = +1/2.
+/// MPU has no C `bernreal`. This ports `PP.pm::_bernoulli_seidel`, used by
+/// `Util.pm::bernreal`, with floating-point Seidel entries.
+/// ```
+/// assert!((math_prime_util::bernreal(4) + 1.0/30.0).abs() < 1e-15);
+/// ```
+pub fn bernreal(n: u32) -> f64 {
+    if n == 0 {
+        return 1.0;
+    }
+    if n == 1 {
+        return 0.5;
+    }
+    if n % 2 == 1 {
+        return 0.0;
+    }
+    // B260 already exceeds the f64 range.
+    if n >= 260 {
+        return if n % 4 == 0 {
+            f64::NEG_INFINITY
+        } else {
+            f64::INFINITY
+        };
+    }
+    let mut d = vec![0.0; n as usize / 2 + 2];
+    d[1] = 1.0;
+    let (mut h, mut w) = (1, 1);
+    // Scale all entries by the final denominator to avoid intermediate overflow.
+    d[1] /= 2.0_f64.powf(f64::from(n) + 1.0) - 2.0;
+    for _ in 0..n {
+        w ^= 1;
+        if w != 0 {
+            for j in 1..h {
+                d[j] += d[j - 1];
+            }
+        } else {
+            w = h;
+            h += 1;
+            while w > 1 {
+                w -= 1;
+                d[w] += d[w + 1];
+            }
+        }
+    }
+    if n % 4 == 0 { -d[h - 1] } else { d[h - 1] }
+}
+
+fn harmonic_split(a: u64, b: u64) -> f64 {
+    if b - a == 1 {
+        return 1.0 / a as f64;
+    }
+    let m = a + (b - a) / 2;
+    harmonic_split(a, m) + harmonic_split(m, b)
+}
+
+/// Return the nth harmonic number.
+/// MPU has no C `harmreal`. This ports `PP.pm::harmreal` and
+/// `_harmonic_split`, using f64 instead of rational or BigFloat values.
+/// ```
+/// assert!((math_prime_util::harmreal(3) - 11.0/6.0).abs() < 1e-15);
+/// ```
+pub fn harmreal(n: u64) -> f64 {
+    if n == 0 {
+        return 0.0;
+    }
+    if n <= 2002 {
+        return harmonic_split(1, n + 1);
+    }
+    let n = n as f64;
+    let n2 = n * n;
+    let mut nt = n2;
+    let mut h = 0.0;
+    for d in [
+        -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0, -276.0,
+        65520.0, -12.0,
+    ] {
+        let term: f64 = 1.0 / (d * nt);
+        if term.abs() < 1e-44 {
+            break;
+        }
+        h += term;
+        nt *= n2;
+    }
+    h + 1.0 / (2.0 * n) + EULER + n.ln()
+}

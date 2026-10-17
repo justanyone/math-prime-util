@@ -123,3 +123,32 @@ fn step(x: u64, a: u64, n: u64) -> u64 {
     let square = mulmod(x, x, n).expect("positive modulus");
     crate::addmod(square, a, n).expect("positive modulus")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{exponents, rho, step};
+
+    #[test]
+    fn rho_backtracking_and_retry_limit() {
+        // A prime makes every nontrivial gcd equal n. Exhaust all retries.
+        assert_eq!(rho(7, 7), None);
+        for n in [49, 77, 121, 143, 10_403, 1_000_036_000_099] {
+            let f = rho(n, 7).expect("these composites split within the C bound");
+            assert!(f > 1 && f < n);
+            assert_eq!(n % f, 0);
+        }
+    }
+
+    #[test]
+    fn modular_step_avoids_overflow() {
+        let n = u64::MAX - 58;
+        let x = n - 1;
+        assert_eq!(step(x, 7, n), 8);
+    }
+
+    #[test]
+    fn large_perfect_power_and_mixed_exponents() {
+        assert_eq!(exponents(1_000_003_u64.pow(3)), vec![3]);
+        assert_eq!(exponents(2_u64.pow(2) * 3_u64.pow(5) * 7), vec![2, 5, 1]);
+    }
+}

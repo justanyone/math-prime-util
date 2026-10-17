@@ -1,4 +1,10 @@
 //! MPU factor fixtures for the four functions in this port.
+//!
+//! Skip signed omega/bigomega cases: -1 through -16, -35, -36, -100,
+//! -102, -143, -187, -392, -561, -1000, -8593952, -434420340,
+//! -752518565, -758096738, and -870589313.
+//! Skip wider-than-u64 cases for both counts and the signature:
+//! 18450931744652885087, 36803912137803496523, 36832540935240707603.
 mod common;
 
 use common::each;

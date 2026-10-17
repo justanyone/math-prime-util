@@ -79,3 +79,19 @@ fn lucky_count_upper_oracle() {
         c.check(Some(lucky_count_upper(c.arg(0))));
     });
 }
+
+// Fixture rows for these two functions are unsigned and fit `u64`.
+// No signed argument is skipped.
+#[test]
+fn nth_ramanujan_prime_upper_oracle() {
+    each("families", "nth_ramanujan_prime_upper", |c| {
+        c.check(nth_ramanujan_prime_upper(c.arg(0)));
+    });
+}
+
+#[test]
+fn is_ramanujan_prime_oracle() {
+    each("families", "is_ramanujan_prime", |c| {
+        c.check(Some(u8::from(is_ramanujan_prime(c.arg(0)))));
+    });
+}

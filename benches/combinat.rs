@@ -1,14 +1,13 @@
-//! Benchmarks for the four native combinat functions.
-use criterion::{Criterion, black_box};
+//! Benchmarks for the native combinat functions.
+#![allow(missing_docs)]
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
     bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
     harmfrac, hclassno, integer_complexity, is_happy, is_pillai, multifactorial, numtoperm,
     pn_primorial, powersum, primorial, rising_factorial, stirling, subfactorial,
 };
 
-#[test]
-fn combinat() {
-    let mut c = Criterion::default().configure_from_args();
+fn combinat(c: &mut Criterion) {
     c.bench_function("bernfrac_58", |b| b.iter(|| bernfrac(black_box(58))));
     c.bench_function("harmfrac_60", |b| b.iter(|| harmfrac(black_box(60))));
     c.bench_function("primorial_52", |b| b.iter(|| primorial(black_box(52))));
@@ -56,5 +55,7 @@ fn combinat() {
     c.bench_function("numtoperm", |b| {
         b.iter(|| numtoperm(24, black_box(987_654_321)));
     });
-    c.final_summary();
 }
+
+criterion_group!(benches, combinat);
+criterion_main!(benches);

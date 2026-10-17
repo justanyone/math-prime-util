@@ -115,16 +115,19 @@ fn check(name: &str) {
                 combinations_of(c.arg(0), c.args.get(1).map(|s| s.parse().unwrap())),
                 ",",
             ),
-            "forperm" => tuples(collected(|f| forperm(c.arg(0), f)), ","),
-            "forderange" => tuples(collected(|f| forderange(c.arg(0), f)), ","),
-            "formultiperm" => tuples(collected(|f| formultiperm(&c.args, f)), ","),
+            "forperm" => tuples(collected(|f| math_prime_util::forperm(c.arg(0), f)), ","),
+            "forderange" => tuples(collected(|f| math_prime_util::forderange(c.arg(0), f)), ","),
+            "formultiperm" => tuples(
+                collected(|f| math_prime_util::formultiperm(&c.args, f)),
+                ",",
+            ),
             "forsetproduct" => {
                 let sets = if c.args.is_empty() {
                     Vec::new()
                 } else {
                     c.args.split(|v| v == "|").map(<[String]>::to_vec).collect()
                 };
-                tuples(collected(|f| forsetproduct(&sets, f)), ",")
+                tuples(collected(|f| math_prime_util::forsetproduct(&sets, f)), ",")
             }
             "prime_iterator" | "prime_iterator_object_iterate" => {
                 let start = if c.args.is_empty() {

@@ -12,3 +12,4 @@ Confirmed the existing iter family has committed oracle cases and a generator se
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -20 bytes)
 All implementation and test edits are complete. Offline verification is still compiling; queued a final focused run after the latest boundary tests. No test failure has been reported yet.
+The first compile found fixture-test functions shadowing the four imported APIs. Qualified calls with math_prime_util to fix it. Property tests and benchmark targets compiled successfully; rerun focused tests and the gate next.

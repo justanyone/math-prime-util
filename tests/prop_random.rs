@@ -194,3 +194,20 @@ fn native_prime_boundaries() {
     assert_eq!(random_ndigit_prime(20), None);
     assert_eq!(random_ndigit_prime(u32::MAX), None);
 }
+
+#[test]
+fn empty_prime_calls_preserve_stream() {
+    srand(15);
+    let expected = irand64();
+    srand(15);
+    assert_eq!(random_prime(14, 16), None);
+    assert_eq!(random_prime(3, 2), None);
+    assert_eq!(random_prime(0, 1), None);
+    assert_eq!(random_prime(2, 2), Some(2));
+    assert_eq!(random_nbit_prime(65), None);
+    assert_eq!(random_ndigit_prime(20), None);
+    assert_eq!(random_safe_prime(65), None);
+    assert_eq!(random_safe_prime(4), Some(11));
+    assert_eq!(random_safe_prime(5), Some(23));
+    assert_eq!(irand64(), expected);
+}

@@ -6,3 +6,4 @@ Confirmed existing thread-local CSPRNG and seeded fixtures. Native C uses reject
 Implemented all four functions in separate files with module exports and runnable docs. Added fixture dispatch, size/range laws, reseeding and concurrent replay tests, plus hot-function benchmarks. Focused offline tests are running.
 Focused offline compatibility and property tests passed: 34 tests total, including all supported native oracle cases. The full gate is running; no fixture, dependency, or tooling changes were needed.
 The gate caught four benchmark closure semicolons required by pedantic clippy. Fixed those statements and restarted the gate.
+Added explicit regression coverage that empty, singleton, and unsupported prime requests preserve stream position. Named the fixture cases skipped by the native API.

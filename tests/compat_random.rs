@@ -251,8 +251,10 @@ fn cipher_vectors() {
     assert_eq!(count, 6);
 }
 
-// Signed, malformed, and bigint arguments (including 20+ decimal digits) have
-// no native Rust API here. One-argument random_prime maps to random_prime(2, n).
+// Skip random_prime arguments -3, (2, -4), (2, a), a, and undef: the
+// native API cannot take signed or malformed inputs. Also skip bounds above
+// u64::MAX, random_ndigit_prime(20/25/30), and random_nbit_prime(65/80/100/128):
+// these need the bigint phase. Map one-argument random_prime(n) to (2, n).
 fn check_prime(f: &str) {
     let mut count = 0;
     for c in common::load("random").into_iter().filter(|c| c.func == f) {

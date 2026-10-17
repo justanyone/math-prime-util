@@ -4,7 +4,7 @@ use crate::{primes, rootint, semi_primes, sqrtint};
 // almost_primes.c: _genkap. Nondecreasing prime factors avoid duplicates.
 fn generate(k: u64, lo: u64, hi: u64, m: u64, begin: u64, list: &mut Vec<u64>) {
     if k == 1 {
-        let start = (lo / m + u64::from(lo % m != 0)).max(begin);
+        let start = lo.div_ceil(m).max(begin);
         list.extend(primes(start, hi / m).into_iter().map(|p| m * p));
     } else {
         for p in primes(
@@ -12,7 +12,7 @@ fn generate(k: u64, lo: u64, hi: u64, m: u64, begin: u64, list: &mut Vec<u64>) {
             rootint(hi / m, u32::try_from(k).expect("k is below 64")),
         ) {
             let t = m * p;
-            if lo / t + u64::from(lo % t != 0) <= hi / t {
+            if lo.div_ceil(t) <= hi / t {
                 generate(k - 1, lo, hi, t, p, list);
             }
         }
@@ -32,7 +32,7 @@ fn sieve(k: u64, lo: u64, hi: u64) -> Vec<u64> {
     super::almost_prime_count::reduce(&mut reduced, &mut top);
     let r = k - reduced;
     if r > 0 {
-        return almost_primes(reduced, (lo >> r) + u64::from(lo % (1_u64 << r) != 0), top)
+        return almost_primes(reduced, lo.div_ceil(1_u64 << r), top)
             .into_iter()
             .map(|n| n << r)
             .collect();
@@ -90,6 +90,11 @@ fn sieve(k: u64, lo: u64, hi: u64) -> Vec<u64> {
 ///
 /// Port of MPU 0.75 `almost_primes.c`: `generate_almost_primes`, `_genkap`,
 /// and `range_almost_prime_sieve`.
+///
+/// # Panics
+///
+/// Panics if a semiprime range does not fit in `usize`.
+///
 /// ```
 /// use math_prime_util::almost_primes;
 /// assert_eq!(almost_primes(3, 1, 30), vec![8, 12, 18, 20, 27, 28, 30]);

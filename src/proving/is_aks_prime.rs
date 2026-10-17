@@ -261,9 +261,11 @@ mod convolution_tests {
         for n in [7, 1_000_000_007, 1 << 32, u64::MAX - 58, u64::MAX] {
             for size in [3, 7, 24] {
                 let dense = vec![n - 1; size];
+                let half = vec![n / 2; size];
+                let above_half = vec![n / 2 + 1; size];
                 let mut sparse = vec![0; size];
                 sparse[1] = n - 2;
-                for x in [&dense, &sparse, &vec![0; size]] {
+                for x in [&dense, &half, &above_half, &sparse, &vec![0; size]] {
                     assert_eq!(square(x, n), convolution(x, x, n));
                     for y in [&dense, &sparse] {
                         assert_eq!(multiply(x, y, n), convolution(x, y, n));

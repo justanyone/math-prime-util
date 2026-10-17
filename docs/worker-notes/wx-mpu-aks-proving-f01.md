@@ -9,3 +9,4 @@ Ported the C degree-limited multiplication and symmetric square paths, including
 Added direct polynomial regressions for sparse, dense, zero, native, and u64-boundary inputs; extended certificate edge tests and all-four-function benchmarks.
 Focused runs and the gate are active; the gate currently waits for the Cargo build lock. No dependency, fixture, verifier, or tooling changes were needed.
 Added the product-compositeness law for all proving and certificate APIs, with unsigned input limits documented in the oracle tests.
+Initial offline oracle and property runs passed (12 compatibility tests and 11 property tests); the final optimized implementation is now building for unit and lint checks.

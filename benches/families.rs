@@ -11,6 +11,10 @@ use math_prime_util::{
     ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
     twin_prime_count, twin_prime_count_approx, twin_primes,
 };
+use math_prime_util::{
+    ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
+    ramanujan_primes,
+};
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
@@ -107,6 +111,20 @@ fn bench_families(c: &mut Criterion) {
         b.iter(|| nth_semiprime_approx(black_box(100)));
     });
 }
+fn bench_ramanujan(c: &mut Criterion) {
+    c.bench_function("ramanujan_primes", |b| {
+        b.iter(|| ramanujan_primes(black_box(10_000), black_box(20_000)));
+    });
+    c.bench_function("ramanujan_prime_count", |b| {
+        b.iter(|| ramanujan_prime_count(black_box(100_000)));
+    });
+    c.bench_function("ramanujan_prime_count_approx", |b| {
+        b.iter(|| ramanujan_prime_count_approx(black_box(100_000_000)));
+    });
+    c.bench_function("ramanujan_prime_count_lower", |b| {
+        b.iter(|| ramanujan_prime_count_lower(black_box(100_000_000)));
+    });
+}
 fn bench_goldbach_misc(c: &mut Criterion) {
     c.bench_function("minimal_goldbach_pair", |b| {
         b.iter(|| minimal_goldbach_pair(black_box(60_119_912)));
@@ -150,6 +168,7 @@ fn bench_perfect_powers(c: &mut Criterion) {
 criterion_group!(
     benches,
     bench_families,
+    bench_ramanujan,
     bench_goldbach_misc,
     bench_squares,
     bench_perfect_powers

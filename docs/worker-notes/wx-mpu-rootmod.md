@@ -21,3 +21,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Fixed remaining compatibility-test semicolon warnings. Scoped Clippy now passes with -D warnings for the library, modular benchmark, and both modular test targets. The repository gate remains blocked by the unrelated count-module float comp <<cut 39 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)
+The offline MSRV 1.85 build passed. Roughly five minutes remain in the session budget; the full-suite wrapper is still running, while modular checks are complete. Remaining integration work is replacing the trial factoring fallback with the <<cut 86 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 62 bytes)

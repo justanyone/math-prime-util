@@ -3,3 +3,4 @@ Read PLAN sections 5–8 and the prescribed test and gate commands.
 Keep the C bounds and stages, use existing arithmetic, and leave fixtures and tooling unchanged.
 Add compatibility, algebraic, and helper tests, then run the offline gate.
 Inspection: reference uses tinyecm64_factor with fixed sigmas; checking the public wrapper defaults before porting.
+Confirmed XS defaults: B1=4000, B2=20*B1, 100 curves; wrapper removes factors 2, 3, 5 and returns an unsplit cofactor on failure.

@@ -165,6 +165,8 @@ mod tests {
     fn split_paths_and_round_limits() {
         assert_eq!(brent(403, 0, 1), None);
         assert_eq!(brent(9, 1, 1), None);
+        assert_eq!(brent(3, 10_000, 0), None);
+        assert_eq!(brent(101, 10_000, 1), None);
         assert_eq!(holf(1), None);
         for n in [403, 1_000_036_000_099, 18_446_743_979_220_271_189] {
             let f = split(n);

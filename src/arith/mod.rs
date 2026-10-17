@@ -1006,6 +1006,10 @@ pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
     if congruences.is_empty() {
         return Some((0, 0));
     }
+    // With two or more pairs, every input modulus must stay in the signed range (native C path).
+    if congruences.len() > 1 && congruences.iter().any(|&(_, m)| m > u64::MAX >> 1) {
+        return None;
+    }
     let mut pairs = congruences.to_vec();
     pairs.sort_unstable_by_key(|a| std::cmp::Reverse(a.1));
     let (mut r, mut m) = pairs[0];
@@ -1023,10 +1027,6 @@ pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
         }
         let ng = n / g;
         let modulus = m.checked_mul(ng)?;
-        // Keep the combined modulus in the signed range, as the C native path does.
-        if modulus > u64::MAX >> 1 {
-            return None;
-        }
         let delta = (i128::from(a) - i128::from(r)) / i128::from(g);
         let delta = u64::try_from(delta.rem_euclid(i128::from(ng))).ok()?;
         let t = crate::mulmod(delta, invmod(m / g, ng)?, ng)?;

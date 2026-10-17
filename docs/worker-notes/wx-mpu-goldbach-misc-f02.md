@@ -1,0 +1,2 @@
+- Plan: port is_gaussian_prime and is_sum_of_squares (util.c) into src/families/, add compat/prop tests, run gate.
+- C source is reference/mpu/XS.xs (lines 2622, 3068); PP fallbacks PP.pm 7627/7681. Writing src/families/goldbach_misc.rs next.

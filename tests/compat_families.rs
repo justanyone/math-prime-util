@@ -714,6 +714,11 @@ fn perfect_power_count_oracle() {
 
 fn almost_omega_native_cases(name: &str, f: impl Fn(u32, u64) -> Option<u64>) {
     each("families", name, |c| {
+        // Skip bigint input n (above u64::MAX); the Rust API is native only.
+        if c.args[1].parse::<u64>().is_err() {
+            return;
+        }
+
         // Skip negative k (-2): the native Rust API uses u32.
         if c.args[0].starts_with('-') {
             return;

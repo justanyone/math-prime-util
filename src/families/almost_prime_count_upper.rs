@@ -337,7 +337,7 @@ pub(super) fn bounds(k: u32, n: u64) -> (u64, u64) {
         _ => {
             let mut b = x / l;
             let logk = f64::from(k).ln();
-            let plus = ll + logk * logk.ln() - 0.504_377;
+            let plus = ll + (logk * logk.ln() - 0.504_377);
             for j in 1..k {
                 b *= plus / f64::from(j);
             }

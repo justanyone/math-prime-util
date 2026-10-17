@@ -307,8 +307,8 @@ fn miller_validation_state_and_width() {
     assert_eq!(miller_rabin_random(4, 3), Some(0));
     assert_eq!(miller_rabin_random(31, 3 * (31 / 4)), Some(1));
     assert_eq!(miller_rabin_random((1u128 << 80) + 3, 5), None);
-    assert_eq!(miller_rabin_random(u128::from(u64::MAX), 1).is_some(), true);
     assert_eq!(irand64(), virgin);
+    assert!(miller_rabin_random(u128::from(u64::MAX), 1).is_some());
 
     srand(9);
     assert_eq!(miller_rabin_random(31, 2), Some(1));

@@ -160,6 +160,24 @@ fn crt(r: u64, n: u64, s: u64, m: u64) -> u64 {
     r + n * t
 }
 
+// rootmod.c, _small. The rows cover moduli 3 through 16.
+const SMALL: [&[u8]; 14] = [
+    &[0],
+    &[0, 0],
+    &[0, 0, 2],
+    &[0, 3, 2, 0],
+    &[3, 0, 2, 0, 0],
+    &[0, 0, 2, 0, 0, 0],
+    &[0, 0, 2, 0, 0, 0, 0, 4],
+    &[0, 0, 2, 5, 4, 0, 0, 3],
+    &[0, 5, 2, 4, 0, 0, 0, 3, 0],
+    &[0, 0, 2, 0, 0, 0, 0, 3, 0, 0],
+    &[0, 4, 2, 0, 0, 0, 0, 3, 6, 0, 5],
+    &[4, 0, 2, 0, 0, 7, 6, 3, 0, 5, 0, 0],
+    &[0, 0, 2, 0, 6, 0, 0, 3, 5, 0, 0, 0, 0],
+    &[0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+];
+
 /// Return a square root modulo `n`, or `None` if none exists.
 /// Port of MPU `rootmod.c`, `sqrtmod` and `_sqrtmod_composite`.
 ///
@@ -174,6 +192,12 @@ pub fn sqrtmod(a: u64, n: u64) -> Option<u64> {
     let a = a % n;
     if a <= 1 || n <= 2 {
         return Some(a);
+    }
+    if n <= 16 {
+        let row = usize::try_from(n - 3).unwrap_or(0);
+        let column = usize::try_from(a - 2).unwrap_or(0);
+        let r = u64::from(SMALL[row][column]);
+        return (r != 0).then_some(r);
     }
     let root = sqrtint(a);
     if root * root == a {
@@ -556,17 +580,7 @@ fn all_root_power(a: u64, k: u64, p: u64, e: u32) -> Vec<u64> {
             e.div_ceil(2) + 1
         };
         let other = all_root_power(a, k, p, ered);
-        if k != p {
-            for s in other {
-                let t = powmod_u(s, k - 1, n);
-                let r = addmod_u(
-                    s,
-                    gcddiv(sub(a, mulmod_u(t, s, n), n), mulmod_u(k, t, n), n),
-                    n,
-                );
-                push_root(&mut roots, r);
-            }
-        } else {
+        if k == p {
             for s in other {
                 let t = powmod_u(s, k - 1, np);
                 let r = addmod_u(
@@ -585,6 +599,16 @@ fn all_root_power(a: u64, k: u64, p: u64, e: u32) -> Vec<u64> {
             }
             roots.sort_unstable();
             roots.dedup();
+        } else {
+            for s in other {
+                let t = powmod_u(s, k - 1, n);
+                let r = addmod_u(
+                    s,
+                    gcddiv(sub(a, mulmod_u(t, s, n), n), mulmod_u(k, t, n), n),
+                    n,
+                );
+                push_root(&mut roots, r);
+            }
         }
     }
     roots

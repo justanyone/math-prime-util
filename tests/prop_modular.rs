@@ -53,3 +53,37 @@ fn concurrent_calls() {
 fn root_count_limit() {
     allrootmod(1, 0, 600_000_001);
 }
+
+#[test]
+fn native_word_edges() {
+    let prime = u64::MAX - 58;
+    let a = u64::MAX - 123;
+    let square = mulmod(a, a, prime).unwrap();
+    let r = sqrtmod(square, prime).unwrap();
+    assert_eq!(mulmod(r, r, prime), Some(square));
+    assert_eq!(allsqrtmod(square, prime), vec![r, prime - r]);
+    for n in [1 << 63, 1 << 62, 1 << 40] {
+        assert_eq!(sqrtmod(17, n).map(|r| mulmod(r, r, n)), Some(Some(17)));
+        for root in allsqrtmod(17, n) {
+            assert_eq!(mulmod(root, root, n), Some(17));
+        }
+    }
+    for n in 1..150 {
+        for k in 0..10 {
+            for a in 0..n {
+                let roots = allrootmod(a, k, n);
+                assert_eq!(
+                    rootmod(a, k, n).is_some(),
+                    !roots.is_empty(),
+                    "a={a}, k={k}, n={n}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[should_panic(expected = "Maximum returned roots exceeded")]
+fn square_root_count_limit() {
+    allsqrtmod(0, 1 << 62);
+}

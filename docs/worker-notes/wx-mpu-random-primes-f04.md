@@ -4,3 +4,4 @@ Keep tools, fixtures, crate root, and generated STATUS.md unchanged.
 Add fixture compatibility, algebraic tests, and benchmarks; run offline checks.
 Confirmed existing thread-local RNG and fixture seed format; locating exact native algorithms before implementation.
 Implemented all four APIs. The factor module is empty, so added a private native Brent splitter based on factor.c for the two callers.
+Added compatibility tests for every assigned fixture family and property tests for bounds, products, uniqueness, replay, and thread isolation. Focused tests are running offline.

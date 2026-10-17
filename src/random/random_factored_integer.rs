@@ -4,7 +4,8 @@ use crate::{gcd, is_prime};
 // reference/mpu/factor.c: pbrent_factor, non-Montgomery path.
 #[allow(clippy::cast_possible_truncation)] // Each remainder is below the u64 modulus.
 fn brent(n: u64, mut a: u64) -> Option<u64> {
-    let step = |x: u64, a: u64| ((u128::from(x) * u128::from(x) + u128::from(a)) % u128::from(n)) as u64;
+    let step =
+        |x: u64, a: u64| ((u128::from(x) * u128::from(x) + u128::from(a)) % u128::from(n)) as u64;
     let inner = if n <= 4_000_000_000 { 32 } else { 160 };
     let (mut r, mut f, mut xi, mut xm) = (1u64, 1, 1, 1);
     let mut rounds = 500_000;
@@ -24,20 +25,30 @@ fn brent(n: u64, mut a: u64) -> Option<u64> {
                 m = (u128::from(m) * u128::from(xi.abs_diff(xm)) % u128::from(n)) as u64;
             }
             f = gcd(m, n);
-            if f != 1 { break; }
+            if f != 1 {
+                break;
+            }
         }
-        if f == 1 { r *= 2; xm = xi; continue; }
+        if f == 1 {
+            r *= 2;
+            xm = xi;
+            continue;
+        }
         if f == n {
             xi = saved;
             loop {
                 xi = step(xi, a);
                 f = gcd(xi.abs_diff(xm), n);
-                if f != 1 || r == 0 { break; }
+                if f != 1 || r == 0 {
+                    break;
+                }
                 r -= 1;
             }
         }
         if f == 0 || f == n {
-            if fails == 0 { break; }
+            if fails == 0 {
+                break;
+            }
             fails -= 1;
             xm = ((u128::from(xm) + 11) % u128::from(n)) as u64;
             xi = xm;
@@ -52,15 +63,25 @@ fn brent(n: u64, mut a: u64) -> Option<u64> {
 pub(super) fn factors(mut n: u64) -> Vec<u64> {
     let mut out = Vec::new();
     for p in [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] {
-        while n % p == 0 && n > 1 { out.push(p); n /= p; }
+        while n % p == 0 && n > 1 {
+            out.push(p);
+            n /= p;
+        }
     }
     let mut stack = vec![n];
     while let Some(n) = stack.pop() {
-        if n <= 1 { continue; }
-        if is_prime(n) != 0 { out.push(n); continue; }
+        if n <= 1 {
+            continue;
+        }
+        if is_prime(n) != 0 {
+            out.push(n);
+            continue;
+        }
         let mut a = 1;
         let d = loop {
-            if let Some(d) = brent(n, a) { break d; }
+            if let Some(d) = brent(n, a) {
+                break d;
+            }
             a += 2;
         };
         stack.extend([d, n / d]);
@@ -93,7 +114,17 @@ mod tests {
 
     #[test]
     fn factor_paths() {
-        for n in [1, 2, 4, 9, 41, 41 * 41, 101 * 103, 203_389_829 * 2_969_096_527, u64::MAX] {
+        for n in [
+            1,
+            2,
+            4,
+            9,
+            41,
+            41 * 41,
+            101 * 103,
+            203_389_829 * 2_969_096_527,
+            u64::MAX,
+        ] {
             let f = factors(n);
             assert_eq!(f.iter().product::<u64>(), n);
             assert!(f.iter().all(|&p| is_prime(p) != 0));
@@ -103,5 +134,7 @@ mod tests {
 
     #[test]
     #[should_panic(expected = "n must be positive")]
-    fn zero_bound() { random_factored_integer(0); }
+    fn zero_bound() {
+        random_factored_integer(0);
+    }
 }

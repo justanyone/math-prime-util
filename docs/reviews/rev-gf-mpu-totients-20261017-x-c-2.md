@@ -4,4 +4,4 @@ Verdict: FAIL
 
 The stopped run is not complete against the acceptance criteria because it rejects a representable native result. No earlier review findings were supplied. Examined the digest's range bounds, recursive termination, inverse-totient deduplication, and compatibility/property tests. Confirmed the candidate source location and compared `reference/mpu/totients.c::jordan_totient`; its overflow sentinel delegates higher orders to the Perl fallback, which the Rust documentation explicitly claims to cover.
 
-Validation: local checks target the base checkout and cannot certify the candidate. Check results will be recorded below.
+Validation: `tools/test.sh --test prop_arith` passed all eight base tests. `tools/gate.sh` passed formatting, clippy and MSRV checks; its full test phase remained running in prime-count/nth-prime compatibility tests at review completion, so `== gate: green` was not observed. These checks target the base checkout and cannot certify the candidate. The boundary finding follows directly from the candidate expression; no candidate execution is claimed.

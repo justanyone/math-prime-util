@@ -7,3 +7,4 @@ Focused base prop_arith checks passed (8 tests); base gate passed formatting, cl
 Base gate is still in compatibility tests; chebyshev passed after a slow run, while prime-count/nth-prime fixtures remain active. No production files changed; review verdict is settled.
 Approximately five minutes remain in the review budget. All review content is written; only the base gate result is outstanding, and it cannot establish candidate acceptance.
 - 2026-10-17T08:12:52Z launcher: no commit for 61 s; 243 s elapsed. Files changed so far: docs/reviews/rev-gf-mpu-totients-20261017-x-c-2.md, docs/worker-notes/rv2-gf-mpu-totients-20261017-x-c-t0308.md.
+Finished independent review: FAIL, one Open native-overflow boundary finding at candidate src/arith/mod.rs:285. Recorded focused base test success and explicitly uncompleted base gate; no candidate execution or green gate claimed. Only review and required notes were written.

@@ -53,3 +53,29 @@ fn boundaries_and_repeated_calls() {
         }
     }
 }
+
+proptest! {
+    #[test]
+    fn tau_multiplicative(a in 1_u64..40, b in 1_u64..40) {
+        if gcd(a,b) == 1 {
+            prop_assert_eq!(ramanujan_tau(a*b), Some(ramanujan_tau(a).unwrap()*ramanujan_tau(b).unwrap()));
+        }
+    }
+}
+
+#[test]
+fn nonresidues_and_parallel_calls() {
+    for n in 3..300 {
+        let a = qnr(n).unwrap();
+        assert!(!is_qr(a, n), "qnr({n}) = {a}");
+    }
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                assert_eq!(divisor_sum(360_360, 1), Some(1_572_480));
+                assert_eq!(chinese2(&[(2, 3), (3, 5)]), Some((8, 15)));
+                assert_eq!(ramanujan_tau(1000), Some(-30_328_412_970_240_000));
+            });
+        }
+    });
+}

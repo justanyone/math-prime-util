@@ -28,19 +28,19 @@ pub fn inverse_sigma0(k: u64, lo: u64, hi: u64) -> Option<Vec<u64>> {
 }
 
 /// Return how many integers in `lo..=hi` have exactly `k` divisors.
-/// Return `None` when `k` is 0.
+/// Return 0 when `k` is 0.
 ///
 /// Port of MPU 0.75 `inverse_sigma0.c::inverse_sigma0_count` (sieve path).
 ///
 /// ```
 /// use math_prime_util::inverse_sigma0_count;
 /// assert_eq!(inverse_sigma0_count(4, 1, 10), Some(3));
-/// assert_eq!(inverse_sigma0_count(0, 1, 10), None);
+/// assert_eq!(inverse_sigma0_count(0, 1, 10), Some(0));
 /// ```
 #[must_use]
 pub fn inverse_sigma0_count(k: u64, lo: u64, hi: u64) -> Option<u64> {
     if k == 0 {
-        return None;
+        return Some(0);
     }
     let mut count = 0;
     for_each_match(k, lo, hi, |_| count += 1);
@@ -48,9 +48,19 @@ pub fn inverse_sigma0_count(k: u64, lo: u64, hi: u64) -> Option<u64> {
 }
 
 /// Call `emit` for each `n` in `lo..=hi` with `k` divisors, in order.
+///
+/// The k=1 and k>hi early returns follow `inverse_sigma0.c`, so large
+/// endpoints do not allocate the sieve.
 fn for_each_match(k: u64, lo: u64, hi: u64, mut emit: impl FnMut(u64)) {
     let lo = lo.max(1);
-    if lo > hi {
+    if lo > hi || k > hi {
+        return;
+    }
+    if k == 1 {
+        // Only 1 has one divisor; lo >= 1 and lo <= hi by the check above.
+        if lo == 1 {
+            emit(1);
+        }
         return;
     }
     let primes = primes_up_to(isqrt(hi));
@@ -147,6 +157,23 @@ mod tests {
         assert_eq!(inverse_sigma0(2, 10, 20), Some(vec![11, 13, 17, 19]));
         assert_eq!(inverse_sigma0(4, 10, 10), Some(vec![10]));
         assert_eq!(inverse_sigma0(0, 1, 10), None);
+    }
+
+    #[test]
+    fn count_zero_k_is_zero() {
+        assert_eq!(inverse_sigma0_count(0, 1, 10), Some(0));
+    }
+
+    #[test]
+    fn k_one_and_large_endpoints_return_early() {
+        // Each call must return without sieving up to sqrt(u64::MAX).
+        assert_eq!(inverse_sigma0_count(1, u64::MAX, u64::MAX), Some(0));
+        assert_eq!(inverse_sigma0(1, u64::MAX, u64::MAX), Some(vec![]));
+        assert_eq!(inverse_sigma0_count(1, 0, 0), Some(0));
+        assert_eq!(inverse_sigma0(1, 0, 5), Some(vec![1]));
+        assert_eq!(inverse_sigma0_count(1, 2, 5), Some(0));
+        // k > hi cannot match, since tau(n) <= n.
+        assert_eq!(inverse_sigma0_count(u64::MAX, 1, 1000), Some(0));
     }
 
     #[test]

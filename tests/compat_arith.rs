@@ -110,3 +110,30 @@ fn chinese2() {
         }
     });
 }
+
+/// `inverse_sigma0` cases: `k hi` uses `lo = 1`; `k lo hi` is explicit.
+fn inverse_range(c: &common::Case) -> (u64, u64, u64) {
+    if c.args.len() == 2 {
+        (c.arg(0), 1, c.arg(1))
+    } else {
+        (c.arg(0), c.arg(1), c.arg(2))
+    }
+}
+
+#[test]
+fn inverse_sigma0_oracle() {
+    each("arith", "inverse_sigma0", |c| {
+        let (k, lo, hi) = inverse_range(c);
+        let got = math_prime_util::inverse_sigma0(k, lo, hi)
+            .map(|v| v.iter().map(u64::to_string).collect::<Vec<_>>().join(" "));
+        c.check(got);
+    });
+}
+
+#[test]
+fn inverse_sigma0_count_oracle() {
+    each("arith", "inverse_sigma0_count", |c| {
+        let (k, lo, hi) = inverse_range(c);
+        c.check(math_prime_util::inverse_sigma0_count(k, lo, hi));
+    });
+}

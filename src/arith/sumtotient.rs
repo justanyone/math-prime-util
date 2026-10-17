@@ -1,6 +1,5 @@
 use super::euler_phi_range;
-use crate::{rootint, sqrtint};
-use std::collections::HashMap;
+use crate::{next_prime, rootint, sqrtint};
 
 // MPU totients.c::_sumtotient_direct. The two caches index small values
 // and quotients separately, so both loops stop at a square root.
@@ -48,15 +47,27 @@ fn sumtotient_direct(n: u64) -> u64 {
 /// ```
 /// assert_eq!(math_prime_util::sumtotient(10), Some(32));
 /// ```
+#[allow(clippy::missing_panics_doc)] // The native bound guarantees all conversions and next_prime.
 pub fn sumtotient(n: u64) -> Option<u64> {
-    fn sumt(n: u64, prefix: &[u64], cache: &mut HashMap<u64, u64>) -> u64 {
+    fn sumt(n: u64, prefix: &[u64], cache: &mut [(u64, u64)]) -> u64 {
         if let Ok(i) = usize::try_from(n) {
             if let Some(&v) = prefix.get(i) {
                 return v;
             }
         }
-        if let Some(&v) = cache.get(&n) {
-            return v;
+        // MPU uses at most eight extra probes in a fixed prime-sized table.
+        let mut slot = usize::try_from(n % cache.len() as u64).unwrap();
+        let mut probes = 0;
+        while probes <= 8 {
+            let (key, value) = cache[slot];
+            if key == n {
+                return value;
+            }
+            if key == 0 {
+                break;
+            }
+            slot = (slot + 1) % cache.len();
+            probes += 1;
         }
         let s = sqrtint(n);
         let lim = n / (s + 1);
@@ -69,7 +80,14 @@ pub fn sumtotient(n: u64) -> Option<u64> {
             v -= u128::from(n / s - n / (s + 1)) * u128::from(sumt(s, prefix, cache));
         }
         let v = u64::try_from(v).unwrap();
-        cache.insert(n, v);
+        while probes <= 8 {
+            if cache[slot].0 == 0 {
+                cache[slot] = (n, v);
+                break;
+            }
+            slot = (slot + 1) % cache.len();
+            probes += 1;
+        }
         v
     }
     if n > 7_790_208_950 {
@@ -78,9 +96,11 @@ pub fn sumtotient(n: u64) -> Option<u64> {
     if n < 4000 {
         return Some(sumtotient_direct(n));
     }
-    let mut prefix = euler_phi_range(0, rootint(n, 3).pow(2) - 1);
+    let cube_root = rootint(n, 3);
+    let mut prefix = euler_phi_range(0, cube_root.pow(2) - 1);
     for i in 2..prefix.len() {
         prefix[i] += prefix[i - 1];
     }
-    Some(sumt(n, &prefix, &mut HashMap::new()))
+    let cache_size = usize::try_from(next_prime(10 + 4 * cube_root).unwrap()).unwrap();
+    Some(sumt(n, &prefix, &mut vec![(0, 0); cache_size]))
 }

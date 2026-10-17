@@ -437,9 +437,11 @@ fn inverse(mut lo: u64, mut hi: u64, n: u64, f: fn(u64) -> Option<u64>) -> u64 {
     while hi - lo > 8 {
         let mut x1 = lo + (hi - lo) / 2;
         let mut rx1 = f(x1).unwrap_or(0);
-        let d0 = (n - rlo) as f64;
+        // C uses unsigned arithmetic here; keep its wraparound when the bracket
+        // does not hold (saturated estimates near u64::MAX).
+        let d0 = n.wrapping_sub(rlo) as f64;
         let d1 = rx1.abs_diff(n) as f64;
-        let d2 = (rhi - n + 1) as f64;
+        let d2 = rhi.wrapping_sub(n).wrapping_add(1) as f64;
         let sign = if rx1 >= n { 1.0 } else { -1.0 };
         let pos = sign * (x1 - lo) as f64 * d1 / (d1 * d1 + d0 * d2).sqrt();
         let movement = (pos + if pos >= 0.0 { 0.5 } else { -0.5 }) as i128;

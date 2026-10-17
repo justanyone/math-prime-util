@@ -5,7 +5,11 @@ const MAX_POWER: u64 = 18_446_744_065_119_617_025;
 const MAX_INDEX: u64 = 4_297_615_581;
 
 // MPU perfect_powers.c, nth_perfect_power_approx. Rust casts saturate at u64::MAX.
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 fn approximate(n: u64) -> u64 {
     if n <= 1 {
         return n;
@@ -14,12 +18,13 @@ fn approximate(n: u64) -> u64 {
         return MAX_POWER;
     }
     let n = n as f64;
-    let mut pp = n.powf(2.0) + (13.0 / 3.0) * n.powf(4.0 / 3.0)
-        + (32.0 / 15.0) * n.powf(16.0 / 15.0);
-    pp += -2.0 * n.powf(5.0 / 3.0) - 2.0 * n.powf(7.0 / 5.0)
-        - 2.0 * n.powf(9.0 / 7.0) + 2.0 * n.powf(12.0 / 10.0);
+    let mut pp =
+        n.powf(2.0) + (13.0 / 3.0) * n.powf(4.0 / 3.0) + (32.0 / 15.0) * n.powf(16.0 / 15.0);
+    pp += -2.0 * n.powf(5.0 / 3.0) - 2.0 * n.powf(7.0 / 5.0) - 2.0 * n.powf(9.0 / 7.0)
+        + 2.0 * n.powf(12.0 / 10.0);
     pp += -2.0 * n.powf(13.0 / 11.0) - 2.0 * n.powf(15.0 / 13.0)
-        + 2.0 * n.powf(16.0 / 14.0) + 2.0 * n.powf(17.0 / 15.0);
+        + 2.0 * n.powf(16.0 / 14.0)
+        + 2.0 * n.powf(17.0 / 15.0);
     pp -= 0.48 * n.powf(19.0 / 17.0);
     pp -= 1.5;
     pp as u64
@@ -109,23 +114,26 @@ fn next(n: u64) -> u64 {
 
 /// Return the `n`th positive perfect power, with 1 at index 1.
 ///
-/// Index 0 returns 0. Indices at or above 4,297,615,581 return the largest
+/// Index 0 returns `None`. Indices at or above 4,297,615,581 return the largest
 /// perfect power that fits in `u64`, as in MPU.
 /// Port of `nth_perfect_power` in MPU 0.75 `perfect_powers.c`, using
 /// `interpolate_with_approx` from `inverse_interpolate.c`.
 ///
 /// ```
 /// use math_prime_util::nth_perfect_power;
-/// assert_eq!(nth_perfect_power(6), 25);
-/// assert_eq!(nth_perfect_power(0), 0);
+/// assert_eq!(nth_perfect_power(6), Some(25));
+/// assert_eq!(nth_perfect_power(0), None);
 /// ```
 #[must_use]
-pub fn nth_perfect_power(n: u64) -> u64 {
-    if n <= 1 {
-        return n;
+pub fn nth_perfect_power(n: u64) -> Option<u64> {
+    if n == 0 {
+        return None;
+    }
+    if n == 1 {
+        return Some(1);
     }
     if n >= MAX_INDEX {
-        return MAX_POWER;
+        return Some(MAX_POWER);
     }
     let (g, mut c) = interpolate(n);
     let mut g = g.min(MAX_POWER);
@@ -141,7 +149,7 @@ pub fn nth_perfect_power(n: u64) -> u64 {
             c += 1;
         }
     }
-    g
+    Some(g)
 }
 
 #[cfg(test)]
@@ -167,11 +175,11 @@ mod tests {
     #[test]
     fn large_indices_and_saturation() {
         for n in [1_000_000, 100_000_000, MAX_INDEX - 1] {
-            let p = nth_perfect_power(n);
+            let p = nth_perfect_power(n).unwrap();
             assert_eq!(count(p), n);
             assert_eq!(count(p - 1), n - 1);
         }
-        assert_eq!(nth_perfect_power(MAX_INDEX), MAX_POWER);
-        assert_eq!(nth_perfect_power(u64::MAX), MAX_POWER);
+        assert_eq!(nth_perfect_power(MAX_INDEX), Some(MAX_POWER));
+        assert_eq!(nth_perfect_power(u64::MAX), Some(MAX_POWER));
     }
 }

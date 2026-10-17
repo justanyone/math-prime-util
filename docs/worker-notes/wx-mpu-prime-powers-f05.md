@@ -3,3 +3,4 @@ Keep each public function in its own families file and use existing integer help
 Use committed oracle fixtures, add algebraic tests and benchmarks, and run offline checks.
 Leave STATUS.md, fixtures, tooling, and the crate root unchanged as required by the task.
 Implemented the exact Möbius count and the C nth approximation, interpolation, and stepping helpers; next add oracle and algebraic tests.
+Added four oracle tests, full-width count and inverse laws, small exhaustive checks, repeat/concurrency checks, and hot-function benchmarks. Focused offline tests are running.

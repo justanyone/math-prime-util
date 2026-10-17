@@ -1,43 +1,59 @@
-//! Algebraic laws for lucky-number ranks and membership.
-use math_prime_util::*;
+//! Algebraic laws for positive perfect powers.
+use math_prime_util::{
+    is_power_exp, nth_perfect_power, perfect_power_count_approx, perfect_power_count_lower,
+    perfect_power_count_upper,
+};
 use proptest::prelude::*;
 
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
-    fn lucky_rank_inverse(k in 1u64..5000) {
-        let n = nth_lucky(k).unwrap();
-        prop_assert!(is_lucky(n));
-        prop_assert_eq!(lucky_count(n), k);
-        prop_assert_eq!(lucky_count(n - 1), k - 1);
-        prop_assert!(nth_lucky_lower(k).unwrap() <= n);
-        prop_assert!(n <= nth_lucky_upper(k).unwrap());
+    fn count_bounds_are_exact(n in any::<u64>()) {
+        let count = perfect_power_count_approx(n);
+        prop_assert_eq!(perfect_power_count_lower(n), count);
+        prop_assert_eq!(perfect_power_count_upper(n), count);
+        if n > 0 {
+            let previous = perfect_power_count_approx(n - 1);
+            let increment = u64::from(n == 1 || is_power_exp(n) > 1);
+            prop_assert_eq!(count, previous + increment);
+        }
     }
+
     #[test]
-    fn lucky_sieve_membership(n in 0u64..10000) {
-        let values = lucky_numbers(0, n);
-        prop_assert_eq!(values.len() as u64, lucky_count(n));
-        prop_assert_eq!(values.last() == Some(&n), is_lucky(n));
-        prop_assert!(values.windows(2).all(|w| w[0] < w[1]));
-        prop_assert!(lucky_count_lower(n) <= lucky_count(n));
-        prop_assert!(lucky_count(n) <= lucky_count_upper(n));
+    fn nth_and_count_are_inverses(n in 1u64..=4_297_615_581) {
+        let power = nth_perfect_power(n).unwrap();
+        prop_assert_eq!(perfect_power_count_approx(power), n);
+        prop_assert_eq!(perfect_power_count_approx(power - 1), n - 1);
+        prop_assert!(power == 1 || is_power_exp(power) > 1);
     }
 }
 
 #[test]
-fn independent_and_concurrent_calls() {
-    let expected = lucky_numbers(0, 300_000);
-    let threads: Vec<_> = (0..4)
-        .map(|_| std::thread::spawn(|| lucky_numbers(0, 300_000)))
-        .collect();
-    for thread in threads {
-        assert_eq!(thread.join().unwrap(), expected);
+fn exhaustive_small_powers() {
+    let mut count = 0;
+    for n in 0..=10_000_u64 {
+        if n == 1
+            || (n > 1
+                && (2..=n.ilog2())
+                    .any(|k| (2..=100).any(|base: u64| base.checked_pow(k) == Some(n))))
+        {
+            count += 1;
+            assert_eq!(nth_perfect_power(count), Some(n));
+        }
+        assert_eq!(perfect_power_count_approx(n), count);
     }
-    assert_eq!(lucky_numbers(10, 1), []);
-    assert_eq!(lucky_numbers(0, 0), []);
-    assert_eq!(nth_lucky(0), None);
-    assert_eq!(nth_lucky_approx(0), None);
-    assert_eq!(nth_lucky_lower(0), None);
-    assert_eq!(nth_lucky_upper(0), None);
-    assert!(!is_lucky(u64::MAX));
+}
+
+#[test]
+fn repeated_and_concurrent_calls_agree() {
+    let expected: Vec<_> = (0..100).map(nth_perfect_power).collect();
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            let expected = &expected;
+            scope.spawn(move || {
+                for (n, &power) in (0u64..).zip(expected) {
+                    assert_eq!(nth_perfect_power(n), power);
+                }
+            });
+        }
+    });
 }

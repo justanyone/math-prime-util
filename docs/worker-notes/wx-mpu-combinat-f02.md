@@ -10,3 +10,6 @@ Focused tests are compiling offline. The implementation has no global cache or s
 Focused offline tests passed: four oracle tests and seven property/boundary/concurrency tests. Running the required gate next.
 The gate found four clippy semicolon formatting errors in test/benchmark closures. Added the required semicolons and rerun the gate.
 The gate passed all stages and printed == gate: green, including pedantic clippy, MSRV 1.85 build, tests, runnable examples, and docs. Running the final whole-suite tools/test.sh invocation.
+Finished: focused and final whole-suite offline tests passed; gate green; git diff --check passed. All four APIs, examples, oracle/property tests, and benchmarks are written. No tools, fixtures, STATUS.md, Cargo.toml, or crate-root changes. <<cut 81 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 57 bytes)

@@ -24,6 +24,12 @@ pub(super) fn exponents(mut n: u64) -> Vec<u32> {
             n /= p;
         }
     }
+    for p in crate::primes_in(7..=421) {
+        while n % p == 0 {
+            factors.push(p);
+            n /= p;
+        }
+    }
     split(n, &mut factors);
     factors.sort_unstable();
     let mut result = Vec::new();
@@ -47,30 +53,70 @@ fn split(n: u64, factors: &mut Vec<u64>) {
         factors.push(n);
         return;
     }
-    let f = rho(n);
+    let power = crate::int::is_power_exp(n);
+    if power > 1 {
+        let root = crate::rootint(n, power);
+        let mut root_factors = Vec::new();
+        split(root, &mut root_factors);
+        for _ in 0..power {
+            factors.extend_from_slice(&root_factors);
+        }
+        return;
+    }
+    let mut seed = 7;
+    let f = loop {
+        if let Some(f) = rho(n, seed) {
+            break f;
+        }
+        seed += 2;
+    };
     split(f, factors);
     split(n / f, factors);
 }
 
-// Port of factor.c, prho_factor. Restart with another polynomial on failure.
-fn rho(n: u64) -> u64 {
+// Port of factor.c, prho_factor: 64-step batches and three polynomial retries.
+fn rho(n: u64, seed: u64) -> Option<u64> {
+    let mut u = seed;
+    let mut v = seed;
     let mut a = 1;
-    loop {
-        let mut u = 7;
-        let mut v = 7;
-        for _ in 0..4_000_000 {
+    let mut fails = 3;
+    for _ in 0..62_500 {
+        let mut m = 1;
+        let (old_u, old_v) = (u, v);
+        for _ in 0..64 {
             u = step(u, a, n);
             v = step(step(v, a, n), a, n);
-            let f = gcd(u.abs_diff(v), n);
-            if f == n {
-                break;
-            }
-            if f > 1 {
-                return f;
+            m = mulmod(m, u.abs_diff(v), n).expect("positive modulus");
+        }
+        let mut f = gcd(m, n);
+        if f == 1 {
+            continue;
+        }
+        if f == n {
+            u = old_u;
+            v = old_v;
+            for _ in 0..=64 {
+                u = step(u, a, n);
+                v = step(step(v, a, n), a, n);
+                f = gcd(u.abs_diff(v), n);
+                if f != 1 {
+                    break;
+                }
             }
         }
-        a += 1;
+        if f == 0 || f == n {
+            if fails == 0 {
+                break;
+            }
+            fails -= 1;
+            u = crate::addmod(u, 2, n).expect("positive modulus");
+            v = u;
+            a += 2;
+        } else {
+            return Some(f);
+        }
     }
+    None
 }
 
 fn step(x: u64, a: u64, n: u64) -> u64 {

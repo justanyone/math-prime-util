@@ -38,23 +38,19 @@ pub fn cheb_factor(mut n: u64, bound: u64, init_x: u64) -> Vec<u64> {
     let inv = n / 2 + 1;
     let mut x = if init_x == 0 { 72 } else { init_x % n };
     let mut f = 1;
-    let mut p = 2;
-    while p <= b {
-        if is_prime(p) != 0 {
-            let mut power = p;
-            if p <= sqrt_b {
-                while power <= b / p {
-                    power *= p;
-                }
-            }
-            let twice_x = addmod_u(x % n, x % n, n);
-            x = mulmod_u(lucas_v(twice_x, power, n), inv, n);
-            f = gcd(if x > 0 { x - 1 } else { n - 1 }, n);
-            if f > 1 {
-                break;
+    for p in crate::primes_in(2..=b) {
+        let mut power = p;
+        if p <= sqrt_b {
+            while power <= b / p {
+                power *= p;
             }
         }
-        p += if p == 2 { 1 } else { 2 };
+        let twice_x = addmod_u(x % n, x % n, n);
+        x = mulmod_u(lucas_v(twice_x, power, n), inv, n);
+        f = gcd(if x > 0 { x - 1 } else { n - 1 }, n);
+        if f > 1 {
+            break;
+        }
     }
     if f > 1 && f < n {
         factors.push(f.min(n / f));

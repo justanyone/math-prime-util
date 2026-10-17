@@ -12,3 +12,5 @@ Offline validation is still blocked on the shared build directory lock. Trying a
 The isolated offline test build is running; shared-target validation remains queued. No code failures have been reported yet.
 The isolated gate has also started and will validate formatting, clippy, MSRV, tests, and docs after the focused build releases its lock.
 Family-wide validation has not returned. Starting a powerful-only oracle filter in a separate target to isolate this task from sibling test runtime.
+Powerful-only oracle validation is running offline. The full gate remains pending; five-minute remaining checkpoint is approaching.
+About five minutes remain. Code, docs, benchmarks, oracle skip comments, and algebraic regressions are complete; formatting passed, while cargo validation is still pending behind builds.

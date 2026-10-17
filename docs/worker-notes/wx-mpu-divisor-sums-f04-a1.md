@@ -8,6 +8,7 @@ Next: locate PLAN.md sections 5–8, existing arith module shape, and the C func
 Read PLAN 5–8. `qnr`, `is_qr`, and `is_fundamental` already live in `src/arith/mod.rs` with docs, and compat tests exist. `qnr` oracle test passed. Next: `is_qr`, `is_fundamental`, property tests, then the gate.
 Moved the three functions into `src/arith/{qnr,is_qr,is_fundamental}.rs`, dropped the unused `next_prime` import, and added residue laws plus repeat/race tests and benches. Next: fmt and focused tests, then the gate.
 Compat and property tests passed. A prime-sampling proptest rejected too often; it is now a fixed prime table. Starting the gate. About five minutes of budget may remain.
+Gate printed `== gate: green` (fmt, clippy, MSRV 1.85, full tests, docs). No fixture or STATUS edit. Done.
 - 2026-10-17T18:59:35Z launcher: no commit for 61 s; 121 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.
 - 2026-10-17T19:00:35Z launcher: no commit for 60 s; 182 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.
 - 2026-10-17T19:01:36Z launcher: no commit for 60 s; 242 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.

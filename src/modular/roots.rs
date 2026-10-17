@@ -28,12 +28,11 @@ fn gcddiv(a: u64, b: u64, n: u64) -> u64 {
 // Factor only after the primality test, as in MPU factorint.
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
     let mut out = Vec::new();
+    if n > 1 && is_prime(n) != 0 {
+        return vec![(n, 1)];
+    }
     let mut p = 2;
     while n > 1 {
-        if is_prime(n) != 0 {
-            out.push((n, 1));
-            break;
-        }
         if n % p == 0 {
             let mut e = 0;
             while n % p == 0 {
@@ -41,6 +40,10 @@ fn factors(mut n: u64) -> Vec<(u64, u32)> {
                 e += 1;
             }
             out.push((p, e));
+            if n > 1 && is_prime(n) != 0 {
+                out.push((n, 1));
+                break;
+            }
         }
         p = if p == 2 { 3 } else { p + 2 };
     }
@@ -515,30 +518,85 @@ fn all_prime(a: u64, k: u64, p: u64) -> Vec<u64> {
     roots
 }
 
+// rootmod.c, _allrootmod_prime_power.
+fn all_root_power(a: u64, k: u64, p: u64, e: u32) -> Vec<u64> {
+    if e == 1 {
+        return all_prime(a, k, p);
+    }
+    let n = p.pow(e);
+    let mut roots = Vec::new();
+    if a % n == 0 {
+        let t = u64::from(e - 1) / k + 1;
+        let t = u32::try_from(t).unwrap_or(e);
+        let step = p.pow(t);
+        let count = p.pow(e - t);
+        assert!(count <= MAX_ROOTS as u64, "Maximum returned roots exceeded");
+        return (0..count).map(|i| mulmod_u(i, step, n)).collect();
+    }
+    let pk = u32::try_from(k).ok().and_then(|k| p.checked_pow(k));
+    if let Some(pk) = pk.filter(|&pk| a % pk == 0) {
+        // Divisibility by p^k implies k < e here.
+        let k32 = u32::try_from(k).unwrap_or(e);
+        let pe1 = p.pow(k32 - 1);
+        let pek = p.pow(e - k32 + 1);
+        let other = all_root_power(a / pk, k, p, e - k32);
+        for r in other {
+            for j in 0..pe1 {
+                push_root(
+                    &mut roots,
+                    addmod_u(mulmod_u(r, p, n), mulmod_u(j, pek, n), n),
+                );
+            }
+        }
+    } else if a % p != 0 {
+        let np = n.checked_mul(p).unwrap_or(n);
+        let ered = if p > 2 || e < 5 {
+            e.div_ceil(2)
+        } else {
+            e.div_ceil(2) + 1
+        };
+        let other = all_root_power(a, k, p, ered);
+        if k != p {
+            for s in other {
+                let t = powmod_u(s, k - 1, n);
+                let r = addmod_u(
+                    s,
+                    gcddiv(sub(a, mulmod_u(t, s, n), n), mulmod_u(k, t, n), n),
+                    n,
+                );
+                push_root(&mut roots, r);
+            }
+        } else {
+            for s in other {
+                let t = powmod_u(s, k - 1, np);
+                let r = addmod_u(
+                    s,
+                    gcddiv(sub(a, mulmod_u(t, s, np), np), mulmod_u(k, t, np), n),
+                    n,
+                );
+                if powmod_u(r, k, n) == a % n {
+                    for i in 0..k {
+                        push_root(
+                            &mut roots,
+                            mulmod_u(r, addmod_u(mulmod_u(i, n / p, n), 1, n), n),
+                        );
+                    }
+                }
+            }
+            roots.sort_unstable();
+            roots.dedup();
+        }
+    }
+    roots
+}
+
+// rootmod.c, _allrootmod_kprime and _rootmod_cprod.
 fn all_kprime(a: u64, k: u64, n: u64) -> Vec<u64> {
     let mut roots = vec![0];
     let mut modulus = 1;
     for (p, e) in factors(n) {
-        let mut local = all_prime(a, k, p);
-        let mut pe = p;
-        for _ in 2..=e {
-            let next_pe = pe * p;
-            let mut next = Vec::new();
-            for r in local {
-                let derivative = mulmod_u(k, powmod_u(r, k - 1, p), p);
-                if derivative != 0 {
-                    let f = sub(a, powmod_u(r, k, next_pe), next_pe) / pe;
-                    let t = mulmod_u(f, invmod(derivative, p).unwrap_or(0), p);
-                    push_root(&mut next, r + t * pe);
-                } else if powmod_u(r, k, next_pe) == a % next_pe {
-                    for t in 0..p {
-                        push_root(&mut next, r + t * pe);
-                    }
-                }
-            }
-            local = next;
-            pe = next_pe;
-        }
+        let pe = p.pow(e);
+        let local = all_root_power(a, k, p, e);
         let mut next = Vec::new();
         for r in roots {
             for &s in &local {

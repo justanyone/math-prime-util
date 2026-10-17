@@ -364,11 +364,11 @@ const SMALL_LEN: u64 = 306;
 const MAX_INDEX: u64 = 425_656_284_035_217_743;
 const MAX_PRIME: u64 = 18_446_744_073_709_551_557;
 fn prime_upper(n: u64) -> Option<u64> {
-    let value = prime_bound(n, true);
+    let value = prime_bound(n);
     (value != 0).then_some(value)
 }
 
-fn prime_bound(n: u64, upper: bool) -> u64 {
+fn prime_bound(n: u64) -> u64 {
     if n < SMALL_LEN {
         return crate::nth_prime(n).unwrap_or(0);
     }
@@ -378,7 +378,7 @@ fn prime_bound(n: u64, upper: bool) -> u64 {
     let x = n as f64;
     let l = x.ln();
     let ll = l.ln();
-    if (upper && n < 15_360) || (!upper && n < 2_000_000) {
+    if n < 15_360 {
         let a = if n < 228 {
             0.6483
         } else if n < 948 {
@@ -402,24 +402,13 @@ fn prime_bound(n: u64, upper: bool) -> u64 {
         }
         return lo;
     }
-    if upper {
-        let (_, c, d) = NTH_UPPER
-            .iter()
-            .find(|&&(t, _, _)| n >= t)
-            .unwrap_or(&(0, 3.92, -33.3994));
-        (x * (l + ll - 1.0 + (ll - c) / l - (ll * ll - 6.0 * ll + d) / (2.0 * l * l)))
-            .floor()
-            .min(MAX_PRIME as f64) as u64
-    } else {
-        let b = if n < 56_000_000 {
-            11.200
-        } else {
-            11.508_000_000_02
-        };
-        (x * (l + ll - 1.0 + (ll - 2.0) / l - (ll * ll - 6.0 * ll + b) / (2.0 * l * l)))
-            .ceil()
-            .min(MAX_PRIME as f64) as u64
-    }
+    let (_, c, d) = NTH_UPPER
+        .iter()
+        .find(|&&(t, _, _)| n >= t)
+        .unwrap_or(&(0, 3.92, -33.3994));
+    (x * (l + ll - 1.0 + (ll - c) / l - (ll * ll - 6.0 * ll + d) / (2.0 * l * l)))
+        .floor()
+        .min(MAX_PRIME as f64) as u64
 }
 
 // MPU inverse_interpolate.c: _linear_interpolate and _inverse_interpolate.
@@ -567,4 +556,50 @@ pub(super) fn interpolate(
         }
     }
     Some(hi)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{count_lower, interpolate, nth_almost_prime_upper};
+
+    #[test]
+    fn interpolation_handles_steps_and_limits() {
+        assert_eq!(interpolate(1, 0, 10, 0, |x| x), Some(10));
+        assert_eq!(interpolate(1, 100, 10, 0, |x| x), Some(10));
+        assert_eq!(interpolate(10, 100, 10, 0, |x| x), Some(10));
+        assert_eq!(interpolate(1, 0, 10, 0, |x| x / 3), Some(30));
+        assert_eq!(interpolate(1, 0, 11, 0, |x| x.saturating_mul(2)), Some(5));
+        assert_eq!(interpolate(1, 0, u64::MAX, 0, |_| 0), None);
+        assert_eq!(interpolate(1, 1000, 100, 600, |x| x), Some(100));
+    }
+
+    #[test]
+    fn bounds_cover_native_edges_and_large_ranges() {
+        assert_eq!(nth_almost_prime_upper(1, 425_656_284_035_217_744), None);
+        assert_eq!(
+            nth_almost_prime_upper(1, 425_656_284_035_217_743),
+            Some(u64::MAX - 58)
+        );
+        for n in [20_000, 100_000] {
+            assert!(nth_almost_prime_upper(1, n).unwrap() >= crate::nth_prime(n).unwrap());
+        }
+        for k in [2, 3, 4, 5, 12, 20, 40, 63] {
+            for n in [
+                0,
+                1,
+                255,
+                638,
+                1926,
+                10_000,
+                500_194,
+                2_000_000,
+                5_000_000_000,
+                2_000_000_000_000,
+                u64::MAX,
+            ] {
+                assert!(count_lower(k, n) <= n);
+            }
+        }
+        assert_eq!(nth_almost_prime_upper(62, 8), None);
+    }
 }

@@ -198,7 +198,6 @@ proptest! {
     }
 }
 
-<<<<<<< HEAD
 #[test]
 fn impossible_partition_bounds_need_no_state_allocation() {
     for options in [
@@ -226,7 +225,9 @@ fn impossible_partition_bounds_need_no_state_allocation() {
     ] {
         assert_eq!(partitions_of(u64::MAX - 2, options).next(), None);
         assert_eq!(compositions_of(u64::MAX - 2, options).next(), None);
-=======
+    }
+}
+
 proptest! {
     #[test]
     fn multiset_matches_unique_index_permutations(values in prop::collection::vec(0_u8..4, 0..7)) {

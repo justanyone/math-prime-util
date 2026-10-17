@@ -2,13 +2,8 @@
 #![allow(missing_docs)] // Criterion generates a public benchmark entry point.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::iter::{
-<<<<<<< HEAD
-    PartitionOptions, combinations_of, compositions_of, divisors_of, partitions_of,
-    permutations_of, primes_in,
-=======
-    PartitionOptions, combinations_of, derangements_of, multipermutations_of, partitions_of,
-    permutations_of, primes_in, set_product,
->>>>>>> origin/dev-001
+    PartitionOptions, combinations_of, compositions_of, derangements_of, divisors_of,
+    multipermutations_of, partitions_of, permutations_of, primes_in, set_product,
 };
 
 fn bench_iter(c: &mut Criterion) {

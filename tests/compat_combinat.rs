@@ -2,7 +2,9 @@
 mod common;
 
 use common::{each, each_may_panic};
-use math_prime_util::{consecutive_integer_lcm, frobenius_number, is_congruent_number, is_polygonal};
+use math_prime_util::{
+    consecutive_integer_lcm, frobenius_number, is_congruent_number, is_polygonal,
+};
 
 #[test]
 fn consecutive_integer_lcm_oracle() {
@@ -22,7 +24,11 @@ fn frobenius_number_oracle() {
         let values: Vec<u64> = case.args.iter().map(|a| a.parse().unwrap()).collect();
         let got = frobenius_number(&values);
         // MPU promotes overflow to bigint; this API returns None.
-        if case.result.as_ref().is_some_and(|r| r.parse::<u64>().is_err() && r != "-1") {
+        if case
+            .result
+            .as_ref()
+            .is_some_and(|r| r.parse::<u64>().is_err() && r != "-1")
+        {
             assert_eq!(got, None, "{case:?}");
             return case.result.clone();
         }

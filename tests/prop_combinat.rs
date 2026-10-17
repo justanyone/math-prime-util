@@ -1,5 +1,7 @@
 //! Algebraic checks for combinat functions.
-use math_prime_util::{consecutive_integer_lcm, frobenius_number, gcd, is_congruent_number, is_polygonal, lcm};
+use math_prime_util::{
+    consecutive_integer_lcm, frobenius_number, gcd, is_congruent_number, is_polygonal, lcm,
+};
 use proptest::prelude::*;
 
 proptest! {
@@ -38,36 +40,42 @@ proptest! {
 fn boundaries_and_repeat_calls() {
     assert_eq!(consecutive_integer_lcm(0), Some(1));
     assert_eq!(consecutive_integer_lcm(u64::MAX), None);
-    assert_eq!(frobenius_number(&[u64::MAX, u64::MAX-1]), None);
-    assert_eq!(frobenius_number(&[4,8,7_000_000_000_000_000_001]), None);
+    assert_eq!(frobenius_number(&[u64::MAX, u64::MAX - 1]), None);
+    assert_eq!(frobenius_number(&[4, 8, 7_000_000_000_000_000_001]), None);
     for _ in 0..2 {
-        assert_eq!(frobenius_number(&[6,9,20]),Some(43));
+        assert_eq!(frobenius_number(&[6, 9, 20]), Some(43));
         assert!(is_congruent_number(13706));
-        assert!(!is_polygonal(14,3));
+        assert!(!is_polygonal(14, 3));
     }
 }
 
 #[test]
 #[should_panic(expected = "coprime")]
-fn frobenius_non_coprime() { let _ = frobenius_number(&[2,4]); }
+fn frobenius_non_coprime() {
+    let _ = frobenius_number(&[2, 4]);
+}
 
 #[test]
 #[should_panic(expected = "positive")]
-fn frobenius_zero() { let _ = frobenius_number(&[0,5]); }
+fn frobenius_zero() {
+    let _ = frobenius_number(&[0, 5]);
+}
 
 #[test]
 #[should_panic(expected = "root < 3")]
-fn polygonal_invalid_sides() { let _ = is_polygonal(0,2); }
+fn polygonal_invalid_sides() {
+    let _ = is_polygonal(0, 2);
+}
 
 #[test]
 fn concurrent_calls() {
     std::thread::scope(|scope| {
         for _ in 0..4 {
             scope.spawn(|| {
-                assert_eq!(frobenius_number(&[6,9,20]),Some(43));
+                assert_eq!(frobenius_number(&[6, 9, 20]), Some(43));
                 assert!(is_congruent_number(34));
-                assert!(is_polygonal(36,4));
-                assert_eq!(consecutive_integer_lcm(10),Some(2520));
+                assert!(is_polygonal(36, 4));
+                assert_eq!(consecutive_integer_lcm(10), Some(2520));
             });
         }
     });

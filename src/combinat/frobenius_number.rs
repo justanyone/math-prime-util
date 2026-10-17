@@ -21,16 +21,22 @@ pub fn frobenius_number(values: &[u64]) -> Option<i128> {
         return Some(-1);
     }
     if basis.len() <= 1 {
-        return Some(0);
+        return None;
     }
-    assert_eq!(basis.iter().copied().reduce(crate::gcd), Some(1), "Frobenius number set must be coprime");
+    assert_eq!(
+        basis.iter().copied().reduce(crate::gcd),
+        Some(1),
+        "Frobenius number set must be coprime"
+    );
     let product = basis[0].checked_mul(basis[1])?;
     if basis.len() == 2 {
         return Some(i128::from(product - basis[0] - basis[1]));
     }
     let modulus = usize::try_from(basis[0]).expect("Frobenius residue table is too large");
     let mut distances = Vec::new();
-    distances.try_reserve_exact(modulus).expect("Frobenius residue table cannot be allocated");
+    distances
+        .try_reserve_exact(modulus)
+        .expect("Frobenius residue table cannot be allocated");
     distances.resize(modulus, u64::MAX);
     distances[0] = 0;
     for &coin in &basis[1..] {
@@ -40,8 +46,14 @@ pub fn frobenius_number(values: &[u64]) -> Option<i128> {
         }
         let divisor = usize::try_from(crate::gcd(basis[0], coin)).ok()?;
         for r in 0..divisor {
-            let mut distance = if r == 0 { 0 } else {
-                (r..modulus).step_by(divisor).map(|q| distances[q]).min().unwrap_or(u64::MAX)
+            let mut distance = if r == 0 {
+                0
+            } else {
+                (r..modulus)
+                    .step_by(divisor)
+                    .map(|q| distances[q])
+                    .min()
+                    .unwrap_or(u64::MAX)
             };
             if distance == u64::MAX {
                 continue;
@@ -55,5 +67,9 @@ pub fn frobenius_number(values: &[u64]) -> Option<i128> {
         }
     }
     let maximum = distances.into_iter().max()?;
-    if maximum == u64::MAX { None } else { Some(i128::from(maximum - basis[0])) }
+    if maximum == u64::MAX {
+        None
+    } else {
+        Some(i128::from(maximum - basis[0]))
+    }
 }

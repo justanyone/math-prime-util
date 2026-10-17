@@ -15,13 +15,13 @@ fn bench_arith(c: &mut Criterion) {
     });
     c.bench_function("mertens", |b| b.iter(|| mertens(black_box(100_000))));
     c.bench_function("liouville", |b| {
-        b.iter(|| math_prime_util::liouville(black_box(1_000_000_007)))
+        b.iter(|| math_prime_util::liouville(black_box(1_000_000_007)));
     });
     c.bench_function("sumliouville", |b| {
-        b.iter(|| math_prime_util::sumliouville(black_box(100_000)))
+        b.iter(|| math_prime_util::sumliouville(black_box(100_000)));
     });
     c.bench_function("exp_mangoldt", |b| {
-        b.iter(|| math_prime_util::exp_mangoldt(black_box(11_u64.pow(18))))
+        b.iter(|| math_prime_util::exp_mangoldt(black_box(11_u64.pow(18))));
     });
     c.bench_function("sumtotient", |b| b.iter(|| sumtotient(black_box(100_000))));
     c.bench_function("arith/divisor_sum", |b| {

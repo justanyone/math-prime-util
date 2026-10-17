@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 //! Totients and multiplicative arithmetic from MPU 0.75.
+//! Divisor sums, discriminants, and arithmetic in residue rings.
 
-use crate::{gcd, is_prime, rootint, sqrtint};
+use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
@@ -72,9 +72,13 @@ fn factors(mut n: u64) -> Vec<(u64, u32)> {
         if let Some((q, e)) = result.last_mut() {
             if *q == p {
                 *e += 1;
-=======
-//! Divisor sums, discriminants, and arithmetic in residue rings.
-use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod};
+                continue;
+            }
+        }
+        result.push((p, 1));
+    }
+    result
+}
 
 fn prime_factors(mut n: u64) -> Vec<u64> {
     let mut factors = Vec::new();
@@ -172,7 +176,6 @@ fn factor_powers(n: u64) -> Vec<(u64, u32)> {
         if let Some(last) = result.last_mut() {
             if last.0 == p {
                 last.1 += 1;
->>>>>>> origin/dev-001
                 continue;
             }
         }
@@ -180,7 +183,6 @@ fn factor_powers(n: u64) -> Vec<(u64, u32)> {
     }
     result
 }
-<<<<<<< HEAD
 
 /// Return Euler's totient. Port of `totients.c::totient` and `_totient_fac`.
 /// ```
@@ -717,7 +719,8 @@ pub fn valuation(mut n: u64, k: u64) -> Option<u64> {
         n /= k;
     }
     Some(v)
-=======
+}
+
 fn sigma(n: u64, k: u64) -> Option<u128> {
     if n <= 1 {
         return Some(u128::from(n));
@@ -1309,5 +1312,4 @@ pub fn is_qr(a: u64, n: u64) -> bool {
             _ => unit % 8 == 1,
         }
     })
->>>>>>> origin/dev-001
 }

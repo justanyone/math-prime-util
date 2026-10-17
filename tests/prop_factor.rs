@@ -12,7 +12,7 @@ proptest! {
     }
 
     #[test]
-    fn smooth_and_rough_product(a in 1u64..10000, b in 1u64..10000, k in 0u64..100) {
+    fn smooth_and_rough_product(a in 1u64..10_000, b in 1u64..10_000, k in 0u64..100) {
         prop_assert_eq!(is_smooth(a * b, k), is_smooth(a, k) && is_smooth(b, k));
         prop_assert_eq!(is_rough(a * b, k), is_rough(a, k) && is_rough(b, k));
     }
@@ -24,7 +24,7 @@ proptest! {
     }
 
     #[test]
-    fn practical_doubling(n in 1u64..1000000) {
+    fn practical_doubling(n in 1u64..1_000_000) {
         prop_assert!(!is_practical(n) || is_practical(2 * n));
     }
 }

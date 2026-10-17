@@ -18,3 +18,6 @@ About five minutes remain in the session. The implementation and focused checks 
 Prime-count remains active with no failure. The full gate result is not yet available; no repository-wide changes are being made to shorten this unrelated test.
 Still waiting for the full gate's prime-count oracle. Focused families tests and the fmt, pedantic clippy, and MSRV gate steps remain green.
 The full gate still has no result after the long-running prime-count oracle. All requested implementation files and tests are on disk; final verification will report this host-time limit if it persists.
+Finished: tools/gate.sh printed == gate: green, including full tests and 197 doctests. Focused families tests passed; no code work remains. Three bigint-only next results are documented as outside the native u64 API. No tools, fixtures, STA <<cut 50 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 26 bytes)

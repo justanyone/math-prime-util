@@ -5,3 +5,4 @@ Add compatibility, algebraic, and helper tests, then run the offline gate.
 Inspection: reference uses tinyecm64_factor with fixed sigmas; checking the public wrapper defaults before porting.
 Confirmed XS defaults: B1=4000, B2=20*B1, 100 curves; wrapper removes factors 2, 3, 5 and returns an unsplit cofactor on failure.
 Implemented curve arithmetic, batch normalization, both stages, and the public wrapper; reused the existing portable Montgomery context.
+Added oracle, product-law, repeated/concurrent-call, validation, and curve-helper tests plus the ECM benchmark. Focused offline tests started.

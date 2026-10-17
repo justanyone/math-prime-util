@@ -1,43 +1,28 @@
-//! Compatibility tests for the four factor predicates from MPU 0.75.
+//! ECM compatibility with the committed MPU oracle.
 mod common;
 
-// The u64 API skips signed arguments (including -0) and the bigint cases
-// 18450931744652885087, 36803912137803496523, and 36832540935240707603.
-use common::each;
-use math_prime_util::{is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
+use math_prime_util::ecm_factor;
 
 #[test]
-fn is_carmichael_oracle() {
-    each("factor", "is_carmichael", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(u8::from(is_carmichael(n))));
-        }
-    });
-}
-
-#[test]
-fn is_quasi_carmichael_oracle() {
-    each("factor", "is_quasi_carmichael", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(is_quasi_carmichael(n)));
-        }
-    });
-}
-
-#[test]
-fn is_cyclic_oracle() {
-    each("factor", "is_cyclic", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(u8::from(is_cyclic(n))));
-        }
-    });
-}
-
-#[test]
-fn is_perfect_number_oracle() {
-    each("factor", "is_perfect_number", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(u8::from(is_perfect_number(n))));
-        }
+fn ecm_factor_oracle() {
+    common::each("factor", "ecm_factor", |c| {
+        let factors = ecm_factor(
+            c.arg(0),
+            c.args.get(1).map(|_| c.arg(1)),
+            c.args.get(2).map(|_| c.arg(2)),
+            c.args.get(3).map(|_| c.arg(3)),
+        );
+        let result = if factors.is_empty() {
+            None
+        } else {
+            Some(
+                factors
+                    .iter()
+                    .map(u64::to_string)
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            )
+        };
+        c.check(result);
     });
 }

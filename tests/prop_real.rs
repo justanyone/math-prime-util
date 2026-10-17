@@ -121,7 +121,10 @@ fn ei_derivative_matches_exp_over_x() {
         let h = 1e-6;
         let slope = (ExponentialIntegral(x + h) - ExponentialIntegral(x - h)) / (2.0 * h);
         let exact = x.exp() / x;
-        assert!((slope - exact).abs() <= 1e-6 * exact.abs(), "x={x} slope={slope} exact={exact}");
+        assert!(
+            (slope - exact).abs() <= 1e-6 * exact.abs(),
+            "x={x} slope={slope} exact={exact}"
+        );
     }
 }
 

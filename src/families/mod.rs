@@ -11,3 +11,15 @@ mod nth_ramanujan_prime_lower;
 pub use nth_ramanujan_prime_lower::nth_ramanujan_prime_lower;
 mod ramanujan_prime_count_upper;
 pub use ramanujan_prime_count_upper::ramanujan_prime_count_upper;
+
+mod nth_prime_power;
+pub use nth_prime_power::nth_prime_power;
+
+mod nth_prime_power_approx;
+pub use nth_prime_power_approx::nth_prime_power_approx;
+
+mod nth_prime_power_lower;
+pub use nth_prime_power_lower::nth_prime_power_lower;
+
+mod nth_prime_power_upper;
+pub use nth_prime_power_upper::nth_prime_power_upper;

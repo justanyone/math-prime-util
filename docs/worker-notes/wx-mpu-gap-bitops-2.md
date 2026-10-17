@@ -3,3 +3,5 @@ Read PLAN.md sections 5–8 before edits; preserve MPU bounds and scan semantics
 Add unit and property tests, runnable docs, and benchmarks without dependencies.
 Run focused offline tests, the status generator, and the gate; record blockers here.
 Reference inspection: all six names occur only in reference/mpu/TODO, not Util.pm, PP.pm, or C. Implement a checked u64 API and record the missing oracle as a verification blocker.
+Implemented six separate modules. High set/flip bits return None; clear/test use zero extension; scan0 can return positions beyond 63. These bounds are explicit Rust choices because MPU has no implementation.
+Added 4,000-case property laws and Criterion benchmark source. Status generator changed exactly six ticks. Focused unit and property checks are running offline.

@@ -18,3 +18,4 @@ Final source review retained the C thresholds and maximum table, and simplified 
 Verification is pending: the original gate remains blocked on Cargo's lock, while the isolated test run has not returned output. No test success is claimed.
 The isolated build directory has populated (75 MB), confirming compilation is progressing. Started the gate against that same local directory to obtain final lint and MSRV diagnostics.
 Added an independent property: prime-square sieve output equals the unit-exponent factorization predicate over arbitrary small intervals. Gates remain queued behind compilation.
+No further source changes planned while compilation finishes. Both gate attempts have reached fmt and are waiting for Cargo build access; final results remain unverified.

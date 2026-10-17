@@ -52,6 +52,9 @@ fn count(n: u64) -> u64 {
     if n < 33_000 {
         return crate::prime_count(n);
     }
+    if n > 10_000_000_000_000_000 {
+        return super::prime_power_count_approx::li(n).integer(false);
+    }
     let x = n as f64;
     let l = x.ln();
     let upper = if n <= 821_800_000 {

@@ -7,16 +7,16 @@ use math_prime_util::{
 
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_power_count", |b| {
-        b.iter(|| prime_power_count(black_box(1_000_000)))
+        b.iter(|| prime_power_count(black_box(1_000_000)));
     });
     c.bench_function("prime_power_count_approx", |b| {
-        b.iter(|| prime_power_count_approx(black_box(100_000_000)))
+        b.iter(|| prime_power_count_approx(black_box(100_000_000)));
     });
     c.bench_function("prime_power_count_lower", |b| {
-        b.iter(|| prime_power_count_lower(black_box(100_000_000)))
+        b.iter(|| prime_power_count_lower(black_box(100_000_000)));
     });
     c.bench_function("prime_power_count_upper", |b| {
-        b.iter(|| prime_power_count_upper(black_box(100_000_000)))
+        b.iter(|| prime_power_count_upper(black_box(100_000_000)));
     });
 }
 criterion_group!(benches, bench_families);

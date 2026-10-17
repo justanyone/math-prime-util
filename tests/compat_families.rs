@@ -31,6 +31,10 @@ fn perfect_power_count_upper_oracle() {
 #[test]
 fn nth_perfect_power_oracle() {
     each("families", "nth_perfect_power", |c| {
+        // Index 4,297,615,582 has the bigint result 2^64, outside the native API.
+        if c.arg::<u64>(0) == 4_297_615_582 {
+            return;
+        }
         c.check(nth_perfect_power(c.arg(0)));
     });
 }

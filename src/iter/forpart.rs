@@ -32,7 +32,7 @@ pub struct PartitionsOf {
 impl Iterator for PartitionsOf {
     type Item = Vec<u64>;
     fn next(&mut self) -> Option<Self::Item> {
-        let amin = self.options.amin.unwrap_or(1).max(1);
+        let amin = self.options.amin.unwrap_or(1);
         let amax = self.options.amax.unwrap_or(self.n).min(self.n);
         let nmin = self.options.nmin.or(self.options.n).unwrap_or(1).max(1);
         let nmax = self
@@ -66,7 +66,12 @@ impl Iterator for PartitionsOf {
                 return None;
             }
             let out = &self.a[..=self.k];
-            if (out.len() as u64) < nmin || (out.len() as u64) > nmax {
+            if (out.len() as u64) < nmin {
+                // XS.xs::forpart skips the remaining lexical range here.
+                if self.a[0] >= self.n - nmin + 1 && self.a[self.k] > 1 {
+                    self.done = true;
+                    return None;
+                }
                 continue;
             }
             if out.iter().any(|&v| {
@@ -86,9 +91,23 @@ impl Iterator for PartitionsOf {
 }
 pub(super) fn parts(n: u64, options: PartitionOptions, composition: bool) -> PartitionsOf {
     assert!(n <= u64::MAX - 2, "partition argument overflow");
-    let size = usize::try_from(n).expect("partition size must fit usize");
-    let amin = options.amin.unwrap_or(1).max(1);
-    let done = n == 0 || amin > n || options.amax == Some(0) || options.nmax == Some(0);
+    let mut options = options;
+    let mut amin = options.amin.unwrap_or(1).max(1);
+    let mut amax = options.amax.unwrap_or(n).min(n);
+    let nmin = options.nmin.or(options.n).unwrap_or(1).max(1);
+    let nmax = options.nmax.or(options.n).unwrap_or(n).min(n);
+    if options.prime == Some(true) {
+        let prev = crate::prev_prime(amax + 1);
+        let next = if amin <= 2 { 2 } else { crate::next_prime(amin - 1) };
+        amin = amin.max(next);
+        amax = amax.min(prev);
+    }
+    options.amin = Some(amin);
+    options.amax = Some(amax);
+    options.nmin = Some(nmin);
+    options.nmax = Some(nmax);
+    let done = n < nmin || nmin > nmax || amin > amax || nmax == 0 || amax == 0;
+    let size = if done { 1 } else { usize::try_from(n).expect("partition size must fit usize") };
     let mut a = if done { vec![0, 0] } else { vec![0; size + 1] };
     if !done {
         a[0] = amin - 1;
@@ -100,7 +119,7 @@ pub(super) fn parts(n: u64, options: PartitionOptions, composition: bool) -> Par
         n,
         options,
         composition,
-        empty: n == 0 && options.nmin.or(options.n).unwrap_or(1) <= 1,
+        empty: n == 0 && nmin <= 1,
         done,
     }
 }

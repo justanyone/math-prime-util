@@ -1,5 +1,5 @@
 use std::ops::ControlFlow;
-use super::{factor_pairs, run};
+use super::run;
 
 /// Iterator over the divisors of `n` in ascending order. See `XS.xs`, `fordivisors`.
 #[derive(Debug, Clone)]
@@ -15,28 +15,15 @@ impl Iterator for DivisorsOf {
     }
 }
 
-/// Iterate over the divisors of `n` in ascending order. `0` has no divisors here.
+/// Iterate over the divisors of `n` in ascending order. Zero has no divisors.
+/// Port of `XS.xs::fordivisors` and `factor.c::divisor_list`.
 /// See `XS.xs`, `fordivisors`.
 /// ```
 /// assert_eq!(math_prime_util::divisors_of(12).collect::<Vec<_>>(), [1, 2, 3, 4, 6, 12]);
 /// ```
 #[must_use]
 pub fn divisors_of(n: u64) -> DivisorsOf {
-    let mut divisors = vec![1u64];
-    if n == 0 {
-        divisors.clear();
-    }
-    for (p, e) in factor_pairs(n) {
-        let len = divisors.len();
-        let mut pk = 1u64;
-        for _ in 0..e {
-            pk *= p;
-            for i in 0..len {
-                divisors.push(divisors[i] * pk);
-            }
-        }
-    }
-    divisors.sort_unstable();
+    let divisors = crate::divisors(n, None);
     DivisorsOf {
         divisors: divisors.into_iter(),
     }

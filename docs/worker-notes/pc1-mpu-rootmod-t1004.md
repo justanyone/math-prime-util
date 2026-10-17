@@ -5,3 +5,4 @@ Earlier work is on this branch; I will read STATUS.md and PLAN.md §§5–8, the
 Next: inspect current factorint changes and the functions still unchecked.
 - 2026-10-17T15:06:05Z launcher: no commit for 62 s; 92 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-rootmod-t1004.md.
 - 2026-10-17T15:07:05Z launcher: no commit for 60 s; 153 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-rootmod-t1004.md.
+- 2026-10-17T15:08:06Z launcher: no commit for 60 s; 214 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-rootmod-t1004.md.

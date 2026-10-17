@@ -317,7 +317,11 @@ fn is_perrin_pseudoprime_oracle() {
         let Ok(n) = c.args[0].parse::<u64>() else {
             return;
         };
-        // The fixture passes only n, so the MPU default restriction 0 applies.
-        c.check(Some(u8::from(is_perrin_pseudoprime(n, 0))));
+        // The optional second argument is the restriction level (default 0).
+        let restricted = c
+            .args
+            .get(1)
+            .map_or(0, |r| r.parse::<u32>().expect("restriction"));
+        c.check(Some(u8::from(is_perrin_pseudoprime(n, restricted))));
     });
 }

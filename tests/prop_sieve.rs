@@ -83,7 +83,8 @@ fn precalc_does_not_change_values_under_threads() {
             }
             assert_eq!(primes(100, 180), expect);
             assert_eq!(next_prime(180), Some(181));
-            assert_eq!(sum_primes(100, 120), sum_primes(100, 120));
+            let s: u64 = primes(100, 120).iter().sum();
+            assert_eq!(sum_primes(100, 120), Some(s));
         }));
     }
     for join in joins {

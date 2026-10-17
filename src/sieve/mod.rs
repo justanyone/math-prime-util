@@ -12,7 +12,7 @@ use wheel::{
     wheel_prev,
 };
 
-/// Largest prime that fits in a `u64`. `constants.h` `MPU_MAX_PRIME`.
+/// Initial sieve end from `cache.c` (`_MPU_INITIAL_CACHE_SIZE`).
 const INITIAL_CACHE_SIZE: u64 = (4_096 - 16) * 30 - wheel::FILL_EXTRA_N;
 
 struct PrimeCache {

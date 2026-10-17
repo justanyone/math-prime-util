@@ -7,3 +7,13 @@ mod stirling;
 pub use stirling::stirling;
 mod bell_number;
 pub use bell_number::bell_number;
+
+mod bernfrac;
+mod harmfrac;
+mod pn_primorial;
+mod primorial;
+
+pub use bernfrac::bernfrac;
+pub use harmfrac::harmfrac;
+pub use pn_primorial::pn_primorial;
+pub use primorial::primorial;

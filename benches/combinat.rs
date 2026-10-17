@@ -1,7 +1,9 @@
 #![allow(missing_docs)]
-//! Benchmarks for the four native combinatorics functions.
+//! Benchmarks for the eight native combinatorics functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{bell_number, binomial, catalan_number, stirling};
+use math_prime_util::{
+    bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling,
+};
 
 fn bench_combinat(c: &mut Criterion) {
     c.bench_function("binomial", |b| {
@@ -14,6 +16,12 @@ fn bench_combinat(c: &mut Criterion) {
         b.iter(|| stirling(black_box(15), black_box(7), black_box(1)));
     });
     c.bench_function("bell_number", |b| b.iter(|| bell_number(black_box(25))));
+    c.bench_function("bernfrac_58", |b| b.iter(|| bernfrac(black_box(58))));
+    c.bench_function("harmfrac_60", |b| b.iter(|| harmfrac(black_box(60))));
+    c.bench_function("primorial_52", |b| b.iter(|| primorial(black_box(52))));
+    c.bench_function("pn_primorial_15", |b| {
+        b.iter(|| pn_primorial(black_box(15)));
+    });
 }
 
 criterion_group!(benches, bench_combinat);

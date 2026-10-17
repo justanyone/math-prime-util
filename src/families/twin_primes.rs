@@ -13,7 +13,10 @@ pub(super) const MAX_TWIN: u64 = 18_446_744_073_709_550_771;
 #[must_use]
 pub fn twin_primes(lo: u64, hi: u64) -> Vec<u64> {
     let mut out = Vec::new();
-    scan(lo, hi, |p| { out.push(p); true });
+    scan(lo, hi, |p| {
+        out.push(p);
+        true
+    });
     out
 }
 
@@ -21,16 +24,23 @@ pub fn twin_primes(lo: u64, hi: u64) -> Vec<u64> {
 // Return false from visit to stop selection at the requested index.
 pub(super) fn scan(lo: u64, hi: u64, mut visit: impl FnMut(u64) -> bool) {
     let hi = hi.min(MAX_TWIN);
-    if lo > hi { return; }
+    if lo > hi {
+        return;
+    }
     for p in [3, 5] {
-        if lo <= p && p <= hi && !visit(p) { return; }
+        if lo <= p && p <= hi && !visit(p) {
+            return;
+        }
     }
     let mut low = lo.max(7);
     // A narrow interval near the native limit must not allocate sqrt(hi) space.
     if hi > 1_000_000_000_000 {
         while low <= hi {
             if matches!(low % 30, 11 | 17 | 29)
-                && crate::is_prime(low) != 0 && crate::is_prime(low + 2) != 0 && !visit(low) {
+                && crate::is_prime(low) != 0
+                && crate::is_prime(low + 2) != 0
+                && !visit(low)
+            {
                 return;
             }
             low += 1;
@@ -42,7 +52,8 @@ pub(super) fn scan(lo: u64, hi: u64, mut visit: impl FnMut(u64) -> bool) {
         let high = low.saturating_add(983_039).min(hi);
         let base = low / 30 * 30;
         let limit = high + 2;
-        let mut composite = vec![false; usize::try_from(limit - base + 1).expect("bounded segment")];
+        let mut composite =
+            vec![false; usize::try_from(limit - base + 1).expect("bounded segment")];
         for &p in &base_primes {
             let start = (base.div_ceil(p) * p).max(p * p);
             for n in (start..=limit).step_by(usize::try_from(p).expect("bounded prime")) {
@@ -52,9 +63,13 @@ pub(super) fn scan(lo: u64, hi: u64, mut visit: impl FnMut(u64) -> bool) {
         for block in (base..=high).step_by(30) {
             for offset in [11, 17, 29] {
                 let p = block + offset;
-                if p < low || p > high { continue; }
+                if p < low || p > high {
+                    continue;
+                }
                 let i = usize::try_from(p - base).expect("bounded offset");
-                if !composite[i] && !composite[i + 2] && !visit(p) { return; }
+                if !composite[i] && !composite[i + 2] && !visit(p) {
+                    return;
+                }
             }
         }
         low = high + 1;

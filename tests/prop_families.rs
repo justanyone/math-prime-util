@@ -1,5 +1,7 @@
 //! Algebraic laws and boundary cases for twin primes.
-use math_prime_util::{is_prime, nth_twin_prime, twin_prime_count, twin_prime_count_approx, twin_primes};
+use math_prime_util::{
+    is_prime, nth_twin_prime, twin_prime_count, twin_prime_count_approx, twin_primes,
+};
 use proptest::prelude::*;
 
 proptest! {
@@ -38,21 +40,31 @@ fn native_and_segment_boundaries() {
     let pairs = twin_primes(0, 1_000_100);
     assert_eq!(pairs.len() as u64, twin_prime_count(1_000_100));
     assert_eq!(twin_prime_count(10_000_000), 58_980);
-    assert_eq!(twin_prime_count(10_000_019), twin_prime_count(10_000_000) + twin_primes(10_000_001, 10_000_019).len() as u64);
+    assert_eq!(
+        twin_prime_count(10_000_019),
+        twin_prime_count(10_000_000) + twin_primes(10_000_001, 10_000_019).len() as u64
+    );
 }
 
 #[test]
 fn correction_intervals_and_repeat_calls() {
-    for n in [1999, 2000, 3999, 4000, 7999, 8000, 15999, 16000, 31999, 32000,
-        63999, 64000, 127999, 128000, 255999, 256000, 599999, 600000,
-        999999, 1_000_000, 3_999_999, 4_000_000, 15_999_999, 16_000_000,
-        31_999_999, 32_000_000] {
+    for n in [
+        1999, 2000, 3999, 4000, 7999, 8000, 15999, 16000, 31999, 32000, 63999, 64000, 127999,
+        128000, 255999, 256000, 599999, 600000, 999999, 1_000_000, 3_999_999, 4_000_000,
+        15_999_999, 16_000_000, 31_999_999, 32_000_000,
+    ] {
         assert!(twin_prime_count_approx(n) > 0);
     }
-    let handles: Vec<_> = (0..4).map(|_| std::thread::spawn(|| {
-        assert_eq!(nth_twin_prime(100), Some(3821));
-        assert_eq!(twin_prime_count(1000), 35);
-        assert_eq!(twin_primes(29, 31), vec![29]);
-    })).collect();
-    for handle in handles { handle.join().unwrap(); }
+    let handles: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                assert_eq!(nth_twin_prime(100), Some(3821));
+                assert_eq!(twin_prime_count(1000), 35);
+                assert_eq!(twin_primes(29, 31), vec![29]);
+            })
+        })
+        .collect();
+    for handle in handles {
+        handle.join().unwrap();
+    }
 }

@@ -10,3 +10,4 @@ Focused tests exposed sieve fixtures with native overflow and alternate primalit
 All 11 new focused tests passed. Preserved the pre-existing primality tests and benchmarks by adding the generic cases alongside them; rerunning the gate after the must_use fix.
 Gate found benchmark style warnings after registering the existing primality benchmark. Fixed explicit imports and statement semicolons; the focused generic tests remain green.
 Formatting, pedantic clippy, and the Rust 1.85 build pass. The gate is now running the full suite; no separate coverage run has been performed.
+Full-suite validation continues through the existing factor tests. The final diff preserves the original tests and benchmarks and passes the whitespace check.

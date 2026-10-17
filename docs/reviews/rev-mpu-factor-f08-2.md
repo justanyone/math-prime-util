@@ -10,4 +10,4 @@ The stopped run is not complete against the acceptance criteria. This review exa
 
 4. src/factor/rough_count.rs:9 — Open. A C file/function citation was added, but the documentation explicitly says the implementation omits MPU's table/cache algorithm. This does not satisfy the earlier faithful-port finding or PLAN.md section 8. The small-domain property tests cannot distinguish this substitute from the required algorithm.
 
-Validation: candidate code was reviewed from the supplied digest. Local checks exercise the base checkout and cannot clear these candidate findings.
+Validation: candidate code was reviewed from the supplied digest. On the base checkout, `tools/test.sh compat_factor` matched zero tests, `tools/test.sh` passed, and `tools/gate.sh` printed `== gate: green`. These base results cannot clear the candidate findings.

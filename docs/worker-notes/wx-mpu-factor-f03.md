@@ -6,3 +6,4 @@ Read the C kernels and XS defaults. Added rho, Brent, and shared wrapper arithme
 Added p-1 stage-one recovery and stage-two gap cache, p+1 Lucas powering, fixture tests, and product/repeat/concurrency laws. Running focused tests next.
 First focused run: rho, p-1, and p+1 fixtures pass. Brent fixture parsing hit an explicit undef bound; handling default arguments next.
 Correction: the fixture contains 10foo, not undef. Named that typed-API skip explicitly; first gate found benchmark semicolons, now fixed.
+All four fixture tests and all three property/edge/concurrency tests pass offline. The gate is running after the benchmark lint fix.

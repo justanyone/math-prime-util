@@ -7,6 +7,20 @@ use math_prime_util::iter::{
 };
 
 fn bench_iter(c: &mut Criterion) {
+    c.bench_function("iter/almost_primes", |b| {
+        b.iter(|| black_box(math_prime_util::almost_primes_in(3, 0..=black_box(10_000)).count()));
+    });
+    c.bench_function("iter/factored", |b| {
+        b.iter(|| black_box(math_prime_util::factored_in(1..=black_box(10_000)).count()));
+    });
+    c.bench_function("iter/squarefree", |b| {
+        b.iter(|| black_box(math_prime_util::squarefree_in(1..=black_box(10_000)).count()));
+    });
+    c.bench_function("iter/squarefree_int", |b| {
+        b.iter(|| {
+            black_box(math_prime_util::squarefree_integers_in(1..=black_box(10_000)).count())
+        });
+    });
     c.bench_function("iter/primes", |b| {
         b.iter(|| black_box(primes_in(0..=black_box(100_000)).count()));
     });

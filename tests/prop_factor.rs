@@ -1,9 +1,10 @@
 //! Algebraic laws for the factor family. Factors from the bounded methods need not be prime.
 use math_prime_util::{
-    cheb_factor, fermat_factor, gcd, holf_factor, is_almost_prime, is_carmichael, is_cyclic,
-    is_omega_prime, is_perfect_number, is_quasi_carmichael, is_semiprime, is_square_free,
-    lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor, prime_bigomega,
-    prime_omega, prime_signature, squfof_factor,
+    cheb_factor, divisors, factor, factor_exp, fermat_factor, gcd, holf_factor, is_almost_prime,
+    is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime, is_quasi_carmichael,
+    is_semiprime, is_square_free, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor,
+    prho_factor, prime_bigomega, prime_omega, prime_signature, rough_count, squarefree_kernel,
+    squfof_factor, trial_factor,
 };
 use proptest::prelude::*;
 
@@ -375,4 +376,128 @@ fn repeated_and_concurrent_calls() {
             });
         }
     });
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(256))]
+
+    #[test]
+    fn factor_product(n in any::<u64>()) {
+        let factors = factor(n);
+        prop_assert!(factors.windows(2).all(|w| w[0] <= w[1]));
+        prop_assert_eq!(factors.iter().map(|&p| u128::from(p)).product::<u128>(), u128::from(n));
+        if n > 1 {
+            prop_assert!(factors.iter().all(|&p| is_prime(p) != 0));
+        }
+        let expanded: Vec<_> = factor_exp(n).into_iter()
+            .flat_map(|(p, e)| (0..e).map(move |_| p)).collect();
+        prop_assert_eq!(expanded, factors);
+    }
+
+    #[test]
+    fn divisor_laws(n in 1u64..=1_000_000, max in 0u64..=1_000_000) {
+        let all = divisors(n, None);
+        prop_assert_eq!(all.first(), Some(&1));
+        prop_assert_eq!(all.last(), Some(&n));
+        prop_assert!(all.windows(2).all(|w| w[0] < w[1]));
+        prop_assert!(all.iter().all(|d| n % d == 0));
+        for (a, b) in all.iter().zip(all.iter().rev()) {
+            prop_assert_eq!(a * b, n);
+        }
+        let expected: Vec<_> = all.into_iter().filter(|&d| d <= max).collect();
+        prop_assert_eq!(divisors(n, Some(max)), expected);
+    }
+
+    #[test]
+    fn bounded_trial_product(n in any::<u64>(), limit in 1u64..=10_000) {
+        let factors = trial_factor(n, limit);
+        prop_assert_eq!(factors.iter().map(|&p| u128::from(p)).product::<u128>(), u128::from(n));
+        if factors.len() > 1 {
+            prop_assert!(factors[..factors.len()-1].iter().all(|&p| p <= limit && is_prime(p) != 0));
+        }
+    }
+}
+
+#[test]
+fn boundaries_and_repeated_calls() {
+    assert_eq!(factor(0), [0]);
+    assert_eq!(factor(1), Vec::<u64>::new());
+    assert_eq!(factor_exp(0), [(0, 1)]);
+    assert_eq!(factor_exp(1), Vec::<(u64, u32)>::new());
+    assert_eq!(divisors(0, None), Vec::<u64>::new());
+    assert_eq!(divisors(360, Some(0)), Vec::<u64>::new());
+    assert_eq!(divisors(360, Some(1)), [1]);
+    assert_eq!(divisors(1, None), [1]);
+    assert_eq!(trial_factor(49, 6), [49]);
+    assert_eq!(trial_factor(49, 7), [7, 7]);
+    assert_eq!(trial_factor(4, 1), [4]);
+    assert_eq!(trial_factor(2017 * 2017, 0), [2017, 2017]);
+    for n in [1, 0, 360, 4_294_967_291, u64::MAX, 360] {
+        let expected = factor(n);
+        std::thread::scope(|scope| {
+            for _ in 0..4 {
+                let expected = &expected;
+                scope.spawn(move || assert_eq!(&factor(n), expected));
+            }
+        });
+    }
+}
+
+#[test]
+fn rough_count_is_bounded_by_n() {
+    for n in 0..200 {
+        for k in 0..12 {
+            assert!(rough_count(n, k) <= n, "n={n} k={k}");
+        }
+    }
+}
+
+#[test]
+fn rough_count_is_monotone_in_n() {
+    for k in 0..10 {
+        for n in 0..200 {
+            assert!(rough_count(n, k) <= rough_count(n + 1, k), "n={n} k={k}");
+        }
+    }
+}
+
+#[test]
+fn rough_count_grows_as_k_shrinks() {
+    // Fewer excluded primes never lowers the count.
+    for n in 0..150 {
+        for k in 3..12 {
+            assert!(rough_count(n, k) <= rough_count(n, k - 1), "n={n} k={k}");
+        }
+    }
+}
+
+#[test]
+fn squarefree_kernel_divides_n() {
+    for n in 1..2000 {
+        assert_eq!(n % squarefree_kernel(n), 0, "n={n}");
+    }
+}
+
+#[test]
+fn squarefree_kernel_is_idempotent() {
+    for n in 0..2000 {
+        let s = squarefree_kernel(n);
+        assert_eq!(squarefree_kernel(s), s, "n={n}");
+    }
+}
+
+#[test]
+fn squarefree_kernel_is_multiplicative_on_coprimes() {
+    // gcd(a, b) = 1 gives kernel(a * b) = kernel(a) * kernel(b).
+    for a in 1..60u64 {
+        for b in 1..60u64 {
+            if gcd(a, b) == 1 {
+                assert_eq!(
+                    squarefree_kernel(a * b),
+                    squarefree_kernel(a) * squarefree_kernel(b),
+                    "a={a} b={b}"
+                );
+            }
+        }
+    }
 }

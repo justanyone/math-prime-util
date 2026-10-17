@@ -2,11 +2,17 @@
 
 mod bernfrac;
 mod harmfrac;
+mod partitions;
+mod partitionsq;
+mod permtonum;
 mod pn_primorial;
 mod primorial;
 
 pub use bernfrac::bernfrac;
 pub use harmfrac::harmfrac;
+pub use partitions::partitions;
+pub use partitionsq::partitionsq;
+pub use permtonum::{PermutationError, permtonum};
 pub use pn_primorial::pn_primorial;
 pub use primorial::primorial;
 mod binomial;
@@ -33,6 +39,7 @@ pub use falling_factorial::falling_factorial;
 pub use integer_complexity::integer_complexity;
 pub use powersum::powersum;
 pub use rising_factorial::rising_factorial;
+<<<<<<< HEAD
 mod hclassno;
 mod is_happy;
 mod is_pillai;
@@ -41,3 +48,13 @@ pub use hclassno::hclassno;
 pub use is_happy::is_happy;
 pub use is_pillai::is_pillai;
 pub use numtoperm::numtoperm;
+=======
+mod consecutive_integer_lcm;
+pub use consecutive_integer_lcm::consecutive_integer_lcm;
+mod frobenius_number;
+pub use frobenius_number::frobenius_number;
+mod is_congruent_number;
+pub use is_congruent_number::is_congruent_number;
+mod is_polygonal;
+pub use is_polygonal::is_polygonal;
+>>>>>>> origin/dev-001

@@ -45,7 +45,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `chinese`
 - [x] `chinese2`
 - [x] `cmpint`
-- [ ] `consecutive_integer_lcm`
+- [x] `consecutive_integer_lcm`
 - [x] `contfrac`
 - [x] `convergents`
 - [ ] `cornacchia`
@@ -54,7 +54,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `dedekind_psi`
 - [x] `digital_root`
 - [x] `divint`
-- [ ] `divisors`
+- [x] `divisors`
 - [x] `divisor_sum`
 - [ ] `divmod`
 - [x] `divrem`
@@ -64,8 +64,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `euler_phi`
 - [x] `exp_mangoldt`
 - [ ] `ExponentialIntegral`
-- [ ] `factor`
-- [ ] `factor_exp`
+- [x] `factor`
+- [x] `factor_exp`
 - [x] `factorial`
 - [x] `factorialmod`
 - [x] `falling_factorial`
@@ -91,7 +91,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `forsetproduct`
 - [ ] `forsquarefree`
 - [ ] `forsquarefreeint`
-- [ ] `frobenius_number`
+- [x] `frobenius_number`
 - [x] `from_contfrac`
 - [x] `fromdigits`
 - [x] `fromzeckendorf`
@@ -108,8 +108,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
-- [ ] `inverse_sigma0`
-- [ ] `inverse_sigma0_count`
+- [x] `inverse_sigma0`
+- [x] `inverse_sigma0_count`
 - [x] `inverse_totient`
 - [x] `invmod`
 - [x] `irand`
@@ -120,20 +120,20 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_almost_prime`
 - [x] `is_bpsw_prime`
 - [x] `is_carmichael`
-- [ ] `is_catalan_pseudoprime`
-- [ ] `is_chen_prime`
+- [x] `is_catalan_pseudoprime`
+- [x] `is_chen_prime`
 - [x] `is_congruent`
-- [ ] `is_congruent_number`
+- [x] `is_congruent_number`
 - [x] `is_cyclic`
-- [ ] `is_delicate_prime`
+- [x] `is_delicate_prime`
 - [x] `is_divisible`
 - [x] `is_euler_plumb_pseudoprime`
 - [x] `is_euler_pseudoprime`
 - [x] `is_even`
 - [x] `is_extra_strong_lucas_pseudoprime`
-- [ ] `is_frobenius_khashin_pseudoprime`
-- [ ] `is_frobenius_pseudoprime`
-- [ ] `is_frobenius_underwood_pseudoprime`
+- [x] `is_frobenius_khashin_pseudoprime`
+- [x] `is_frobenius_pseudoprime`
+- [x] `is_frobenius_underwood_pseudoprime`
 - [x] `is_fundamental`
 - [x] `is_gaussian_prime`
 - [x] `is_happy`
@@ -147,9 +147,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_palindrome`
 - [x] `is_perfect_number`
 - [ ] `is_perfect_power`
-- [ ] `is_perrin_pseudoprime`
+- [x] `is_perrin_pseudoprime`
 - [x] `is_pillai`
-- [ ] `is_polygonal`
+- [x] `is_polygonal`
 - [x] `is_power`
 - [x] `is_powerfree`
 - [x] `is_powerful`
@@ -259,14 +259,14 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `numtoperm`
 - [ ] `omega_prime_count`
 - [ ] `omega_primes`
-- [ ] `partitions`
-- [ ] `partitionsq`
+- [x] `partitions`
+- [x] `partitionsq`
 - [x] `pbrent_factor`
 - [ ] `perfect_power_count`
 - [ ] `perfect_power_count_approx`
 - [ ] `perfect_power_count_lower`
 - [ ] `perfect_power_count_upper`
-- [ ] `permtonum`
+- [x] `permtonum`
 - [ ] `Pi`
 - [x] `pisano_period`
 - [x] `pminus1_factor`
@@ -341,7 +341,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `rising_factorial`
 - [x] `rootint`
 - [ ] `rootmod`
-- [ ] `rough_count`
+- [x] `rough_count`
 - [x] `rshiftint`
 - [x] `semiprime_count`
 - [x] `semiprime_count_approx`
@@ -372,7 +372,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sopfr`
 - [x] `sqrtint`
 - [ ] `sqrtmod`
-- [ ] `squarefree_kernel`
+- [x] `squarefree_kernel`
 - [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`
@@ -393,7 +393,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `toint`
 - [x] `toset`
 - [x] `tozeckendorf`
-- [ ] `trial_factor`
+- [x] `trial_factor`
 - [x] `twin_prime_count`
 - [x] `twin_prime_count_approx`
 - [x] `twin_primes`

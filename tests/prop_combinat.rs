@@ -1,7 +1,13 @@
 //! Algebraic laws and native overflow boundaries.
 use math_prime_util::{
+<<<<<<< HEAD
     bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
     harmfrac, hclassno, integer_complexity, is_happy, is_pillai, multifactorial, numtoperm,
+=======
+    PermutationError, bell_number, bernfrac, binomial, catalan_number, consecutive_integer_lcm,
+    factorial, falling_factorial, frobenius_number, fubini, gcd, harmfrac, integer_complexity,
+    is_congruent_number, is_polygonal, lcm, multifactorial, partitions, partitionsq, permtonum,
+>>>>>>> origin/dev-001
     pn_primorial, powersum, primorial, rising_factorial, stirling, subfactorial,
 };
 use proptest::prelude::*;
@@ -379,6 +385,7 @@ fn complexity_matches_exhaustive_recurrence() {
 }
 
 #[test]
+<<<<<<< HEAD
 fn native_boundaries_and_repeated_calls() {
     assert_eq!(hclassno(0), Some(-1));
     assert_eq!(hclassno(1_u64 << 63), None);
@@ -427,3 +434,211 @@ fn independent_calls_are_thread_safe() {
         assert_eq!(thread.join().unwrap(), expected);
     }
 }
+=======
+fn partition_counts_match_enumeration() {
+    for n in 0_u64..=24 {
+        assert_eq!(partitions(n), Some(count_partitions(n)));
+        assert_eq!(partitionsq(n), Some(count_distinct_partitions(n)));
+        if n > 0 {
+            assert!(partitions(n).unwrap() >= partitions(n - 1).unwrap());
+            assert!(partitionsq(n).unwrap() <= partitions(n).unwrap());
+        }
+    }
+}
+
+#[test]
+fn permutation_ranks_are_complete() {
+    for length in 0_usize..=7 {
+        let mut perm: Vec<u64> = (0..u64::try_from(length).unwrap()).collect();
+        let mut ranks = Vec::new();
+        collect_ranks(&mut perm, 0, &mut ranks);
+        ranks.sort_unstable();
+        let factorial = (1..=length)
+            .map(|factor| u64::try_from(factor).unwrap())
+            .product();
+        let expected: Vec<u64> = (0..factorial).collect();
+        assert_eq!(ranks, expected);
+    }
+    for length in 1_u64..=20 {
+        let reverse: Vec<u64> = (0..length).rev().collect();
+        let mut factorial = 1_u64;
+        for factor in 1..=length {
+            factorial *= factor;
+        }
+        assert_eq!(permtonum(&reverse), Ok(Some(factorial - 1)));
+        let identity: Vec<u64> = (0..length).collect();
+        assert_eq!(permtonum(&identity), Ok(Some(0)));
+    }
+}
+
+#[test]
+fn native_overflow_and_invalid_permutation() {
+    assert!(partitions(416).is_some());
+    assert_eq!(partitions(417), None);
+    assert_eq!(partitions(u64::MAX), None);
+    assert!(partitionsq(791).is_some());
+    assert_eq!(partitionsq(792), None);
+    assert_eq!(partitionsq(u64::MAX), None);
+    // `21!` does not fit in `u64`. The reverse of `0..21` overflows the rank.
+    let reverse_21: Vec<u64> = (0..21).rev().collect();
+    assert_eq!(permtonum(&reverse_21), Ok(None));
+    // `factorial(21)` is 0 in util.c, so length 22 returns `None` even for the identity.
+    let identity_22: Vec<u64> = (0..22).collect();
+    assert_eq!(permtonum(&identity_22), Ok(None));
+    let identity_21: Vec<u64> = (0..21).collect();
+    assert_eq!(permtonum(&identity_21), Ok(Some(0)));
+    assert_eq!(permtonum(&[1, 1]), Err(PermutationError::Invalid));
+    assert_eq!(permtonum(&[0, 2]), Err(PermutationError::Invalid));
+    assert_eq!(permtonum(&[3, 0, 1]), Err(PermutationError::Invalid));
+}
+
+#[test]
+fn repeat_and_concurrent_partition_calls() {
+    let sample = [6_u64, 3, 4, 2, 5, 0, 1];
+    let once = (permtonum(&sample), partitions(120), partitionsq(90));
+    let twice = (permtonum(&sample), partitions(120), partitionsq(90));
+    assert_eq!(once, twice);
+    let workers: Vec<_> = (0..4)
+        .map(|_| std::thread::spawn(move || (permtonum(&sample), partitions(120), partitionsq(90))))
+        .collect();
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), once);
+    }
+}
+
+fn count_partitions(n: u64) -> u64 {
+    fn rec(remain: u64, max_part: u64) -> u64 {
+        if remain == 0 {
+            return 1;
+        }
+        let mut count = 0;
+        for part in 1..=max_part.min(remain) {
+            count += rec(remain - part, part);
+        }
+        count
+    }
+    rec(n, n)
+}
+
+fn count_distinct_partitions(n: u64) -> u64 {
+    fn rec(remain: u64, min_part: u64) -> u64 {
+        if remain == 0 {
+            return 1;
+        }
+        let mut count = 0;
+        for part in min_part..=remain {
+            count += rec(remain - part, part + 1);
+        }
+        count
+    }
+    rec(n, 1)
+}
+
+fn collect_ranks(perm: &mut [u64], start: usize, ranks: &mut Vec<u64>) {
+    if start == perm.len() {
+        ranks.push(permtonum(perm).unwrap().unwrap());
+        return;
+    }
+    for index in start..perm.len() {
+        perm.swap(start, index);
+        collect_ranks(perm, start + 1, ranks);
+        perm.swap(start, index);
+    }
+}
+
+proptest! {
+    #[test]
+    fn lcm_recurrence(n in 1u64..=47) {
+        prop_assert_eq!(consecutive_integer_lcm(n), consecutive_integer_lcm(n-1).and_then(|v| lcm(v,n)));
+    }
+
+    #[test]
+    fn polygonal_construction(k in 3u64..=10000, r in 0u64..=10000) {
+        let n = if r == 0 { 0 } else { r * ((k-2)*(r-1)+2)/2 };
+        prop_assert!(is_polygonal(n,k));
+    }
+
+    #[test]
+    fn frobenius_pair(a in 2u64..100, b in 2u64..100) {
+        if gcd(a,b) == 1 {
+            prop_assert_eq!(frobenius_number(&[a,b]),Some(i128::from(a*b-a-b)));
+        }
+    }
+
+    #[test]
+    fn frobenius_redundant_and_permuted(a in 2u64..50, b in 2u64..50) {
+        if gcd(a,b) == 1 {
+            prop_assert_eq!(frobenius_number(&[a,b,a+b,a]),frobenius_number(&[b,a]));
+        }
+    }
+
+    #[test]
+    fn frobenius_last_gap(a in 2u64..20, b in 2u64..20, c in 2u64..20) {
+        if gcd(gcd(a,b),c) == 1 {
+            let mut reachable = [false; 400];
+            reachable[0] = true;
+            for i in 1..reachable.len() {
+                reachable[i] = [a,b,c].into_iter().any(|v| {
+                    let v = usize::try_from(v).unwrap();
+                    i >= v && reachable[i-v]
+                });
+            }
+            let last = reachable.iter().rposition(|&r| !r).unwrap();
+            prop_assert_eq!(frobenius_number(&[a,b,c]), Some(i128::try_from(last).unwrap()));
+        }
+    }
+
+    #[test]
+    fn congruent_square_scaling(n in 0u64..500, s in 1u64..20) {
+        prop_assert_eq!(is_congruent_number(n*s*s),is_congruent_number(n));
+    }
+}
+
+#[test]
+fn boundaries_and_repeat_calls() {
+    assert_eq!(consecutive_integer_lcm(0), Some(1));
+    assert_eq!(frobenius_number(&[]), None);
+    assert_eq!(frobenius_number(&[7]), None);
+    assert_eq!(frobenius_number(&[1]), Some(-1));
+    assert_eq!(consecutive_integer_lcm(u64::MAX), None);
+    assert_eq!(frobenius_number(&[u64::MAX, u64::MAX - 1]), None);
+    assert_eq!(frobenius_number(&[4, 8, 7_000_000_000_000_000_001]), None);
+    for _ in 0..2 {
+        assert_eq!(frobenius_number(&[6, 9, 20]), Some(43));
+        assert!(is_congruent_number(13706));
+        assert!(!is_polygonal(14, 3));
+    }
+}
+
+#[test]
+#[should_panic(expected = "coprime")]
+fn frobenius_non_coprime() {
+    let _ = frobenius_number(&[2, 4]);
+}
+
+#[test]
+#[should_panic(expected = "positive")]
+fn frobenius_zero() {
+    let _ = frobenius_number(&[0, 5]);
+}
+
+#[test]
+#[should_panic(expected = "root < 3")]
+fn polygonal_invalid_sides() {
+    let _ = is_polygonal(0, 2);
+}
+
+#[test]
+fn concurrent_lcm_polygonal_calls() {
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                assert_eq!(frobenius_number(&[6, 9, 20]), Some(43));
+                assert!(is_congruent_number(34));
+                assert!(is_polygonal(36, 4));
+                assert_eq!(consecutive_integer_lcm(10), Some(2520));
+            });
+        }
+    });
+}
+>>>>>>> origin/dev-001

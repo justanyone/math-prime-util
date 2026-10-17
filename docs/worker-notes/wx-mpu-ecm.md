@@ -14,3 +14,4 @@ Helper tests pass (3/3); compatibility test and four property/state tests pass. 
 Final gate attempt still stops in pre-existing count-module float comparisons; no changes made outside the ECM task paths. Waiting for the single full-suite run.
 Benchmark target compile check requested while the full offline suite continues; normal gate is blocked before MSRV/docs by count-module lint errors.
 Benchmark target compiles successfully offline. Remaining acceptance limits: strict partition equality for the named fixture and a green unmodified repository gate.
+Focused checks are complete; the full-suite command has not returned yet. No further source changes are planned. Oracle partition and baseline lint blockers are documented.

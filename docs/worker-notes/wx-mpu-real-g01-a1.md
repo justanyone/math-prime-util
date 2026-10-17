@@ -11,3 +11,4 @@ Next: run tools/test.sh on compat_real and prop_real.
 - 2026-10-17T14:48:56Z launcher: no commit for 61 s; 189 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-real-g01-a1.md.
 - 2026-10-17T14:49:58Z launcher: no commit for 60 s; 251 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-real-g01-a1.md.
 - 2026-10-17T14:51:38Z launcher: no commit for 60 s; 351 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-real-g01-a1.md.
+- 2026-10-17T14:53:47Z launcher: no commit for 64 s; 481 s elapsed. Files changed so far: STATUS.md, benches/real.rs, docs/worker-notes/wx-mpu-real-g01-a1.md, src/real/exponential_integral.rs, src/real/logarithmic_integral.rs, src/real/mod.rs, src/real/riemann_zeta.rs, tests/compat_real.rs, tests/prop_real.rs.

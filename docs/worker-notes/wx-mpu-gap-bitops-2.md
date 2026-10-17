@@ -16,3 +16,4 @@ Progress: existing nth_prime and prime_count oracle tests remain active. No new 
 The existing nth_prime oracle passed. Ran focused bit-position doc tests separately while prime_count continues, so runnable public examples can be verified without waiting for the full gate.
 All six public doc examples passed offline. Gate still awaiting the existing prime_count oracle; no bit-position failures observed.
 Final diff remains whitespace-clean. Pending full tests are unrelated count oracle work. The requested C/Perl port cannot be certified because all six reference functions are absent; native implementation and laws are complete.
+Minute update: gate and wrapper test run continue without reported errors; the long-running prime_count oracle is the current wait.

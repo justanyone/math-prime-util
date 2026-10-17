@@ -17,3 +17,4 @@ The nth-prime oracle passed. Prime-count is the last active compatibility test i
 About five minutes remain in the session. The implementation and focused checks are complete; waiting for the existing prime-count oracle to allow the full gate to finish.
 Prime-count remains active with no failure. The full gate result is not yet available; no repository-wide changes are being made to shorten this unrelated test.
 Still waiting for the full gate's prime-count oracle. Focused families tests and the fmt, pedantic clippy, and MSRV gate steps remain green.
+The full gate still has no result after the long-running prime-count oracle. All requested implementation files and tests are on disk; final verification will report this host-time limit if it persists.

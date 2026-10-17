@@ -3,7 +3,12 @@
 //!
 //! Ported from MPU's `rational.c` and `rational.h` (MPU 0.75).
 
-#![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_precision_loss, clippy::cast_possible_wrap)]
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_wrap
+)]
 
 /// Continued fraction terms of `num / den`, by the Euclidean algorithm.
 ///
@@ -54,7 +59,10 @@ pub fn contfrac(num: u64, den: u64) -> Vec<u64> {
 /// ```
 #[must_use]
 pub fn from_contfrac(cf: &[u64]) -> Option<(u64, u64)> {
-    assert!(cf.iter().skip(1).all(|&a| a > 0), "terms after the first must be positive");
+    assert!(
+        cf.iter().skip(1).all(|&a| a > 0),
+        "terms after the first must be positive"
+    );
     if cf.is_empty() {
         return Some((0, 1));
     }
@@ -109,6 +117,10 @@ pub fn convergents(cfrac: &[u64]) -> Option<Vec<(u64, u64)>> {
 /// `None` when `dbound` is 0, when `|x|` is not below `u64::MAX`, or when
 /// an intermediate value overflows.
 ///
+/// # Panics
+///
+/// Panics if the denominator bound is zero.
+///
 /// # Examples
 ///
 /// ```
@@ -118,6 +130,10 @@ pub fn convergents(cfrac: &[u64]) -> Option<Vec<(u64, u64)>> {
 /// ```
 #[must_use]
 pub fn bestrational(x: f64, dbound: u64) -> Option<(i128, u64)> {
+    assert!(
+        dbound > 0,
+        "bestrational: denominator bound must be positive"
+    );
     let xabs = x.abs();
     if dbound == 0 || !xabs.is_finite() || xabs >= u64::MAX as f64 {
         return None;
@@ -173,7 +189,14 @@ pub fn bestrational(x: f64, dbound: u64) -> Option<(i128, u64)> {
         p1 = p2;
         q1 = q2;
     }
-    Some((if x.is_sign_negative() { -i128::from(p1) } else { i128::from(p1) }, q1))
+    Some((
+        if x.is_sign_negative() {
+            -i128::from(p1)
+        } else {
+            i128::from(p1)
+        },
+        q1,
+    ))
 }
 
 /// The Calkin-Wilf successor of the reduced fraction `num / den`.
@@ -195,7 +218,10 @@ pub fn bestrational(x: f64, dbound: u64) -> Option<(i128, u64)> {
 /// ```
 #[must_use]
 pub fn next_calkin_wilf(num: u64, den: u64) -> Option<(u64, u64)> {
-    assert!(num > 0 && den > 0 && gcd(num, den) == 1, "rational must be positive and reduced");
+    assert!(
+        num > 0 && den > 0 && gcd(num, den) == 1,
+        "rational must be positive and reduced"
+    );
     let (n, d) = (num, den);
     let nd_new = if n < d {
         d - n
@@ -231,7 +257,10 @@ pub fn next_calkin_wilf(num: u64, den: u64) -> Option<(u64, u64)> {
 /// ```
 #[must_use]
 pub fn next_stern_brocot(num: u64, den: u64) -> Option<(u64, u64)> {
-    assert!(num > 0 && den > 0 && gcd(num, den) == 1, "rational must be positive and reduced");
+    assert!(
+        num > 0 && den > 0 && gcd(num, den) == 1,
+        "rational must be positive and reduced"
+    );
     if den == 1 {
         if num == u64::MAX {
             return None;
@@ -533,8 +562,8 @@ pub fn farey_rank(n: u32, p: u32, q: u32) -> u64 {
 
 /// Returns the number of terms in the Farey sequence of order `n`.
 ///
-/// Uses MPU `rational.c` `farey_length`. The sum of totients equals the
-/// rank of 1/1, computed by `farey_rank`.
+/// Uses MPU `rational.c` `farey_length` and the divisor grouping in
+/// `totients.c` `_sumtotient_direct`.
 ///
 /// # Panics
 ///
@@ -546,7 +575,51 @@ pub fn farey_rank(n: u32, p: u32, q: u32) -> u64 {
 #[must_use]
 pub fn farey_len(n: u32) -> u64 {
     assert!(n > 0, "farey: order must be positive");
-    farey_rank(n, 1, 1).saturating_add(1)
+    if n <= 2 {
+        return u64::from(n) + 1;
+    }
+    let n = u64::from(n);
+    let root = crate::sqrtint(n) as usize;
+    let flag = n < root as u64 * (root as u64 + 1);
+    let mut large: Vec<u64> = (0..=root as u64).collect();
+    for p in 2..=root {
+        if large[p] == p as u64 {
+            for j in (p..=root).step_by(p) {
+                large[j] -= large[j] / p as u64;
+            }
+        }
+    }
+    let mut small = vec![0u64; root + 1];
+    small[1] = 1;
+    for i in 2..=root {
+        small[i] = small[i - 1] + large[i];
+    }
+    if flag {
+        large[root] = small[root];
+    }
+    for i in (1..=root - usize::from(flag)).rev() {
+        let m = n / i as u64;
+        let r = crate::sqrtint(m) as usize;
+        let mut sum = (m + 1) / 2 * (m | 1) - (m - m / 2);
+        let mut k = 2;
+        let mut j = k * i;
+        while j <= root {
+            sum -= large[j];
+            sum -= (m / k as u64 - m / (k + 1) as u64) * small[k];
+            k += 1;
+            j += i;
+        }
+        while k <= r {
+            sum -= small[(m / k as u64) as usize];
+            sum -= (m / k as u64 - m / (k + 1) as u64) * small[k];
+            k += 1;
+        }
+        if m < r as u64 * (r as u64 + 1) {
+            sum += small[r];
+        }
+        large[i] = sum;
+    }
+    1 + large[1]
 }
 
 /// Returns all terms of the Farey sequence of order `n`.
@@ -586,41 +659,74 @@ pub fn farey(n: u32) -> Vec<(u32, u32)> {
 /// ```
 #[must_use]
 pub fn farey_nth(n: u32, k: u64) -> Option<(u32, u32)> {
-    if n == 0 { return None; }
-    if k < 2 { return Some(if k == 0 { (0, 1) } else { (1, n) }); }
-    if n < 2 { return None; }
+    if n == 0 {
+        return None;
+    }
+    if k < 2 {
+        return Some(if k == 0 { (0, 1) } else { (1, n) });
+    }
+    if n < 2 {
+        return None;
+    }
     let (mut lo, mut hi, mut count) = (1, n, 1);
     if n >= 5 {
         let inc = ((u64::from(n) + 8191) >> 13) as u32;
         let nf = f64::from(n);
         let len = 1.0 + (0.304 * nf * nf + 0.29 * nf + 0.95);
         let estimate = k as f64 * (nf / len);
-        let mut guess = if estimate <= f64::from(lo) { lo + 1 }
-            else if estimate >= f64::from(hi) { hi - 1 }
-            else { estimate as u32 };
+        let mut guess = if estimate <= f64::from(lo) {
+            lo + 1
+        } else if estimate >= f64::from(hi) {
+            hi - 1
+        } else {
+            estimate as u32
+        };
         let mut rank = 0;
         if lo < hi {
             rank = farey_rank(n, guess, n);
-            if rank <= k { lo = guess; count = rank; } else { hi = guess - 1; }
+            if rank <= k {
+                lo = guess;
+                count = rank;
+            } else {
+                hi = guess - 1;
+            }
         }
         guess = if rank <= k {
             if hi - inc < guess { hi } else { guess + inc }
-        } else if lo + inc + 1 > guess { lo } else { guess - 1 - inc };
+        } else if lo + inc + 1 > guess {
+            lo
+        } else {
+            guess - 1 - inc
+        };
         if lo < hi && guess > lo && guess < hi {
             rank = farey_rank(n, guess, n);
-            if rank <= k { lo = guess; count = rank; } else { hi = guess - 1; }
+            if rank <= k {
+                lo = guess;
+                count = rank;
+            } else {
+                hi = guess - 1;
+            }
         }
     }
     while lo < hi {
         let mid = lo + ((hi - lo + 1) >> 1);
         let rank = farey_rank(n, mid, n);
-        if rank <= k { lo = mid; count = rank; } else { hi = mid - 1; }
+        if rank <= k {
+            lo = mid;
+            count = rank;
+        } else {
+            hi = mid - 1;
+        }
     }
-    if lo == n { return (k == count).then_some((1, 1)); }
+    if lo == n {
+        return (k == count).then_some((1, 1));
+    }
     let g = gcd(u64::from(lo), u64::from(n)) as u32;
     let (mut p0, mut q0) = (lo / g, n / g);
     let mut remaining = k - count;
-    if remaining == 0 { return Some((p0, q0)); }
+    if remaining == 0 {
+        return Some((p0, q0));
+    }
     let (mut p1, mut q1) = next_farey(n, p0, q0)?;
     remaining -= 1;
     for _ in 0..remaining {

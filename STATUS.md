@@ -75,22 +75,22 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `fermat_factor`
 - [x] `fibonacci`
 - [ ] `floor_sum`
-- [ ] `foralmostprimes`
-- [ ] `forcomb`
-- [ ] `forcomp`
-- [ ] `forcomposites`
-- [ ] `forderange`
-- [ ] `fordivisors`
-- [ ] `forfactored`
-- [ ] `formultiperm`
-- [ ] `foroddcomposites`
-- [ ] `forpart`
-- [ ] `forperm`
-- [ ] `forprimes`
-- [ ] `forsemiprimes`
-- [ ] `forsetproduct`
-- [ ] `forsquarefree`
-- [ ] `forsquarefreeint`
+- [x] `foralmostprimes`
+- [x] `forcomb`
+- [x] `forcomp`
+- [x] `forcomposites`
+- [x] `forderange`
+- [x] `fordivisors`
+- [x] `forfactored`
+- [x] `formultiperm`
+- [x] `foroddcomposites`
+- [x] `forpart`
+- [x] `forperm`
+- [x] `forprimes`
+- [x] `forsemiprimes`
+- [x] `forsetproduct`
+- [x] `forsquarefree`
+- [x] `forsquarefreeint`
 - [ ] `frobenius_number`
 - [x] `from_contfrac`
 - [x] `fromdigits`
@@ -179,7 +179,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `jordan_totient`
 - [x] `kronecker`
 - [ ] `LambertW`
-- [ ] `lastfor`
+- [x] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
 - [x] `lehman_factor`
@@ -292,8 +292,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `prime_count_lower`
 - [ ] `prime_count_upper`
 - [ ] `prime_get_config`
-- [ ] `prime_iterator`
-- [ ] `prime_iterator_object`
+- [x] `prime_iterator`
+- [x] `prime_iterator_object`
 - [x] `prime_memfree`
 - [x] `prime_omega`
 - [ ] `prime_power_count`

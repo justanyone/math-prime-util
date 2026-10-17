@@ -1,0 +1,1 @@
+- start: reading reviewer note; plan: fix each Open finding with a failing-first test, decline with reason if not valid

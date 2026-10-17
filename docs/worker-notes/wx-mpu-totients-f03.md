@@ -13,3 +13,4 @@ The next gate pass found two benchmark-only semicolon warnings. Added the semico
 Formatting and all-target Clippy now pass. Full offline tests are building; the gate will run the Rust 1.85 build, suite, and docs after the Cargo lock is released.
 - 2026-10-17T18:45:31Z launcher: no commit for 60 s; 307 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients-f03.md, src/arith/dedekind_psi.rs, src/arith/inverse_totient.rs, src/arith/is_totient.rs, src/arith/mod.rs, src/arith/sumtotient.rs, tests/prop_arith.rs.
 Final full-suite compilation is still running with output buffered by tools/test.sh. No new code failures have appeared; the gate remains queued for its MSRV build.
+The final test build released Cargo's lock and the gate is compiling with Rust 1.85. Whitespace validation also passed; waiting for the full-suite results.

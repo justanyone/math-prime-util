@@ -15,3 +15,6 @@ Full-suite validation remains pending in existing count tests. Added a focused d
 All four new doctests pass. Existing chebyshev oracle also finished; prime_count and nth_prime oracle tests remain active in the full-suite gate.
 - 2026-10-17T06:55:53Z launcher: no commit for 60 s; 486 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f05.md, src/families/mod.rs, src/families/nth_perfect_power.rs, src/families/perfect_power_count_approx.rs, src/families/perfect_power_count_lower.rs, src/families/perfect_power_count_upper.rs, tests/compat_families.rs, tests/prop_families.rs.
 The full offline checks have no reported failure but are still in existing prime-count oracle work. All assigned-function checks, documentation checks, clippy, formatting, and MSRV checks have passed.
+About five minutes remain in the worker budget. No task code remains unwritten; the full gate and whole-suite runs are still pending in existing count oracle tests. Final validation status: focused oracle/property/unit/doctests pass; fmt, c <<cut 126 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 101 bytes)

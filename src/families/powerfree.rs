@@ -87,6 +87,7 @@ pub fn is_powerfree(n: u64, k: u32) -> bool {
 /// ```
 /// assert_eq!(math_prime_util::powerfree_count(10, 2), 7);
 /// ```
+#[allow(clippy::cast_sign_loss)] // The Mobius identity is a count in 0..=n.
 pub fn powerfree_count(n: u64, k: u32) -> u64 {
     if k < 2 {
         return u64::from(n >= 1);
@@ -104,7 +105,7 @@ pub fn powerfree_count(n: u64, k: u32) -> u64 {
             count += i128::from(m) * i128::from(n / (i as u64).pow(k));
         }
     }
-    u64::try_from(count).expect("count fits u64")
+    count as u64
 }
 
 fn triangular(n: u64) -> u128 {

@@ -7,3 +7,4 @@ Implemented powerful generation/count/sum recurrences and the powerfree Mobius/M
 Focused fixture tests launched offline. Added property tests for counts, sums, parts, inverse ranks, boundaries, repeated calls, and concurrent calls. Added Criterion benchmark source.
 Initial fixtures passed 8/11 functions. Corrected zero-k API mapping and single-bound list arguments. Focused compatibility and property tests are running; begin the gate next.
 Ten fixture functions now pass. List fixtures encode an empty list as undef; adapted the harness. Fixed sieve index lint findings. Gate rerun is underway.
+Added the C nth-powerful rank limits, small-rank table, and fitted search bounds. Wide sums deliberately extend the C native overflow path. Native-only fixture skips name signed, bigint, and out-of-u32 inputs.

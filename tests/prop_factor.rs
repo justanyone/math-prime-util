@@ -44,6 +44,10 @@ fn edge_inputs_and_zero_budget() {
     assert_eq!(lehman_factor(0, None), vec![0]);
     assert_eq!(lehman_factor(1, None), Vec::<u64>::new());
     assert_eq!(lehman_factor(77, Some(true)), vec![7, 11]);
+    assert_eq!(lehman_factor(89_u64.pow(3), None), vec![89, 89, 89]);
+    assert_eq!(fermat_factor(49, Some(0)), vec![7, 7]);
+    assert_eq!(holf_factor(49, Some(0)), vec![7, 7]);
+    assert_eq!(squfof_factor(49, Some(0)), vec![49]);
     assert_eq!(
         squfof_factor(9_223_371_873_002_223_329, None),
         vec![9_223_371_873_002_223_329]

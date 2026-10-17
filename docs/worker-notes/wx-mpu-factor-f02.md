@@ -7,3 +7,4 @@ Four algorithm files, compatibility tests, product properties, repeat/concurrenc
 All four oracle tests passed. Product properties passed. Corrected a test that wrongly required SQUFOF to split a square in one racing round; the default budget does split it.
 Focused compatibility and property rerun is complete. Fixed the pedantic lint findings in tests and benchmarks. The full offline gate is running; no tools or fixtures were changed.
 Review found that Lehman's final trial fallback can return more than two factors. Ported that full multiplicity behavior and added a regression for 89 cubed, plus direct fallback tests.
+The first full gate printed green. Final review preserved the C uint32_t wrapping in Lehman's B*B expression and added public multiplicity and zero-budget square regressions. Running final validation after those changes.

@@ -42,7 +42,8 @@ fn split(n: u64, do_trial: bool) -> Vec<u64> {
         return vec![n];
     }
     let reduced = (bound as f64 / (tune * tune * tune)) as u64;
-    let bound_squared = bound * bound;
+    // B is uint32_t in the C expression B*B, before promotion to UV.
+    let bound_squared = u64::from((bound as u32).wrapping_mul(bound as u32));
     let mut kn = 0;
     for k in 1..=reduced {
         let (inc, r) = if k & 1 != 0 { (4, (k + n) % 4) } else { (2, 1) };

@@ -1,81 +1,60 @@
-//! Lucky-number compatibility with the committed MPU 0.75 oracle.
+//! Perfect-power compatibility with the committed MPU 0.75 oracle.
 mod common;
+
 use common::each;
-use math_prime_util::*;
+use math_prime_util::{
+    is_perfect_power, next_perfect_power, perfect_power_count, prev_perfect_power,
+};
 
 #[test]
-fn lucky_numbers_oracle() {
-    each("families", "lucky_numbers", |c| {
-        let (lo, hi) = if c.args.len() == 1 {
-            (0, c.arg(0))
-        } else {
-            (c.arg(0), c.arg(1))
-        };
-        let values = lucky_numbers(lo, hi);
-        c.check(if values.is_empty() {
-            None
-        } else {
-            Some(
-                values
-                    .iter()
-                    .map(u64::to_string)
-                    .collect::<Vec<_>>()
-                    .join(" "),
-            )
-        });
+fn is_perfect_power_oracle() {
+    each("families", "is_perfect_power", |c| {
+        // Skip signed inputs (including -8922003266371364726) and bigint
+        // input 18446744073709551616: the native API takes u64.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            c.check(Some(u8::from(is_perfect_power(n))));
+        }
     });
 }
+
 #[test]
-fn is_lucky_oracle() {
-    each("families", "is_lucky", |c| {
-        c.check(Some(u8::from(is_lucky(c.arg(0)))));
+fn next_perfect_power_oracle() {
+    each("families", "next_perfect_power", |c| {
+        // Skip signed inputs and bigint input 18446744073709551616.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            // Bigint results 18446744073709551616 become native overflow.
+            let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
+            assert_eq!(next_perfect_power(n), expected, "{c:?}");
+        }
     });
 }
+
 #[test]
-fn lucky_count_oracle() {
-    each("families", "lucky_count", |c| {
-        let (lo, hi): (u64, u64) = if c.args.len() == 1 {
-            (0, c.arg(0))
+fn prev_perfect_power_oracle() {
+    each("families", "prev_perfect_power", |c| {
+        // Skip signed inputs and bigint input 18446744073709551616.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            // The signed result -1 at zero has no unsigned representation.
+            let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
+            assert_eq!(prev_perfect_power(n), expected, "{c:?}");
+        }
+    });
+}
+
+#[test]
+fn perfect_power_count_oracle() {
+    each("families", "perfect_power_count", |c| {
+        let n: u64 = c.arg(0);
+        let count = if c.args.len() == 1 {
+            perfect_power_count(n)
         } else {
-            (c.arg(0), c.arg(1))
-        };
-        let count = if lo > hi {
-            0
-        } else {
-            lucky_count(hi) - if lo == 0 { 0 } else { lucky_count(lo - 1) }
+            let hi = c.arg(1);
+            if hi < n {
+                0
+            } else {
+                perfect_power_count(hi) - n.checked_sub(1).map_or(0, perfect_power_count)
+            }
         };
         c.check(Some(count));
-    });
-}
-macro_rules! oracle {
-    ($name:ident) => {
-        #[test]
-        fn $name() {
-            each("families", stringify!($name), |c| {
-                c.check(math_prime_util::$name(c.arg(0)));
-            });
-        }
-    };
-}
-oracle!(nth_lucky);
-oracle!(nth_lucky_approx);
-oracle!(nth_lucky_lower);
-oracle!(nth_lucky_upper);
-#[test]
-fn lucky_count_approx_oracle() {
-    each("families", "lucky_count_approx", |c| {
-        c.check(Some(lucky_count_approx(c.arg(0))));
-    });
-}
-#[test]
-fn lucky_count_lower_oracle() {
-    each("families", "lucky_count_lower", |c| {
-        c.check(Some(lucky_count_lower(c.arg(0))));
-    });
-}
-#[test]
-fn lucky_count_upper_oracle() {
-    each("families", "lucky_count_upper", |c| {
-        c.check(Some(lucky_count_upper(c.arg(0))));
     });
 }

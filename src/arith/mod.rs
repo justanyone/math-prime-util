@@ -418,97 +418,14 @@ pub fn moebius_range(lo: u64, hi: u64) -> Vec<i8> {
         .collect()
 }
 
-struct Mertens {
-    prefix: Vec<i64>,
-    cache: HashMap<u64, i64>,
-}
-impl Mertens {
-    fn new(n: u64) -> Self {
-        let limit = (rootint(n, 3).pow(2)).max(sqrtint(n)).max(16);
-        let mut prefix = vec![0];
-        let mut sum = 0;
-        for m in moebius_range(1, limit) {
-            sum += i64::from(m);
-            prefix.push(sum);
-        }
-        Self {
-            prefix,
-            cache: HashMap::new(),
-        }
-    }
-    fn get(&mut self, n: u64) -> i64 {
-        if let Ok(i) = usize::try_from(n) {
-            if let Some(&v) = self.prefix.get(i) {
-                return v;
-            }
-        }
-        if let Some(&v) = self.cache.get(&n) {
-            return v;
-        }
-        let s = sqrtint(n);
-        let ns = n / (s + 1);
-        let mut sum = 1 - i128::from(n / 2) - i128::from(n & 1);
-        for k in 2..=ns {
-            sum -= i128::from(self.get(n / k))
-                + i128::from(self.prefix[usize::try_from(k).unwrap()])
-                    * i128::from(n / k - n / (k + 1));
-        }
-        if s > ns {
-            sum -= i128::from(self.prefix[usize::try_from(s).unwrap()])
-                * i128::from(n / s - n / (s + 1));
-        }
-        let sum = i64::try_from(sum).unwrap();
-        self.cache.insert(n, sum);
-        sum
-    }
-}
-
-/// Return the sum of Moebius values through `n`.
-/// Port of `moebius.c::mertens` and `_rmertens`.
-/// ```
-/// assert_eq!(math_prime_util::mertens(10), -1);
-/// ```
-pub fn mertens(n: u64) -> i64 {
-    Mertens::new(n).get(n)
-}
-
-/// Return Liouville's function. Port of `moebius.c::liouville`.
-/// ```
-/// assert_eq!(math_prime_util::liouville(12), -1);
-/// ```
-pub fn liouville(n: u64) -> i8 {
-    if n == 0 {
-        return -1;
-    }
-    if factors(n).iter().map(|&(_, e)| e).sum::<u32>() % 2 == 0 {
-        1
-    } else {
-        -1
-    }
-}
-
-/// Sum Liouville's function through `n`. Port of `moebius.c::sumliouville`.
-/// ```
-/// assert_eq!(math_prime_util::sumliouville(10), 0);
-/// ```
-pub fn sumliouville(n: u64) -> i64 {
-    let mut ctx = Mertens::new(n);
-    let mut sum = 0;
-    for k in 1..=sqrtint(n) {
-        sum += ctx.get(n / (k * k));
-    }
-    sum
-}
-
-/// Return the prime base of a prime power, or one.
-/// Port of `util.c::exp_mangoldt`.
-/// ```
-/// assert_eq!(math_prime_util::exp_mangoldt(27), 3);
-/// ```
-pub fn exp_mangoldt(n: u64) -> u64 {
-    let f = factors(n);
-    if f.len() == 1 { f[0].0 } else { 1 }
-}
+mod mertens;
+pub use mertens::mertens;
+mod liouville;
+pub use liouville::liouville;
+mod sumliouville;
+pub use sumliouville::sumliouville;
+mod exp_mangoldt;
+pub use exp_mangoldt::exp_mangoldt;
 
 /// Sum Euler's totient through `n`, or return `None` on native overflow.
 /// Port of `totients.c::sumtotient` and `_sumt`.

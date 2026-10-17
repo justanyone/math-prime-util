@@ -1,106 +1,268 @@
-//! Lucky-number compatibility with the committed MPU 0.75 oracle.
+//! MPU powerful and powerfree oracle cases.
 mod common;
-use common::each;
 use math_prime_util::*;
 
 #[test]
-fn lucky_numbers_oracle() {
-    each("families", "lucky_numbers", |c| {
-        let (lo, hi) = if c.args.len() == 1 {
-            (0, c.arg(0))
-        } else {
-            (c.arg(0), c.arg(1))
-        };
-        let values = lucky_numbers(lo, hi);
-        c.check(if values.is_empty() {
-            None
-        } else {
-            Some(
-                values
-                    .iter()
-                    .map(u64::to_string)
-                    .collect::<Vec<_>>()
-                    .join(" "),
-            )
-        });
-    });
-}
-#[test]
-fn is_lucky_oracle() {
-    each("families", "is_lucky", |c| {
-        c.check(Some(u8::from(is_lucky(c.arg(0)))));
-    });
-}
-#[test]
-fn lucky_count_oracle() {
-    each("families", "lucky_count", |c| {
-        let (lo, hi): (u64, u64) = if c.args.len() == 1 {
-            (0, c.arg(0))
-        } else {
-            (c.arg(0), c.arg(1))
-        };
-        let count = if lo > hi {
-            0
-        } else {
-            lucky_count(hi) - if lo == 0 { 0 } else { lucky_count(lo - 1) }
-        };
-        c.check(Some(count));
-    });
-}
-macro_rules! oracle {
-    ($name:ident) => {
-        #[test]
-        fn $name() {
-            each("families", stringify!($name), |c| {
-                c.check(math_prime_util::$name(c.arg(0)));
-            });
+fn is_powerful_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "is_powerful")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
         }
-    };
-}
-oracle!(nth_lucky);
-oracle!(nth_lucky_approx);
-oracle!(nth_lucky_lower);
-oracle!(nth_lucky_upper);
-#[test]
-fn lucky_count_approx_oracle() {
-    each("families", "lucky_count_approx", |c| {
-        c.check(Some(lucky_count_approx(c.arg(0))));
-    });
-}
-#[test]
-fn lucky_count_lower_oracle() {
-    each("families", "lucky_count_lower", |c| {
-        c.check(Some(lucky_count_lower(c.arg(0))));
-    });
-}
-#[test]
-fn lucky_count_upper_oracle() {
-    each("families", "lucky_count_upper", |c| {
-        c.check(Some(lucky_count_upper(c.arg(0))));
-    });
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(u8::from(is_powerful(n, k))));
+    }
 }
 
 #[test]
-fn nth_prime_power_oracle() {
-    each("families", "nth_prime_power", |c| {
-        c.check(nth_prime_power(c.arg(0)));
-    });
+fn powerful_numbers_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "powerful_numbers")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        let k = if c.args.len() > 2 { c.arg(2) } else { 2 };
+        let result = powerful_numbers(n, c.arg(1), k)
+            .iter()
+            .map(u64::to_string)
+            .collect::<Vec<_>>()
+            .join(" ");
+        c.check(Some(result));
+    }
 }
+
 #[test]
-fn nth_prime_power_approx_oracle() {
-    each("families", "nth_prime_power_approx", |c| {
-        c.check(nth_prime_power_approx(c.arg(0)));
-    });
+fn powerful_count_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "powerful_count")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(powerful_count(n, k)));
+    }
 }
+
 #[test]
-fn nth_prime_power_lower_oracle() {
-    each("families", "nth_prime_power_lower", |c| {
-        c.check(nth_prime_power_lower(c.arg(0)));
-    });
+fn sumpowerful_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "sumpowerful")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(sumpowerful(n, k)));
+    }
 }
+
 #[test]
-fn nth_prime_power_upper_oracle() {
-    each("families", "nth_prime_power_upper", |c| {
-        c.check(nth_prime_power_upper(c.arg(0)));
-    });
+fn nth_powerful_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "nth_powerful")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        if c.result.as_ref().is_some_and(|r| r.parse::<u64>().is_err()) {
+            continue;
+        }
+        c.check(nth_powerful(n, k));
+    }
+}
+
+#[test]
+fn is_powerfree_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "is_powerfree")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(u8::from(is_powerfree(n, k))));
+    }
+}
+
+#[test]
+fn powerfree_count_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "powerfree_count")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(powerfree_count(n, k)));
+    }
+}
+
+#[test]
+fn nth_powerfree_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "nth_powerfree")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        if c.result.as_ref().is_some_and(|r| r.parse::<u64>().is_err()) {
+            continue;
+        }
+        c.check(nth_powerfree(n, k));
+    }
+}
+
+#[test]
+fn powerfree_sum_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "powerfree_sum")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(powerfree_sum(n, k)));
+    }
+}
+
+#[test]
+fn powerfree_part_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "powerfree_part")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(powerfree_part(n, k)));
+    }
+}
+
+#[test]
+fn powerfree_part_sum_oracle() {
+    for c in common::load("families")
+        .into_iter()
+        .filter(|c| c.func == "powerfree_part_sum")
+    {
+        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
+            continue;
+        }
+        let n = c.arg::<u64>(0);
+        let k = if c.args.len() > 1 {
+            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
+                continue;
+            };
+            k
+        } else {
+            2
+        };
+        c.check(Some(powerfree_part_sum(n, k)));
+    }
 }

@@ -3,3 +3,4 @@ Keep the C algorithms and use existing integer and factoring helpers.
 Add fixture compatibility, algebraic tests, and hot function benchmarks.
 Run the offline focused tests and the required gate; leave tools and fixtures unchanged.
 Read the C recurrences and fixture boundaries. Private factoring dependencies are unavailable; use local helpers. Wide sums must cover oracle values beyond u64.
+Implemented powerful generation/count/sum recurrences and the powerfree Mobius/Mertens formulas. Next add the compatibility harness and run it.

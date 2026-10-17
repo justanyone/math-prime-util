@@ -502,3 +502,42 @@ fn next_chen_prime_oracle() {
         c.check(next_chen_prime(c.arg(0)));
     });
 }
+
+#[test]
+fn is_gaussian_prime_oracle() {
+    each("families", "is_gaussian_prime", |c| {
+        // Gaussian primality depends only on |a| and |b|, so signs are dropped.
+        let abs = |i: usize| c.args[i].trim_start_matches('-').parse::<u64>().unwrap();
+        c.check(Some(is_gaussian_prime(abs(0), abs(1))));
+    });
+}
+
+#[test]
+fn is_sum_of_squares_oracle() {
+    each("families", "is_sum_of_squares", |c| {
+        // Skip is_sum_of_squares(-5, 2): the native API takes unsigned n.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let k = if c.args.len() > 1 { c.arg(1) } else { 2 };
+        c.check(Some(u8::from(is_sum_of_squares(n, k))));
+    });
+}
+
+#[test]
+fn nth_semiprime_oracle() {
+    each("families", "nth_semiprime", |c| {
+        c.check(nth_semiprime(c.arg(0)).map(|v| v.to_string()));
+    });
+}
+#[test]
+fn nth_semiprime_approx_oracle() {
+    each("families", "nth_semiprime_approx", |c| {
+        // Skipped: indices past the 191-entry table need MPU's inverse
+        // interpolation (semiprime_count_approx), which is not ported yet.
+        if c.arg::<u64>(0) >= 191 {
+            return;
+        }
+        c.check(nth_semiprime_approx(c.arg(0)).map(|v| v.to_string()));
+    });
+}

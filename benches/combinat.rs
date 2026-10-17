@@ -2,9 +2,10 @@
 #![allow(missing_docs)]
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
-    harmfrac, integer_complexity, multifactorial, pn_primorial, powersum, primorial,
-    rising_factorial, stirling, subfactorial,
+    bell_number, bernfrac, binomial, catalan_number, consecutive_integer_lcm, factorial,
+    falling_factorial, frobenius_number, fubini, harmfrac, integer_complexity, is_congruent_number,
+    is_polygonal, multifactorial, partitions, partitionsq, permtonum, pn_primorial, powersum,
+    primorial, rising_factorial, stirling, subfactorial,
 };
 
 fn combinat(c: &mut Criterion) {
@@ -45,6 +46,24 @@ fn combinat(c: &mut Criterion) {
     c.bench_function("powersum", |b| b.iter(|| powersum(black_box(116), 8)));
     c.bench_function("integer_complexity_cached", |b| {
         b.iter(|| integer_complexity(black_box(100_000)));
+    });
+    c.bench_function("partitions_200", |b| b.iter(|| partitions(black_box(200))));
+    c.bench_function("partitionsq_400", |b| {
+        b.iter(|| partitionsq(black_box(400)));
+    });
+    let perm: Vec<u64> = (0..20).rev().collect();
+    c.bench_function("permtonum_20", |b| b.iter(|| permtonum(black_box(&perm))));
+    c.bench_function("consecutive_integer_lcm", |b| {
+        b.iter(|| consecutive_integer_lcm(black_box(43)));
+    });
+    c.bench_function("frobenius_number", |b| {
+        b.iter(|| frobenius_number(black_box(&[47, 74, 97, 126, 157, 188])));
+    });
+    c.bench_function("is_congruent_number", |b| {
+        b.iter(|| is_congruent_number(black_box(1001)));
+    });
+    c.bench_function("is_polygonal", |b| {
+        b.iter(|| is_polygonal(black_box(15), black_box(3)));
     });
 }
 

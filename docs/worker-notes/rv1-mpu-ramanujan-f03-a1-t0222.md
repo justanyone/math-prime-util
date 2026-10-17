@@ -8,3 +8,4 @@ Base focused compatibility tests passed (10 lucky-family cases); base gate passe
 Base gate has reached slow count oracle tests without a reported failure; candidate review is already complete and remains FAIL independently of the base gate outcome.
 Still waiting for the base gate's count oracle cases; no additional source searches or code edits are needed. The review documents four open acceptance failures.
 - 2026-10-17T07:26:49Z launcher: no commit for 61 s; 272 s elapsed. Files changed so far: docs/reviews/rev-mpu-ramanujan-f03-a1-1.md, docs/worker-notes/rv1-mpu-ramanujan-f03-a1-t0222.md.
+Base nth-prime oracle passed; base prime-count oracle is still running. No candidate tests have been executed because the checkout is the base.

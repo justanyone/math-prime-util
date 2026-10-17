@@ -1,7 +1,10 @@
 #![allow(missing_docs)]
 //! Benchmarks for the MPU `ChaCha20` stream.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{csrand, irand32, irand64, random_bytes, urandomm};
+use math_prime_util::{
+    csrand, irand32, irand64, random_bytes, random_nbit_prime, random_ndigit_prime, random_prime,
+    random_safe_prime, urandomm,
+};
 fn bench_random(c: &mut Criterion) {
     csrand(&[42; 40]);
     c.bench_function("random/maurer_cert32", |b| {
@@ -15,6 +18,18 @@ fn bench_random(c: &mut Criterion) {
     });
     c.bench_function("random/semiprime64", |b| {
         b.iter(|| math_prime_util::random_semiprime(black_box(64)));
+    });
+    c.bench_function("random/prime", |b| {
+        b.iter(|| random_prime(black_box(1_000_000), black_box(2_000_000)));
+    });
+    c.bench_function("random/ndigit_prime", |b| {
+        b.iter(|| random_ndigit_prime(black_box(12)));
+    });
+    c.bench_function("random/nbit_prime", |b| {
+        b.iter(|| random_nbit_prime(black_box(64)));
+    });
+    c.bench_function("random/safe_prime", |b| {
+        b.iter(|| random_safe_prime(black_box(32)));
     });
     c.bench_function("random/irand32", |b| b.iter(irand32));
     c.bench_function("random/irand64", |b| b.iter(irand64));

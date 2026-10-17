@@ -18,7 +18,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `almost_prime_count_upper`
 - [ ] `almost_primes`
 - [ ] `bell_number`
-- [ ] `bernfrac`
+- [x] `bernfrac`
 - [x] `bernreal`
 - [x] `bestrational`
 - [ ] `binomial`
@@ -40,8 +40,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `cdivint`
 - [x] `cdivrem`
 - [ ] `cheb_factor`
-- [ ] `chebyshev_psi`
-- [ ] `chebyshev_theta`
+- [x] `chebyshev_psi`
+- [x] `chebyshev_theta`
 - [ ] `chinese`
 - [ ] `chinese2`
 - [x] `cmpint`
@@ -101,7 +101,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `goldbach_pair_count`
 - [ ] `goldbach_pairs`
 - [x] `hammingweight`
-- [ ] `harmfrac`
+- [x] `harmfrac`
 - [x] `harmreal`
 - [ ] `hclassno`
 - [ ] `holf_factor`
@@ -119,12 +119,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_almost_extra_strong_lucas_pseudoprime`
 - [ ] `is_almost_prime`
 - [x] `is_bpsw_prime`
-- [ ] `is_carmichael`
+- [x] `is_carmichael`
 - [ ] `is_catalan_pseudoprime`
 - [ ] `is_chen_prime`
 - [x] `is_congruent`
 - [ ] `is_congruent_number`
-- [ ] `is_cyclic`
+- [x] `is_cyclic`
 - [ ] `is_delicate_prime`
 - [x] `is_divisible`
 - [x] `is_euler_plumb_pseudoprime`
@@ -145,7 +145,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_odd`
 - [ ] `is_omega_prime`
 - [x] `is_palindrome`
-- [ ] `is_perfect_number`
+- [x] `is_perfect_number`
 - [ ] `is_perfect_power`
 - [ ] `is_perrin_pseudoprime`
 - [ ] `is_pillai`
@@ -162,7 +162,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_provable_prime_with_cert`
 - [x] `is_pseudoprime`
 - [ ] `is_qr`
-- [ ] `is_quasi_carmichael`
+- [x] `is_quasi_carmichael`
 - [ ] `is_ramanujan_prime`
 - [ ] `is_rough`
 - [x] `is_safe_prime`
@@ -181,7 +181,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `LambertW`
 - [ ] `lastfor`
 - [x] `lcm`
-- [ ] `legendre_phi`
+- [x] `legendre_phi`
 - [ ] `lehman_factor`
 - [ ] `liouville`
 - [ ] `LogarithmicIntegral`
@@ -238,7 +238,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_perfect_power_upper`
 - [ ] `nth_powerfree`
 - [ ] `nth_powerful`
-- [ ] `nth_prime`
+- [x] `nth_prime`
 - [ ] `nth_prime_approx`
 - [ ] `nth_prime_lower`
 - [ ] `nth_prime_power`
@@ -270,7 +270,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `Pi`
 - [ ] `pisano_period`
 - [ ] `pminus1_factor`
-- [ ] `pn_primorial`
+- [x] `pn_primorial`
 - [ ] `powerfree_count`
 - [ ] `powerfree_part`
 - [ ] `powerfree_part_sum`
@@ -287,7 +287,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `prho_factor`
 - [ ] `prime_bigomega`
 - [ ] `prime_certificate`
-- [ ] `prime_count`
+- [x] `prime_count`
 - [ ] `prime_count_approx`
 - [ ] `prime_count_lower`
 - [ ] `prime_count_upper`
@@ -305,7 +305,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `primes`
 - [ ] `prime_set_config`
 - [ ] `prime_signature`
-- [ ] `primorial`
+- [x] `primorial`
 - [ ] `print_primes`
 - [ ] `qnr`
 - [ ] `ramanujan_prime_count`
@@ -320,12 +320,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `random_factored_integer`
 - [ ] `random_maurer_prime`
 - [ ] `random_maurer_prime_with_cert`
-- [ ] `random_nbit_prime`
-- [ ] `random_ndigit_prime`
-- [ ] `random_prime`
+- [x] `random_nbit_prime`
+- [x] `random_ndigit_prime`
+- [x] `random_prime`
 - [ ] `random_proven_prime`
 - [ ] `random_proven_prime_with_cert`
-- [ ] `random_safe_prime`
+- [x] `random_safe_prime`
 - [ ] `random_semiprime`
 - [ ] `random_shawe_taylor_prime`
 - [ ] `random_shawe_taylor_prime_with_cert`

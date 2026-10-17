@@ -1,3 +1,0 @@
-- 19:10 Plan: fix conflict markers and duplicate tests in tests/prop_iter.rs (findings 1 and 2). Check current file first.
-- 2026-10-17T19:13:10Z launcher: no commit for 60 s; 154 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-iterators-f03-20261017-x.md, tests/prop_iter.rs.
-- 19:13 Resolved markers in tests/prop_iter.rs: HEAD side kept + dev-001 arrangement tests appended; dropped duplicate proptest block. tools/test.sh task_ (4 ok) and arrangement (3 ok) pass. Gate not run (time). Finding 1 and 2 addressed. Regression test: file no longer parses with markers; compile is the failing-without-fix signal.

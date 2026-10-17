@@ -2,3 +2,4 @@
 - Found ecm.rs and compat/prop tests already present; running focused tests.
 - 2026-10-17T18:42:10Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01.md.
 - 2026-10-17T18:43:10Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01.md.
+- Ran compat_factor/prop_factor filters; checking ecm test lines.

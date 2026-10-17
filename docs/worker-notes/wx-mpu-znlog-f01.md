@@ -7,3 +7,4 @@ Focused offline tests are running; added exact binomial and direct factorial che
 Module extraction is complete; offline cargo checks are still pending, with no diagnostics emitted yet.
 The gate passed formatting and is waiting for the focused cargo test build lock; both required Rust toolchains are installed.
 Restored the C factorial fast path for n <= 10; fixture and property tests retain signed/bigint skip comments and concurrency checks.
+At four minutes elapsed, focused checks are still building. No code diagnostics have been reported; the gate remains queued behind Cargo.

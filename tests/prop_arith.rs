@@ -171,6 +171,76 @@ fn nonresidues_and_parallel_calls() {
     });
 }
 
+proptest! {
+    #[test]
+    fn fundamental_matches_shape(n in -4_000_i64..4_000) {
+        let r = n.rem_euclid(16);
+        let m = n.unsigned_abs();
+        let square_free = |x: u64| x != 0 && moebius(x) != 0;
+        let expect = if r == 8 || r == 12 {
+            square_free(m >> 2)
+        } else if r % 4 == 1 {
+            square_free(m)
+        } else {
+            false
+        };
+        prop_assert_eq!(is_fundamental(n), expect);
+        prop_assert_eq!(is_fundamental(n), is_fundamental(n));
+    }
+    #[test]
+    fn prime_residue_matches_kronecker(a in 0_u64..400, p in 3_u64..400) {
+        prop_assume!(is_prime(p) != 0);
+        let symbol = kronecker(i64::try_from(a).unwrap(), i64::try_from(p).unwrap());
+        prop_assert_eq!(is_qr(a, p), symbol != -1);
+    }
+    #[test]
+    fn least_nonresidue(n in 3_u64..800) {
+        if let Some(a) = qnr(n) {
+            prop_assert!(is_prime(a) != 0);
+            prop_assert!(!is_qr(a, n));
+            for b in 1..a {
+                prop_assert!(is_qr(b, n));
+            }
+            prop_assert_eq!(qnr(n), Some(a));
+        }
+    }
+}
+
+#[test]
+fn residue_edges_repeat_and_races() {
+    assert_eq!(qnr(0), None);
+    assert_eq!(qnr(1), Some(1));
+    assert_eq!(qnr(2), Some(2));
+    assert!(!is_qr(0, 0));
+    assert!(!is_qr(1, 0));
+    assert!(!is_qr(2, 0));
+    assert!(!is_fundamental(0));
+    assert!(!is_fundamental(i64::MIN));
+    assert!(is_fundamental(-4));
+    assert!(!is_fundamental(4));
+    let samples = [1_u64, 2, 4, 6, 7, 8, 9, 15, 16, 105, 10_007];
+    for &n in &samples {
+        assert_eq!(qnr(n), qnr(n));
+        assert_eq!(is_qr(0, n), is_qr(0, n));
+        assert_eq!(is_qr(2, n), is_qr(2, n));
+    }
+    let expected_qnr = qnr(10_007);
+    let expected_qr = is_qr(10, 10_007);
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                assert_eq!(qnr(0), None);
+                assert_eq!(qnr(10_007), expected_qnr);
+                assert_eq!(is_qr(1, 0), false);
+                assert_eq!(is_qr(10, 10_007), expected_qr);
+                assert!(!is_fundamental(i64::MIN));
+                assert!(is_fundamental(-4));
+                assert_eq!(is_fundamental(12), is_fundamental(12));
+            });
+        }
+    });
+}
+
 #[test]
 fn jordan_totient_power_of_two_boundary() {
     // Regression: 2^64 overflowed u64 before the subtraction; the result u64::MAX is representable.

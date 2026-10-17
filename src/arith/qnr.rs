@@ -4,7 +4,6 @@ use crate::{is_prime, next_prime};
 /// Return the least quadratic nonresidue modulo `n`.
 ///
 /// Return `None` if `n` is zero or no nonresidue exists.
-/// The value is `0` or a prime in MPU. This port returns `None` for `0`.
 ///
 /// Port of MPU 0.75 `util.c::qnr`.
 ///

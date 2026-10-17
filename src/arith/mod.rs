@@ -16,7 +16,7 @@ pub use is_qr::is_qr;
 mod is_fundamental;
 pub use is_fundamental::is_fundamental;
 
-use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
+use crate::{gcd, invmod, is_power, is_prime, is_square, powmod, rootint, sqrtint};
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {

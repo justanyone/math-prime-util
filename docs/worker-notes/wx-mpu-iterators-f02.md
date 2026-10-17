@@ -12,3 +12,5 @@ About five minutes remain. Waiting for offline build results, then resolving gat
 The gate is waiting on Cargo's build lock while focused tests compile. Corrected the k=63 boundary expectation: both 2^63 and 3*2^62 have 63 prime factors.
 Build jobs have not produced final diagnostics yet. The oracle fixture tests now exercise the independent squarefree integer sieve; all requested API examples remain runnable.
 Compatibility dispatch now calls all four closure APIs directly. Builds remain blocked or running without final output; checking the gate again before declaring validation status.
+Added unwind/relaunch, u64 endpoint, and cube-root sieve regression cases. Waiting on the shared Cargo build lock remains the only observed validation blocker.
+Started focused tests with CARGO_TARGET_DIR=target/iter-verify to avoid the shared build-directory lock. No dependencies or build scripts changed.

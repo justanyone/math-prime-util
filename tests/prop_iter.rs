@@ -263,3 +263,29 @@ fn requested_iterator_bounds_and_state() {
         );
     }
 }
+
+#[test]
+fn requested_iterator_unwind_and_relaunch() {
+    assert!(
+        std::panic::catch_unwind(|| {
+            let _: ControlFlow<()> = forfactored(0..=300, |_, _| panic!("callback"));
+        })
+        .is_err()
+    );
+    assert_eq!(factored_in(0..=300).count(), 300);
+    assert!(
+        std::panic::catch_unwind(|| {
+            let _: ControlFlow<()> = forsquarefreeint(1..=100, |_| panic!("callback"));
+        })
+        .is_err()
+    );
+    assert_eq!(squarefree_integers_in(1..=100).count(), 61);
+    let mut end = factored_in(u64::MAX..=u64::MAX);
+    assert_eq!(end.next().unwrap().0, u64::MAX);
+    assert_eq!(end.next(), None);
+    assert_eq!(end.next(), None);
+    let lo = 100_000_000_000_000;
+    for (n, factors) in factored_in(lo..=lo + 100) {
+        assert_eq!(factors, math_prime_util::factor_exp(n));
+    }
+}

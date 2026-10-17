@@ -1,0 +1,2 @@
+- Continue MPU-ITERATORS: finish forsemiprimes, foralmostprimes, forfactored, forsquarefree, forsquarefreeint, fordivisors; then gate.
+- 03:42 read iter/mod.rs and compat_iter.rs; no pub factor fn found yet; checking src/factor

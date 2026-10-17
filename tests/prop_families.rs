@@ -621,3 +621,56 @@ fn all_binary_exponents_are_perfect_powers() {
         assert_eq!(prev_perfect_power(n + 1), Some(n));
     }
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn almost_count_matches_list(k in 0_u64..12, n in 0_u64..3000) {
+        let list = almost_primes(k, 0, n);
+        prop_assert_eq!(almost_prime_count(k,n), list.len() as u64);
+        prop_assert!(list.windows(2).all(|w| w[0] < w[1]));
+        prop_assert!(list.iter().all(|&v| is_almost_prime(k,v)));
+        prop_assert!(almost_prime_count_lower(k,n) <= almost_prime_count(k,n));
+    }
+    #[test]
+    fn almost_counts_partition(n in 1_u64..2000) {
+        prop_assert_eq!((0..=n.ilog2()+1).map(|k| almost_prime_count(u64::from(k),n)).sum::<u64>(), n);
+    }
+}
+
+#[test]
+fn almost_edges_and_parallel_calls() {
+    assert!(almost_primes(64, 0, u64::MAX).is_empty());
+    assert!(almost_primes(3, 100, 50).is_empty());
+    assert_eq!(almost_primes(0, 0, u64::MAX), vec![1]);
+    assert_eq!(
+        almost_primes(63, 0, u64::MAX),
+        vec![1_u64 << 63, 3_u64 << 62]
+    );
+    for k in [64, 65, u64::MAX] {
+        assert_eq!(almost_prime_count(k, u64::MAX), 0);
+        assert_eq!(almost_prime_count_lower(k, u64::MAX), 0);
+        assert_eq!(almost_prime_count_approx(k, u64::MAX), 0);
+    }
+    for handle in (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                let list = almost_primes(4, 0, 10000);
+                assert_eq!(almost_prime_count(4, 10000), list.len() as u64);
+                (
+                    almost_prime_count_approx(4, 10000),
+                    almost_prime_count_lower(4, 10000),
+                )
+            })
+        })
+        .collect::<Vec<_>>()
+    {
+        assert_eq!(
+            handle.join().unwrap(),
+            (
+                almost_prime_count_approx(4, 10000),
+                almost_prime_count_lower(4, 10000)
+            )
+        );
+    }
+}

@@ -7,6 +7,9 @@
 /// assert_eq!(almost_prime_count_lower(2, 100), 34);
 /// ```
 pub fn almost_prime_count_lower(k: u64, n: u64) -> u64 {
-    if k == 2 && n < 256 { crate::semiprime_count(n) }
-    else { super::almost_prime_count::bounds(k,n).0 }
+    if k == 2 && n < 256 {
+        crate::semiprime_count(n)
+    } else {
+        super::almost_prime_count::bounds(k, n).0
+    }
 }

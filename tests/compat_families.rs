@@ -711,3 +711,55 @@ fn perfect_power_count_oracle() {
         c.check(Some(count));
     });
 }
+
+#[test]
+fn almost_primes_oracle() {
+    each("families", "almost_primes", |c| {
+        let (lo, hi) = if c.args.len() == 2 {
+            (0, c.arg(1))
+        } else {
+            (c.arg(1), c.arg(2))
+        };
+        let values = almost_primes(c.arg(0), lo, hi);
+        c.check((!values.is_empty()).then(|| {
+            values
+                .iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(" ")
+        }));
+    });
+}
+
+#[test]
+fn almost_prime_count_oracle() {
+    each("families", "almost_prime_count", |c| {
+        // The signed k=-2 case is outside the unsigned Rust API.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        c.check(Some(almost_prime_count(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
+fn almost_prime_count_approx_oracle() {
+    each("families", "almost_prime_count_approx", |c| {
+        // The signed k=-2 case is outside the unsigned Rust API.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        c.check(Some(almost_prime_count_approx(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
+fn almost_prime_count_lower_oracle() {
+    each("families", "almost_prime_count_lower", |c| {
+        // The signed k=-2 case is outside the unsigned Rust API.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        c.check(Some(almost_prime_count_lower(c.arg(0), c.arg(1))));
+    });
+}

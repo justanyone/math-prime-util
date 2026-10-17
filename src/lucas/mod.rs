@@ -49,16 +49,12 @@ fn powmod(a: u64, mut k: u64, n: u64) -> u64 {
 /// Reduces a signed value into `0..n`, as MPU's `ivmod` does.
 fn ivmod(a: i64, n: u64) -> u64 {
     let m = a.unsigned_abs() % n;
-    if a >= 0 || m == 0 {
-        m
-    } else {
-        n - m
-    }
+    if a >= 0 || m == 0 { m } else { n - m }
 }
 
-/// `a / 2 mod n`, or `None` when 2 has no inverse and `a` is odd.
+/// `a / 2 mod n`, or `None` when 2 has no inverse.
 ///
-/// Same result as MPU's `divmod(a, 2, n)`, with `0` mapped to `None`.
+/// Follows MPU's `divmod(a, 2, n)` inverse requirement.
 fn half_mod(a: u64, n: u64) -> Option<u64> {
     if n % 2 == 0 {
         None
@@ -97,7 +93,7 @@ fn halve_odd(x: u64, n: u64) -> u64 {
 
 /// Floor of log2(k), for `k > 0`.
 fn top_bit(k: u64) -> u32 {
-    63 - k.leading_zeros()
+    k.ilog2()
 }
 
 /// Port of `alt_lucas_seq` in `reference/mpu/lucas_seq.c`.
@@ -331,9 +327,8 @@ pub fn lucasumod(p: i64, q: i64, k: u64, n: u64) -> u64 {
 
 /// `V_k(P, Q) mod n`.
 ///
-/// Port of `lucasvmod` in `reference/mpu/lucas_seq.c` (MPU 0.75). The C
-/// version has a V-only ladder for each branch. This port takes the V value
-/// from the same ladder as `lucasuvmod`, which gives the same residues.
+/// Port of `lucasvmod` in `reference/mpu/lucas_seq.c` (MPU 0.75).
+/// Uses the V-only ladder when `Q` is 1.
 ///
 /// # Panics
 ///
@@ -346,7 +341,50 @@ pub fn lucasumod(p: i64, q: i64, k: u64, n: u64) -> u64 {
 /// assert_eq!(math_prime_util::lucasvmod(1, -1, 10, 1000), 123);
 /// ```
 pub fn lucasvmod(p: i64, q: i64, k: u64, n: u64) -> u64 {
-    lucasuvmod(p, q, k, n).1
+    assert!(n > 0, "lucasvmod: modulus n must be > 0");
+    if n == 1 {
+        return 0;
+    }
+    if k == 0 {
+        return 2 % n;
+    }
+    let (p, q) = (ivmod(p, n), ivmod(q, n));
+    let d = submod(mulmod(p, p, n), mulmod(4, q, n), n);
+    if d == 0 {
+        if let Some(b) = half_mod(p, n).filter(|&b| b != 0) {
+            return mulmod(2, powmod(b, k, n), n);
+        }
+    }
+    let (mut u, mut v) = (1, p);
+    if q == 1 {
+        u = mulsubmod(p, p, 2, n);
+        for bit in (0..top_bit(k)).rev() {
+            let t = mulsubmod(u, v, p, n);
+            if (k >> bit) & 1 == 1 {
+                v = t;
+                u = mulsubmod(u, u, 2, n);
+            } else {
+                u = t;
+                v = mulsubmod(v, v, 2, n);
+            }
+        }
+    } else if n % 2 == 0 {
+        return alt_lucas_seq(n, p, q, k).1;
+    } else {
+        let mut qk = q;
+        for bit in (0..top_bit(k)).rev() {
+            u = mulmod(u, v, n);
+            v = mulsubmod(v, v, addmod(qk, qk, n), n);
+            qk = mulmod(qk, qk, n);
+            if (k >> bit) & 1 == 1 {
+                let t = mulmod(u, d, n);
+                u = halve_odd(muladdmod(u, p, v, n), n);
+                v = halve_odd(muladdmod(v, p, t, n), n);
+                qk = mulmod(qk, q, n);
+            }
+        }
+    }
+    v
 }
 
 /// Exact `(U_k, V_k)` for `P`, `Q` as `i64`, or `None` when a value
@@ -425,7 +463,9 @@ fn exact_uv(p: i64, q: i64, k: u64, need_v: bool) -> Option<(i128, i128)> {
 /// assert_eq!(math_prime_util::lucasu(1, -1, 10), Some(55));
 /// ```
 pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i128> {
-    exact_uv(p, q, k, false).map(|(u, _)| u).filter(|&u| fits_native(u))
+    exact_uv(p, q, k, false)
+        .map(|(u, _)| u)
+        .filter(|&u| fits_native(u))
 }
 
 /// Exact `V_k(P, Q)`, or `None` when it is larger than `u64::MAX` in magnitude.
@@ -438,7 +478,9 @@ pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i128> {
 /// assert_eq!(math_prime_util::lucasv(1, -1, 10), Some(123));
 /// ```
 pub fn lucasv(p: i64, q: i64, k: u64) -> Option<i128> {
-    exact_uv(p, q, k, true).map(|(_, v)| v).filter(|&v| fits_native(v))
+    exact_uv(p, q, k, true)
+        .map(|(_, v)| v)
+        .filter(|&v| fits_native(v))
 }
 
 /// Computes `F(k)` and `F(k+1)` by doubling, or `None` on overflow.

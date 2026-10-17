@@ -33,7 +33,10 @@ proptest! {
 fn exact_result_bounds_and_unused_powers() {
     assert_eq!(lucasu(2, -1, 51), Some(11_749_380_235_262_596_085));
     assert_eq!(lucasu(1, i64::MAX, 4), Some(-18_446_744_073_709_551_613));
-    assert_eq!(lucasuv(2, 5, 55), Some((-7_772_665_691_574_266_981, -11_983_059_433_114_136_582)));
+    assert_eq!(
+        lucasuv(2, 5, 55),
+        Some((-7_772_665_691_574_266_981, -11_983_059_433_114_136_582))
+    );
     assert_eq!(lucas_sequence(7778, 1976, 5, 33), (6153, 1454, 7403));
     assert_eq!(fibonacci(94), None);
     assert_eq!(lucas_number(93), None);
@@ -46,7 +49,10 @@ fn repeated_and_concurrent_calls() {
         for _ in 0..4 {
             scope.spawn(|| {
                 for _ in 0..8 {
-                    assert_eq!(lucas_sequence(u64::MAX, i64::MIN, i64::MAX, u64::MAX), expected);
+                    assert_eq!(
+                        lucas_sequence(u64::MAX, i64::MIN, i64::MAX, u64::MAX),
+                        expected
+                    );
                 }
             });
         }

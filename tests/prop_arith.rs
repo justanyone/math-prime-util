@@ -241,7 +241,7 @@ fn divisor_sums_have_no_shared_call_state() {
                     assert_eq!(divisor_sum(12, 2), Some(210));
                     assert_eq!(aliquot_sum(27), Some(13));
                     assert_eq!(abundance(28), Some(0));
-                    assert_eq!(ramanujan_tau(49), Some(-1696965207));
+                    assert_eq!(ramanujan_tau(49), Some(-1_696_965_207));
                 }
             });
         }

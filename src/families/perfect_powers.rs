@@ -38,7 +38,8 @@ pub fn nth_perfect_power_lower(n: u64) -> Option<u64> {
         return Some(MAX_PERFECT_POW);
     }
     let x = n as f64;
-    let mut pp = x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
+    let mut pp =
+        x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
     pp += -2.0 * x.powf(5.0 / 3.0) - 2.0 * x.powf(7.0 / 5.0) - 2.0 * x.powf(9.0 / 7.0)
         + 2.0 * x.powf(12.0 / 10.0);
     pp += -2.0 * x.powf(13.0 / 11.0) - 2.0 * x.powf(15.0 / 13.0);
@@ -72,7 +73,8 @@ pub fn nth_perfect_power_upper(n: u64) -> Option<u64> {
         return Some(MAX_PERFECT_POW);
     }
     let x = n as f64;
-    let mut pp = x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
+    let mut pp =
+        x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
     pp += -2.0 * x.powf(5.0 / 3.0) - 2.0 * x.powf(7.0 / 5.0) - 2.0 * x.powf(9.0 / 7.0)
         + 2.0 * x.powf(12.0 / 10.0);
     // MPU skips the 11 and 13 terms here.
@@ -107,10 +109,12 @@ pub fn nth_perfect_power_approx(n: u64) -> Option<u64> {
         return Some(MAX_PERFECT_POW);
     }
     let x = n as f64;
-    let mut pp = x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
+    let mut pp =
+        x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
     pp += -2.0 * x.powf(5.0 / 3.0) - 2.0 * x.powf(7.0 / 5.0) - 2.0 * x.powf(9.0 / 7.0)
         + 2.0 * x.powf(12.0 / 10.0);
-    pp += -2.0 * x.powf(13.0 / 11.0) - 2.0 * x.powf(15.0 / 13.0) + 2.0 * x.powf(16.0 / 14.0)
+    pp += -2.0 * x.powf(13.0 / 11.0) - 2.0 * x.powf(15.0 / 13.0)
+        + 2.0 * x.powf(16.0 / 14.0)
         + 2.0 * x.powf(17.0 / 15.0);
     pp -= 0.48 * x.powf(19.0 / 17.0);
     pp -= 1.5;

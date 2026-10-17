@@ -65,13 +65,11 @@ pub fn smooth_count(n: u64, k: u64) -> u64 {
         }
     }
     if k >= 17 && n <= 128 {
-        return n - u64::try_from(
-            XT.iter()
-                .zip(YT.iter())
-                .filter(|&(&x, &y)| u64::from(x) <= n && u64::from(y) > k)
-                .count(),
-        )
-        .unwrap();
+        return n - XT
+            .iter()
+            .zip(YT.iter())
+            .filter(|&(&x, &y)| u64::from(x) <= n && u64::from(y) > k)
+            .fold(0, |count, _| count + 1);
     }
     let mut sum = 1 + u64::from(logint(n, 2));
     let mut x3 = n / 3;

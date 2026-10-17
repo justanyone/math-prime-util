@@ -44,7 +44,7 @@ pub fn is_rough(n: u64, k: u64) -> bool {
         if n % p == 0 {
             return false;
         }
-        p = next_prime(p).unwrap();
+        p = next_prime(p).unwrap_or(u64::MAX);
     }
     if k <= 2500 {
         return true;

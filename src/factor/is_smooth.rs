@@ -40,7 +40,7 @@ pub fn is_smooth(mut n: u64, k: u64) -> bool {
                 return true;
             }
         }
-        let next = next_prime(p).unwrap();
+        let next = next_prime(p).unwrap_or(u64::MAX);
         if k < next {
             return n <= k;
         }
@@ -60,7 +60,7 @@ pub fn is_smooth(mut n: u64, k: u64) -> bool {
         while n % p == 0 {
             n /= p;
         }
-        p = next_prime(p).unwrap();
+        p = next_prime(p).unwrap_or(u64::MAX);
     }
     if n <= k {
         return true;

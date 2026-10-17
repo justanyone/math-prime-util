@@ -8,3 +8,4 @@ Implemented native BLS15 with modular discriminant arithmetic and strict ordered
 The pre-change regressions failed as expected. Parser regressions now pass; corrected the BLS15 test witness after its Lucas value failed the theorem.
 Focused compat and property tests passed. Added MPU native fallback and whitespace properties; approximately five minutes remain for lint, final tests, and review.
 Unit and focused tests pass. Added concurrent signed-proof calls interleaved with malformed input and duplicate proof blocks to check independence.
+The gate passed fmt, clippy, and the MSRV build and is running the full tests. Added boundary cases for native BLS15 and range validation.

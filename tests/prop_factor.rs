@@ -1,6 +1,9 @@
-<<<<<<< HEAD
-//! Product, bound, and repeatability laws for bounded factor methods.
-use math_prime_util::{pbrent_factor, pminus1_factor, pplus1_factor, prho_factor};
+//! Product, bound, and repeatability laws for bounded factor methods, and
+//! independent algebraic checks for the factor predicates.
+use math_prime_util::{
+    gcd, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael, pbrent_factor,
+    pminus1_factor, pplus1_factor, prho_factor,
+};
 use proptest::prelude::*;
 
 fn methods(n: u64, bound: u64) -> [Vec<u64>; 4] {
@@ -11,20 +14,6 @@ fn methods(n: u64, bound: u64) -> [Vec<u64>; 4] {
         pplus1_factor(n, Some(bound)),
     ]
 }
-
-proptest! {
-    #![proptest_config(ProptestConfig::with_cases(128))]
-    #[test]
-    fn factors_preserve_product(n in any::<u64>(), bound in 0_u64..256) {
-        for factors in methods(n, bound) {
-            prop_assert_eq!(factors.iter().map(|&f| u128::from(f)).product::<u128>(), u128::from(n));
-            prop_assert!(factors.windows(2).all(|w| w[0] <= w[1]));
-            prop_assert!(n < 2 || factors.iter().all(|&f| f > 1 && n % f == 0));
-        }
-=======
-//! Independent algebraic checks for the factor predicates.
-use math_prime_util::{gcd, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
-use proptest::prelude::*;
 
 fn factors(mut n: u64) -> Vec<u64> {
     let mut result = Vec::new();
@@ -43,13 +32,25 @@ fn factors(mut n: u64) -> Vec<u64> {
 }
 
 proptest! {
+    #![proptest_config(ProptestConfig::with_cases(128))]
+    #[test]
+    fn factors_preserve_product(n in any::<u64>(), bound in 0_u64..256) {
+        for factors in methods(n, bound) {
+            prop_assert_eq!(factors.iter().map(|&f| u128::from(f)).product::<u128>(), u128::from(n));
+            prop_assert!(factors.windows(2).all(|w| w[0] <= w[1]));
+            prop_assert!(n < 2 || factors.iter().all(|&f| f > 1 && n % f == 0));
+        }
+    }
+
     #[test]
     fn cyclic_iff_coprime_totient(n in 1_u64..100_000) {
         let fs = factors(n);
         let mut phi = n;
         let mut prev = 0;
         for p in fs {
-            if p != prev { phi = phi / p * (p - 1); }
+            if p != prev {
+                phi = phi / p * (p - 1);
+            }
             prev = p;
         }
         prop_assert_eq!(is_cyclic(n), gcd(n, phi) == 1);
@@ -82,12 +83,10 @@ proptest! {
                 .count() as u64
         };
         prop_assert_eq!(is_quasi_carmichael(n), expected);
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn edge_inputs_and_zero_work() {
     for n in [0, 1, 2, 3, 5, 7, 8, 25, 49, 77, 91, u64::MAX] {
         let first = methods(n, 0);
@@ -112,7 +111,9 @@ fn concurrent_calls_are_independent() {
             scope.spawn(move || assert_eq!(&methods(1_000_036_000_099, 256), expected));
         }
     });
-=======
+}
+
+#[test]
 fn perfect_numbers_and_u64_boundaries() {
     for n in [
         6,
@@ -158,5 +159,4 @@ fn repeated_and_concurrent_calls_agree() {
         second.join().unwrap();
     });
     check();
->>>>>>> origin/dev-001
 }

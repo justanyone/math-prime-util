@@ -128,3 +128,30 @@ fn brent(n: u64, mut a: u64) -> Option<u64> {
     }
     None
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{brent, prime_factors};
+
+    #[test]
+    fn brent_splits_composites_and_rejects_primes() {
+        for n in [47 * 53, 1_000_003 * 1_000_033, 1_000_003 * 1_000_003] {
+            let d = brent(n, 1).expect("composite has a nontrivial factor");
+            assert!(d > 1 && d < n);
+            assert_eq!(n % d, 0);
+        }
+        assert_eq!(brent(101, 1), None);
+        assert_eq!(brent(18_446_744_073_709_551_557, 1), None);
+    }
+
+    #[test]
+    fn factor_support_keeps_order_and_multiplicity() {
+        assert!(prime_factors(1).is_empty());
+        assert_eq!(prime_factors(1_000_003 * 1_000_033), [1_000_003, 1_000_033]);
+        assert_eq!(prime_factors(47_u64.pow(4)), [47, 47, 47, 47]);
+        assert_eq!(
+            prime_factors(u64::MAX),
+            [3, 5, 17, 257, 641, 65_537, 6_700_417]
+        );
+    }
+}

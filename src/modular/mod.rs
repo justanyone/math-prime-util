@@ -270,3 +270,8 @@ mod tests {
 
 mod native;
 pub use native::{binomialmod, factorialmod, pisano_period, znlog};
+
+mod cornacchia;
+mod divmod;
+pub use cornacchia::cornacchia;
+pub use divmod::divmod;

@@ -259,14 +259,14 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `numtoperm`
 - [ ] `omega_prime_count`
 - [ ] `omega_primes`
-- [ ] `partitions`
-- [ ] `partitionsq`
+- [x] `partitions`
+- [x] `partitionsq`
 - [x] `pbrent_factor`
 - [ ] `perfect_power_count`
 - [ ] `perfect_power_count_approx`
 - [ ] `perfect_power_count_lower`
 - [ ] `perfect_power_count_upper`
-- [ ] `permtonum`
+- [x] `permtonum`
 - [ ] `Pi`
 - [x] `pisano_period`
 - [x] `pminus1_factor`

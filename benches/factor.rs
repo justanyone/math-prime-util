@@ -2,10 +2,11 @@
 //! Benchmarks for the factor family.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    cheb_factor, fermat_factor, holf_factor, is_almost_prime, is_carmichael, is_cyclic,
-    is_omega_prime, is_perfect_number, is_practical, is_quasi_carmichael, is_rough, is_semiprime,
-    is_smooth, is_square_free, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor,
-    prho_factor, prime_bigomega, prime_omega, prime_signature, smooth_count, squfof_factor,
+    cheb_factor, divisors, factor, factor_exp, fermat_factor, holf_factor, is_almost_prime,
+    is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_practical, is_quasi_carmichael,
+    is_rough, is_semiprime, is_smooth, is_square_free, lehman_factor, pbrent_factor,
+    pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
+    smooth_count, squfof_factor, trial_factor,
 };
 
 fn bench_factor(c: &mut Criterion) {
@@ -61,6 +62,18 @@ fn bench_factor(c: &mut Criterion) {
     c.bench_function("prime_signature", |b| {
         b.iter(|| prime_signature(black_box(600_851_475_143)));
     });
+    c.bench_function("is_practical", |b| {
+        b.iter(|| is_practical(black_box(720_720)));
+    });
+    c.bench_function("is_smooth", |b| {
+        b.iter(|| is_smooth(black_box(614_889_782_588_491_410), 100));
+    });
+    c.bench_function("is_rough", |b| {
+        b.iter(|| is_rough(black_box(1_000_003 * 1_000_033), 10_000));
+    });
+    c.bench_function("smooth_count", |b| {
+        b.iter(|| smooth_count(black_box(10_000_000), 400));
+    });
     let mut group = c.benchmark_group("factor");
     for n in [30_u64, 1_000_003 * 1_000_033, u64::MAX] {
         group.bench_with_input(BenchmarkId::new("is_square_free", n), &n, |b, &n| {
@@ -77,18 +90,24 @@ fn bench_factor(c: &mut Criterion) {
         });
     }
     group.finish();
-    c.bench_function("is_practical", |b| {
-        b.iter(|| is_practical(black_box(720_720)));
-    });
-    c.bench_function("is_smooth", |b| {
-        b.iter(|| is_smooth(black_box(614_889_782_588_491_410), 100));
-    });
-    c.bench_function("is_rough", |b| {
-        b.iter(|| is_rough(black_box(1_000_003 * 1_000_033), 10_000));
-    });
-    c.bench_function("smooth_count", |b| {
-        b.iter(|| smooth_count(black_box(10_000_000), 400));
-    });
 }
-criterion_group!(benches, bench_factor);
+fn bench_native(c: &mut Criterion) {
+    let mut group = c.benchmark_group("factor");
+    for n in [360, 600_851_475_143, 1_000_036_000_099, u64::MAX] {
+        group.bench_with_input(BenchmarkId::new("factor", n), &n, |b, &n| {
+            b.iter(|| factor(black_box(n)));
+        });
+        group.bench_with_input(BenchmarkId::new("factor_exp", n), &n, |b, &n| {
+            b.iter(|| factor_exp(black_box(n)));
+        });
+        group.bench_with_input(BenchmarkId::new("divisors", n), &n, |b, &n| {
+            b.iter(|| divisors(black_box(n), None));
+        });
+        group.bench_with_input(BenchmarkId::new("trial_factor", n), &n, |b, &n| {
+            b.iter(|| trial_factor(black_box(n), 1000));
+        });
+    }
+    group.finish();
+}
+criterion_group!(benches, bench_factor, bench_native);
 criterion_main!(benches);

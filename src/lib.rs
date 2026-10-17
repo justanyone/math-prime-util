@@ -27,6 +27,7 @@
 pub mod arith;
 pub mod bigint;
 pub mod bits;
+pub mod bits_pos;
 pub mod combinat;
 pub mod config;
 pub mod count;
@@ -50,6 +51,7 @@ pub use arith::*;
 #[allow(unused_imports)] // until the module has public items
 pub use bigint::*;
 pub use bits::*;
+pub use bits_pos::*;
 #[allow(unused_imports)] // until the module has public items
 pub use combinat::*;
 #[allow(unused_imports)] // until the module has public items

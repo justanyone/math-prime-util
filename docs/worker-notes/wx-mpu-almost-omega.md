@@ -18,3 +18,5 @@ About five minutes remain in the session budget. Focused almost-prime tests and 
 Property suite passed: 9 tests, including existing family properties. Fixed benchmark semicolon lints; native oracle comparison is still running.
 
 Exact almost-prime counts pass the oracle. Three count estimates fail at u64::MAX because existing f64 prime estimates differ from MPU long-double outputs. Investigating nth compatibility separately.
+
+Compensated large-input prime estimates now preserve low integer bits. This keeps small-input behavior unchanged while testing the long-double dependency gap.

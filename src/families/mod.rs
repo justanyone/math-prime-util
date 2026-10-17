@@ -19,3 +19,5 @@ mod almost;
 pub use almost::*;
 mod omega;
 pub use omega::*;
+
+mod precision;

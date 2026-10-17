@@ -368,6 +368,9 @@ pub fn nth_almost_prime_approx(k: u32, n: u64) -> Option<u64> {
 }
 
 fn prime_approx(n: u64) -> u64 {
+    if n >= (1u64 << 53) {
+        return super::precision::prime_approx(n);
+    }
     if n < 3_000_000 {
         prime_count(n)
     } else {
@@ -385,6 +388,12 @@ fn bounds(k: u32, n: u64) -> (u64, u64) {
         return (u64::from(n >= 1), u64::from(n >= 1));
     }
     if k == 1 {
+        if n >= (1u64 << 53) {
+            return (
+                super::precision::prime_bound(n, false),
+                super::precision::prime_bound(n, true),
+            );
+        }
         return (
             super::nth_prime_power_approx::count_bound(n, false),
             super::nth_prime_power_approx::count_bound(n, true),

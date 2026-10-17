@@ -20,3 +20,4 @@ The full-suite wrapper has not returned yet. The focused and families unit runs 
 Still waiting for the full-suite wrapper. No additional source changes or fixture edits are needed after focused validation.
 Full-suite execution remains pending after several minutes; gate cannot reach MSRV or docs because existing count-module test lints stop clippy.
 About five minutes remain. Shared the exact C small-semiprime table between listing and approximation; matched the C last-prime square-root bound for the count cache. Rerunning focused tests and gate.
+Final reviewed focused run passed all eight compatibility/property tests. Canonical gate still stops only at the three existing src/count/mod.rs float_cmp errors. Documentation examples were checked separately; full-suite run has no final result yet.

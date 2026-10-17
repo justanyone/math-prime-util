@@ -279,6 +279,16 @@ mod tests {
         // Above 45 bits the Montgomery schedule adds rounds; 2^50 is even.
         assert_eq!(dispatcher(1 << 50, 1), Some(2));
         assert_eq!(dispatcher(1, 8), None);
+        // Stage 0 is `holf`: start 0 returns its factor, start 1 skips it.
+        let mut differs = 0;
+        for n in crate::factor::test_support::inputs() {
+            if u32::try_from(n).is_ok() {
+                let h = holf_stage(n);
+                assert_eq!(dispatcher(n, 0), h.or(dispatcher(n, 1)), "{n}");
+                differs += usize::from(h.is_some() && h != dispatcher(n, 1));
+            }
+        }
+        assert!(differs > 0);
     }
 
     #[test]

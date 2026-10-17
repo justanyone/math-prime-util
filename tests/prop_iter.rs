@@ -203,24 +203,24 @@ fn impossible_partition_bounds_need_no_state_allocation() {
     for options in [
         PartitionOptions {
             n: Some(0),
-            ..Default::default()
+            ..PartitionOptions::default()
         },
         PartitionOptions {
             amax: Some(0),
-            ..Default::default()
+            ..PartitionOptions::default()
         },
         PartitionOptions {
             nmin: Some(u64::MAX),
-            ..Default::default()
+            ..PartitionOptions::default()
         },
         PartitionOptions {
             amin: Some(u64::MAX),
-            ..Default::default()
+            ..PartitionOptions::default()
         },
         PartitionOptions {
             nmin: Some(3),
             nmax: Some(2),
-            ..Default::default()
+            ..PartitionOptions::default()
         },
     ] {
         assert_eq!(partitions_of(u64::MAX - 2, options).next(), None);
@@ -230,7 +230,10 @@ fn impossible_partition_bounds_need_no_state_allocation() {
 
 #[test]
 fn composition_overflow_is_rejected() {
-    assert!(std::panic::catch_unwind(|| compositions_of(u64::MAX, Default::default())).is_err());
+    assert!(
+        std::panic::catch_unwind(|| compositions_of(u64::MAX, PartitionOptions::default()))
+            .is_err()
+    );
 }
 
 #[test]
@@ -246,15 +249,15 @@ fn task_iterators_keep_independent_state() {
             assert_eq!(first.next(), None);
         }};
     }
-    cloned_stream!(partitions_of(8, Default::default()));
-    cloned_stream!(compositions_of(8, Default::default()));
+    cloned_stream!(partitions_of(8, PartitionOptions::default()));
+    cloned_stream!(compositions_of(8, PartitionOptions::default()));
     cloned_stream!(combinations_of(8, Some(3)));
     cloned_stream!(divisors_of(360));
     let workers: Vec<_> = (0..4)
         .map(|_| {
             std::thread::spawn(|| {
-                assert_eq!(partitions_of(8, Default::default()).count(), 22);
-                assert_eq!(compositions_of(8, Default::default()).count(), 128);
+                assert_eq!(partitions_of(8, PartitionOptions::default()).count(), 22);
+                assert_eq!(compositions_of(8, PartitionOptions::default()).count(), 128);
                 assert_eq!(combinations_of(8, Some(3)).count(), 56);
                 assert_eq!(divisors_of(360).count(), 24);
             })
@@ -281,8 +284,8 @@ fn task_callbacks_break_and_can_restart() {
             assert!($function($($arg,)+ |_| ControlFlow::<()>::Continue(())).is_continue());
         }};
     }
-    restart!(forpart, 6, Default::default());
-    restart!(forcomp, 6, Default::default());
+    restart!(forpart, 6, PartitionOptions::default());
+    restart!(forcomp, 6, PartitionOptions::default());
     restart!(forcomb, 6, Some(3));
     restart!(fordivisors, 60);
 }
@@ -297,9 +300,9 @@ proptest! {
             p.len() as u64 >= nmin.max(1) && p.len() as u64 <= nmax
                 && p.iter().all(|&v| v >= amin.max(1) && v <= amax && prime.is_none_or(|want| (math_prime_util::is_prime(v) != 0) == want))
         };
-        let expected: Vec<_> = partitions_of(n, Default::default()).filter(valid).collect();
+        let expected: Vec<_> = partitions_of(n, PartitionOptions::default()).filter(valid).collect();
         prop_assert_eq!(partitions_of(n, options).collect::<Vec<_>>(), expected);
-        let expected: Vec<_> = compositions_of(n, Default::default()).filter(valid).collect();
+        let expected: Vec<_> = compositions_of(n, PartitionOptions::default()).filter(valid).collect();
         prop_assert_eq!(compositions_of(n, options).collect::<Vec<_>>(), expected);
     }
 

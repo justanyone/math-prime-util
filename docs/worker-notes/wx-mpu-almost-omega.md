@@ -42,3 +42,5 @@ About five minutes remain. The complete family oracle suite passes; compensated 
 Final focused verification includes all 26 compatibility tests and a new large-input estimate-bound test to exercise both compensated RiemannR paths. Full gate passed fmt, clippy, and MSRV and is running existing count fixtures.
 
 Focused results: 26 compatibility tests and 10 property tests passed offline. Family doctests are running; the gate remains in existing prime-count compatibility tests, with no reported failure.
+
+All 26 family doctests passed offline. No dependencies, fixture changes, tooling changes, status edits, or crate-root edits were made. The full gate is still waiting for existing count-family tests.

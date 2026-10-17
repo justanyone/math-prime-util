@@ -126,6 +126,8 @@ fn almost_omega_boundaries_and_concurrency() {
     assert_eq!(nth_almost_prime(0, 2), None);
     assert_eq!(nth_omega_prime(0, 2), None);
     assert_eq!(nth_omega_prime(16, 1), None);
+    assert_eq!(nth_omega_prime(15, 299_179), None);
+    assert_eq!(nth_omega_prime(1, u64::MAX), None);
     assert_eq!(almost_prime_count(64, u64::MAX), 0);
     assert_eq!(almost_prime_count_approx(64, u64::MAX), 0);
     assert_eq!(almost_prime_count_lower(64, u64::MAX), 0);

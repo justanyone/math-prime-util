@@ -163,6 +163,28 @@ pub fn nth_omega_prime(k: u32, n: u64) -> Option<u64> {
         return (n == 1).then_some(1);
     }
     let mut lo = primorial(k)?;
+    // omega_primes.c: max_omega_prime_count and max_nth_omega_prime.
+    let max = [
+        1,
+        425_656_284_140_516_112,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        u64::MAX,
+        5_512_134_903_353,
+        87_133_769_732,
+        446_745_559,
+        299_178,
+    ][k as usize];
+    if n > max {
+        return None;
+    }
     if n == 1 {
         return Some(lo);
     }

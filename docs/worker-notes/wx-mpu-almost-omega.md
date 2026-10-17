@@ -28,3 +28,5 @@ Large-input count lower/upper now pass after matching the C Li return-type round
 Found large prefix fixtures that require the C omega recursive-construction branch. Added that branch; narrow arbitrary ranges keep the bounded factor sieve.
 
 Final compatibility and gate runs are active. Clippy, MSRV, and whole-suite execution are being checked offline; earlier stale long prefix runs were stopped after the recursive branch fix.
+
+Added native omega rank overflow checks from the C maximum-count table. Reused the existing prime nth-bound helper for k=1 instead of substituting exact ranks.

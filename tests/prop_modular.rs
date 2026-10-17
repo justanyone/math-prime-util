@@ -26,8 +26,8 @@ fn exhaustive_roots() {
 fn invalid_modulus_and_limits() {
     assert_eq!(sqrtmod(1, 0), None);
     assert_eq!(rootmod(1, 2, 0), None);
-    assert!(allsqrtmod(1, 0).is_empty());
-    assert!(allrootmod(1, 2, 0).is_empty());
+    assert_eq!(allsqrtmod(1, 0), Vec::<u64>::new());
+    assert_eq!(allrootmod(1, 2, 0), Vec::<u64>::new());
     assert!(std::panic::catch_unwind(|| allrootmod(1, 0, 600_000_001)).is_err());
     assert!(std::panic::catch_unwind(|| allsqrtmod(0, 1_u64 << 60)).is_err());
 }
@@ -67,7 +67,7 @@ fn word_boundaries() {
     for n in [1_u64 << 63, u64::MAX, 18_446_744_073_709_551_557] {
         for a in [1, 4, 9] {
             let roots = allsqrtmod(a, n);
-            assert!(!roots.is_empty());
+            assert_ne!(roots, Vec::<u64>::new());
             for r in roots {
                 assert_eq!(math_prime_util::mulmod(r, r, n), Some(a));
             }

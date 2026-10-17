@@ -11,3 +11,4 @@ Focused tests passed: all four oracle tests and all three algebraic/concurrency 
 Changed Goldbach output ordering to the C reversal rather than sorting; removed unnecessary overflow branches using segment bounds.
 Review found existing lucky-family tests and benchmarks had been overwritten. Restored their exact baseline content and appended the assigned cases.
 The focused family unit tests passed, including native Chen limits and exhaustive semiprime checks. Added the C square shortcut and segment-overflow boundary tests.
+The first offline gate printed == gate: green. Final rerun covers restored lucky tests and the last square/overflow tests; baseline diff has no whitespace errors.

@@ -524,6 +524,22 @@ fn is_sum_of_squares_oracle() {
     });
 }
 
+// Fixture rows for these two functions are unsigned and fit `u64`.
+// No signed argument is skipped.
+#[test]
+fn nth_ramanujan_prime_upper_oracle() {
+    each("families", "nth_ramanujan_prime_upper", |c| {
+        c.check(nth_ramanujan_prime_upper(c.arg(0)));
+    });
+}
+
+#[test]
+fn is_ramanujan_prime_oracle() {
+    each("families", "is_ramanujan_prime", |c| {
+        c.check(Some(u8::from(is_ramanujan_prime(c.arg(0)))));
+    });
+}
+
 #[test]
 fn ramanujan_primes_oracle() {
     each("families", "ramanujan_primes", |c| {

@@ -10,6 +10,7 @@ use math_prime_util::{
     prime_powers, ramanujan_prime_count_upper, semi_primes, semiprime_count,
     semiprime_count_approx, sumpowerful, twin_prime_count, twin_prime_count_approx, twin_primes,
 };
+use math_prime_util::{is_ramanujan_prime, nth_ramanujan_prime_upper};
 use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
@@ -102,6 +103,12 @@ fn bench_families(c: &mut Criterion) {
     });
     c.bench_function("semiprime_count_approx", |b| {
         b.iter(|| semiprime_count_approx(black_box(1_000_000)));
+    });
+    c.bench_function("nth_ramanujan_prime_upper", |b| {
+        b.iter(|| nth_ramanujan_prime_upper(black_box(1_000_000)));
+    });
+    c.bench_function("is_ramanujan_prime", |b| {
+        b.iter(|| is_ramanujan_prime(black_box(947)));
     });
     c.bench_function("nth_semiprime", |b| {
         b.iter(|| nth_semiprime(black_box(100_000)));

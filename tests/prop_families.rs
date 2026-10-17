@@ -406,6 +406,55 @@ proptest! {
     }
 }
 
+const SMALL_RAM: [u64; 23] = [
+    2, 11, 17, 29, 41, 47, 59, 67, 71, 97, 101, 107, 127, 149, 151, 167, 179, 181, 227, 229, 233,
+    239, 241,
+];
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn ramanujan_upper_is_at_least_the_prime_on_the_small_range(k in 1u64..24) {
+        let prime = SMALL_RAM[usize::try_from(k).unwrap() - 1];
+        prop_assert_eq!(nth_ramanujan_prime_upper(k), Some(prime));
+        prop_assert!(is_ramanujan_prime(prime));
+        prop_assert_eq!(is_prime(prime), 2);
+    }
+
+    #[test]
+    fn ramanujan_upper_grows_past_the_table(k in 24u64..80) {
+        let lo = nth_ramanujan_prime_upper(k).unwrap();
+        let hi = nth_ramanujan_prime_upper(k + 1).unwrap();
+        prop_assert!(lo <= hi);
+        prop_assert!(lo > k);
+    }
+}
+
+#[test]
+fn ramanujan_validation_repeat_and_threads() {
+    assert_eq!(nth_ramanujan_prime_upper(0), None);
+    assert!(!is_ramanujan_prime(0));
+    assert!(!is_ramanujan_prime(1));
+    assert!(!is_ramanujan_prime(u64::MAX));
+    let bound = nth_ramanujan_prime_upper(100);
+    assert_eq!(bound, nth_ramanujan_prime_upper(100));
+    assert_eq!(is_ramanujan_prime(97), is_ramanujan_prime(97));
+    let threads: Vec<_> = (0..4)
+        .map(|_| std::thread::spawn(|| (nth_ramanujan_prime_upper(80), is_ramanujan_prime(241))))
+        .collect();
+    for thread in threads {
+        assert_eq!(thread.join().unwrap(), (Some(1123), true));
+    }
+    for (index, &prime) in SMALL_RAM.iter().enumerate() {
+        assert!(is_ramanujan_prime(prime));
+        if index + 1 < SMALL_RAM.len() {
+            for n in prime + 1..SMALL_RAM[index + 1] {
+                assert!(!is_ramanujan_prime(n), "{n}");
+            }
+        }
+    }
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]

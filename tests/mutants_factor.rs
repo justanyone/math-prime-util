@@ -260,3 +260,18 @@ fn heuristic_splitters_exact_results() {
         "fold of exact outputs"
     );
 }
+
+#[test]
+fn almost_prime_powers_of_two_and_overshoot() {
+    // n << k would wrap to zero here; the early exit must use n >> k.
+    for k in [32_u64, 40, 63] {
+        assert!(is_almost_prime(k, 1 << k), "k={k}");
+        assert!(!is_almost_prime(k - 1, 1 << k), "k={k}");
+        assert!(!is_almost_prime(k + 1, 1 << k), "k={k}");
+    }
+    // k reaches zero while the small prime still divides n.
+    assert!(!is_almost_prime(3, 16));
+    assert!(!is_almost_prime(5, 2_u64.pow(6) * 3));
+    assert!(is_almost_prime(7, 2_u64.pow(6) * 3));
+    assert!(!is_almost_prime(64, u64::MAX));
+}

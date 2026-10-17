@@ -263,6 +263,13 @@ mod tests {
         let f = holf_stage(403).unwrap();
         assert_eq!(403 % f, 0);
         assert_eq!(squfof_stage(u64::MAX), None);
+        // The cutoff is 62 bits: 62 bits splits, 63 bits does not.
+        let p = crate::prev_prime(1 << 31).unwrap();
+        let q = crate::prev_prime(p - 100_000).unwrap();
+        assert_eq!(64 - (p * q).leading_zeros(), 62);
+        let f = squfof_stage(p * q).unwrap();
+        assert!(f == p || f == q);
+        assert_eq!(squfof_stage(3 << 61), None);
         let f = squfof_stage(91).unwrap();
         assert_eq!(91 % f, 0);
         for start in 0..8 {

@@ -14,3 +14,4 @@ Focused tests pass after overflow checks. Final gate fixes are limited to benchm
 Formatting, pedantic Clippy, and MSRV 1.85 build pass. The full offline test and documentation gate is running.
 Diff whitespace check passes. Full gate is still running the pre-existing count compatibility tests.
 All new tests remain green. Waiting for the existing prime-count compatibility suite in the full gate; no network or external files were changed.
+The full gate is spending over a minute in existing chebyshev, nth-prime and prime-count oracle tests. New family tests already passed offline.

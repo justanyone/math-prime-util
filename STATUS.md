@@ -201,7 +201,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `lucky_count_upper`
 - [x] `lucky_numbers`
 - [x] `mertens`
-- [ ] `miller_rabin_random`
+- [x] `miller_rabin_random`
 - [x] `minimal_goldbach_pair`
 - [x] `modint`
 - [x] `moebius`
@@ -420,7 +420,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `vecreduce`
 - [x] `vecrsort`
 - [x] `vecrsorti`
-- [ ] `vecsample`
+- [x] `vecsample`
 - [x] `vecsingleton`
 - [x] `vecslide`
 - [x] `vecsort`

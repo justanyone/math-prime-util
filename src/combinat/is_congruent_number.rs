@@ -72,7 +72,7 @@ mod tests {
     /// Number of integer triples with `a*x^2 + b*y^2 + c*z^2 == m`.
     fn count(a: i64, b: i64, c: i64, m: i64) -> i64 {
         let mut total = 0;
-        let bound = |k: i64| (0..).take_while(|t| k * t * t <= m).last().unwrap_or(0);
+        let bound = |k: i64| (0..=m).take_while(|t| k * t * t <= m).last().unwrap_or(0);
         for x in -bound(a)..=bound(a) {
             for y in -bound(b)..=bound(b) {
                 for z in -bound(c)..=bound(c) {
@@ -95,7 +95,7 @@ mod tests {
     }
 
     fn squarefree(n: u64) -> bool {
-        (2..).take_while(|d| d * d <= n).all(|d| n % (d * d) != 0)
+        (2..=n).take_while(|d| d * d <= n).all(|d| n % (d * d) != 0)
     }
 
     #[test]

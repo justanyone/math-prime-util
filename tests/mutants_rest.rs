@@ -59,6 +59,7 @@ fn convergents_edges() {
     );
 }
 
+#[allow(clippy::cast_precision_loss)]
 fn pairwise_harmonic(a: u64, b: u64) -> f64 {
     if b - a == 1 {
         return 1.0 / a as f64;
@@ -121,12 +122,12 @@ fn drand_is_a_scaled_unit_draw() {
 
 #[test]
 fn primes_empty_ranges() {
-    assert!(primes(20, 10).is_empty());
-    assert!(primes(5, 3).is_empty());
-    assert!(primes(0, 1).is_empty());
-    assert!(primes(1, 1).is_empty());
-    assert!(primes(0, 0).is_empty());
-    assert!(primes(100, 1).is_empty());
+    assert_eq!(primes(20, 10), Vec::<u64>::new());
+    assert_eq!(primes(5, 3), Vec::<u64>::new());
+    assert_eq!(primes(0, 1), Vec::<u64>::new());
+    assert_eq!(primes(1, 1), Vec::<u64>::new());
+    assert_eq!(primes(0, 0), Vec::<u64>::new());
+    assert_eq!(primes(100, 1), Vec::<u64>::new());
     assert_eq!(primes(2, 2), vec![2]);
 }
 

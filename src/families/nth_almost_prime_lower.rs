@@ -17,6 +17,7 @@ fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
     let movement = ((n - rlo) as f64 * span as f64 / (rhi - rlo) as f64 + 0.5) as u64;
     lo + movement.clamp(1, span - 1)
 }
+#[allow(clippy::too_many_lines)]
 pub(super) fn inverse(mut lo: u64, mut hi: u64, n: u64, f: impl Fn(u64) -> u64) -> u64 {
     if hi == 0 {
         let mut rlo = f(lo);

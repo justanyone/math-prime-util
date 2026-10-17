@@ -11,3 +11,4 @@ Corrected the prime approximation branch to use MPU real.c Halley inverse R. Exa
 Added the C approximation-assisted nth search for k=3 and k=4 with tolerance 20000. Cargo commands still wait on the shared build lock.
 Shared build lock has not cleared. Started the focused oracle tests in a worktree-local target directory to get independent offline validation.
 - 2026-10-17T18:49:38Z launcher: no commit for 60 s; 366 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-almost-omega-f02.md, src/families/almost_prime_count_upper.rs, src/families/mod.rs, src/families/nth_almost_prime.rs, src/families/nth_almost_prime_approx.rs, src/families/nth_almost_prime_lower.rs, tests/compat_families.rs, tests/prop_families.rs.
+Offline validation remains running. No fixture or tool changes were made; all test cases outside the native u64 API are explicitly skipped.

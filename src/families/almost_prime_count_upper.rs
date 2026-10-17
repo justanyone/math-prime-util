@@ -204,6 +204,7 @@ pub fn almost_prime_count_upper(k: u32, n: u64) -> u64 {
         bounds(k, n).1
     }
 }
+#[allow(clippy::too_many_lines)]
 pub(super) fn bounds(k: u32, n: u64) -> (u64, u64) {
     if k >= 64 || n >> k == 0 {
         return (0, 0);

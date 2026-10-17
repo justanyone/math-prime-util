@@ -15,3 +15,4 @@ Final canonical gate passes fmt and reports only the existing three src/count/mo
 Final focused rerun passed all eight tests after the prime-list cache change (compatibility 5.20 s). Whole-suite run remains pending behind the wrapper output buffer.
 Families unit tests passed, including the new interpolation and saturation checks. Required gate remains blocked only by out-of-scope count tests; full-suite run is still pending.
 - 2026-10-17T06:54:11Z launcher: no commit for 60 s; 363 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-twin-semi-f02.md, src/families/mod.rs, src/families/nth_twin_prime_approx.rs, src/families/semi_primes.rs, src/families/semiprime_count.rs, src/families/semiprime_count_approx.rs, tests/compat_families.rs, tests/prop_families.rs.
+The full-suite wrapper has not returned yet. The focused and families unit runs are green; waiting for the one authorized whole-suite run without starting another.

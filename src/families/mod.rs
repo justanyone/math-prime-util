@@ -76,3 +76,7 @@ mod is_ramanujan_prime;
 pub use is_ramanujan_prime::is_ramanujan_prime;
 mod nth_ramanujan_prime_upper;
 pub use nth_ramanujan_prime_upper::nth_ramanujan_prime_upper;
+mod nth_semiprime;
+pub use nth_semiprime::*;
+mod nth_semiprime_approx;
+pub use nth_semiprime_approx::*;

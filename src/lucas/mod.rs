@@ -4,6 +4,9 @@
 //! the same methods as MPU: the Crandall-style ladder for odd moduli and the
 //! `alt_lucas_seq` ladder for even moduli. `P` and `Q` are `i64`, as in MPU.
 
+// Every narrowing `as` cast below takes a value already reduced below `n`, so it fits `u64`.
+#![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+
 /// `(a + b) mod n`, for `a, b < n`.
 fn addmod(a: u64, b: u64, n: u64) -> u64 {
     ((u128::from(a) + u128::from(b)) % u128::from(n)) as u64
@@ -267,19 +270,18 @@ fn uvmod_core(p: u64, q: u64, k: u64, n: u64) -> (u64, u64) {
 /// # Examples
 ///
 /// ```
-/// // Fibonacci: P = 1, Q = -1. U_17 = 1597 and V_17 = 2207.
+/// // Fibonacci pair: U_17 = 1597 and V_17 = 3571 (Lucas number L_17).
+/// // Q^17 = (-1)^17 = -1, which is 9999 mod 10000.
 /// let (u, v, qk) = math_prime_util::lucas_sequence(10_000, 1, -1, 17);
-/// assert_eq!((u, v), (1597, 2207));
-/// assert_eq!(qk, 1); // (-1)^17 mod 10000 = 9999, so this line checks Q^k below
+/// assert_eq!((u, v, qk), (1597, 3571, 9999));
 /// ```
 pub fn lucas_sequence(n: u64, p: i64, q: i64, k: u64) -> (u64, u64, u64) {
     assert!(n > 0, "lucas_sequence: modulus n must be > 0");
     if n == 1 {
         return (0, 0, 0);
     }
-    let (pm, qm) = (ivmod(p, n), ivmod(q, n));
     let (u, v) = lucasuvmod(p, q, k, n);
-    (u, v, powmod(qm, k, n))
+    (u, v, powmod(ivmod(q, n), k, n))
 }
 
 /// `(U_k(P, Q), V_k(P, Q)) mod n`, with `P` and `Q` reduced first.
@@ -479,7 +481,8 @@ fn calc_fib(k: u64) -> Option<(u64, u64)> {
 ///
 /// ```
 /// assert_eq!(math_prime_util::fibonacci(10), Some(55));
-/// assert_eq!(math_prime_util::fibonacci(93), None);
+/// assert_eq!(math_prime_util::fibonacci(93), Some(12_200_160_415_121_876_738));
+/// assert_eq!(math_prime_util::fibonacci(94), None);
 /// ```
 pub fn fibonacci(k: u64) -> Option<u64> {
     if k <= 1 {

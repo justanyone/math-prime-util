@@ -19,3 +19,5 @@ Three scalar fixture tests passed. Empty omega lists are stored as undef by the 
 All four fixture tests and all six task property/regression tests pass. Split the added benchmarks into their own group function to keep clippy clean.
 Gate found four new assert_is_empty style lints in the added edge tests. Replaced them with value-reporting equality assertions.
 Required whole-suite tools/test.sh launched once; the gate is rerunning after all focused tests passed.
+Fmt, clippy across all targets, and the Rust 1.85 build pass. Final diff contains additions only in the assigned module, tests, benchmarks, and notes.
+About five minutes remain: all focused tests, fmt, clippy, and MSRV pass. Waiting for the required whole-suite run and final gate tests/docs.

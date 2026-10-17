@@ -261,7 +261,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `omega_primes`
 - [ ] `partitions`
 - [ ] `partitionsq`
-- [ ] `pbrent_factor`
+- [x] `pbrent_factor`
 - [ ] `perfect_power_count`
 - [ ] `perfect_power_count_approx`
 - [ ] `perfect_power_count_lower`
@@ -269,7 +269,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `permtonum`
 - [ ] `Pi`
 - [x] `pisano_period`
-- [ ] `pminus1_factor`
+- [x] `pminus1_factor`
 - [x] `pn_primorial`
 - [ ] `powerfree_count`
 - [ ] `powerfree_part`
@@ -280,11 +280,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `powersum`
 - [x] `powint`
 - [x] `powmod`
-- [ ] `pplus1_factor`
+- [x] `pplus1_factor`
 - [ ] `prev_perfect_power`
 - [x] `prev_prime`
 - [ ] `prev_prime_power`
-- [ ] `prho_factor`
+- [x] `prho_factor`
 - [ ] `prime_bigomega`
 - [ ] `prime_certificate`
 - [x] `prime_count`

@@ -27,4 +27,3 @@ pub fn powerfree_count(n: u64, k: u32) -> u64 {
     }
     count as u64
 }
-

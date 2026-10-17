@@ -213,3 +213,19 @@ fn inverse_count(mut lo: u64, mut hi: u64, n: u64, k: u32) -> u64 {
     }
     hi
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{inverse_count, linear_interpolate};
+
+    #[test]
+    fn interpolate_endpoint_and_rounding_limits() {
+        assert_eq!(linear_interpolate(10, 20, 5, 10, 5), 11);
+        assert_eq!(linear_interpolate(10, 20, 5, 10, 10), 19);
+        assert_eq!(linear_interpolate(10, 20, 0, 10, 5), 15);
+        assert_eq!(linear_interpolate(10, 20, 0, 1000, 1), 11);
+        assert_eq!(linear_interpolate(10, 20, 0, 1000, 999), 19);
+        assert_eq!(inverse_count(9, 10, 4, 2), 9);
+        assert_eq!(inverse_count(8, 9, 4, 2), 9);
+    }
+}

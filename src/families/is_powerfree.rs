@@ -28,4 +28,3 @@ pub fn is_powerfree(n: u64, k: u32) -> bool {
     }
     factor_exp(n).iter().all(|&(_, e)| e < k)
 }
-

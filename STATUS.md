@@ -320,12 +320,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `random_factored_integer`
 - [ ] `random_maurer_prime`
 - [ ] `random_maurer_prime_with_cert`
-- [ ] `random_nbit_prime`
-- [ ] `random_ndigit_prime`
-- [ ] `random_prime`
+- [x] `random_nbit_prime`
+- [x] `random_ndigit_prime`
+- [x] `random_prime`
 - [ ] `random_proven_prime`
 - [ ] `random_proven_prime_with_cert`
-- [ ] `random_safe_prime`
+- [x] `random_safe_prime`
 - [ ] `random_semiprime`
 - [ ] `random_shawe_taylor_prime`
 - [ ] `random_shawe_taylor_prime_with_cert`

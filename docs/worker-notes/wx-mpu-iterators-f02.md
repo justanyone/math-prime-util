@@ -7,3 +7,5 @@ Moved the four APIs to separate module files. Existing fixture coverage is retai
 The first extraction script failed before changing source; correcting the script and retaining the new squarefree sieve file.
 Focused offline iterator tests are running. Ported the factor-sieve chunk size and root thresholds; checking grouped-factor output and extreme bounds next.
 The focused build caught a module doc placement error after extraction; fixed it. Added regression tests for invalid k, clones, early breaks, nesting, and threads.
+The gate is running offline. Added the unchanged 64-bit almost-prime maximum table and benchmark cases for all four workloads; generated fixtures and STATUS remain untouched.
+About five minutes remain. Waiting for offline build results, then resolving gate diagnostics and checking fixture dispatch.

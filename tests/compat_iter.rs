@@ -158,7 +158,7 @@ fn check(name: &str) {
                         squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
                         " ",
                     ),
-                    _ => joined(squarefree_in(range).map(|(n, _)| n), " "),
+                    _ => joined(squarefree_integers_in(range), " "),
                 }
             }
             "fordivisors" => {

@@ -1,7 +1,7 @@
 use super::run;
 use std::ops::{ControlFlow, RangeInclusive};
 
-/// Iterator over the squarefree `n` in a range, with their factors. See `XS.xs`, `forfactored`.
+/// Iterator over the squarefree `n` in a range, with their factors. Port of MPU 0.75 `XS.xs::forsquarefree` and `factor.c::factor_range_next`.
 #[derive(Debug, Clone)]
 pub struct SquarefreeIn {
     factored: super::FactoredIn,

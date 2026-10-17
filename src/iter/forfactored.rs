@@ -2,7 +2,8 @@ use super::run;
 use std::ops::{ControlFlow, RangeInclusive};
 
 /// Iterator over `(n, factors)` for each `n` in a range, where `factors` are the
-/// `(prime, exponent)` pairs of `n`. See `XS.xs`, `forfactored`.
+/// `(prime, exponent)` pairs of `n`.
+/// Port of MPU 0.75 `XS.xs::forfactored` and `factor.c::factor_range_next`.
 #[derive(Debug, Clone)]
 pub struct FactoredIn {
     range: RangeInclusive<u64>,

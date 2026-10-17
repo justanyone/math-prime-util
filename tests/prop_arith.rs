@@ -379,14 +379,14 @@ fn ramanujan_sum_edges_and_repeat() {
 
 #[test]
 fn valuation_and_ramanujan_sum_concurrent() {
-    let threads: Vec<_> = (0..4)
-        .map(|i| {
+    let threads: Vec<_> = (1_u64..=4)
+        .map(|n| {
             std::thread::spawn(move || {
                 for _ in 0..3 {
                     assert_eq!(valuation(72, 3), Some(2));
                     assert_eq!(valuation(1_u64 << 40, 2), Some(40));
                     assert_eq!(ramanujan_sum(12, 36), 4);
-                    assert_eq!(ramanujan_sum(u64::from(i) + 1, 1), i64::from(moebius(u64::from(i) + 1)));
+                    assert_eq!(ramanujan_sum(n, 1), i64::from(moebius(n)));
                 }
             })
         })

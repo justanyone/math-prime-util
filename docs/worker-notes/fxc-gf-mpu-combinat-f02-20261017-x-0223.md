@@ -2,3 +2,4 @@
 - Plan: resolve conflict markers in benches/combinat.rs, src/combinat/mod.rs, tests/compat_combinat.rs, tests/prop_combinat.rs keeping both sides.
 - Then run focused tests via mw-test, then gate if time allows.
 - Resolved all 4 conflicts (union of modules, benches, tests). Next: mw-test focused.
+- Final: tools/gate.sh and cargo fmt need approval here (denied), so gate not run; rustfmt not run. Merge conflicts resolved; focused tests pass.

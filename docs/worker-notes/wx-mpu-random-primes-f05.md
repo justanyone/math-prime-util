@@ -1,0 +1,1 @@
+- Plan: port vecsample and miller_rabin_random from random_prime.c into src/random/, add fixtures tests, compat/prop tests.

@@ -17,6 +17,16 @@ proptest! {
         prop_assert_eq!(is_provable_prime(n*n), 0);
     }
 }
+proptest! {
+    #[test]
+    fn products_have_no_certificate(a in 2_u64..=u64::from(u32::MAX), b in 2_u64..=u64::from(u32::MAX)) {
+        let n = a * b;
+        prop_assert_eq!(is_provable_prime(n), 0);
+        prop_assert!(prime_certificate(n).is_empty());
+        prop_assert_eq!(is_provable_prime_with_cert(n), (0, String::new()));
+    }
+}
+
 #[test]
 fn repeated_concurrent_calls() {
     let threads: Vec<_> = (0..4)

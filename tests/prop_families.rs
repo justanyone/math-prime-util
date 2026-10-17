@@ -640,8 +640,8 @@ proptest! {
 
 #[test]
 fn almost_edges_and_parallel_calls() {
-    assert!(almost_primes(64, 0, u64::MAX).is_empty());
-    assert!(almost_primes(3, 100, 50).is_empty());
+    assert_eq!(almost_primes(64, 0, u64::MAX), Vec::<u64>::new());
+    assert_eq!(almost_primes(3, 100, 50), Vec::<u64>::new());
     assert_eq!(almost_primes(0, 0, u64::MAX), vec![1]);
     assert_eq!(
         almost_primes(63, 0, u64::MAX),
@@ -699,14 +699,14 @@ fn almost_high_ranges_and_fit_boundaries() {
         1926,
         1927,
         1928,
-        486586,
-        486587,
-        500194,
-        500195,
-        1913680,
-        1913681,
-        22347532,
-        22347533,
+        486_586,
+        486_587,
+        500_194,
+        500_195,
+        1_913_680,
+        1_913_681,
+        22_347_532,
+        22_347_533,
         295_000_000,
         295_000_001,
         3_184_393_786,

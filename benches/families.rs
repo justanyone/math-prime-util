@@ -16,9 +16,9 @@ use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
 };
-fn bench_families(c: &mut Criterion) {
+fn bench_almost(c: &mut Criterion) {
     c.bench_function("almost_primes", |b| {
-        b.iter(|| math_prime_util::almost_primes(4, 0, black_box(100_000)))
+        b.iter(|| math_prime_util::almost_primes(4, 0, black_box(100_000)));
     });
     for (name, f) in [
         (
@@ -36,7 +36,9 @@ fn bench_families(c: &mut Criterion) {
     ] {
         c.bench_function(name, |b| b.iter(|| f(4, black_box(100_000))));
     }
-
+}
+fn bench_families(c: &mut Criterion) {
+    bench_almost(c);
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
     });

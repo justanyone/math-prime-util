@@ -126,6 +126,7 @@ fn sigma(n: u64, k: u64) -> Option<u128> {
 }
 
 /// Return the sum of the k-th powers of the divisors of n.
+/// Return `None` if the result exceeds u64.
 ///
 /// Port of MPU 0.75 `factor.c::divisor_sum`.
 ///
@@ -187,6 +188,7 @@ const TAU: &[i64] = &[
 ];
 
 /// Return the native Ramanujan tau value.
+/// Return `None` if the native calculation overflows.
 ///
 /// Port of MPU 0.75 `util.c::ramanujan_tau` and `PP.pm::_tauprime`, `_taupower`.
 ///
@@ -285,6 +287,7 @@ fn class_number(n: u64) -> i128 {
 }
 
 /// Return the sum of the proper divisors of n.
+/// Return `None` if the result exceeds u64.
 ///
 /// Port of MPU 0.75 `factor.c::aliquot_sum`.
 ///
@@ -300,8 +303,9 @@ pub fn aliquot_sum(n: u64) -> Option<u64> {
 
 /// Return the aliquot sum minus n as a native signed word.
 /// MPU converts the difference to i64 with wraparound.
+/// Return `None` if the aliquot sum exceeds u64.
 ///
-/// Port of MPU 0.75 `factor.c::aliquot_sum (abundance wrapper)`.
+/// Port of MPU 0.75 `XS.xs::abundance` and `factor.c::aliquot_sum`.
 ///
 /// ```
 /// assert_eq!(math_prime_util::abundance(12), Some(4));
@@ -414,6 +418,7 @@ pub fn is_fundamental(n: i64) -> bool {
 }
 
 /// Solve simultaneous congruences. Each pair is (residue, modulus).
+/// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
 ///
 /// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
 ///
@@ -425,6 +430,8 @@ pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
 }
 
 /// Return the least solution and the combined modulus.
+/// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
+/// An empty input gives `(0, 0)`.
 ///
 /// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
 ///
@@ -476,6 +483,7 @@ fn lambda(n: u64) -> u64 {
 }
 
 /// Return the multiplicative order of a modulo n.
+/// Return `None` if n is zero or a is not a unit modulo n.
 ///
 /// Port of MPU 0.75 `util.c::znorder`.
 ///
@@ -505,6 +513,7 @@ pub fn znorder(a: u64, n: u64) -> Option<u64> {
 }
 
 /// Return the least primitive root modulo n.
+/// Return `None` if n is zero or no root exists.
 ///
 /// Port of MPU 0.75 `util.c::znprimroot`.
 ///
@@ -555,6 +564,7 @@ pub fn znprimroot(n: u64) -> Option<u64> {
 }
 
 /// Test whether a is a primitive root modulo n.
+/// Return `None` if n is zero.
 ///
 /// Port of MPU 0.75 `util.c::is_primitive_root`.
 ///
@@ -602,6 +612,7 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
 }
 
 /// Return the least quadratic nonresidue modulo n.
+/// Return `None` if n is zero or no nonresidue exists.
 ///
 /// Port of MPU 0.75 `util.c::qnr`.
 ///
@@ -647,6 +658,7 @@ pub fn qnr(n: u64) -> Option<u64> {
 }
 
 /// Test whether a is a square modulo n.
+/// Return false for modulus zero, as in the MPU wrapper.
 ///
 /// Port of MPU 0.75 `util.c::is_qr and rootmod.c::_sqrtmod_composite`.
 ///

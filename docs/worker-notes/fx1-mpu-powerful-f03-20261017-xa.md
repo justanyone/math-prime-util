@@ -1,5 +1,0 @@
-- Plan: fix finding 1 (range factorization for k=2 root>100 in powerfree_part_sum) and finding 2 (bounded memory/size guard in powerfree_sum), with tests. Reviewed note first.
-- Finding 1: add segmented range factoring (blocks of 2^16, small primes up to sqrt(nk)) for nk>100, mirroring powerfree.c:207-221; test vs brute force at root 100/101.
-- Finding 2: powerfree_sum has no C-style bound; add a documented root cap (2^26) that panics before allocating; test with should_panic on u64::MAX.
-- Edits written for both findings; next: mw-test powerfree, then gate.
-- Gate and rustfmt need approval in this sandbox (not run). Lib powerfree tests: 5 pass. Final: fixes for both findings committed as edits; gate not run.

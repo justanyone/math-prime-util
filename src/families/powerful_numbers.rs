@@ -53,4 +53,3 @@ pub fn powerful_numbers(lo: u64, hi: u64, k: u32) -> Vec<u64> {
     result.sort_unstable();
     result
 }
-

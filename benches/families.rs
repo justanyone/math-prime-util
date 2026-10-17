@@ -3,13 +3,13 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
     goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_perfect_power,
-    is_prime_power, is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair,
-    next_chen_prime, next_perfect_power, next_prime_power, nth_lucky, nth_ramanujan_prime,
-    nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx,
-    nth_twin_prime, nth_twin_prime_approx, perfect_power_count, powerfree_count, powerful_count,
-    powerful_numbers, prev_perfect_power, prev_prime_power, prime_powers,
-    ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
-    twin_prime_count, twin_prime_count_approx, twin_primes,
+    is_powerful, is_prime_power, is_sum_of_squares, lucky_count, lucky_numbers,
+    minimal_goldbach_pair, next_chen_prime, next_perfect_power, next_prime_power, nth_lucky,
+    nth_ramanujan_prime, nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_semiprime,
+    nth_semiprime_approx, nth_twin_prime, nth_twin_prime_approx, perfect_power_count,
+    powerfree_count, powerful_count, powerful_numbers, prev_perfect_power, prev_prime_power,
+    prime_powers, ramanujan_prime_count_upper, semi_primes, semiprime_count,
+    semiprime_count_approx, sumpowerful, twin_prime_count, twin_prime_count_approx, twin_primes,
 };
 use math_prime_util::{is_ramanujan_prime, nth_ramanujan_prime_upper};
 use math_prime_util::{
@@ -80,6 +80,9 @@ fn bench_families(c: &mut Criterion) {
     });
     c.bench_function("ramanujan_prime_count_upper", |b| {
         b.iter(|| ramanujan_prime_count_upper(black_box(10000)));
+    });
+    c.bench_function("is_powerful", |b| {
+        b.iter(|| is_powerful(black_box(999_966_000_289), 2));
     });
     c.bench_function("powerful_count", |b| {
         b.iter(|| powerful_count(black_box(1_000_000_000), 2));

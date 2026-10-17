@@ -46,4 +46,3 @@ pub fn powerful_count(n: u64, k: u32) -> u64 {
         .map(|i| count_rec(n, k, &flags, i.pow(r), r - 1))
         .sum()
 }
-

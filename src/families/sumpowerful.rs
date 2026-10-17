@@ -41,4 +41,3 @@ pub fn sumpowerful(n: u64, k: u32) -> u128 {
     let flags = squarefree_flags(rootint(n, k + 1));
     sum_rec(n, k, &flags, 1, 2 * k - 1)
 }
-

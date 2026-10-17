@@ -1,15 +1,17 @@
 #![allow(missing_docs)]
 //! Benchmarks for the lucky-number, prime-power, twin prime and semiprime functions.
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_prime_power,
-    is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair, next_chen_prime,
-    next_prime_power, nth_lucky, nth_ramanujan_prime, nth_ramanujan_prime_approx,
-    nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx, nth_twin_prime,
-    nth_twin_prime_approx, powerfree_count, powerful_count, powerful_numbers, prev_prime_power,
-    prime_powers, ramanujan_prime_count_upper, semi_primes, semiprime_count,
-    semiprime_count_approx, sumpowerful, twin_prime_count, twin_prime_count_approx, twin_primes,
+    goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_perfect_power,
+    is_prime_power, is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair,
+    next_chen_prime, next_perfect_power, next_prime_power, nth_lucky, nth_ramanujan_prime,
+    nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx,
+    nth_twin_prime, nth_twin_prime_approx, perfect_power_count, powerfree_count, powerful_count,
+    powerful_numbers, prev_perfect_power, prev_prime_power, prime_powers,
+    ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
+    twin_prime_count, twin_prime_count_approx, twin_primes,
 };
+use math_prime_util::{is_ramanujan_prime, nth_ramanujan_prime_upper};
 use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
@@ -103,6 +105,12 @@ fn bench_families(c: &mut Criterion) {
     c.bench_function("semiprime_count_approx", |b| {
         b.iter(|| semiprime_count_approx(black_box(1_000_000)));
     });
+    c.bench_function("nth_ramanujan_prime_upper", |b| {
+        b.iter(|| nth_ramanujan_prime_upper(black_box(1_000_000)));
+    });
+    c.bench_function("is_ramanujan_prime", |b| {
+        b.iter(|| is_ramanujan_prime(black_box(947)));
+    });
     c.bench_function("nth_semiprime", |b| {
         b.iter(|| nth_semiprime(black_box(100_000)));
     });
@@ -146,11 +154,30 @@ fn bench_squares(c: &mut Criterion) {
         b.iter(|| is_sum_of_squares(black_box(18_446_744_073_709_551_557), 2));
     });
 }
+fn bench_perfect_powers(c: &mut Criterion) {
+    let mut group = c.benchmark_group("perfect_powers");
+    for n in [1_000_003, 4_294_967_296, 1 << 63, u64::MAX] {
+        group.bench_with_input(BenchmarkId::new("is_perfect_power", n), &n, |b, &n| {
+            b.iter(|| is_perfect_power(black_box(n)));
+        });
+        group.bench_with_input(BenchmarkId::new("next_perfect_power", n), &n, |b, &n| {
+            b.iter(|| next_perfect_power(black_box(n)));
+        });
+        group.bench_with_input(BenchmarkId::new("prev_perfect_power", n), &n, |b, &n| {
+            b.iter(|| prev_perfect_power(black_box(n)));
+        });
+        group.bench_with_input(BenchmarkId::new("perfect_power_count", n), &n, |b, &n| {
+            b.iter(|| perfect_power_count(black_box(n)));
+        });
+    }
+    group.finish();
+}
 criterion_group!(
     benches,
     bench_families,
     bench_ramanujan,
     bench_goldbach_misc,
-    bench_squares
+    bench_squares,
+    bench_perfect_powers
 );
 criterion_main!(benches);

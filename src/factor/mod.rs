@@ -19,6 +19,7 @@ mod trial_factor;
 pub use trial_factor::trial_factor;
 
 mod cheb_factor;
+mod ecm;
 mod fermat_factor;
 mod holf_factor;
 mod is_almost_prime;
@@ -43,6 +44,7 @@ mod prime_signature;
 mod smooth_count;
 mod squfof_factor;
 pub use cheb_factor::cheb_factor;
+pub use ecm::ecm_factor;
 pub use fermat_factor::fermat_factor;
 pub use holf_factor::holf_factor;
 pub use is_almost_prime::is_almost_prime;

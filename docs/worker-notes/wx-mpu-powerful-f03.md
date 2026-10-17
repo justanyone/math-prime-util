@@ -2,3 +2,4 @@
 - Functions and compat tests already exist in src/families/powerfree.rs and tests/compat_families.rs; running focused test.
 - 2026-10-17T18:45:03Z launcher: no commit for 62 s; 94 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-powerful-f03.md.
 - Compat and prop tests for all three functions already present; waiting on compat_families run.
+- Test run still in progress at turn ~9; no result yet.

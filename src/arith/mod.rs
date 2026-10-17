@@ -1,5 +1,5 @@
 //! Divisor sums, discriminants, and arithmetic in residue rings.
-use crate::{gcd, invmod, is_prime, is_square, is_power, powmod, next_prime};
+use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod};
 
 fn prime_factors(mut n: u64) -> Vec<u64> {
     let mut factors = Vec::new();
@@ -91,25 +91,35 @@ fn brent(n: u64, mut a: u64) -> Option<u64> {
     None
 }
 
-
 fn factor_powers(n: u64) -> Vec<(u64, u32)> {
     let mut result: Vec<(u64, u32)> = Vec::new();
     for p in prime_factors(n) {
         if let Some(last) = result.last_mut() {
-            if last.0 == p { last.1 += 1; continue; }
+            if last.0 == p {
+                last.1 += 1;
+                continue;
+            }
         }
         result.push((p, 1));
     }
     result
 }
 fn sigma(n: u64, k: u64) -> Option<u128> {
-    if n <= 1 { return Some(u128::from(n)); }
+    if n <= 1 {
+        return Some(u128::from(n));
+    }
     let mut product = 1_u128;
     for (p, e) in factor_powers(n) {
-        if k == 0 { product *= u128::from(e + 1); continue; }
+        if k == 0 {
+            product *= u128::from(e + 1);
+            continue;
+        }
         let pk = u128::from(p).checked_pow(u32::try_from(k).ok()?)?;
         let (mut power, mut sum) = (1_u128, 1_u128);
-        for _ in 0..e { power = power.checked_mul(pk)?; sum = sum.checked_add(power)?; }
+        for _ in 0..e {
+            power = power.checked_mul(pk)?;
+            sum = sum.checked_add(power)?;
+        }
         product = product.checked_mul(sum)?;
     }
     Some(product)
@@ -127,7 +137,13 @@ pub fn divisor_sum(n: u64, k: u64) -> Option<u64> {
     u64::try_from(sigma(n, k)?).ok()
 }
 
-const TAU: &[i64] = &[0,1,-24,252,-1472,4830,-6048,-16744,84480,-113643,-115920,534612,-370944,-577738,401856,1217160,987136,-6905934,2727432,10661420,-7109760,-4219488,-12830688,18643272,21288960,-25499225,13865712,-73279080,24647168,128406630,-29211840,-52843168,-196706304,134722224,165742416,-80873520,167282496,-182213314,-255874080,-145589976,408038400,308120442,101267712,-17125708,-786948864,-548895690,-447438528];
+const TAU: &[i64] = &[
+    0, 1, -24, 252, -1472, 4830, -6048, -16744, 84480, -113643, -115920, 534612, -370944, -577738,
+    401856, 1217160, 987136, -6905934, 2727432, 10661420, -7109760, -4219488, -12830688, 18643272,
+    21288960, -25499225, 13865712, -73279080, 24647168, 128406630, -29211840, -52843168,
+    -196706304, 134722224, 165742416, -80873520, 167282496, -182213314, -255874080, -145589976,
+    408038400, 308120442, 101267712, -17125708, -786948864, -548895690, -447438528,
+];
 
 /// Return the tabulated native Ramanujan tau value.
 ///
@@ -150,7 +166,9 @@ pub fn ramanujan_tau(n: u64) -> Option<i64> {
 /// assert_eq!(math_prime_util::aliquot_sum(12), Some(16));
 /// ```
 pub fn aliquot_sum(n: u64) -> Option<u64> {
-    if n <= 1 { return Some(0); }
+    if n <= 1 {
+        return Some(0);
+    }
     u64::try_from(sigma(n, 1)? - u128::from(n)).ok()
 }
 
@@ -190,13 +208,19 @@ pub fn sopf(n: u64) -> u64 {
     factor_powers(n).iter().map(|&(p, _)| p).sum()
 }
 
-fn kronecker_unsigned(mut a: u64, mut b: u64) -> i32 {
-    if b == 0 { return i32::from(a == 1); }
+fn kronecker_unsigned(a: u64, mut b: u64) -> i32 {
+    if b == 0 {
+        return i32::from(a == 1);
+    }
     let mut s = 1;
     let r = b.trailing_zeros();
     if r > 0 {
-        if a % 2 == 0 { return 0; }
-        if r % 2 == 1 && matches!(a % 8, 3 | 5) { s = -s; }
+        if a % 2 == 0 {
+            return 0;
+        }
+        if r % 2 == 1 && matches!(a % 8, 3 | 5) {
+            s = -s;
+        }
         b >>= r;
     }
     kronecker_odd(a, b, s)
@@ -204,9 +228,13 @@ fn kronecker_unsigned(mut a: u64, mut b: u64) -> i32 {
 fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
     while a != 0 {
         let r = a.trailing_zeros();
-        if r % 2 == 1 && matches!(b % 8, 3 | 5) { s = -s; }
+        if r % 2 == 1 && matches!(b % 8, 3 | 5) {
+            s = -s;
+        }
         a >>= r;
-        if a & b & 2 != 0 { s = -s; }
+        if a & b & 2 != 0 {
+            s = -s;
+        }
         (a, b) = (b % a, a);
     }
     if b == 1 { s } else { 0 }
@@ -223,12 +251,20 @@ fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
 pub fn kronecker(a: i64, b: i64) -> i32 {
     let mut s = if a < 0 && b < 0 { -1 } else { 1 };
     let mut b = b.unsigned_abs();
-    if a >= 0 { return s * kronecker_unsigned(a.unsigned_abs(), b); }
-    if b == 0 { return i32::from(a == -1); }
+    if a >= 0 {
+        return s * kronecker_unsigned(a.unsigned_abs(), b);
+    }
+    if b == 0 {
+        return i32::from(a == -1);
+    }
     let r = b.trailing_zeros();
     if r > 0 {
-        if a % 2 == 0 { return 0; }
-        if r % 2 == 1 && matches!(a.rem_euclid(8), 3 | 5) { s = -s; }
+        if a % 2 == 0 {
+            return 0;
+        }
+        if r % 2 == 1 && matches!(a.rem_euclid(8), 3 | 5) {
+            s = -s;
+        }
         b >>= r;
     }
     let rem = a.unsigned_abs() % b;
@@ -247,8 +283,11 @@ pub fn is_fundamental(n: i64) -> bool {
     let r = n.rem_euclid(16);
     let m = n.unsigned_abs();
     let square_free = |x| x != 0 && factor_powers(x).iter().all(|&(_, e)| e == 1);
-    if r != 0 && r % 4 == 0 && r != 4 { square_free(m >> 2) }
-    else { r % 4 == 1 && square_free(m) }
+    if r != 0 && r % 4 == 0 && r != 4 {
+        square_free(m >> 2)
+    } else {
+        r % 4 == 1 && square_free(m)
+    }
 }
 
 /// Solve simultaneous congruences. Each pair is (residue, modulus).
@@ -272,22 +311,31 @@ pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
 /// assert_eq!(math_prime_util::chinese2(&[(2, 3), (3, 5)]), Some((8, 15)));
 /// ```
 pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
-    if congruences.is_empty() { return Some((0, 0)); }
+    if congruences.is_empty() {
+        return Some((0, 0));
+    }
     let mut pairs = congruences.to_vec();
     pairs.sort_unstable_by(|a, b| b.1.cmp(&a.1));
     let (mut r, mut m) = pairs[0];
-    if m == 0 { return None; }
+    if m == 0 {
+        return None;
+    }
     r %= m;
     for &(a, n) in &pairs[1..] {
-        if n == 0 { return None; }
+        if n == 0 {
+            return None;
+        }
         let g = gcd(m, n);
-        if r % g != a % g { return None; }
+        if r % g != a % g {
+            return None;
+        }
         let ng = n / g;
         let modulus = m.checked_mul(ng)?;
         let delta = (i128::from(a) - i128::from(r)) / i128::from(g);
         let delta = u64::try_from(delta.rem_euclid(i128::from(ng))).ok()?;
         let t = crate::mulmod(delta, invmod(m / g, ng)?, ng)?;
-        r = u64::try_from((u128::from(r) + u128::from(m) * u128::from(t)) % u128::from(modulus)).ok()?;
+        r = u64::try_from((u128::from(r) + u128::from(m) * u128::from(t)) % u128::from(modulus))
+            .ok()?;
         m = modulus;
     }
     Some((r, m))
@@ -296,7 +344,11 @@ pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
 fn lambda(n: u64) -> u64 {
     let mut result = 1;
     for (p, e) in factor_powers(n) {
-        let term = if p == 2 && e > 2 { 1 << (e - 2) } else { (p - 1) * p.pow(e - 1) };
+        let term = if p == 2 && e > 2 {
+            1 << (e - 2)
+        } else {
+            (p - 1) * p.pow(e - 1)
+        };
         result = result / gcd(result, term) * term;
     }
     result
@@ -311,14 +363,23 @@ fn lambda(n: u64) -> u64 {
 /// assert_eq!(math_prime_util::znorder(2, 7), Some(3));
 /// ```
 pub fn znorder(a: u64, n: u64) -> Option<u64> {
-    if n == 0 { return None; }
-    if n == 1 { return Some(1); }
-    if gcd(a, n) != 1 { return None; }
+    if n == 0 {
+        return None;
+    }
+    if n == 1 {
+        return Some(1);
+    }
+    if gcd(a, n) != 1 {
+        return None;
+    }
     let mut k = lambda(n);
     for (p, e) in factor_powers(k) {
         k /= p.pow(e);
         let mut a1 = powmod(a, k, n)?;
-        while a1 != 1 { k *= p; a1 = powmod(a1, p, n)?; }
+        while a1 != 1 {
+            k *= p;
+            a1 = powmod(a1, p, n)?;
+        }
     }
     Some(k)
 }
@@ -332,22 +393,44 @@ pub fn znorder(a: u64, n: u64) -> Option<u64> {
 /// assert_eq!(math_prime_util::znprimroot(7), Some(3));
 /// ```
 pub fn znprimroot(n: u64) -> Option<u64> {
-    if n == 0 { return None; }
-    if n <= 4 { return Some(n - 1); }
-    if n % 4 == 0 { return None; }
+    if n == 0 {
+        return None;
+    }
+    if n <= 4 {
+        return Some(n - 1);
+    }
+    if n % 4 == 0 {
+        return None;
+    }
     let even = n % 2 == 0;
     let odd = if even { n / 2 } else { n };
     let factors = factor_powers(odd);
-    if factors.len() != 1 { return None; }
+    if factors.len() != 1 {
+        return None;
+    }
     let (p, e) = factors[0];
-    if p == 3 && even { return Some(5); }
+    if p == 3 && even {
+        return Some(5);
+    }
     let phi = p - 1;
     let phif = factor_powers(phi);
     for a in 2..p {
-        if (even && a % 2 == 0) || matches!(a, 4 | 8 | 9) { continue; }
-        if kronecker_unsigned(a, p) != -1 { continue; }
-        if phif.iter().skip(1).any(|&(q, _)| powmod(a, phi / q, p) == Some(1)) { continue; }
-        if e == 1 || powmod(a, phi, p * p) != Some(1) { return Some(a); }
+        if (even && a % 2 == 0) || matches!(a, 4 | 8 | 9) {
+            continue;
+        }
+        if kronecker_unsigned(a, p) != -1 {
+            continue;
+        }
+        if phif
+            .iter()
+            .skip(1)
+            .any(|&(q, _)| powmod(a, phi / q, p) == Some(1))
+        {
+            continue;
+        }
+        if e == 1 || powmod(a, phi, p * p) != Some(1) {
+            return Some(a);
+        }
     }
     None
 }
@@ -361,21 +444,43 @@ pub fn znprimroot(n: u64) -> Option<u64> {
 /// assert_eq!(math_prime_util::is_primitive_root(3, 7), Some(true));
 /// ```
 pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
-    if n == 0 { return None; }
-    if n == 1 { return Some(true); }
+    if n == 0 {
+        return None;
+    }
+    if n == 1 {
+        return Some(true);
+    }
     let a = a % n;
-    if a <= 1 { return Some(a == 1 && n <= 2); }
-    if n <= 4 { return Some(a == n - 1); }
-    if n % 4 == 0 || (n % 2 == 0 && a % 2 == 0) || is_square(a) || gcd(a, n) != 1 { return Some(false); }
+    if a <= 1 {
+        return Some(a == 1 && n <= 2);
+    }
+    if n <= 4 {
+        return Some(a == n - 1);
+    }
+    if n % 4 == 0 || (n % 2 == 0 && a % 2 == 0) || is_square(a) || gcd(a, n) != 1 {
+        return Some(false);
+    }
     let odd = if n % 2 == 0 { n / 2 } else { n };
     let f = factor_powers(odd);
-    if f.len() != 1 { return Some(false); }
+    if f.len() != 1 {
+        return Some(false);
+    }
     let (p, e) = f[0];
-    if e > 1 && powmod(a, p - 1, p * p) == Some(1) { return Some(false); }
-    if kronecker_unsigned(a, p) != -1 { return Some(false); }
+    if e > 1 && powmod(a, p - 1, p * p) == Some(1) {
+        return Some(false);
+    }
+    if kronecker_unsigned(a, p) != -1 {
+        return Some(false);
+    }
     let phi = p - 1;
-    if is_power(a, 3) && gcd(3, phi) != 1 { return Some(false); }
-    Some(factor_powers(phi).iter().all(|&(q, _)| powmod(a, phi / q, p) != Some(1)))
+    if is_power(a, 3) && gcd(3, phi) != 1 {
+        return Some(false);
+    }
+    Some(
+        factor_powers(phi)
+            .iter()
+            .all(|&(q, _)| powmod(a, phi / q, p) != Some(1)),
+    )
 }
 
 /// Return the least quadratic nonresidue modulo n.
@@ -387,22 +492,38 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
 /// assert_eq!(math_prime_util::qnr(7), Some(3));
 /// ```
 pub fn qnr(n: u64) -> Option<u64> {
-    if n == 0 { return None; }
-    if n <= 2 { return Some(n); }
-    if kronecker_unsigned(2, n) == -1 { return Some(2); }
+    if n == 0 {
+        return None;
+    }
+    if n <= 2 {
+        return Some(n);
+    }
+    if kronecker_unsigned(2, n) == -1 {
+        return Some(2);
+    }
     if is_prime(n) != 0 {
         return (3..n).step_by(2).find(|&a| kronecker_unsigned(a, n) == -1);
     }
     let mut n = n;
     if n % 2 == 0 {
-        let e = n.trailing_zeros(); n >>= e;
-        if e >= 2 || n == 1 { return Some(2); }
+        let e = n.trailing_zeros();
+        n >>= e;
+        if e >= 2 || n == 1 {
+            return Some(2);
+        }
     }
-    if [3, 5, 11, 13, 19].iter().any(|p| n % p == 0) { return Some(2); }
+    if [3, 5, 11, 13, 19].iter().any(|p| n % p == 0) {
+        return Some(2);
+    }
     let factors = factor_powers(n);
     let mut a = 2;
     while a < n {
-        if factors.iter().any(|&(p, _)| a < p && kronecker_unsigned(a, p) == -1) { return Some(a); }
+        if factors
+            .iter()
+            .any(|&(p, _)| a < p && kronecker_unsigned(a, p) == -1)
+        {
+            return Some(a);
+        }
         a = next_prime(a);
     }
     None
@@ -417,16 +538,33 @@ pub fn qnr(n: u64) -> Option<u64> {
 /// assert!(math_prime_util::is_qr(2, 7));
 /// ```
 pub fn is_qr(a: u64, n: u64) -> bool {
-    if n == 0 { return a == 1; }
-    if n <= 2 || a % n <= 1 { return true; }
+    if n == 0 {
+        return a == 1;
+    }
+    if n <= 2 || a % n <= 1 {
+        return true;
+    }
     let a = a % n;
     factor_powers(n).iter().all(|&(p, e)| {
         let mut unit = a;
         let mut v = 0;
-        while unit % p == 0 && v < e { unit /= p; v += 1; }
-        if v == e { return true; }
-        if v % 2 == 1 { return false; }
-        if p != 2 { return kronecker_unsigned(unit, p) == 1; }
-        match e - v { 1 => true, 2 => unit % 4 == 1, _ => unit % 8 == 1 }
+        while unit % p == 0 && v < e {
+            unit /= p;
+            v += 1;
+        }
+        if v == e {
+            return true;
+        }
+        if v % 2 == 1 {
+            return false;
+        }
+        if p != 2 {
+            return kronecker_unsigned(unit, p) == 1;
+        }
+        match e - v {
+            1 => true,
+            2 => unit % 4 == 1,
+            _ => unit % 8 == 1,
+        }
     })
 }

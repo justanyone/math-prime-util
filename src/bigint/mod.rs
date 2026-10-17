@@ -154,11 +154,16 @@ impl Int for u128 {
 
     fn next_prime(&self) -> Option<Self> {
         const ADVANCE: [u128; 30] = [
-            1, 6, 5, 4, 3, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3,
-            2, 1, 2, 1, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1, 2,
+            1, 6, 5, 4, 3, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1,
+            2,
         ];
         if *self < 7 {
-            return Some(match *self { 0 | 1 => 2, 2 => 3, 3 | 4 => 5, _ => 7 });
+            return Some(match *self {
+                0 | 1 => 2,
+                2 => 3,
+                3 | 4 => 5,
+                _ => 7,
+            });
         }
         let mut n = *self;
         loop {

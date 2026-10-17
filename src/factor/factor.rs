@@ -155,3 +155,26 @@ fn mul_mod(a: u64, b: u64, n: u64) -> u64 {
 fn square_add(x: u64, a: u64, n: u64) -> u64 {
     ((u128::from(x) * u128::from(x) + u128::from(a)) % u128::from(n)) as u64
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{brent, holf, split};
+
+    #[test]
+    fn split_paths_and_round_limits() {
+        assert_eq!(brent(403, 0, 1), None);
+        assert_eq!(brent(9, 1, 1), None);
+        assert_eq!(holf(1), None);
+        for n in [403, 1_000_036_000_099, 18_446_743_979_220_271_189] {
+            let f = split(n);
+            assert!(f > 1 && f < n);
+            assert_eq!(n % f, 0);
+        }
+        for a in 1..=10 {
+            if let Some(f) = brent(1_000_036_000_099, 100_000, a) {
+                assert!(f > 1 && f < 1_000_036_000_099);
+                assert_eq!(1_000_036_000_099 % f, 0);
+            }
+        }
+    }
+}

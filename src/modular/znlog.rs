@@ -233,7 +233,6 @@ pub fn znlog(a: u64, g: u64, n: u64) -> Option<u64> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -252,5 +251,4 @@ mod tests {
         assert_eq!(bsgs(3, 4, 17, 8), None);
         assert_eq!(log_rho(3, 4, 17, 8, 8), None);
     }
-
 }

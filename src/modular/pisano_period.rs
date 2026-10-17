@@ -73,4 +73,3 @@ pub fn pisano_period(n: u64) -> u128 {
     }
     r
 }
-

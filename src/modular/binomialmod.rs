@@ -160,11 +160,37 @@ pub fn binomialmod(n: u64, k: u64, m: u64) -> Option<u64> {
     Some(crt(&parts))
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::factorialmod;
 
+    #[test]
+    fn prime_power_methods_agree() {
+        for (p, e) in [(2, 8), (3, 5), (5, 4)] {
+            for n in [1, 2, 10, 27, 100, 257, 1000] {
+                for k in 0..=n.min(40) {
+                    assert_eq!(
+                        binomial_granville(n, k, p, e),
+                        binomial_prime_power(n, k, p, e)
+                    );
+                }
+            }
+        }
+    }
 
+    #[test]
+    fn small_binomials_match_exact_integers() {
+        for n in 0..=60 {
+            let mut exact = 1u128;
+            for k in 0..=n {
+                for m in [1, 2, 4, 8, 9, 25, 101, 1024] {
+                    assert_eq!(
+                        binomialmod(n, k, m).map(u128::from),
+                        Some(exact % u128::from(m))
+                    );
+                }
+                exact = exact * u128::from(n - k) / u128::from(k + 1);
+            }
+        }
+    }
 }

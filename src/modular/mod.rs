@@ -268,8 +268,8 @@ mod tests {
     }
 }
 
-mod native;
 mod binomialmod;
+mod native;
 pub use binomialmod::binomialmod;
 mod factorialmod;
 pub use factorialmod::factorialmod;

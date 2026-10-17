@@ -139,3 +139,17 @@ pub(super) fn valuation(mut n: u64, p: u64) -> u64 {
     e
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn factorization_handles_units_powers_and_semiprimes() {
+        assert!(factor_exp(1).is_empty());
+        assert_eq!(factor_exp(1024), vec![(2, 10)]);
+        assert_eq!(
+            factor_exp(1_000_003 * 1_000_033),
+            vec![(1_000_003, 1), (1_000_033, 1)]
+        );
+    }
+}

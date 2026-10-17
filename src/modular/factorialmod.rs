@@ -76,3 +76,17 @@ pub fn factorialmod(n: u64, m: u64) -> Option<u64> {
     Some(r)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn segmented_and_wilson_paths_match_products() {
+        for m in [10007, 20014, 8192] {
+            for n in [0, 1, 10, 101, 1000, 1001, 5004, 10005, 10006] {
+                let expected = (2..=n).fold(1 % m, |r, i| mulmod_u(r, i, m));
+                assert_eq!(factorialmod(n, m), Some(expected));
+            }
+        }
+    }
+}

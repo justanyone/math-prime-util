@@ -4,3 +4,4 @@ The task forbids fixture and tools changes; use the existing modular oracle case
 Run focused offline tests, then the required gate, and record any remaining gaps.
 The factoring API is absent. The fixture includes signed and bigint cases outside the native unsigned API; compatibility tests will name these skips.
 Implemented prime square roots, prime-power lifting, CRT, all square roots, modular division, and Cornacchia. Next: general roots and fixture checks.
+General roots now use split-k Tonelli-Shanks and Hensel/CRT. All roots split k into primes; exceptional prime-power roots currently use digit lifting rather than the C recursive shortcut.

@@ -43,7 +43,7 @@ fn bench_arith(c: &mut Criterion) {
         b.iter(|| inverse_sigma0_count(black_box(48), 1, 1_000_000));
     });
     c.bench_function("arith/ramanujan_sum", |b| {
-        b.iter(|| math_prime_util::ramanujan_sum(black_box(12), black_box(36_0360)));
+        b.iter(|| math_prime_util::ramanujan_sum(black_box(12), black_box(360_360)));
     });
     c.bench_function("arith/valuation", |b| {
         b.iter(|| math_prime_util::valuation(black_box(1_u64 << 62), black_box(4)));

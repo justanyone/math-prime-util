@@ -8,3 +8,4 @@ Focused offline tests are compiling; added benchmarks for compositions and divis
 Composition state now has its own public iterator type; updated the existing fixture dispatcher for the distinct types. Gate is waiting for the focused build lock.
 Reviewed the moved code against XS RuleAsc and combination stepping. Existing iter fixtures and generator already cover this family, so neither was changed.
 First focused build found the prime-neighbor API returns Option; mapped missing bounds to an empty range and corrected the port. Re-running offline checks.
+Offline dependency compilation and lock waits continue. No network, tool, fixture, or dependency changes were made.

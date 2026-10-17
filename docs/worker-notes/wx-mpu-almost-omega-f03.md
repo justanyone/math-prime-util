@@ -12,3 +12,4 @@ First compile found two C U suffixes in FIRST_THREE; removed them and rerun the 
 Removed C suffixes and formatted copied numeric tables with Rust separators. Waiting for focused tests and the second gate run.
 Added private interpolation regression tests and native-limit checks. Removed unused lower-prime-bound branches from the copied helper.
 Snapshot race affected test restoration; recovered the original tests from the commit before the first test edit and appended only this task module. Fixed test k conversion and clippy findings.
+The git shim truncated retrieved originals even inside Python. Recovered complete originals with read-only /usr/bin/git; no git writes were used.

@@ -9,3 +9,4 @@ Focused tests are executing the large exact counts. Formatting is applied; next 
 The u64::MAX approximation differs by 859 with f64. Added two-component arithmetic for the existing C logarithmic integral series and large Mobius sum. The gate also found benchmark semicolons; fixed them.
 All approximation fixtures now pass, including u64::MAX. Adjusted bounds to retain MPU's Li NV rounding before long-double arithmetic. Rechecking bounds, properties, and the full gate.
 Both bound fixture tests and the initial properties pass. Added large-input precision coverage and concurrent repeat calls because all counts must remain stateless. The gate rerun includes the deliberate precision-cast lint allowance.
+The gate passed fmt, clippy, and MSRV and is running existing suite tests. The named origin/dev ref is absent in this isolated checkout; inspect the initial snapshot to preserve any pre-existing family test content.

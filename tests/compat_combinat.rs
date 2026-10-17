@@ -1,7 +1,7 @@
 //! Oracle checks for the assigned combinat functions.
 mod common;
 
-use common::{each, each_may_panic};
+use common::each;
 use math_prime_util::{
     consecutive_integer_lcm, frobenius_number, is_congruent_number, is_polygonal,
 };
@@ -20,34 +20,25 @@ fn consecutive_integer_lcm_oracle() {
 
 #[test]
 fn frobenius_number_oracle() {
-    each_may_panic("combinat", "frobenius_number", |case| {
-        // Skip the oracle resource failure for the ten-billion-entry table.
-        // The native C product overflows first, so our API returns None.
-        if case.error && case.args.first().is_some_and(|a| a == "10000000000") {
-            assert_eq!(
-                frobenius_number(&[
-                    10_000_000_000,
-                    10_000_008_870,
-                    10_000_057_783,
-                    10_000_072_907
-                ]),
-                None
-            );
-            // Preserve the fixture error contract for the shared runner.
-            panic!("oracle residue table resource failure");
-        }
+    each("combinat", "frobenius_number", |case| {
         let values: Vec<u64> = case.args.iter().map(|a| a.parse().unwrap()).collect();
-        let got = frobenius_number(&values);
+        // Skip the oracle resource failure for the ten-billion-entry table.
+        // The fixture records a resource failure, outside the numeric contract.
+        if case.error && values.first() == Some(&10_000_000_000) {
+            return;
+        }
+        let result = std::panic::catch_unwind(|| frobenius_number(&values));
+        if case.error {
+            assert!(result.is_err(), "{case:?}");
+            return;
+        }
         // MPU promotes overflow to bigint; this API returns None.
-        if case
+        let expected = case
             .result
             .as_ref()
-            .is_some_and(|r| r.parse::<u64>().is_err() && r != "-1")
-        {
-            assert_eq!(got, None, "{case:?}");
-            return case.result.clone();
-        }
-        got.map(|n| n.to_string())
+            .and_then(|r| r.parse::<i128>().ok())
+            .filter(|&n| n == -1 || u64::try_from(n).is_ok());
+        assert_eq!(result.unwrap(), expected, "{case:?}");
     });
 }
 

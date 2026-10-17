@@ -1,4 +1,0 @@
-- Plan: resolve the 4 conflicted files (benches/factor.rs, src/factor/mod.rs, tests/compat_factor.rs, tests/prop_factor.rs) keeping both sides; keep diff minimal; run focused tests with mw-test.
-- Started: reading conflict markers first.
-- Resolved tests/compat_factor.rs and tests/prop_factor.rs (union of both sides, one proptest block). Next: mw-test on factor tests.
-- gate (tools/gate.sh) and cargo fmt were not run: the sandbox denied gate.sh and cargo is not on PATH here. Unverified: rustfmt/clippy on tests/prop_factor.rs (long filter line). Last line: merge resolved, 20 factor tests pass.

@@ -3,9 +3,6 @@
 
 use crate::{is_prime, next_prime, prime_count, primes};
 
-/// `constants.h` `MPU_MAX_PRIME` on a 64-bit build.
-const MPU_MAX_PRIME: u64 = u64::MAX - 58;
-
 /// Return true when `n` is a Ramanujan prime.
 ///
 /// Port of MPU 0.75 `ramanujan_primes.c`, `is_ramanujan_prime`.
@@ -130,6 +127,9 @@ fn noe_level(mink: u64, max: u64, target: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// `constants.h` `MPU_MAX_PRIME` on a 64-bit build. Test-only: `half_gap` is checked against it.
+    const MPU_MAX_PRIME: u64 = u64::MAX - 58;
 
     const SMALL_RAM: [u64; 23] = [
         2, 11, 17, 29, 41, 47, 59, 67, 71, 97, 101, 107, 127, 149, 151, 167, 179, 181, 227, 229,

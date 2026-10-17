@@ -163,7 +163,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_pseudoprime`
 - [ ] `is_qr`
 - [x] `is_quasi_carmichael`
-- [ ] `is_ramanujan_prime`
+- [x] `is_ramanujan_prime`
 - [ ] `is_rough`
 - [x] `is_safe_prime`
 - [ ] `is_semiprime`
@@ -249,7 +249,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_ramanujan_prime`
 - [ ] `nth_ramanujan_prime_approx`
 - [ ] `nth_ramanujan_prime_lower`
-- [ ] `nth_ramanujan_prime_upper`
+- [x] `nth_ramanujan_prime_upper`
 - [ ] `nth_semiprime`
 - [ ] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`

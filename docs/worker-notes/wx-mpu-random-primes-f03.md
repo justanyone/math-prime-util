@@ -11,3 +11,4 @@ Focused offline tests passed: four compatibility tests and three property/state 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)
 First gate stopped at clippy: SHA constants needed digit separators and the semiprime table needed placement before statements. Fixed both and restarted the gate. Focused tests remain green.
 Moved SHA constants to module scope to keep the compression function below the pedantic line limit. Added a regression test that unsupported bigint sizes consume no random state. Awaiting the full offline gate.
+Clippy fixes are complete. The gate is running past compilation, and the required single whole-suite tools/test.sh run is queued. No network, oracle regeneration, dependency changes, or git writes were used.

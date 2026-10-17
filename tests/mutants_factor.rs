@@ -29,9 +29,9 @@ fn products() -> Vec<(u64, Vec<u64>)> {
         if list.len() == 6 {
             return;
         }
-        for i in start..POOL.len() {
-            if let Some(m) = n.checked_mul(POOL[i]) {
-                list.push(POOL[i]);
+        for (i, &p) in POOL.iter().enumerate().skip(start) {
+            if let Some(m) = n.checked_mul(p) {
+                list.push(p);
                 go(i, m, list, out);
                 list.pop();
             }
@@ -227,7 +227,7 @@ fn fold(mut hash: u64, list: &[u64]) -> u64 {
 fn heuristic_splitters_exact_results() {
     let (mut holf, mut lehman, mut rho, mut pm1, mut pp1) = (0, 0, 0, 0, 0);
     for n in inputs() {
-        let mut check = |what: &str, h: &mut u64, got: Vec<u64>| {
+        let check = |what: &str, h: &mut u64, got: Vec<u64>| {
             assert_split(n, &got, what);
             *h = fold(*h, &got);
         };

@@ -52,7 +52,11 @@ fn compat_int_prime_set_config_rh_match_scans_every_riemann() {
     // MPU 0.75 /riemann\s*h/ is unanchored: a later "riemann" can still match.
     // Positive cases: the second occurrence matches. Negative: no "h" follows any occurrence.
     let _guard = CONFIG_LOCK.lock().unwrap();
-    for key in ["riemannXriemannh", "riemann riemann h", "riemannxriemann\th"] {
+    for key in [
+        "riemannXriemannh",
+        "riemann riemann h",
+        "riemannxriemann\th",
+    ] {
         let on = prime_set_config(&[(key, 1)]).unwrap_or_else(|e| panic!("{key}: {e:?}"));
         assert!(on.assume_rh, "key {key} should set assume_rh");
     }

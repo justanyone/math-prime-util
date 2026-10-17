@@ -16,7 +16,14 @@ static LOCK: Mutex<()> = Mutex::new(());
 fn prop_int_rh_aliases_match_assume_rh() {
     // Every spelling MPU accepts for assume_rh must give the same state as assume_rh.
     let _guard = LOCK.lock().unwrap();
-    for key in ["rh", "grh", "erh", "assume rh", "assume_rh", "riemann hypothesis"] {
+    for key in [
+        "rh",
+        "grh",
+        "erh",
+        "assume rh",
+        "assume_rh",
+        "riemann hypothesis",
+    ] {
         for value in [0_u64, 1] {
             let set = prime_set_config(&[(key, value)]).unwrap();
             assert_eq!(set.assume_rh, value != 0, "alias {key} with value {value}");

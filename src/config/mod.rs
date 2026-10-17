@@ -127,7 +127,9 @@ pub fn prime_set_config(params: &[(&str, u64)]) -> Result<Config, ConfigError> {
         } else if is_rh_key(&key_lower) {
             next.assume_rh = value != 0;
         } else {
-            return Err(ConfigError::UnknownKey { key: key.to_owned() });
+            return Err(ConfigError::UnknownKey {
+                key: key.to_owned(),
+            });
         }
     }
     *config = next;

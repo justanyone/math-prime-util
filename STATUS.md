@@ -45,7 +45,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `chinese`
 - [x] `chinese2`
 - [x] `cmpint`
-- [ ] `consecutive_integer_lcm`
+- [x] `consecutive_integer_lcm`
 - [x] `contfrac`
 - [x] `convergents`
 - [ ] `cornacchia`
@@ -91,7 +91,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `forsetproduct`
 - [ ] `forsquarefree`
 - [ ] `forsquarefreeint`
-- [ ] `frobenius_number`
+- [x] `frobenius_number`
 - [x] `from_contfrac`
 - [x] `fromdigits`
 - [x] `fromzeckendorf`
@@ -108,8 +108,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
-- [ ] `inverse_sigma0`
-- [ ] `inverse_sigma0_count`
+- [x] `inverse_sigma0`
+- [x] `inverse_sigma0_count`
 - [x] `inverse_totient`
 - [x] `invmod`
 - [x] `irand`
@@ -123,7 +123,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_catalan_pseudoprime`
 - [x] `is_chen_prime`
 - [x] `is_congruent`
-- [ ] `is_congruent_number`
+- [x] `is_congruent_number`
 - [x] `is_cyclic`
 - [x] `is_delicate_prime`
 - [x] `is_divisible`
@@ -149,7 +149,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_perfect_power`
 - [x] `is_perrin_pseudoprime`
 - [ ] `is_pillai`
-- [ ] `is_polygonal`
+- [x] `is_polygonal`
 - [x] `is_power`
 - [x] `is_powerfree`
 - [x] `is_powerful`

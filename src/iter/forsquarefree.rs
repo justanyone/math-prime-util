@@ -1,23 +1,18 @@
-use std::ops::{ControlFlow, RangeInclusive};
 use super::run;
+use std::ops::{ControlFlow, RangeInclusive};
 
 /// Iterator over the squarefree `n` in a range, with their factors. See `XS.xs`, `forfactored`.
 #[derive(Debug, Clone)]
 pub struct SquarefreeIn {
-    range: RangeInclusive<u64>,
+    factored: super::FactoredIn,
 }
 
 impl Iterator for SquarefreeIn {
     type Item = (u64, Vec<(u64, u32)>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.range.find_map(|n| {
-            if n == 0 {
-                return None;
-            }
-            let factors = crate::factor_exp(n);
-            factors.iter().all(|&(_, e)| e == 1).then_some((n, factors))
-        })
+        self.factored
+            .find(|(_, factors)| factors.iter().all(|&(_, e)| e == 1))
     }
 }
 
@@ -28,7 +23,9 @@ impl Iterator for SquarefreeIn {
 /// ```
 #[must_use]
 pub fn squarefree_in(range: RangeInclusive<u64>) -> SquarefreeIn {
-    SquarefreeIn { range }
+    SquarefreeIn {
+        factored: super::factored_in(range),
+    }
 }
 
 /// Visit `n` and its factors for each squarefree `n` in an inclusive range.
@@ -48,4 +45,3 @@ pub fn forsquarefree<B>(
 ) -> ControlFlow<B> {
     run(squarefree_in(range), |(n, factors)| f(n, factors))
 }
-

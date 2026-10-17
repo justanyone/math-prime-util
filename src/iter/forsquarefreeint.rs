@@ -1,5 +1,5 @@
-use std::ops::{ControlFlow, RangeInclusive};
 use super::run;
+use std::ops::{ControlFlow, RangeInclusive};
 
 /// Visit each squarefree integer in an inclusive range. See `XS.xs`, `forsquarefreeint`.
 /// ```
@@ -17,7 +17,6 @@ pub fn forsquarefreeint<B>(
 ) -> ControlFlow<B> {
     run(squarefree_integers_in(range), f)
 }
-
 
 /// State for the squarefree sieve in `XS.xs::forsquarefreeint`.
 #[derive(Clone, Debug)]
@@ -57,8 +56,15 @@ impl Iterator for SquarefreeIntegersIn {
 /// ```
 #[must_use]
 pub fn squarefree_integers_in(range: RangeInclusive<u64>) -> SquarefreeIntegersIn {
-    let range = if range.is_empty() { 1..=0 } else { (*range.start()).max(1)..=*range.end() };
-    SquarefreeIntegersIn { range, segment: Vec::new().into_iter() }
+    let range = if range.is_empty() {
+        1..=0
+    } else {
+        (*range.start()).max(1)..=*range.end()
+    };
+    SquarefreeIntegersIn {
+        range,
+        segment: Vec::new().into_iter(),
+    }
 }
 
 // util.c::range_issquarefree marks multiples of each prime square.
@@ -74,5 +80,9 @@ fn squarefree_segment(lo: u64, hi: u64) -> Vec<u64> {
             i += square;
         }
     }
-    is_free.into_iter().zip(lo..=hi).filter_map(|(free, n)| free.then_some(n)).collect()
+    is_free
+        .into_iter()
+        .zip(lo..=hi)
+        .filter_map(|(free, n)| free.then_some(n))
+        .collect()
 }

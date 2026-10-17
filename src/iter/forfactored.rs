@@ -1,5 +1,5 @@
-use std::ops::{ControlFlow, RangeInclusive};
 use super::run;
+use std::ops::{ControlFlow, RangeInclusive};
 
 /// Iterator over `(n, factors)` for each `n` in a range, where `factors` are the
 /// `(prime, exponent)` pairs of `n`. See `XS.xs`, `forfactored`.
@@ -15,7 +15,10 @@ impl Iterator for FactoredIn {
 
     fn next(&mut self) -> Option<Self::Item> {
         if !self.sieve {
-            return self.range.find(|&n| n > 0).map(|n| (n, crate::factor_exp(n)));
+            return self
+                .range
+                .find(|&n| n > 0)
+                .map(|n| (n, crate::factor_exp(n)));
         }
         if let Some(value) = self.segment.next() {
             return Some(value);
@@ -37,9 +40,17 @@ impl Iterator for FactoredIn {
 /// ```
 #[must_use]
 pub fn factored_in(range: RangeInclusive<u64>) -> FactoredIn {
-    let range = if range.is_empty() { 1..=0 } else { (*range.start()).max(1)..=*range.end() };
+    let range = if range.is_empty() {
+        1..=0
+    } else {
+        (*range.start()).max(1)..=*range.end()
+    };
     let sieve = !range.is_empty() && range.end() - range.start() >= 100;
-    FactoredIn { range, sieve, segment: Vec::new().into_iter() }
+    FactoredIn {
+        range,
+        sieve,
+        segment: Vec::new().into_iter(),
+    }
 }
 
 /// Visit `n` and its factors for each `n` in an inclusive range. See `XS.xs`, `forfactored`.
@@ -59,7 +70,6 @@ pub fn forfactored<B>(
     run(factored_in(range), |(n, factors)| f(n, factors))
 }
 
-
 // MPU 0.75 factor.c::_fr_full_sieve. Bounds and thresholds are unchanged.
 fn full_sieve(root: u64, span: u64) -> bool {
     match root {
@@ -76,7 +86,11 @@ fn full_sieve(root: u64, span: u64) -> bool {
 // MPU 0.75 factor.c::_vec_factor, with prime powers stored as exponent pairs.
 fn factor_segment(lo: u64, hi: u64) -> Vec<(u64, Vec<(u64, u32)>)> {
     let root = crate::sqrtint(hi);
-    let limit = if full_sieve(root, hi - lo) { root } else { crate::rootint(hi, 3) };
+    let limit = if full_sieve(root, hi - lo) {
+        root
+    } else {
+        crate::rootint(hi, 3)
+    };
     let mut values: Vec<_> = (lo..=hi).map(|n| (n, Vec::new())).collect();
     let mut products = vec![1_u64; values.len()];
     for p in crate::primes_in(2..=limit) {
@@ -121,9 +135,14 @@ mod tests {
     #[test]
     fn sieve_thresholds() {
         assert!(full_sieve(9_999_999, 0));
-        for (root, span) in [(10_000_000, 900), (35_000_000, 1700),
-            (100_000_000, 3400), (350_000_000, 5500),
-            (1_000_000_000, 17000), (3_500_000_000, 19000)] {
+        for (root, span) in [
+            (10_000_000, 900),
+            (35_000_000, 1700),
+            (100_000_000, 3400),
+            (350_000_000, 5500),
+            (1_000_000_000, 17000),
+            (3_500_000_000, 19000),
+        ] {
             assert!(!full_sieve(root, span));
             assert!(full_sieve(root, span + 1));
         }

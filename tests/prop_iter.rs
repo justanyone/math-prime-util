@@ -202,7 +202,10 @@ proptest! {
 fn requested_iterator_bounds_and_state() {
     assert_eq!(almost_primes_in(64, 0..=u64::MAX).next(), None);
     assert_eq!(almost_primes_in(u32::MAX, 0..=u64::MAX).next(), None);
-    assert_eq!(almost_primes_in(63, 0..=u64::MAX).collect::<Vec<_>>(), [1_u64 << 63]);
+    assert_eq!(
+        almost_primes_in(63, 0..=u64::MAX).collect::<Vec<_>>(),
+        [1_u64 << 63]
+    );
     assert_eq!(almost_primes_in(0, 0..=10).count(), 0);
     let lo = 10;
     let hi = 2;
@@ -224,20 +227,39 @@ fn requested_iterator_bounds_and_state() {
     let mut empty = squarefree_integers_in(4..=4);
     assert_eq!(empty.next(), None);
     assert_eq!(empty.next(), None);
-    assert_eq!(foralmostprimes(2, 0..=100, ControlFlow::Break), ControlFlow::Break(4));
-    assert_eq!(forfactored(1..=100, |n, _| ControlFlow::Break(n)), ControlFlow::Break(1));
-    assert_eq!(forsquarefree(1..=100, |n, _| ControlFlow::Break(n)), ControlFlow::Break(1));
-    assert_eq!(forsquarefreeint(1..=100, ControlFlow::Break), ControlFlow::Break(1));
-    let workers: Vec<_> = (0..4).map(|_| std::thread::spawn(|| {
-        let mut seen = Vec::new();
-        let _: ControlFlow<()> = forsquarefreeint(0..=100, |n| {
-            assert!(forfactored(n..=n, |_, _| ControlFlow::Break(())).is_break());
-            seen.push(n);
-            ControlFlow::Continue(())
-        });
-        seen
-    })).collect();
+    assert_eq!(
+        foralmostprimes(2, 0..=100, ControlFlow::Break),
+        ControlFlow::Break(4)
+    );
+    assert_eq!(
+        forfactored(1..=100, |n, _| ControlFlow::Break(n)),
+        ControlFlow::Break(1)
+    );
+    assert_eq!(
+        forsquarefree(1..=100, |n, _| ControlFlow::Break(n)),
+        ControlFlow::Break(1)
+    );
+    assert_eq!(
+        forsquarefreeint(1..=100, ControlFlow::Break),
+        ControlFlow::Break(1)
+    );
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                let mut seen = Vec::new();
+                let _: ControlFlow<()> = forsquarefreeint(0..=100, |n| {
+                    assert!(forfactored(n..=n, |_, _| ControlFlow::Break(())).is_break());
+                    seen.push(n);
+                    ControlFlow::Continue(())
+                });
+                seen
+            })
+        })
+        .collect();
     for worker in workers {
-        assert_eq!(worker.join().unwrap(), squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>());
+        assert_eq!(
+            worker.join().unwrap(),
+            squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>()
+        );
     }
 }

@@ -1,8 +1,8 @@
 //! Stateful loops from MPU 0.75 `XS.xs` and `lib/Math/Prime/Util/PP.pm`.
 mod forsquarefreeint;
-pub use forsquarefreeint::{SquarefreeIntegersIn, squarefree_integers_in, forsquarefreeint};
+pub use forsquarefreeint::{SquarefreeIntegersIn, forsquarefreeint, squarefree_integers_in};
 mod forsquarefree;
-pub use forsquarefree::{SquarefreeIn, squarefree_in, forsquarefree};
+pub use forsquarefree::{SquarefreeIn, forsquarefree, squarefree_in};
 mod forfactored;
 pub use forfactored::{FactoredIn, factored_in, forfactored};
 mod foralmostprimes;

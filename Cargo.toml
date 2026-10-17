@@ -37,6 +37,10 @@ name = "combinat"
 harness = false
 
 [[bench]]
+name = "count"
+harness = false
+
+[[bench]]
 name = "digits"
 harness = false
 

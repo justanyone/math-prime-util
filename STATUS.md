@@ -74,7 +74,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `fdivrem`
 - [x] `fermat_factor`
 - [x] `fibonacci`
-- [ ] `floor_sum`
+- [x] `floor_sum`
 - [ ] `foralmostprimes`
 - [ ] `forcomb`
 - [ ] `forcomp`
@@ -178,7 +178,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_totient`
 - [x] `jordan_totient`
 - [x] `kronecker`
-- [ ] `LambertW`
+- [x] `LambertW`
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
@@ -250,8 +250,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_ramanujan_prime_approx`
 - [x] `nth_ramanujan_prime_lower`
 - [ ] `nth_ramanujan_prime_upper`
-- [ ] `nth_semiprime`
-- [ ] `nth_semiprime_approx`
+- [x] `nth_semiprime`
+- [x] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
 - [x] `nth_twin_prime`
@@ -267,7 +267,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `perfect_power_count_lower`
 - [ ] `perfect_power_count_upper`
 - [x] `permtonum`
-- [ ] `Pi`
+- [x] `Pi`
 - [x] `pisano_period`
 - [x] `pminus1_factor`
 - [x] `pn_primorial`
@@ -288,9 +288,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_bigomega`
 - [ ] `prime_certificate`
 - [x] `prime_count`
-- [ ] `prime_count_approx`
-- [ ] `prime_count_lower`
-- [ ] `prime_count_upper`
+- [x] `prime_count_approx`
+- [x] `prime_count_lower`
+- [x] `prime_count_upper`
 - [x] `prime_get_config`
 - [ ] `prime_iterator`
 - [ ] `prime_iterator_object`
@@ -306,7 +306,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_set_config`
 - [x] `prime_signature`
 - [x] `primorial`
-- [ ] `print_primes`
+- [x] `print_primes`
 - [x] `qnr`
 - [ ] `ramanujan_prime_count`
 - [ ] `ramanujan_prime_count_approx`
@@ -333,10 +333,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `random_unrestricted_semiprime`
 - [x] `randperm`
 - [x] `rashiftint`
-- [ ] `remove_factors`
-- [ ] `remove_factors_exp`
+- [x] `remove_factors`
+- [x] `remove_factors_exp`
 - [x] `reverse_digits`
-- [ ] `RiemannR`
+- [x] `RiemannR`
 - [ ] `RiemannZeta`
 - [x] `rising_factorial`
 - [x] `rootint`

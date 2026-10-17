@@ -18,3 +18,4 @@ Full suite compilation still holds the build lock. Preserved sibling tests; no a
 Waiting on the full offline suite and gate. The test wrapper buffers its output until completion, so current full-suite progress is unavailable.
 About five minutes remain. Gate has advanced past compilation and is producing test output; awaiting the final result.
 Gate printed == gate: green: fmt, pedantic clippy, Rust 1.85 offline build, all tests, runnable docs, and documentation passed. Waiting for the separately requested tools/test.sh invocation.
+Finished: focused oracle/property tests, the full offline tools/test.sh run, and tools/gate.sh all passed. Gate printed == gate: green. Sibling tests are preserved; signed/bigint cases remain documented API skips. No fixtures, tools, STATUS.md, dependencies, or git metadata were edited.

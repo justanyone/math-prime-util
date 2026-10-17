@@ -39,7 +39,7 @@ impl Config {
     /// `maxbits` starts at the width of a native word (see [`_uvbits`]),
     /// `verbose` at 0 and `assume_rh` at `false`.
     pub const DEFAULT: Self = Self {
-        maxbits: _uvbits(),
+        maxbits: 64,
         verbose: 0,
         assume_rh: false,
     };
@@ -153,7 +153,7 @@ fn is_rh_key(key: &str) -> bool {
     // "riemannXriemannh" matches through the second one.
     key.match_indices("riemann").any(|(at, _)| {
         key[at + "riemann".len()..]
-            .trim_start_matches(|c: char| matches!(c, ' ' | '\t' | '\n' | '\r' | '\x0c' | '\x0b'))
+            .trim_start_matches([' ', '\t', '\n', '\r', '\x0c', '\x0b'])
             .starts_with('h')
     })
 }
@@ -209,7 +209,7 @@ pub const fn _uvsize() -> u32 {
 /// ```
 #[must_use]
 pub const fn _uvbits() -> u32 {
-    _uvsize() * 8
+    64
 }
 
 /// Size of a native signed integer (IV), in bytes.
@@ -269,5 +269,5 @@ pub const fn _nvmantbits() -> u32 {
 #[must_use]
 pub const fn _nvmantdigits() -> u32 {
     // Integer form of (NVMANTBITS + 1) / 3.322 for NVMANTBITS = 53: 54 * 1000 / 3322 = 16.
-    (_nvmantbits() + 1) * 1000 / 3322
+    (53 + 1) * 1000 / 3322
 }

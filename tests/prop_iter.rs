@@ -217,7 +217,9 @@ fn range_loops_stop_and_keep_local_state() {
     for (run, first) in loops.into_iter().zip([2, 4, 9, 4]) {
         assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
         assert_eq!(
-            run(30..=0, |_| panic!("empty callback")),
+            run(std::ops::RangeInclusive::new(30, 0), |_| panic!(
+                "empty callback"
+            )),
             ControlFlow::Continue(())
         );
         assert!(std::panic::catch_unwind(|| run(0..=30, |_| panic!("callback"))).is_err());
@@ -275,7 +277,10 @@ fn semiprime_exhausted_input_stays_empty() {
     let mut range = 4..=4;
     assert_eq!(range.next(), Some(4));
     assert_eq!(semiprimes_in(range).next(), None);
-    assert_eq!(semiprimes_in(10..=4).next(), None);
+    assert_eq!(
+        semiprimes_in(std::ops::RangeInclusive::new(10, 4)).next(),
+        None
+    );
     let mut iter = semiprimes_in(0..=10);
     assert_eq!(iter.next(), Some(4));
     assert_eq!(iter.clone().collect::<Vec<_>>(), [6, 9, 10]);

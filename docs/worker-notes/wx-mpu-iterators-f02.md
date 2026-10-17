@@ -15,3 +15,4 @@ Compatibility dispatch now calls all four closure APIs directly. Builds remain b
 Added unwind/relaunch, u64 endpoint, and cube-root sieve regression cases. Waiting on the shared Cargo build lock remains the only observed validation blocker.
 Started focused tests with CARGO_TARGET_DIR=target/iter-verify to avoid the shared build-directory lock. No dependencies or build scripts changed.
 Final source review retained the C thresholds and maximum table, and simplified the private factor-value type for pedantic lint. Isolated focused compilation is still pending.
+Verification is pending: the original gate remains blocked on Cargo's lock, while the isolated test run has not returned output. No test success is claimed.

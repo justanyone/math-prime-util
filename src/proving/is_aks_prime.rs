@@ -236,7 +236,7 @@ mod tests {
         assert!(!test_anr(2, 15, 7));
         assert!(test_anr(102, 101, 7));
         assert_eq!(multiply(&[0, 1], &[0, 1], 7), vec![1, 0]);
-        assert_eq!(log_binomial(1, 2), -f64::MAX);
+        assert_eq!(log_binomial(1, 2).to_bits(), (-f64::MAX).to_bits());
     }
 }
 

@@ -244,9 +244,10 @@ mod tests {
 
     #[test]
     fn chebyshev_known_values() {
-        assert_eq!(chebyshev_theta(1), 0.0);
-        assert_eq!(chebyshev_psi(1), 0.0);
-        assert_eq!(chebyshev_psi(0), 0.0);
+        // ±0.0 is the defined value. Compare bits after abs so -0.0 matches.
+        assert_eq!(chebyshev_theta(1).abs().to_bits(), 0);
+        assert_eq!(chebyshev_psi(1).abs().to_bits(), 0);
+        assert_eq!(chebyshev_psi(0).abs().to_bits(), 0);
         assert!((chebyshev_theta(10) - 210.0_f64.ln()).abs() < 1e-12);
     }
 

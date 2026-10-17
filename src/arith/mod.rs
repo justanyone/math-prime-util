@@ -1,9 +1,6 @@
 //! Totients and multiplicative arithmetic from MPU 0.75.
 //! Divisor sums, discriminants, and arithmetic in residue rings.
 
-<<<<<<< HEAD
-use crate::{gcd, is_prime, is_square, next_prime, rootint, sqrtint};
-=======
 mod sopfr;
 pub use sopfr::sopfr;
 mod sopf;
@@ -14,7 +11,6 @@ mod chinese;
 pub use chinese::chinese;
 
 use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
->>>>>>> origin/dev-001
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
@@ -997,24 +993,13 @@ pub fn is_fundamental(n: i64) -> bool {
     }
 }
 
-<<<<<<< HEAD
-/// Solve simultaneous congruences. Each pair is (residue, modulus).
-/// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
-=======
 /// Return the least solution and the combined modulus.
 /// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
 /// An empty input gives `(0, 0)`.
->>>>>>> origin/dev-001
 ///
 /// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
 ///
 /// ```
-<<<<<<< HEAD
-/// assert_eq!(math_prime_util::chinese(&[(2, 3), (3, 5)]), Some(8));
-/// ```
-pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
-    chinese2(congruences).map(|(r, _)| r)
-=======
 /// assert_eq!(math_prime_util::chinese2(&[(2, 3), (3, 5)]), Some((8, 15)));
 /// ```
 pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
@@ -1188,7 +1173,6 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
             .iter()
             .all(|&(q, _)| powmod(a, phi / q, p) != Some(1)),
     )
->>>>>>> origin/dev-001
 }
 
 /// Return the least quadratic nonresidue modulo n.
@@ -1280,14 +1264,3 @@ pub fn is_qr(a: u64, n: u64) -> bool {
 mod inverse_sigma0;
 pub use inverse_sigma0::*;
 
-mod chinese2;
-pub use chinese2::chinese2;
-
-mod znorder;
-pub use znorder::znorder;
-
-mod znprimroot;
-pub use znprimroot::znprimroot;
-
-mod is_primitive_root;
-pub use is_primitive_root::is_primitive_root;

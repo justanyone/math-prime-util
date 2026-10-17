@@ -194,7 +194,6 @@ proptest! {
 
 proptest! {
     #[test]
-<<<<<<< HEAD
     fn crt_shared_moduli(x in any::<u64>(), m in 1_u64..1000, n in 1_u64..1000) {
         let input = [(x % m, m), (x % n, n), (x % m, m)];
         let result = chinese2(&input).unwrap();
@@ -211,7 +210,9 @@ proptest! {
             prop_assert_eq!(carmichael_lambda(n) % order, 0);
             prop_assert_eq!(powmod(a, order, n), Some(1));
         }
-=======
+    }
+
+    #[test]
     fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
         prop_assert_eq!(sopfr(a * b), sopfr(a) + sopfr(b));
         if gcd(a, b) == 1 {
@@ -234,12 +235,10 @@ proptest! {
     #[test]
     fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
         prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn residue_ring_exhaustive() {
     for n in 1..150 {
         let mut least_root = None;
@@ -275,8 +274,6 @@ fn crt_native_bounds() {
 }
 
 #[test]
-fn residue_ring_repeated_parallel_inputs() {
-=======
 fn divisor_sums_native_edges() {
     for (n, repeated, distinct) in [
         (0, 0, 0),
@@ -332,12 +329,14 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
     ] {
         assert_eq!(kronecker(a, b), expected);
     }
->>>>>>> origin/dev-001
+}
+
+#[test]
+fn residue_ring_repeated_parallel_inputs() {
     let threads: Vec<_> = (0..4)
         .map(|_| {
             std::thread::spawn(|| {
                 for _ in 0..3 {
-<<<<<<< HEAD
                     assert_eq!(chinese2(&[(5, 12), (17, 18), (5, 12)]), Some((17, 36)));
                     assert_eq!(znorder(2, 27), Some(18));
                     assert_eq!(znprimroot(54), Some(5));
@@ -346,14 +345,12 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
                     assert_eq!(znorder(0, 2), None);
                     assert_eq!(znprimroot(0), None);
                     assert_eq!(is_primitive_root(0, 0), None);
-=======
                     assert_eq!(sopfr(360), 17);
                     assert_eq!(sopf(360), 10);
                     let inputs = [(5, 12), (17, 18), (5, 12)];
                     assert_eq!(chinese(&inputs), Some(17));
                     assert_eq!(inputs, [(5, 12), (17, 18), (5, 12)]);
                     assert_eq!(kronecker(-7, 19), -1);
->>>>>>> origin/dev-001
                 }
             })
         })

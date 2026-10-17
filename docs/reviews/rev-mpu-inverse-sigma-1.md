@@ -11,3 +11,5 @@ The stopped run is not complete against the acceptance criteria. This review use
 4. src/arith/inverse_sigma0.rs:56 — Open. Every nonempty valid range builds all primes through sqrt(hi), even for k=1. For example, `inverse_sigma0_count(1, u64::MAX, u64::MAX)` should immediately return zero through MPU's k=1 fast path, but instead allocates 4,294,967,296 boolean entries plus a prime vector and sieves billions of positions. SEGMENT bounds only the later arrays. Restore the C fast paths and algorithm selection, with large-endpoint regressions that exercise the early returns.
 
 Inspection of the digest found ascending, nonduplicating segment emission and terminating segment progression, including the saturated final endpoint. No candidate execution is claimed: required local checks run against the base checkout and cannot establish candidate correctness.
+
+Validation on the base checkout: `tools/test.sh tests/compat_arith.rs` passed all 15 tests; `tools/gate.sh` completed with `== gate: green`. These results do not validate the candidate branch.

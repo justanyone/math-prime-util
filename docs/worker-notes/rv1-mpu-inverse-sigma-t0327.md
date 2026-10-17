@@ -9,3 +9,4 @@ Gate passed fmt, clippy, and MSRV; its full test phase is still in compat_count.
 Base gate reports long-running nth_prime_oracle and prime_count_oracle tests, with no failure yet. Waiting within the session budget; candidate review verdict remains FAIL independently of base checks.
 Base nth_prime_oracle finished successfully; prime_count_oracle remains running. No further source reads are needed; waiting for gate completion before finalizing validation details.
 About five minutes remain in the wall-clock budget. FAIL review is already on disk; base prime_count_oracle is still running, so gate green has not been observed.
+Finished: base prime-count tests passed and tools/gate.sh printed == gate: green. Recorded validation in the FAIL review; four candidate findings remain open. Only the requested review and required worker notes were authored; no source changes or git writes.

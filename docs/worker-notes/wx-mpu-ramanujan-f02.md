@@ -22,3 +22,4 @@ About five minutes remain in the worker budget. All assigned implementation and 
 The existing nth-prime oracle has now passed. Only the existing prime-count oracle remains in this test executable.
 Ran the four Ramanujan documentation examples directly while the existing prime-count oracle continues in the gate.
 All four Ramanujan doc examples pass. Full gate remains in the existing prime_count_oracle; fmt, clippy, MSRV, new unit, compat and property tests pass.
+- 2026-10-17T07:01:06Z launcher: no commit for 61 s; 791 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-ramanujan-f02.md, src/families/mod.rs, src/families/nth_ramanujan_prime.rs, src/families/nth_ramanujan_prime_approx.rs, src/families/nth_ramanujan_prime_lower.rs, src/families/ramanujan_prime_count_upper.rs, tests/compat_families.rs, tests/prop_families.rs.

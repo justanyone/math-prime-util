@@ -3,3 +3,4 @@ Read PLAN.md sections 5–8 before writing; inspect only specific unresolved dou
 Check compatibility, completion evidence, and focused validation without changing code.
 Write the required verdict with concrete candidate line references; no earlier findings exist.
 Found an undefined lastfor_value call in candidate tests; wrote FAIL review. Next run required focused/base checks, keeping their evidentiary limit explicit.
+Review is written with the compile blocker and native iterator checks. Focused base tests are building; the base gate is waiting for the build lock, so neither can certify the candidate.

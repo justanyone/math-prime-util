@@ -13,22 +13,12 @@ fn is_prime_u64(n: u64) -> bool {
     if n < 2 {
         return false;
     }
-    if n % 2 == 0 {
-        return n == 2;
-    }
-    if n % 3 == 0 {
-        return n == 3;
-    }
-    let mut d = 5u64;
+    let mut d = 2u64;
     while d <= n / d {
-        if n % d == 0 || n % (d + 2) == 0 {
+        if n % d == 0 {
             return false;
         }
-        d += 6;
-        if d > n / d {
-            // `d + 6` can wrap; the division test above is the real bound.
-            break;
-        }
+        d += 1;
     }
     true
 }
@@ -191,10 +181,6 @@ pub fn primorial(n: u64) -> Option<u128> {
     let mut p = 2u64;
     while p <= n {
         acc = acc.checked_mul(u128::from(p))?;
-        if p > n / 2 && p != n {
-            // The next prime is past `n` once `p` is the last prime <= n
-            // only if we already multiplied `p`. Continue via next_prime.
-        }
         let nxt = next_prime(p);
         if nxt <= p {
             break;
@@ -500,29 +486,40 @@ fn polygonal_u128(n: u128, k: u128) -> bool {
     if n <= 1 {
         return true;
     }
-    let (disc, root_adjust, step) = if k == 4 {
-        return crate::is_square(u64::try_from(n).unwrap_or(u64::MAX)) && n <= u128::from(u64::MAX)
-            || is_square_u128(n);
-    } else if k == 3 {
-        let d = n.checked_mul(8)?.checked_add(1);
-        (d, k - 4, 2 * k - 4)
+    if k == 4 {
+        return is_square_u128(n);
+    }
+    // `k = 3` subtracts 1 from the root (`k - 4 = -1` in the C code).
+    let (disc, step, adjust_down) = if k == 3 {
+        let Some(d) = n.checked_mul(8).and_then(|v| v.checked_add(1)) else {
+            return false;
+        };
+        (d, 2u128, true)
     } else {
-        let coef = (8 * k).checked_sub(16)?;
-        let d = coef.checked_mul(n)?.checked_add((k - 4).checked_mul(k - 4)?);
-        (d, k - 4, 2 * k - 4)
+        let Some(coef) = k.checked_mul(8).and_then(|v| v.checked_sub(16)) else {
+            return false;
+        };
+        let Some(sq) = (k - 4).checked_mul(k - 4) else {
+            return false;
+        };
+        let Some(d) = coef.checked_mul(n).and_then(|v| v.checked_add(sq)) else {
+            return false;
+        };
+        (d, k * 2 - 4, false)
     };
-    let Some(d) = disc else {
-        return false;
-    };
-    let s = sqrt_u128(d);
-    if s.checked_mul(s) != Some(d) {
+    let s = sqrt_u128(disc);
+    if s.checked_mul(s) != Some(disc) {
         return false;
     }
-    let num = s.checked_add(root_adjust)?;
-    if step == 0 || num % step != 0 {
+    let num = if adjust_down {
+        s.checked_sub(1)
+    } else {
+        s.checked_add(k - 4)
+    };
+    let Some(num) = num else {
         return false;
-    }
-    true
+    };
+    step != 0 && num % step == 0
 }
 
 fn is_square_u128(n: u128) -> bool {

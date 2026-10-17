@@ -366,13 +366,12 @@ pub fn subfactorial(n: i64) -> Option<u128> {
 
 /// `!n = n * !(n - 1) + (-1)^n`, with `!0 = 1` and `!1 = 0`.
 fn subfactorial_rec(n: u64) -> Option<u128> {
-    let mut a = 1u128; // !0
     let mut b = 0u128; // !1
     if n == 0 {
-        return Some(a);
+        return Some(1);
     }
     if n == 1 {
-        return Some(b);
+        return Some(0);
     }
     for i in 2..=n {
         let mut t = b.checked_mul(u128::from(i))?;
@@ -381,9 +380,7 @@ fn subfactorial_rec(n: u64) -> Option<u128> {
         } else {
             t = t.checked_sub(1)?;
         }
-        a = b;
         b = t;
-        let _ = a;
     }
     Some(b)
 }

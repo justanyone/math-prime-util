@@ -90,7 +90,11 @@ mod tests {
     fn small_sums_match_direct_count() {
         assert_eq!(powerfree_sum(0, 2), 0);
         assert_eq!(powerfree_sum(1, 2), 1);
-        assert_eq!(powerfree_sum(300, 2), (1..=300_u128).filter(|&i| (2..=17).all(|d| i % (d * d) != 0)).sum());
+        let direct: u128 = (1..=300_u64)
+            .filter(|&i| (2..=17).all(|d| i % (d * d) != 0))
+            .map(u128::from)
+            .sum();
+        assert_eq!(powerfree_sum(300, 2), direct);
     }
 
     #[test]

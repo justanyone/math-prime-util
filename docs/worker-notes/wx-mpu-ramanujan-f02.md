@@ -15,3 +15,4 @@ Formatting, pedantic Clippy, and MSRV 1.85 build pass. The full offline test and
 Diff whitespace check passes. Full gate is still running the pre-existing count compatibility tests.
 All new tests remain green. Waiting for the existing prime-count compatibility suite in the full gate; no network or external files were changed.
 The full gate is spending over a minute in existing chebyshev, nth-prime and prime-count oracle tests. New family tests already passed offline.
+The existing Chebyshev oracle passed; the full gate continues with nth-prime and prime-count cases.

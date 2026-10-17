@@ -254,7 +254,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
-- [ ] `nth_twin_prime`
+- [x] `nth_twin_prime`
 - [ ] `nth_twin_prime_approx`
 - [ ] `numtoperm`
 - [ ] `omega_prime_count`
@@ -394,9 +394,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `toset`
 - [x] `tozeckendorf`
 - [ ] `trial_factor`
-- [ ] `twin_prime_count`
-- [ ] `twin_prime_count_approx`
-- [ ] `twin_primes`
+- [x] `twin_prime_count`
+- [x] `twin_prime_count_approx`
+- [x] `twin_primes`
 - [x] `urandomb`
 - [x] `urandomm`
 - [x] `urandomr`

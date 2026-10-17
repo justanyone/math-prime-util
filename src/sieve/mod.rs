@@ -183,7 +183,8 @@ impl Iterator for PrimesIn {
 }
 
 fn primes_from_cache(lo: u64, hi: u64) -> Option<Vec<u64>> {
-    let guard = lock_cache();
+    let lock = CACHE.get()?;
+    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
     if guard.limit == 0 || hi >= guard.limit {
         return None;
     }
@@ -295,7 +296,8 @@ pub fn prev_prime(n: u64) -> Option<u64> {
 }
 
 fn cache_next(n: u64) -> Option<u64> {
-    let guard = lock_cache();
+    let lock = CACHE.get()?;
+    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
     if guard.limit == 0 || n >= guard.limit {
         return None;
     }
@@ -304,7 +306,8 @@ fn cache_next(n: u64) -> Option<u64> {
 
 /// `None` means the cache does not cover `n`. `Some(None)` means no prime.
 fn cache_prev(n: u64) -> Option<Option<u64>> {
-    let guard = lock_cache();
+    let lock = CACHE.get()?;
+    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
     if guard.limit == 0 || n >= guard.limit {
         return None;
     }
@@ -690,7 +693,10 @@ mod tests {
                 assert_eq!(next_prime(90), Some(97));
                 assert_eq!(prev_prime(90), Some(89));
                 assert_eq!(primes(14, 18), vec![17]);
-                assert_eq!(sieve_prime_cluster(0, 30, &[2]).len(), 4);
+                assert_eq!(
+                    sieve_prime_cluster(0, 30, &[2]),
+                    vec![3, 5, 11, 17, 29]
+                );
             }));
         }
         for join in joins {

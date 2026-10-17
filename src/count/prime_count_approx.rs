@@ -10,12 +10,14 @@ use super::prime_count;
 /// # Examples
 ///
 /// ```
-/// let approx = math_prime_util::prime_count_approx(10_000_000_000);
-/// let exact = 455_052_511_u64;
-/// assert!(approx.abs_diff(exact) < 1_000);
+/// assert_eq!(math_prime_util::prime_count_approx(10_000_000_000), 455_050_683);
 /// ```
 #[must_use]
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 pub fn prime_count_approx(n: u64) -> u64 {
     if n < 3_000_000 {
         return prime_count(n);

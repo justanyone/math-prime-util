@@ -18,7 +18,11 @@ use super::prime_count;
 /// assert!(math_prime_util::prime_count_lower(n) <= math_prime_util::prime_count(n));
 /// ```
 #[must_use]
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 pub fn prime_count_lower(n: u64) -> u64 {
     if n < 33_000 {
         return prime_count(n);

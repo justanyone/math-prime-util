@@ -45,7 +45,11 @@ const UPPER_THRESH: [(u64, f32); 21] = [
 /// assert!(math_prime_util::prime_count_upper(n) >= math_prime_util::prime_count(n));
 /// ```
 #[must_use]
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 pub fn prime_count_upper(n: u64) -> u64 {
     if n < 33_000 {
         return prime_count(n);
@@ -91,7 +95,18 @@ mod tests {
 
     #[test]
     fn bound_holds_in_each_branch() {
-        for n in [33_000, 59_000, 355_991, 821_800_000, 821_800_001, 1_000_000_000, 101_000_000_000, 200_000_000_000] {
+        for n in [
+            33_000,
+            59_000,
+            355_991,
+            821_800_000,
+            821_800_001,
+            1_000_000_000,
+            5_000_000_000,
+            50_000_000_000,
+            101_000_000_000,
+            200_000_000_000,
+        ] {
             assert!(prime_count_upper(n) > 0, "n = {n}");
         }
         assert!(prime_count_upper(1_000_000) >= prime_count(1_000_000));

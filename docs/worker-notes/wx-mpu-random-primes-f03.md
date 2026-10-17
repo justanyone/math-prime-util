@@ -12,3 +12,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 First gate stopped at clippy: SHA constants needed digit separators and the semiprime table needed placement before statements. Fixed both and restarted the gate. Focused tests remain green.
 Moved SHA constants to module scope to keep the compression function below the pedantic line limit. Added a regression test that unsupported bigint sizes consume no random state. Awaiting the full offline gate.
 Clippy fixes are complete. The gate is running past compilation, and the required single whole-suite tools/test.sh run is queued. No network, oracle regeneration, dependency changes, or git writes were used.
+The required gate printed == gate: green, including clippy, MSRV 1.85, all tests, doctests, and docs. All four functions and benchmarks are implemented; native oracle cases pass. Bigint sizes intentionally return None. Waiting only for the  <<cut 51 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 27 bytes)
+Final: tools/test.sh also passed offline, including all 188 doctests. Work is complete for native sizes; no tests were blocked. No files outside the worktree were changed. The launcher owns commits and pushes.

@@ -2,10 +2,11 @@
 //! Benchmarks for the lucky-number, prime-power, twin prime and semiprime functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    goldbach_pair_count, goldbach_pairs, is_lucky, is_prime_power, lucky_count, lucky_numbers,
-    minimal_goldbach_pair, next_chen_prime, next_prime_power, nth_lucky, nth_ramanujan_prime,
-    nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_twin_prime, nth_twin_prime_approx,
-    powerfree_count, powerful_count, powerful_numbers, prev_prime_power, prime_power_count,
+    goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_prime_power,
+    is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair, next_chen_prime,
+    next_prime_power, nth_lucky, nth_ramanujan_prime, nth_ramanujan_prime_approx,
+    nth_ramanujan_prime_lower, nth_twin_prime, nth_twin_prime_approx, powerfree_count,
+    powerful_count, powerful_numbers, prev_prime_power, prime_power_count,
     prime_power_count_approx, prime_power_count_lower, prime_power_count_upper, prime_powers,
     ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
     twin_prime_count, twin_prime_count_approx, twin_primes,
@@ -126,5 +127,13 @@ fn bench_goldbach_misc(c: &mut Criterion) {
         b.iter(|| next_chen_prime(black_box(10_000_000_000_000_000)));
     });
 }
-criterion_group!(benches, bench_families, bench_goldbach_misc);
+fn bench_squares(c: &mut Criterion) {
+    c.bench_function("is_gaussian_prime", |b| {
+        b.iter(|| is_gaussian_prime(black_box(519_880), black_box(2_265_929)));
+    });
+    c.bench_function("is_sum_of_squares", |b| {
+        b.iter(|| is_sum_of_squares(black_box(18_446_744_073_709_551_557), 2));
+    });
+}
+criterion_group!(benches, bench_families, bench_goldbach_misc, bench_squares);
 criterion_main!(benches);

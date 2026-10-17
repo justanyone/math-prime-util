@@ -1,0 +1,1 @@
+- start: reading review note; plan: fix each Open finding with a failing-then-passing test

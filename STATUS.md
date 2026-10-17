@@ -72,7 +72,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `farey`
 - [x] `farey_rank`
 - [x] `fdivrem`
-- [ ] `fermat_factor`
+- [x] `fermat_factor`
 - [x] `fibonacci`
 - [ ] `floor_sum`
 - [ ] `foralmostprimes`
@@ -104,7 +104,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `harmfrac`
 - [x] `harmreal`
 - [ ] `hclassno`
-- [ ] `holf_factor`
+- [x] `holf_factor`
 - [ ] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
@@ -182,7 +182,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
-- [ ] `lehman_factor`
+- [x] `lehman_factor`
 - [ ] `liouville`
 - [ ] `LogarithmicIntegral`
 - [x] `logint`
@@ -373,7 +373,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sqrtint`
 - [ ] `sqrtmod`
 - [ ] `squarefree_kernel`
-- [ ] `squfof_factor`
+- [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`
 - [x] `stirling`

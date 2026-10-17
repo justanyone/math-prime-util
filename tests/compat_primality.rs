@@ -309,3 +309,15 @@ fn is_frobenius_underwood_pseudoprime_oracle() {
         c.check(Some(u8::from(is_frobenius_underwood_pseudoprime(n))));
     });
 }
+
+#[test]
+fn is_perrin_pseudoprime_oracle() {
+    common::each("primality", "is_perrin_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        // The fixture passes only n, so the MPU default restriction 0 applies.
+        c.check(Some(u8::from(is_perrin_pseudoprime(n, 0))));
+    });
+}

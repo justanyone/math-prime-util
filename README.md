@@ -50,3 +50,12 @@ The phases are described in `PLAN.md` section 6.
 
 Same terms as MPU and Perl itself: GPL-1.0-or-later OR Artistic-1.0-Perl. See
 [LICENSE](LICENSE). Math::Prime::Util is copyright Dana Jacobsen.
+
+## Generic integers
+
+`Int` provides `is_prime`, `factor`, `powmod`, `gcd`, and `next_prime`
+for `u64` and `u128`. Import `math_prime_util::Int`, then use
+`97_u128.is_prime()` or `3_u64.powmod(&5, &7)`.
+Factoring returns `Result`; modular powers and next primes return `Option`.
+Primality returns 0, 1, or 2, as the native API does.
+The optional `num-bigint` backend is not yet available.

@@ -13,11 +13,7 @@ categories = ["mathematics", "algorithms"]
 publish = false
 exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 
-[features]
-bigint = ["dep:num-bigint"]
-
 [dependencies]
-num-bigint = { version = "0.4", optional = true }
 getrandom = { version = "0.3", features = ["std"] }
 
 [dev-dependencies]
@@ -27,6 +23,10 @@ criterion = { version = "0.5", default-features = false }
 [lib]
 # The lib test harness rejects criterion flags (`--output-format bencher`); benches live in benches/.
 bench = false
+
+[[bench]]
+name = "primality"
+harness = false
 
 [[bench]]
 name = "arith"

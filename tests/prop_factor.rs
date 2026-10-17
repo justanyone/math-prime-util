@@ -45,11 +45,11 @@ proptest! {
 #[test]
 fn boundaries_and_repeated_calls() {
     assert_eq!(factor(0), [0]);
-    assert!(factor(1).is_empty());
+    assert_eq!(factor(1), Vec::<u64>::new());
     assert_eq!(factor_exp(0), [(0, 1)]);
-    assert!(factor_exp(1).is_empty());
-    assert!(divisors(0, None).is_empty());
-    assert!(divisors(360, Some(0)).is_empty());
+    assert_eq!(factor_exp(1), Vec::<(u64, u32)>::new());
+    assert_eq!(divisors(0, None), Vec::<u64>::new());
+    assert_eq!(divisors(360, Some(0)), Vec::<u64>::new());
     assert_eq!(divisors(360, Some(1)), [1]);
     assert_eq!(divisors(1, None), [1]);
     assert_eq!(trial_factor(49, 6), [49]);

@@ -11,3 +11,4 @@ All approximation fixtures now pass, including u64::MAX. Adjusted bounds to reta
 Both bound fixture tests and the initial properties pass. Added large-input precision coverage and concurrent repeat calls because all counts must remain stateless. The gate rerun includes the deliberate precision-cast lint allowance.
 The gate passed fmt, clippy, and MSRV and is running existing suite tests. The named origin/dev ref is absent in this isolated checkout; inspect the initial snapshot to preserve any pre-existing family test content.
 Recovered the pre-existing lucky-family tests and benchmarks from the initial snapshot and retained them alongside the new cases. This corrects an accidental replacement of shared family files. Revalidate the combined files.
+The combined diff now preserves the original family cases. Full offline validation is still running in the existing prime-count compatibility tests; no new failure has been reported.

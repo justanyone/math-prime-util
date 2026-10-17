@@ -11,3 +11,5 @@ The run was stopped before completion; the diff confirms it is incomplete agains
 - tests/compat_iter.rs:314 — successful lastfor fixture rows reach the missing helper, blocking compilation.
 
 Validation: reviewed the supplied candidate diff and candidate test source. The checkout is the base; local checks against it do not validate the candidate.
+
+Local validation attempts: `tools/test.sh tests/compat_iter.rs` produced no result during review; `tools/gate.sh` reached clippy and waited for the build lock. No green gate was observed.

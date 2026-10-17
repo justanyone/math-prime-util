@@ -9,3 +9,4 @@ All four oracle tests and seven property/boundary tests now pass offline, includ
 The gate passed formatting, pedantic clippy, and the offline Rust 1.85 build. Its full test suite is progressing; no dependency or fixture changes were needed.
 The full gate is still running in the pre-existing compat_count tests. Focused perfect-power checks remain green; waiting for the required full-suite result.
 Existing chebyshev, nth_prime, and prime_count oracle tests each exceeded 60 seconds in the full gate. No failures have been reported; continuing to wait within the session budget.
+- 2026-10-17T06:53:18Z launcher: no commit for 60 s; 334 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f04.md, src/families/is_perfect_power.rs, src/families/mod.rs, src/families/next_perfect_power.rs, src/families/perfect_power_count.rs, src/families/prev_perfect_power.rs, tests/compat_families.rs, tests/prop_families.rs.

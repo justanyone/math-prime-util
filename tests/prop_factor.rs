@@ -47,12 +47,15 @@ proptest! {
     }
 
     #[test]
-    fn quasi_bases_match_positive_base_definition(n in 35_u64..20_000) {
+    fn quasi_bases_match_integer_base_definition(n in 35_u32..20_000) {
+        let n = u64::from(n);
         let fs = factors(n);
         let expected = if fs.len() < 2 || fs.windows(2).any(|w| w[0] == w[1]) {
             0
         } else {
-            (1..fs[0]).filter(|b| fs.iter().all(|p| (n - b) % (p - b) == 0)).count() as u64
+            (-i128::from(n)..i128::from(fs[0]))
+                .filter(|&b| b != 0 && fs.iter().all(|&p| (i128::from(n) - b) % (i128::from(p) - b) == 0))
+                .count() as u64
         };
         prop_assert_eq!(is_quasi_carmichael(n), expected);
     }
@@ -78,4 +81,10 @@ fn perfect_numbers_and_u64_boundaries() {
     assert!(!is_carmichael(u64::MAX));
     assert!(!is_cyclic(u64::MAX));
     assert_eq!(is_quasi_carmichael(0), 0);
+}
+
+#[test]
+fn quasi_carmichael_includes_negative_bases() {
+    // 2093 = 7 * 13 * 23 admits the bases 5 and -1.
+    assert_eq!(is_quasi_carmichael(2093), 2);
 }

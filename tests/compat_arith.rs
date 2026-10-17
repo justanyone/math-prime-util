@@ -27,7 +27,7 @@ fn euler_phi_oracle() {
 #[test]
 fn jordan_totient_oracle() {
     each("arith", "jordan_totient", |c| {
-        c.check(jordan_totient(c.arg(0), c.arg(1)))
+        c.check(jordan_totient(c.arg(0), c.arg(1)));
     });
 }
 #[test]
@@ -36,7 +36,7 @@ fn carmichael_lambda_oracle() {
         if c.args[0].starts_with('-') {
             return;
         } // Signed carmichael_lambda inputs are outside this API.
-        c.check(Some(carmichael_lambda(c.arg(0))))
+        c.check(Some(carmichael_lambda(c.arg(0))));
     });
 }
 #[test]
@@ -79,13 +79,13 @@ fn liouville_oracle() {
 #[test]
 fn sumliouville_oracle() {
     each("arith", "sumliouville", |c| {
-        c.check(Some(sumliouville(c.arg(0))))
+        c.check(Some(sumliouville(c.arg(0))));
     });
 }
 #[test]
 fn exp_mangoldt_oracle() {
     each("arith", "exp_mangoldt", |c| {
-        c.check(Some(exp_mangoldt(c.arg(0))))
+        c.check(Some(exp_mangoldt(c.arg(0))));
     });
 }
 #[test]
@@ -94,8 +94,14 @@ fn sumtotient_oracle() {
 }
 #[test]
 fn dedekind_psi_oracle() {
-    each("arith", "dedekind_psi", |c| c.check(dedekind_psi(c.arg(0))));
+    each("arith", "dedekind_psi", |c| {
+        if c.args[0].starts_with('-') {
+            return;
+        } // Signed dedekind_psi inputs are outside this API.
+        c.check(dedekind_psi(c.arg(0)));
+    });
 }
+
 #[test]
 fn inverse_totient_oracle() {
     each("arith", "inverse_totient", |c| {
@@ -109,13 +115,13 @@ fn is_totient_oracle() {
         if c.args[0].starts_with('-') {
             return;
         } // Signed is_totient inputs are outside this API.
-        c.check(Some(u8::from(is_totient(c.arg(0)))))
+        c.check(Some(u8::from(is_totient(c.arg(0)))));
     });
 }
 #[test]
 fn ramanujan_sum_oracle() {
     each("arith", "ramanujan_sum", |c| {
-        c.check(Some(ramanujan_sum(c.arg(0), c.arg(1))))
+        c.check(Some(ramanujan_sum(c.arg(0), c.arg(1))));
     });
 }
 #[test]

@@ -12,19 +12,36 @@ fn factors(mut n: u64) -> Vec<(u64, u32)> {
             out.push(n);
             return;
         }
-        let mut c = 1_u64;
+        // MPU factor.c::prho_factor: batches of 64 Floyd steps and backtracking.
+        let (mut u, mut v, mut c) = (7_u64, 7_u64, 1_u64);
         loop {
             let step = |x: u64| {
                 u64::try_from((u128::from(x) * u128::from(x) + u128::from(c)) % u128::from(n))
                     .unwrap()
             };
-            let (mut x, mut y, mut d) = (2, 2, 1);
-            for _ in 0..200_000 {
-                x = step(x);
-                y = step(step(y));
-                d = gcd(x.abs_diff(y), n);
-                if d != 1 {
-                    break;
+            let (old_u, old_v) = (u, v);
+            let mut product = 1;
+            for _ in 0..64 {
+                u = step(u);
+                v = step(step(v));
+                product =
+                    u64::try_from(u128::from(product) * u128::from(u.abs_diff(v)) % u128::from(n))
+                        .unwrap();
+            }
+            let mut d = gcd(product, n);
+            if d == 1 {
+                continue;
+            }
+            if d == n {
+                u = old_u;
+                v = old_v;
+                for _ in 0..=64 {
+                    u = step(u);
+                    v = step(step(v));
+                    d = gcd(u.abs_diff(v), n);
+                    if d != 1 {
+                        break;
+                    }
                 }
             }
             if d > 1 && d < n {
@@ -32,7 +49,9 @@ fn factors(mut n: u64) -> Vec<(u64, u32)> {
                 split(n / d, out);
                 return;
             }
-            c += 1;
+            u = u64::try_from((u128::from(u) + 2) % u128::from(n)).unwrap();
+            v = u;
+            c += 2;
         }
     }
     if n < 2 {

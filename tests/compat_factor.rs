@@ -9,7 +9,7 @@ use math_prime_util::{
     is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_practical, is_quasi_carmichael,
     is_rough, is_semiprime, is_smooth, is_square_free, lehman_factor, pbrent_factor,
     pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
-    smooth_count, squfof_factor, trial_factor,
+    rough_count, smooth_count, squarefree_kernel, squfof_factor, trial_factor,
 };
 
 fn check(name: &str, method: impl Fn(u64, Option<u64>) -> Vec<u64>) {
@@ -330,5 +330,22 @@ fn is_rough_oracle() {
 fn smooth_count_oracle() {
     each("factor", "smooth_count", |c| {
         c.check(Some(smooth_count(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
+fn rough_count_oracle() {
+    each("factor", "rough_count", |c| {
+        c.check(Some(rough_count(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
+fn squarefree_kernel_oracle() {
+    each("factor", "squarefree_kernel", |c| {
+        // Skip the bigint arguments above u64::MAX.
+        if c.args[0].parse::<u64>().is_ok() {
+            c.check(Some(squarefree_kernel(c.arg(0))));
+        }
     });
 }

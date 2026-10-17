@@ -154,3 +154,15 @@ fn class_number(n: u64) -> i128 {
     };
     i128::from(12 * h + correction)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::class_number;
+
+    #[test]
+    fn class_number_small_discriminants() {
+        for (n, expected) in [(0, -1), (1, 0), (2, 0), (3, 4), (4, 6), (7, 12)] {
+            assert_eq!(class_number(n), expected);
+        }
+    }
+}

@@ -221,6 +221,9 @@ fn divisor_sum_native_boundaries_and_prime_powers() {
     assert_eq!(divisor_sum(2, 128), None);
     assert_eq!(divisor_sum(4, 127), None);
     assert_eq!(divisor_sum(6, 63), None);
+    assert_eq!(divisor_sum(u64::MAX, 2), None);
+    assert_eq!(aliquot_sum(3_u64 << 62), None);
+    assert_eq!(abundance(3_u64 << 62), None);
     assert_eq!(divisor_sum(1_u64 << 63, 0), Some(64));
     assert_eq!(divisor_sum(1_u64 << 63, 1), Some(u64::MAX));
     assert_eq!(aliquot_sum(1_u64 << 63), Some((1_u64 << 63) - 1));

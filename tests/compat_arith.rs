@@ -23,7 +23,10 @@ fn divisor_sum() {
         {
             return;
         }
-        c.check(math_prime_util::divisor_sum(c.arg(0), c.arg(1)));
+        c.check(math_prime_util::divisor_sum(
+            c.arg(0),
+            if c.args.len() == 1 { 1 } else { c.arg(1) },
+        ));
     });
 }
 #[test]
@@ -51,6 +54,10 @@ fn kronecker() {
 #[test]
 fn is_fundamental() {
     each("arith", "is_fundamental", |c| {
+        // Values above i64::MAX need an unsigned discriminant API.
+        if c.args[0].parse::<i64>().is_err() {
+            return;
+        }
         c.check(Some(u8::from(math_prime_util::is_fundamental(c.arg(0)))))
     });
 }

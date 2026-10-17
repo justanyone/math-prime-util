@@ -6,7 +6,7 @@ proptest! {
     fn divisor_identities(n in 1_u64..10000) {
         let s = divisor_sum(n, 1).unwrap();
         prop_assert_eq!(aliquot_sum(n), Some(s - n));
-        prop_assert_eq!(abundance(n), Some(i128::from(s) - 2 * i128::from(n)));
+        prop_assert_eq!(abundance(n), Some(i64::try_from(s).unwrap() - 2 * i64::try_from(n).unwrap()));
         prop_assert!(sopf(n) <= sopfr(n));
     }
     #[test]

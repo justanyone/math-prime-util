@@ -2,3 +2,4 @@
 - 01:48:32 wrote nth_semiprime.rs (table empty placeholder, trial-division scan). Next: fill table, approx, tests.
 - 01:48:41 table filled (191 entries), nth_semiprime done; next approx
 - 01:48:57 approx written, mod.rs lines added. Next: compat/prop tests, run.
+- 01:49:40 unit tests fixed (1<<62 is past MAX_IDX). Next: compat run, gate.

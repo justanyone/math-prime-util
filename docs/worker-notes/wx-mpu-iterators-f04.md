@@ -8,3 +8,6 @@ Added independent multiset/product laws, derangement recurrence, clone/exhaustio
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -7 bytes)
 The iterator fixture and property commands are compiling offline. Added Criterion workloads for derangements, multiset permutations, and products; the permutation workload already existed. No dependencies or fixture changes were needed.
+Confirmed the existing iter family has committed oracle cases and a generator section, so neither restricted file needs edits. Added explicit empty/singleton and duplicate-product boundary tests. The gate is waiting for the focused build lo <<cut 3 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -20 bytes)

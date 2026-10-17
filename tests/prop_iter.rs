@@ -297,3 +297,37 @@ fn arrangement_callbacks_are_reentrant_and_stop() {
         assert_eq!(worker.join().unwrap(), (120, 44, 6, 4));
     }
 }
+
+#[test]
+fn arrangement_empty_and_singleton_boundaries() {
+    assert_eq!(
+        permutations_of(0).collect::<Vec<_>>(),
+        [Vec::<usize>::new()]
+    );
+    assert_eq!(permutations_of(1).collect::<Vec<_>>(), [vec![0]]);
+    assert_eq!(
+        derangements_of(0).collect::<Vec<_>>(),
+        [Vec::<usize>::new()]
+    );
+    assert_eq!(derangements_of(1).next(), None);
+    assert_eq!(derangements_of(2).collect::<Vec<_>>(), [vec![1, 0]]);
+    let mut empty = multipermutations_of::<u8>(&[]);
+    assert_eq!(empty.next(), Some(vec![]));
+    assert_eq!(empty.next(), None);
+    assert_eq!(empty.next(), None);
+    assert_eq!(multipermutations_of(&[7]).collect::<Vec<_>>(), [vec![7]]);
+    assert_eq!(set_product::<u8>(&[]).next(), None);
+    for sets in [vec![vec![]], vec![vec![], vec![1]], vec![vec![1], vec![]]] {
+        let mut calls = 0;
+        let result: ControlFlow<()> = forsetproduct(&sets, |_| {
+            calls += 1;
+            ControlFlow::Continue(())
+        });
+        assert!(result.is_continue());
+        assert_eq!(calls, 0);
+    }
+    assert_eq!(
+        set_product(&[vec![2, 2]]).collect::<Vec<_>>(),
+        [vec![2], vec![2]]
+    );
+}

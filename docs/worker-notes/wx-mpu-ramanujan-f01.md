@@ -7,3 +7,6 @@ Implemented separate public files and private Axler/nth-prime bounds. The numeri
 Focused fixture and property tests were launched. The first build exposed tuple delimiter mistakes in the bound tables; fixing syntax before numerical checks.
 The initial write was truncated by the tool transport, including long table lines. Rewrote those tables with short lines and removed the injected truncation notice. Focused tests are rebuilding offline.
 Exact-count oracle cases pass. Generation exposed a first-index offset, now corrected. Two u64::MAX floating-point cases differ from the C oracle; they need extended precision rather than fixture-specific constants.
+The public APIs, compatibility tests, property tests, and Criterion source are written. No dependency, fixture, tools, STATUS, or git metadata was changed. Lint fixes and focused reruns are in progress; the large-input numerical mismatch re <<cut 11 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -13 bytes)

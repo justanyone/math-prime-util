@@ -4,7 +4,7 @@ use math_prime_util::*;
 #[test]
 fn is_aks_prime_oracle() {
     common::each("primality", "is_aks_prime", |c| {
-        // Signed inputs such as -1 and -2 are outside the u64 API.
+        // Signed inputs such as -1 and -2, and bigint inputs, are outside the u64 API.
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(Some(u8::from(is_aks_prime(n))));
         }

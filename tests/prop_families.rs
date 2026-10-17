@@ -39,7 +39,7 @@ fn boundaries_and_repeat_calls() {
     assert!(powerful_numbers(10, 1, 2).is_empty());
     assert!(powerful_numbers(2, 100, 64).is_empty());
     assert_eq!(powerful_numbers(0, 100, 64), vec![1]);
-    assert_eq!(sumpowerful(10, 0), 0);
+    assert_eq!(sumpowerful(10, 0), 55);
     assert_eq!(nth_powerful(0, 2), None);
     assert_eq!(nth_powerful(2, 64), None);
     assert_eq!(nth_powerful(10, 1), Some(10));

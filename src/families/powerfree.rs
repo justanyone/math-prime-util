@@ -222,9 +222,8 @@ pub fn nth_powerfree(n: u64, k: u32) -> Option<u64> {
         4 => 2,
         _ => 1,
     };
-    let mut count = 0;
     for _ in 0..10 {
-        count = powerfree_count(q, k);
+        let count = powerfree_count(q, k);
         let diff = count.abs_diff(n);
         if diff <= threshold {
             break;
@@ -237,7 +236,7 @@ pub fn nth_powerfree(n: u64, k: u32) -> Option<u64> {
         };
     }
     // Recount after the last density correction.
-    count = powerfree_count(q, k);
+    let mut count = powerfree_count(q, k);
     while !is_powerfree(q, k) {
         q -= 1;
     }

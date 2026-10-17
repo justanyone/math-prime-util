@@ -31,21 +31,17 @@ fn powerful_numbers_oracle() {
         .into_iter()
         .filter(|c| c.func == "powerful_numbers")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed and bigint inputs; the API takes native unsigned integers.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
-        let n = c.arg::<u64>(0);
-        let k = if c.args.len() > 1 {
-            let Ok(k) = c.args.last().unwrap().parse::<u32>() else {
-                continue;
-            };
-            k
+        let (lo, hi) = if c.args.len() == 1 {
+            (1, c.arg(0))
         } else {
-            2
+            (c.arg(0), c.arg(1))
         };
         let k = if c.args.len() > 2 { c.arg(2) } else { 2 };
-        let result = powerful_numbers(n, c.arg(1), k)
+        let result = powerful_numbers(lo, hi, k)
             .iter()
             .map(u64::to_string)
             .collect::<Vec<_>>()

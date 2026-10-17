@@ -167,13 +167,13 @@ fn sum_rec(n: u64, k: u32, flags: &[bool], m: u64, r: u32) -> u128 {
 /// assert_eq!(math_prime_util::sumpowerful(10, 2), 22);
 /// ```
 pub fn sumpowerful(n: u64, k: u32) -> u128 {
-    if n == 0 || k == 0 {
+    if n == 0 {
         return 0;
     }
     if k >= 64 {
         return 1;
     }
-    if k == 1 {
+    if k <= 1 {
         return u128::from(n) * (u128::from(n) + 1) / 2;
     }
     let flags = squarefree_flags(rootint(n, k + 1));
@@ -182,16 +182,15 @@ pub fn sumpowerful(n: u64, k: u32) -> u128 {
 
 /// Return the `n`th `k`-powerful integer, or `None` on overflow or zero rank.
 /// Port of `powerful.c` / `nth_powerful`; invert `powerful_count`.
-/// A zero `k` selects squares, as in MPU's public API.
+/// A zero `k` includes all positive integers, as in MPU's public API.
 /// ```
 /// assert_eq!(math_prime_util::nth_powerful(4, 2), Some(9));
 /// ```
 pub fn nth_powerful(n: u64, k: u32) -> Option<u64> {
-    let k = if k == 0 { 2 } else { k };
     if n == 0 {
         return None;
     }
-    if k == 1 || n == 1 {
+    if k <= 1 || n == 1 {
         return Some(n);
     }
     if k >= 64 {

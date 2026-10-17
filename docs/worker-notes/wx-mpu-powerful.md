@@ -5,3 +5,4 @@ Run the offline focused tests and the required gate; leave tools and fixtures un
 Read the C recurrences and fixture boundaries. Private factoring dependencies are unavailable; use local helpers. Wide sums must cover oracle values beyond u64.
 Implemented powerful generation/count/sum recurrences and the powerfree Mobius/Mertens formulas. Next add the compatibility harness and run it.
 Focused fixture tests launched offline. Added property tests for counts, sums, parts, inverse ranks, boundaries, repeated calls, and concurrent calls. Added Criterion benchmark source.
+Initial fixtures passed 8/11 functions. Corrected zero-k API mapping and single-bound list arguments. Focused compatibility and property tests are running; begin the gate next.

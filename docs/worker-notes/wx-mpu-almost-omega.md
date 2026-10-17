@@ -46,3 +46,5 @@ Focused results: 26 compatibility tests and 10 property tests passed offline. Fa
 All 26 family doctests passed offline. No dependencies, fixture changes, tooling changes, status edits, or crate-root edits were made. The full gate is still waiting for existing count-family tests.
 
 Final status so far: 26 oracle tests, 10 property tests, and 26 family doctests passed. Full gate has no reported failure but three existing count compatibility tests remain active. Coverage was not measured separately.
+
+The reference origin/dev ref is not present in this checkout. Focused tests remain green; the gate is still in existing count fixtures (chebyshev has now passed).

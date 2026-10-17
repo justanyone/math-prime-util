@@ -44,11 +44,9 @@ pub fn prime_count_lower(n: u64) -> u64 {
         };
         fn_ / (fl1 - 1.0 - 1.0 / fl1 - 2.975_666 / fl2 - 13.024_334 / (fl1 * fl2) + a / (fl2 * fl2))
     } else if n < 4_000_000_000 {
-        let a = if n < 88_783 {
-            4.0
-        } else if n < 300_000 {
-            -3.0
-        } else if n < 303_000 {
+        // `prime_counts.c` also lists `a = 4` below 88 783 and `a = -3` below
+        // 300 000. Both cuts are below 300 070, so this branch never takes them.
+        let a = if n < 303_000 {
             5.0
         } else if n < 1_100_000 {
             -7.0
@@ -84,7 +82,25 @@ mod tests {
 
     #[test]
     fn bound_holds_in_each_branch() {
-        for n in [33_000, 69_720, 88_783, 300_070, 300_071, 1_000_000, 4_000_000_000, 5_000_000_000] {
+        for n in [
+            33_000,
+            69_720,
+            70_000,
+            88_783,
+            100_000,
+            200_000,
+            300_070,
+            300_071,
+            302_999,
+            1_000_000,
+            2_000_000,
+            8_000_000,
+            20_000_000,
+            37_500_000,
+            100_000_000,
+            4_000_000_000,
+            5_000_000_000,
+        ] {
             assert!(prime_count_lower(n) <= n / 2, "n = {n}");
             assert!(prime_count_lower(n) > 0, "n = {n}");
         }

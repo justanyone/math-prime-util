@@ -1,4 +1,5 @@
 //! Algebraic laws and validation for stateless real functions.
+#![allow(clippy::float_cmp, clippy::cast_precision_loss)]
 use math_prime_util::*;
 use proptest::prelude::*;
 proptest! {
@@ -28,8 +29,8 @@ proptest! {
 }
 #[test]
 fn invalid_inputs_panic() {
+    assert_eq!(exponential_integral(0.0), f64::NEG_INFINITY);
     for f in [
-        || exponential_integral(0.0),
         || logarithmic_integral(-1.0),
         || riemann_zeta(-1.0),
         || riemann_r(0.0),

@@ -1,6 +1,9 @@
 //! Real special functions from MPU 0.75.
 #![allow(
     clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::float_cmp,
+    clippy::approx_constant,
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
@@ -170,7 +173,7 @@ const A: [f64; 13] = [
 ];
 
 fn lambert_approx(x: f64) -> f64 {
-    let (mut k1, mut k2, k3): (f64, f64, f64);
+    let (k1, k2, k3): (f64, f64, f64);
     let w;
     if x < -0.312 {
         k2 = 2.0 * (1.0 + 2.7182818284590452353603 * x);
@@ -267,13 +270,14 @@ fn lambert_approx(x: f64) -> f64 {
 
 /// Return the real exponential integral.
 /// Port of `real.c::Ei` and `_Ei` in MPU 0.75.
-/// # Panics
-/// Panics if `x` is zero.
+/// Zero returns negative infinity, as in the Perl front end.
 /// ```
 /// assert!((math_prime_util::exponential_integral(1.0) - 1.89511781635594).abs() < 1e-12);
 /// ```
 pub fn exponential_integral(x: f64) -> f64 {
-    assert!(x != 0.0, "ExponentialIntegral requires x != 0");
+    if x == 0.0 {
+        return f64::NEG_INFINITY;
+    }
     if x.is_nan() {
         return x;
     }
@@ -713,6 +717,7 @@ pub fn bernreal(n: u32) -> f64 {
                 w -= 1;
                 d[w] += d[w + 1];
             }
+            w = 0;
         }
     }
     if n % 4 == 0 { -d[h - 1] } else { d[h - 1] }
@@ -728,7 +733,7 @@ fn harmonic_split(a: u64, b: u64) -> f64 {
 
 /// Return the nth harmonic number.
 /// MPU has no C `harmreal`. This ports `PP.pm::harmreal` and
-/// `_harmonic_split`, using f64 instead of rational or BigFloat values.
+/// `_harmonic_split`, using f64 instead of rational or `BigFloat` values.
 /// ```
 /// assert!((math_prime_util::harmreal(3) - 11.0/6.0).abs() < 1e-15);
 /// ```

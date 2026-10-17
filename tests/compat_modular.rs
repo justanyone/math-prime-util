@@ -41,13 +41,13 @@ fn allsqrtmod_oracle() {
 #[test]
 fn rootmod_oracle() {
     cases("rootmod", |c| {
-        c.check(rootmod(c.arg(0), c.arg(1), c.arg(2)))
+        c.check(rootmod(c.arg(0), c.arg(1), c.arg(2)));
     });
 }
 #[test]
 fn allrootmod_oracle() {
     cases("allrootmod", |c| {
-        roots(&c, &allrootmod(c.arg(0), c.arg(1), c.arg(2)))
+        roots(&c, &allrootmod(c.arg(0), c.arg(1), c.arg(2)));
     });
 }
 #[test]
@@ -57,6 +57,6 @@ fn divmod_oracle() {
 #[test]
 fn cornacchia_oracle() {
     cases("cornacchia", |c| {
-        c.check(cornacchia(c.arg(0), c.arg(1)).map(|(x, y)| format!("{x} {y}")))
+        c.check(cornacchia(c.arg(0), c.arg(1)).map(|(x, y)| format!("{x} {y}")));
     });
 }

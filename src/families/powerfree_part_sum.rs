@@ -6,7 +6,7 @@ use crate::rootint;
 
 /// Triangular number `T(n) = n*(n+1)/2`.
 /// Port of `powerfree.c` `T`.
-fn triangular(n: u64) -> u128 {
+const fn triangular(n: u64) -> u128 {
     u128::from(n) * (u128::from(n) + 1) / 2
 }
 

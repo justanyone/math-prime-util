@@ -773,12 +773,15 @@ fn powerfree_validation_repeat_and_threads() {
         .map(u128::from)
         .sum();
     let by_parts: u128 = (1..=n).map(|i| u128::from(powerfree_part(i, k))).sum();
-    assert_eq!(powerfree_sum(n, k), by_filter);
-    assert_eq!(powerfree_part_sum(n, k), by_parts);
+    let first_sum = powerfree_sum(n, k);
+    let first_part = powerfree_part(720, k);
+    let first_part_sum = powerfree_part_sum(n, k);
+    assert_eq!(first_sum, by_filter);
+    assert_eq!(first_part_sum, by_parts);
     // A second call uses no cache, so the result stays the same.
-    assert_eq!(powerfree_sum(n, k), by_filter);
-    assert_eq!(powerfree_part(720, k), powerfree_part(720, k));
-    assert_eq!(powerfree_part_sum(n, k), by_parts);
+    assert_eq!(powerfree_sum(n, k), first_sum);
+    assert_eq!(powerfree_part(720, k), first_part);
+    assert_eq!(powerfree_part_sum(n, k), first_part_sum);
 
     let expected_part = powerfree_part(720, k);
     std::thread::scope(|scope| {

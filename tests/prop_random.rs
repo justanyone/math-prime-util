@@ -279,8 +279,8 @@ fn sample_edges_keep_stream_and_duplicates() {
     srand(15);
     let expected = irand64();
     srand(15);
-    assert!(vecsample::<u64>(0, &[1, 2, 3]).is_empty());
-    assert!(vecsample::<u64>(4, &[]).is_empty());
+    assert_eq!(vecsample::<u64>(0, &[1, 2, 3]), Vec::<u64>::new());
+    assert_eq!(vecsample::<u64>(4, &[]), Vec::<u64>::new());
     assert_eq!(vecsample(9, &[7u64]), vec![7]);
     assert_eq!(irand64(), expected);
     let data = [3, 1, 4, 1, 5, 9];

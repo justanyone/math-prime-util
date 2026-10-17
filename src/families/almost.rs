@@ -2,7 +2,9 @@
 #![allow(
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
+    clippy::cast_sign_loss,
+    clippy::unreadable_literal,
+    clippy::excessive_precision
 )]
 use crate::{prime_count, primes, rootint};
 const FIRST_3: [u64; 50] = [

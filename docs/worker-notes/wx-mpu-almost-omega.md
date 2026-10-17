@@ -8,3 +8,5 @@ Dependencies checked; existing prime counts can support recursive exact counting
 Implemented exact recursive counts, ordered almost-prime construction, omega factor-sieve windows, and rank inversion. Next: coefficient bounds and compatibility tests.
 
 All twelve public functions and fixture adapters are now written; focused offline compatibility tests are running. Bounds reuse existing prime-bound helpers.
+
+Added algebraic rank/count/range tests, repeated and concurrent calls, native boundary tests, and Criterion benchmarks. Compatibility and gate jobs are in progress.

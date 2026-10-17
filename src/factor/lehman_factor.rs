@@ -3,7 +3,7 @@
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
 )]
-use super::fermat_factor::attempt;
+use super::fermat_factor::{attempt_list, pair};
 use crate::{gcd, is_prime, is_square_root, rootint};
 
 /// Tries Lehman's factorization method.
@@ -18,10 +18,10 @@ use crate::{gcd, is_prime, is_square_root, rootint};
 /// assert_eq!(lehman_factor(91, None), vec![7, 13]);
 /// ```
 pub fn lehman_factor(n: u64, do_trial: Option<bool>) -> Vec<u64> {
-    attempt(n, |n| split(n, do_trial.unwrap_or(true)))
+    attempt_list(n, |n| split(n, do_trial.unwrap_or(true)))
 }
 
-fn split(n: u64, do_trial: bool) -> u64 {
+fn split(n: u64, do_trial: bool) -> Vec<u64> {
     let tune: f64 = if n >> 36 != 0 { 3.5 } else { 5.0 };
     let bound = (tune * (1 + rootint(n, 3)) as f64) as u64;
     let mut trial_start = 3;
@@ -34,12 +34,12 @@ fn split(n: u64, do_trial: bool) -> u64 {
                 break;
             }
             if n % p == 0 {
-                return p;
+                return pair(n, p);
             }
         }
     }
     if n >= 8_796_393_022_207 {
-        return n;
+        return vec![n];
     }
     let reduced = (bound as f64 / (tune * tune * tune)) as u64;
     let bound_squared = bound * bound;
@@ -48,12 +48,12 @@ fn split(n: u64, do_trial: bool) -> u64 {
         let (inc, r) = if k & 1 != 0 { (4, (k + n) % 4) } else { (2, 1) };
         kn += n;
         if kn >= 1_152_921_504_606_846_976 {
-            return n;
+            return vec![n];
         }
         let mut x = (kn as f64).sqrt();
         let a = x as u64;
         if a * a == kn {
-            return gcd(a, n);
+            return pair(n, gcd(a, n));
         }
         x *= 2.0;
         let a = (x + 0.999_999_966_5) as u64;
@@ -63,18 +63,40 @@ fn split(n: u64, do_trial: bool) -> u64 {
         let mut a = b;
         while a <= upper {
             if let Some(b) = is_square_root(c) {
-                return gcd(a + b, n);
+                return pair(n, gcd(a + b, n));
             }
             c += inc * (a + a + inc);
             a += inc;
         }
     }
     if do_trial {
+        let mut factors = Vec::new();
+        let mut remaining = n;
         for p in (trial_start..=bound.min(65535)).step_by(2) {
-            if n % p == 0 {
-                return p;
+            if p > remaining / p {
+                break;
+            }
+            while remaining % p == 0 {
+                factors.push(p);
+                remaining /= p;
             }
         }
+        if remaining > 1 {
+            factors.push(remaining);
+        }
+        return factors;
     }
-    n
+    vec![n]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::split;
+
+    #[test]
+    fn trial_fallback_keeps_multiplicity() {
+        assert_eq!(split(89_u64.pow(3), true), vec![89, 89, 89]);
+        assert_eq!(split(1009, true), vec![1009]);
+        assert_eq!(split(1009, false), vec![1009]);
+    }
 }

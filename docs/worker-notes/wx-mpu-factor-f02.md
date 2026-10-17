@@ -6,3 +6,4 @@ Read the C routines and XS wrapper. The wrapper strips 2, 3, 5 and keeps an unfa
 Four algorithm files, compatibility tests, product properties, repeat/concurrency checks, and benchmarks are now written. Running the focused offline tests next.
 All four oracle tests passed. Product properties passed. Corrected a test that wrongly required SQUFOF to split a square in one racing round; the default budget does split it.
 Focused compatibility and property rerun is complete. Fixed the pedantic lint findings in tests and benchmarks. The full offline gate is running; no tools or fixtures were changed.
+Review found that Lehman's final trial fallback can return more than two factors. Ported that full multiplicity behavior and added a regression for 89 cubed, plus direct fallback tests.

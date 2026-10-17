@@ -38,7 +38,20 @@ fn split(n: u64, mut rounds: u64) -> u64 {
 }
 
 // The common public wrapper in XS.xs, not a recursive prime factorization.
-pub(super) fn attempt(mut n: u64, method: impl FnOnce(u64) -> u64) -> Vec<u64> {
+pub(super) fn attempt(n: u64, method: impl FnOnce(u64) -> u64) -> Vec<u64> {
+    attempt_list(n, |n| pair(n, method(n)))
+}
+
+pub(super) fn pair(n: u64, f: u64) -> Vec<u64> {
+    let f = gcd(n, f);
+    if f > 1 && f < n {
+        vec![f.min(n / f), f.max(n / f)]
+    } else {
+        vec![n]
+    }
+}
+
+pub(super) fn attempt_list(mut n: u64, method: impl FnOnce(u64) -> Vec<u64>) -> Vec<u64> {
     if n == 0 {
         return vec![0];
     }
@@ -50,12 +63,10 @@ pub(super) fn attempt(mut n: u64, method: impl FnOnce(u64) -> u64) -> Vec<u64> {
         }
     }
     if n > 1 {
-        let f = if is_prime(n) != 0 { n } else { method(n) };
-        let f = gcd(n, f);
-        if f > 1 && f < n {
-            result.extend([f.min(n / f), f.max(n / f)]);
-        } else {
+        if is_prime(n) != 0 {
             result.push(n);
+        } else {
+            result.extend(method(n));
         }
     }
     result

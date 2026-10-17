@@ -13,3 +13,4 @@ Existing chebyshev, nth-prime, and prime-count oracle tests exceed 60 seconds. T
 - 2026-10-17T06:53:38Z launcher: no commit for 60 s; 363 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f01.md, src/families/is_prime_power.rs, src/families/mod.rs, src/families/next_prime_power.rs, src/families/prev_prime_power.rs, src/families/prime_powers.rs, tests/compat_families.rs, tests/prop_families.rs.
 Chebyshev oracle passed. The two remaining prime-count compatibility tests are still running; retaining the minimal implementation and waiting for the required gate.
 No failure has appeared in the full gate; the existing count oracle remains the only active test group. Continue waiting within the session limit.
+The nth-prime oracle passed. Prime-count is the last active compatibility test in that group; all requested code, tests, docs, and benchmarks are complete.

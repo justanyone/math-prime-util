@@ -159,3 +159,20 @@ fn modops_oracle() {
         c.check(mulsubmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)));
     });
 }
+
+/// Run explicitly with `tools/test.sh tests/compat_int.rs benchmark_tool -- --ignored`.
+#[test]
+#[ignore = "benchmark tooling requires Perl; fixture tests do not"]
+fn benchmark_tool_regressions() {
+    let output = std::process::Command::new("perl")
+        .arg("tools/bench_vs_perl.t")
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("Perl must be available for benchmark tooling checks");
+    assert!(
+        output.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

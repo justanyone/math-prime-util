@@ -19,6 +19,12 @@ phases and [STATUS.md](STATUS.md) for the per-function checklist (428 names).
   against MPU's pure-Perl implementation and other Rust crates, a 95 % line
   coverage gate, mutation testing, and Miri on any `unsafe`.
 
+## Branches
+
+Work lands on a numbered integration branch (`dev-001`, `dev-002`, and so on). Small task branches are cut from it
+and merged back by pull request. After every 100 merges the integration branch is merged to `main`, deleted, and the
+next number starts from `main`. `main` carries releases only. The rotation is `tools/rotate_dev.py` in the SkyBuild kit.
+
 ## Milestones
 
 Each line is ticked, with its date, by the milestone row of the build board when every requirement of that milestone is done.

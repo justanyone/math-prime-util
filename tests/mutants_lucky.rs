@@ -491,3 +491,14 @@ fn small_sieve_every_size_and_block_boundaries() {
         assert_eq!(lucky_numbers(0, n), naive_lucky(n), "numbers {n}");
     }
 }
+
+#[test]
+fn small_sieve_every_n_is_a_prefix_of_the_reference() {
+    // Lucky numbers up to n are a prefix of those up to any larger bound.
+    let reference = naive_lucky(24_000);
+    for n in 2500..24_000u64 {
+        let got = lucky_numbers(0, n);
+        assert_eq!(got[..], reference[..got.len()], "prefix {n}");
+        assert_eq!(got.len(), reference.partition_point(|&x| x <= n), "len {n}");
+    }
+}

@@ -2,7 +2,10 @@
 
 - Goal: resolve the four conflicted files (benches/factor.rs, src/factor/mod.rs, tests/compat_factor.rs, tests/prop_factor.rs) keeping both sides' intent.
 - Method: read each conflict hunk, keep HEAD's factor functions and dev-001's additions, drop duplicates, then run focused tests with mw-test.
-- Resolved all four conflict files (union of both sides' functions, tests and imports). Next: run mw-test on the four files.
+- Resolved all four conflict files (union of both sides' functions, tests and imports).
+- Tests: tools/test.sh --test compat_factor = 8 passed; tools/test.sh tests/prop_factor.rs = 11 passed; tools/test.sh benches/factor.rs compiles.
+- Not run: tools/gate.sh and rustfmt (the sandbox asked for approval on them), so fmt and clippy are unverified. mw-test with file args does not work here (it passes them to cargo as flags).
+- No new fail-first tests were added: the fix is a merge resolution, and the existing merged tests cover both sides.
 - 2026-10-17T07:25:38Z launcher: no commit for 60 s; 121 s elapsed. Files changed so far: STATUS.md, benches/combinat.rs, benches/factor.rs, benches/families.rs, benches/random.rs, docs/worker-notes/fxc-gf-mpu-factor-f02-20261017-x-0223.md, src/combinat/bernfrac.rs, src/combinat/harmfrac.rs, src/combinat/mod.rs, src/combinat/pn_primorial.rs, src/combinat/primorial.rs, src/count/mod.rs.
 - 2026-10-17T07:26:38Z launcher: no commit for 60 s; 181 s elapsed. Files changed so far: STATUS.md, benches/combinat.rs, benches/factor.rs, benches/families.rs, benches/random.rs, docs/worker-notes/fxc-gf-mpu-factor-f02-20261017-x-0223.md, src/combinat/bernfrac.rs, src/combinat/harmfrac.rs, src/combinat/mod.rs, src/combinat/pn_primorial.rs, src/combinat/primorial.rs, src/count/mod.rs.
 - 2026-10-17T07:27:40Z launcher: no commit for 61 s; 243 s elapsed. Files changed so far: STATUS.md, benches/combinat.rs, benches/factor.rs, benches/families.rs, benches/random.rs, docs/worker-notes/fxc-gf-mpu-factor-f02-20261017-x-0223.md, src/combinat/bernfrac.rs, src/combinat/harmfrac.rs, src/combinat/mod.rs, src/combinat/pn_primorial.rs, src/combinat/primorial.rs, src/count/mod.rs.

@@ -34,11 +34,21 @@ fn triangular(n: u64) -> u128 {
     u128::from(n) * (u128::from(n) + 1) / 2
 }
 
+/// Largest Möbius sieve root accepted, about 128 MiB of sieve memory.
+/// `powerfree.c` returns 0 past its word limit, but the `u128` sum here
+/// must stay exact, so the sieve is bounded instead.
+const MAX_SIEVE_ROOT: u64 = 1 << 26;
+
 /// Sum the positive `k`-powerfree integers up to `n`.
 ///
 /// Port of MPU 0.75 `powerfree.c`, `powerfree_sum`.
 /// The sum uses `u128`, so a value past the C word limit stays exact.
 /// For `k < 2` the result is 1 when `n >= 1`, and 0 otherwise.
+///
+/// # Panics
+///
+/// Panics when `rootint(n, k)` exceeds `2^26`, so `k = 2` with `n` above
+/// about `4.5e15` is rejected before any sieve memory is allocated.
 ///
 /// # Examples
 ///
@@ -50,7 +60,12 @@ pub fn powerfree_sum(n: u64, k: u32) -> u128 {
     if k < 2 {
         return u128::from(n >= 1);
     }
-    let mu = mobius(rootint(n, k));
+    let root = rootint(n, k);
+    assert!(
+        root <= MAX_SIEVE_ROOT,
+        "powerfree_sum: root {root} exceeds sieve limit {MAX_SIEVE_ROOT}"
+    );
+    let mu = mobius(root);
     let mut sum = triangular(n);
     let mut subtract = 0_u128;
     for (i, &m) in mu.iter().enumerate().skip(2) {
@@ -65,4 +80,22 @@ pub fn powerfree_sum(n: u64, k: u32) -> u128 {
         }
     }
     sum - subtract
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn small_sums_match_direct_count() {
+        assert_eq!(powerfree_sum(0, 2), 0);
+        assert_eq!(powerfree_sum(1, 2), 1);
+        assert_eq!(powerfree_sum(300, 2), (1..=300_u128).filter(|&i| (2..=17).all(|d| i % (d * d) != 0)).sum());
+    }
+
+    #[test]
+    #[should_panic(expected = "exceeds sieve limit")]
+    fn wide_input_is_rejected_before_sieving() {
+        let _ = powerfree_sum(u64::MAX, 2);
+    }
 }

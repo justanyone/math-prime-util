@@ -4,3 +4,4 @@ Keep STATUS.md unchanged as required by the task-specific instructions.
 Random Miller–Rabin remains deferred until the random module is available.
 
 Checked the existing Montgomery and Lucas APIs; starting the deterministic pseudoprime core.
+Implemented Fermat, Euler, Miller–Rabin, Lucas variants, BPSW, probable, safe and Mersenne tests; preparing fixture checks.

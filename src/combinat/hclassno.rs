@@ -13,7 +13,7 @@ pub fn hclassno(n: u64) -> Option<i128> {
     if n == 0 {
         return Some(-1);
     }
-    if n > i64::MAX.cast_unsigned() {
+    if n > (1_u64 << 63) - 1 {
         return None;
     }
     if matches!(n % 4, 1 | 2) {
@@ -36,7 +36,8 @@ pub fn hclassno(n: u64) -> Option<i128> {
             break;
         }
         h = h.checked_add(
-            u64::from(b2 % b == 0) + u64::from(crate::is_square(b2))
+            u64::from(b2 % b == 0)
+                + u64::from(crate::is_square(b2))
                 + 2 * count_class_div(b + 1, b2),
         )?;
         b += 2;
@@ -58,9 +59,18 @@ fn count_class_div(start: u64, n: u64) -> u64 {
         return 0;
     }
     if limit - start < 70 {
-        (start..=limit).filter(|d| n % d == 0).count().try_into().expect("at most 70 divisors")
+        (start..=limit)
+            .filter(|d| n % d == 0)
+            .count()
+            .try_into()
+            .expect("at most 70 divisors")
     } else {
-        divisors(n).into_iter().filter(|&d| d >= start && d <= limit).count().try_into().expect("divisor count fits u64")
+        divisors(n)
+            .into_iter()
+            .filter(|&d| d >= start && d <= limit)
+            .count()
+            .try_into()
+            .expect("divisor count fits u64")
     }
 }
 

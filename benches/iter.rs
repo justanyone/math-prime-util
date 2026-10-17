@@ -2,7 +2,8 @@
 #![allow(missing_docs)] // Criterion generates a public benchmark entry point.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::iter::{
-    PartitionOptions, combinations_of, partitions_of, permutations_of, primes_in,
+    PartitionOptions, combinations_of, compositions_of, divisors_of, partitions_of,
+    permutations_of, primes_in,
 };
 
 fn bench_iter(c: &mut Criterion) {
@@ -14,6 +15,12 @@ fn bench_iter(c: &mut Criterion) {
     });
     c.bench_function("iter/combinations", |b| {
         b.iter(|| black_box(combinations_of(black_box(20), Some(5)).count()));
+    });
+    c.bench_function("iter/compositions", |b| {
+        b.iter(|| black_box(compositions_of(black_box(16), PartitionOptions::default()).count()));
+    });
+    c.bench_function("iter/divisors", |b| {
+        b.iter(|| black_box(divisors_of(black_box(735_134_400)).count()));
     });
     c.bench_function("iter/permutations", |b| {
         b.iter(|| black_box(permutations_of(black_box(8)).count()));

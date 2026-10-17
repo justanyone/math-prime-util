@@ -1,6 +1,6 @@
-use std::ops::ControlFlow;
-use super::{PartitionOptions, PartitionsOf, run};
 use super::forpart::parts;
+use super::{PartitionOptions, PartitionsOf, run};
+use std::ops::ControlFlow;
 
 /// State for ordered compositions. See `XS.xs::forpart`, alias `forcomp`.
 #[derive(Debug, Clone)]
@@ -23,7 +23,9 @@ impl Iterator for CompositionsOf {
 /// assert_eq!(math_prime_util::compositions_of(3, Default::default()).count(), 4);
 /// ```
 pub fn compositions_of(n: u64, options: PartitionOptions) -> CompositionsOf {
-    CompositionsOf { inner: parts(n, options, true) }
+    CompositionsOf {
+        inner: parts(n, options, true),
+    }
 }
 
 /// Visit each sum. See `XS.xs`, `forcomp`.
@@ -39,4 +41,3 @@ pub fn forcomp<B>(
 ) -> ControlFlow<B> {
     run(compositions_of(n, options), f)
 }
-

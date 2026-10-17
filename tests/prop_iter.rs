@@ -197,3 +197,120 @@ proptest! {
         prop_assert_eq!(visited, divs.len());
     }
 }
+
+#[test]
+fn impossible_partition_bounds_need_no_state_allocation() {
+    for options in [
+        PartitionOptions {
+            n: Some(0),
+            ..Default::default()
+        },
+        PartitionOptions {
+            amax: Some(0),
+            ..Default::default()
+        },
+        PartitionOptions {
+            nmin: Some(u64::MAX),
+            ..Default::default()
+        },
+        PartitionOptions {
+            amin: Some(u64::MAX),
+            ..Default::default()
+        },
+        PartitionOptions {
+            nmin: Some(3),
+            nmax: Some(2),
+            ..Default::default()
+        },
+    ] {
+        assert_eq!(partitions_of(u64::MAX - 2, options).next(), None);
+        assert_eq!(compositions_of(u64::MAX - 2, options).next(), None);
+    }
+}
+
+#[test]
+fn composition_overflow_is_rejected() {
+    assert!(std::panic::catch_unwind(|| compositions_of(u64::MAX, Default::default())).is_err());
+}
+
+#[test]
+fn task_iterators_keep_independent_state() {
+    macro_rules! cloned_stream {
+        ($iter:expr) => {{
+            let mut first = $iter;
+            let _ = first.next();
+            let second = first.clone();
+            let expected: Vec<_> = second.collect();
+            assert_eq!(first.by_ref().collect::<Vec<_>>(), expected);
+            assert_eq!(first.next(), None);
+            assert_eq!(first.next(), None);
+        }};
+    }
+    cloned_stream!(partitions_of(8, Default::default()));
+    cloned_stream!(compositions_of(8, Default::default()));
+    cloned_stream!(combinations_of(8, Some(3)));
+    cloned_stream!(divisors_of(360));
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                assert_eq!(partitions_of(8, Default::default()).count(), 22);
+                assert_eq!(compositions_of(8, Default::default()).count(), 128);
+                assert_eq!(combinations_of(8, Some(3)).count(), 56);
+                assert_eq!(divisors_of(360).count(), 24);
+            })
+        })
+        .collect();
+    for worker in workers {
+        worker.join().unwrap();
+    }
+}
+
+#[test]
+fn task_callbacks_break_and_can_restart() {
+    macro_rules! restart {
+        ($function:ident, $($arg:expr),+) => {{
+            let mut calls = 0;
+            assert_eq!($function($($arg,)+ |_| {
+                calls += 1;
+                ControlFlow::Break(17)
+            }), ControlFlow::Break(17));
+            assert_eq!(calls, 1);
+            assert!(std::panic::catch_unwind(|| {
+                let _: ControlFlow<()> = $function($($arg,)+ |_| panic!("callback"));
+            }).is_err());
+            assert!($function($($arg,)+ |_| ControlFlow::<()>::Continue(())).is_continue());
+        }};
+    }
+    restart!(forpart, 6, Default::default());
+    restart!(forcomp, 6, Default::default());
+    restart!(forcomb, 6, Some(3));
+    restart!(fordivisors, 60);
+}
+
+proptest! {
+    #[test]
+    fn task_restricted_sums(n in 0_u64..11, amin in 0_u64..6, amax in 0_u64..12,
+        nmin in 0_u64..7, nmax in 0_u64..12, prime in prop::option::of(any::<bool>())) {
+        let options = PartitionOptions { amin: Some(amin), amax: Some(amax), nmin: Some(nmin), nmax: Some(nmax), prime, n: None };
+        let valid = |p: &Vec<u64>| {
+            if n == 0 { return nmin <= 1; }
+            p.len() as u64 >= nmin.max(1) && p.len() as u64 <= nmax
+                && p.iter().all(|&v| v >= amin.max(1) && v <= amax && prime.is_none_or(|want| (math_prime_util::is_prime(v) != 0) == want))
+        };
+        let expected: Vec<_> = partitions_of(n, Default::default()).filter(valid).collect();
+        prop_assert_eq!(partitions_of(n, options).collect::<Vec<_>>(), expected);
+        let expected: Vec<_> = compositions_of(n, Default::default()).filter(valid).collect();
+        prop_assert_eq!(compositions_of(n, options).collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn task_divisors_and_combinations(n in 1_u64..1000, size in 0_usize..12, k in 0_usize..14) {
+        let ds: Vec<_> = divisors_of(n).collect();
+        prop_assert_eq!(&ds, &(1..=n).filter(|d| n % d == 0).collect::<Vec<_>>());
+        let cs: Vec<_> = combinations_of(size, Some(k)).collect();
+        prop_assert!(cs.windows(2).all(|v| v[0] < v[1]));
+        prop_assert!(cs.iter().all(|v| v.len() == k && v.windows(2).all(|p| p[0] < p[1]) && v.iter().all(|&i| i < size)));
+        let expected = if k > size { 0 } else { (0..k).fold(1, |count, i| count * (size-i) / (i+1)) };
+        prop_assert_eq!(cs.len(), expected);
+    }
+}

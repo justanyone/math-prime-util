@@ -599,4 +599,3 @@ pub fn forsquarefreeint<B>(
 ) -> ControlFlow<B> {
     run(squarefree_in(range), |(n, _)| f(n))
 }
-

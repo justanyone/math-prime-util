@@ -1,5 +1,5 @@
-use std::ops::ControlFlow;
 use super::run;
+use std::ops::ControlFlow;
 
 /// Combination state from `XS.xs`, `_comb_init` and `_comb_iterate`.
 #[derive(Debug, Clone)]

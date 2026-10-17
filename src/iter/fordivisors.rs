@@ -1,5 +1,5 @@
-use std::ops::ControlFlow;
 use super::run;
+use std::ops::ControlFlow;
 
 /// Iterator over the divisors of `n` in ascending order. See `XS.xs`, `fordivisors`.
 #[derive(Debug, Clone)]

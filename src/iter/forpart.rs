@@ -1,5 +1,5 @@
-use std::ops::ControlFlow;
 use super::run;
+use std::ops::ControlFlow;
 
 /// Bounds for parts and lengths. See `XS.xs`, `forpart`.
 #[derive(Debug, Clone, Copy, Default)]
@@ -98,7 +98,11 @@ pub(super) fn parts(n: u64, options: PartitionOptions, composition: bool) -> Par
     let nmax = options.nmax.or(options.n).unwrap_or(n).min(n);
     if options.prime == Some(true) {
         let prev = crate::prev_prime(amax + 1);
-        let next = if amin <= 2 { 2 } else { crate::next_prime(amin - 1) };
+        let next = if amin <= 2 {
+            2
+        } else {
+            crate::next_prime(amin - 1)
+        };
         amin = amin.max(next);
         amax = amax.min(prev);
     }
@@ -107,7 +111,11 @@ pub(super) fn parts(n: u64, options: PartitionOptions, composition: bool) -> Par
     options.nmin = Some(nmin);
     options.nmax = Some(nmax);
     let done = n < nmin || nmin > nmax || amin > amax || nmax == 0 || amax == 0;
-    let size = if done { 1 } else { usize::try_from(n).expect("partition size must fit usize") };
+    let size = if done {
+        1
+    } else {
+        usize::try_from(n).expect("partition size must fit usize")
+    };
     let mut a = if done { vec![0, 0] } else { vec![0; size + 1] };
     if !done {
         a[0] = amin - 1;
@@ -147,4 +155,3 @@ pub fn forpart<B>(
 ) -> ControlFlow<B> {
     run(partitions_of(n, options), f)
 }
-

@@ -19,3 +19,6 @@ About five minutes remain. All fifteen arithmetic doc examples pass (16 matching
 tools/gate.sh printed == gate: green: fmt, pedantic clippy, MSRV, repository tests, all 216 doctests, and docs passed. The separate required tools/test.sh full-suite run is still finishing; coverage could not be measured without cargo-llvm- <<cut 4 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -19 bytes)
+Finished: tools/test.sh passed the full offline suite and all 216 doctests; tools/gate.sh printed == gate: green. All requested implementation work is complete. Native-signature fixture skips are documented; coverage measurement remains for <<cut 47 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 23 bytes)

@@ -1,3 +1,4 @@
+//! Stateful loops from MPU 0.75 `XS.xs` and `lib/Math/Prime/Util/PP.pm`.
 mod forsquarefreeint;
 pub use forsquarefreeint::{SquarefreeIntegersIn, squarefree_integers_in, forsquarefreeint};
 mod forsquarefree;
@@ -6,7 +7,6 @@ mod forfactored;
 pub use forfactored::{FactoredIn, factored_in, forfactored};
 mod foralmostprimes;
 pub use foralmostprimes::{AlmostPrimesIn, almost_primes_in, foralmostprimes};
-//! Stateful loops from MPU 0.75 `XS.xs` and `lib/Math/Prime/Util/PP.pm`.
 
 use std::ops::{ControlFlow, RangeInclusive};
 

@@ -197,3 +197,47 @@ proptest! {
         prop_assert_eq!(visited, divs.len());
     }
 }
+
+#[test]
+fn requested_iterator_bounds_and_state() {
+    assert_eq!(almost_primes_in(64, 0..=u64::MAX).next(), None);
+    assert_eq!(almost_primes_in(u32::MAX, 0..=u64::MAX).next(), None);
+    assert_eq!(almost_primes_in(63, 0..=u64::MAX).collect::<Vec<_>>(), [1_u64 << 63]);
+    assert_eq!(almost_primes_in(0, 0..=10).count(), 0);
+    let lo = 10;
+    let hi = 2;
+    assert_eq!(almost_primes_in(2, lo..=hi).count(), 0);
+    assert_eq!(factored_in(lo..=hi).count(), 0);
+    assert_eq!(squarefree_integers_in(lo..=hi).count(), 0);
+    assert_eq!(squarefree_integers_in(0..=0).count(), 0);
+    for (n, factors) in factored_in(0..=1000) {
+        assert_eq!(factors, math_prime_util::factor_exp(n));
+    }
+    let mut a = factored_in(1..=300);
+    assert_eq!(a.next(), Some((1, vec![])));
+    let b = a.clone();
+    assert_eq!(a.collect::<Vec<_>>(), b.collect::<Vec<_>>());
+    let mut a = squarefree_integers_in(0..=100);
+    assert_eq!(a.next(), Some(1));
+    let b = a.clone();
+    assert_eq!(a.collect::<Vec<_>>(), b.collect::<Vec<_>>());
+    let mut empty = squarefree_integers_in(4..=4);
+    assert_eq!(empty.next(), None);
+    assert_eq!(empty.next(), None);
+    assert_eq!(foralmostprimes(2, 0..=100, ControlFlow::Break), ControlFlow::Break(4));
+    assert_eq!(forfactored(1..=100, |n, _| ControlFlow::Break(n)), ControlFlow::Break(1));
+    assert_eq!(forsquarefree(1..=100, |n, _| ControlFlow::Break(n)), ControlFlow::Break(1));
+    assert_eq!(forsquarefreeint(1..=100, ControlFlow::Break), ControlFlow::Break(1));
+    let workers: Vec<_> = (0..4).map(|_| std::thread::spawn(|| {
+        let mut seen = Vec::new();
+        let _: ControlFlow<()> = forsquarefreeint(0..=100, |n| {
+            assert!(forfactored(n..=n, |_, _| ControlFlow::Break(())).is_break());
+            seen.push(n);
+            ControlFlow::Continue(())
+        });
+        seen
+    })).collect();
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>());
+    }
+}

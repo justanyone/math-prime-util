@@ -2,12 +2,13 @@
 //! Benchmarks for the lucky-number, prime-power, twin prime and semiprime functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    is_lucky, is_prime_power, lucky_count, lucky_numbers, next_prime_power, nth_lucky,
-    nth_ramanujan_prime, nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_semiprime,
-    nth_semiprime_approx, nth_twin_prime, nth_twin_prime_approx, powerfree_count, powerful_count,
-    powerful_numbers, prev_prime_power, prime_powers, ramanujan_prime_count_upper, semi_primes,
-    semiprime_count, semiprime_count_approx, sumpowerful, twin_prime_count,
-    twin_prime_count_approx, twin_primes,
+    goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_prime_power,
+    is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair, next_chen_prime,
+    next_prime_power, nth_lucky, nth_ramanujan_prime, nth_ramanujan_prime_approx,
+    nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx, nth_twin_prime,
+    nth_twin_prime_approx, powerfree_count, powerful_count, powerful_numbers, prev_prime_power,
+    prime_powers, ramanujan_prime_count_upper, semi_primes, semiprime_count,
+    semiprime_count_approx, sumpowerful, twin_prime_count, twin_prime_count_approx, twin_primes,
 };
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_powers", |b| {
@@ -105,5 +106,27 @@ fn bench_families(c: &mut Criterion) {
         b.iter(|| nth_semiprime_approx(black_box(100)));
     });
 }
-criterion_group!(benches, bench_families);
+fn bench_goldbach_misc(c: &mut Criterion) {
+    c.bench_function("minimal_goldbach_pair", |b| {
+        b.iter(|| minimal_goldbach_pair(black_box(60_119_912)));
+    });
+    c.bench_function("goldbach_pair_count", |b| {
+        b.iter(|| goldbach_pair_count(black_box(1_000_000)));
+    });
+    c.bench_function("goldbach_pairs", |b| {
+        b.iter(|| goldbach_pairs(black_box(100_000)));
+    });
+    c.bench_function("next_chen_prime", |b| {
+        b.iter(|| next_chen_prime(black_box(10_000_000_000_000_000)));
+    });
+}
+fn bench_squares(c: &mut Criterion) {
+    c.bench_function("is_gaussian_prime", |b| {
+        b.iter(|| is_gaussian_prime(black_box(519_880), black_box(2_265_929)));
+    });
+    c.bench_function("is_sum_of_squares", |b| {
+        b.iter(|| is_sum_of_squares(black_box(18_446_744_073_709_551_557), 2));
+    });
+}
+criterion_group!(benches, bench_families, bench_goldbach_misc, bench_squares);
 criterion_main!(benches);

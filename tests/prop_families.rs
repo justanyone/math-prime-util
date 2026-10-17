@@ -314,6 +314,98 @@ fn empty_ranges_and_repeat_calls() {
     }
 }
 
+fn chen_semiprime(mut n: u64) -> bool {
+    let mut factors = 0;
+    let mut p = 2;
+    while p <= n / p {
+        while n % p == 0 {
+            n /= p;
+            factors += 1;
+        }
+        p += 1;
+    }
+    factors + u32::from(n > 1) == 2
+}
+
+proptest! {
+    #[test]
+    fn goldbach_agrees_with_exhaustive_search(n in 0_u64..5000) {
+        let expected: Vec<_> = (2..=n / 2)
+            .filter(|&p| is_prime(p) != 0 && is_prime(n - p) != 0)
+            .collect();
+        let pairs = goldbach_pairs(n);
+        prop_assert_eq!(&pairs, &expected);
+        prop_assert_eq!(goldbach_pair_count(n), pairs.len() as u64);
+        prop_assert_eq!(minimal_goldbach_pair(n), pairs.first().copied());
+    }
+
+    #[test]
+    fn chen_is_the_next_valid_prime(n in 0_u64..10_000) {
+        let p = next_chen_prime(n).unwrap();
+        prop_assert!(p > n);
+        prop_assert!(is_prime(p) != 0);
+        prop_assert!(is_prime(p + 2) != 0 || chen_semiprime(p + 2));
+        for q in n + 1..p {
+            prop_assert!(is_prime(q) == 0 || (is_prime(q + 2) == 0 && !chen_semiprime(q + 2)));
+        }
+    }
+}
+
+#[test]
+fn repeat_and_concurrent_calls_agree() {
+    let expected = goldbach_pairs(100_000);
+    for handle in (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    goldbach_pairs(100_000),
+                    goldbach_pair_count(100_000),
+                    next_chen_prime(167),
+                )
+            })
+        })
+        .collect::<Vec<_>>()
+    {
+        let (pairs, count, chen) = handle.join().unwrap();
+        assert_eq!(pairs, expected);
+        assert_eq!(count, expected.len() as u64);
+        assert_eq!(chen, Some(179));
+    }
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(128))]
+    #[test]
+    fn sum_of_two_squares_matches_search(n in 0_u64..3000) {
+        let found = (0..=n.isqrt()).any(|a| is_square(n - a * a));
+        prop_assert_eq!(is_sum_of_squares(n, 2), found);
+    }
+    #[test]
+    fn sum_of_squares_monotone_in_k(n in 0_u64..100_000) {
+        prop_assert!(is_sum_of_squares(n, 4));
+        prop_assert_eq!(is_sum_of_squares(n, 1), is_square(n));
+        if is_sum_of_squares(n, 2) {
+            prop_assert!(is_sum_of_squares(n, 3));
+        }
+        // Legendre: n is a sum of three squares unless n = 4^a (8b + 7).
+        let tz = n.trailing_zeros();
+        let legendre = n == 0 || tz % 2 == 1 || (n >> tz) % 8 != 7;
+        prop_assert_eq!(is_sum_of_squares(n, 3), legendre);
+    }
+    #[test]
+    fn gaussian_norm_law(a in 1_u64..2000, b in 1_u64..2000) {
+        // For a, b both nonzero, a + bi is prime exactly when a^2 + b^2 is prime.
+        prop_assert_eq!(is_gaussian_prime(a, b) == 2, is_prime(a * a + b * b) == 2);
+        prop_assert_eq!(is_gaussian_prime(a, b), is_gaussian_prime(b, a));
+    }
+    #[test]
+    fn gaussian_axis_law(p in 0_u64..100_000) {
+        let expected = u8::from(p % 4 == 3 && is_prime(p) != 0) * 2;
+        prop_assert_eq!(is_gaussian_prime(p, 0), expected);
+        prop_assert_eq!(is_gaussian_prime(0, p), expected);
+    }
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]

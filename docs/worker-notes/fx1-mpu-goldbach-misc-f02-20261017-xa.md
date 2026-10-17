@@ -1,3 +1,4 @@
 - start: reading reviewer note; plan = fix Open findings with a failing-first test each
 - t~7min: finding1 needs perl oracle+fixtures (decline); finding2 needs bigint MR port (no bigint primality in crate; decline); finding3: bounding pollard/rho with step budget, panic when exhausted
 - t~10min: edited pollard/rho to bounded Option version + rho_budget_is_bounded test; running focused tests
+- final: finding 3 fixed and tested (4/4 lib tests pass); findings 1 and 2 declined; fmt and gate not run here

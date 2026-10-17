@@ -41,3 +41,37 @@ fn independent_and_concurrent_calls() {
     assert_eq!(nth_lucky_upper(0), None);
     assert!(!is_lucky(u64::MAX));
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn prime_power_rank_and_bounds(k in 1u64..20_000) {
+        let n = nth_prime_power(k).unwrap();
+        let count = |x| prime_count(x) + (2..=x.ilog2()).map(|e| prime_count(rootint(x,e))).sum::<u64>();
+        prop_assert_eq!(count(n), k);
+        prop_assert_eq!(count(n-1), k-1);
+        prop_assert!(nth_prime_power_lower(k).unwrap() <= n);
+        prop_assert!(nth_prime_power_upper(k).unwrap() >= n);
+        prop_assert!(nth_prime_power_approx(k).is_some());
+    }
+}
+
+#[test]
+fn prime_power_repeated_and_concurrent_calls() {
+    for f in [
+        nth_prime_power,
+        nth_prime_power_approx,
+        nth_prime_power_lower,
+        nth_prime_power_upper,
+    ] {
+        assert_eq!(f(0), None);
+        let expected = f(4096);
+        let threads: Vec<_> = (0..4)
+            .map(|_| std::thread::spawn(move || f(4096)))
+            .collect();
+        for thread in threads {
+            assert_eq!(thread.join().unwrap(), expected);
+        }
+        assert_eq!(f(4096), expected);
+    }
+}

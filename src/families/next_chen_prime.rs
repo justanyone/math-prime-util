@@ -1,4 +1,4 @@
-use crate::{is_prime, next_prime, primes, rootint};
+use crate::{is_prime, next_prime, primes, rootint, sqrtint};
 
 const MAX_CHEN_PRIME: u64 = 18_446_744_073_709_551_437;
 
@@ -45,6 +45,13 @@ fn is_semiprime(n: u64) -> bool {
     if is_prime(n) != 0 {
         return false;
     }
+    if bound <= 277 {
+        return true;
+    }
+    let root = sqrtint(n);
+    if root * root == n {
+        return is_prime(root) != 0;
+    }
     // A composite with no prime factor at most its cube root has two factors.
     for p in primes(281, bound) {
         if n % p == 0 {
@@ -75,6 +82,9 @@ mod tests {
             assert_eq!(is_semiprime(n), count == 2, "n={n}");
         }
         assert!(is_semiprime(283 * 293));
+        assert!(is_semiprime(1009 * 1009));
+        assert!(!is_semiprime(1009_u64.pow(4)));
+        assert!(is_semiprime(1009 * 1_000_003));
         assert!(!is_semiprime(283 * 283 * 293));
     }
 

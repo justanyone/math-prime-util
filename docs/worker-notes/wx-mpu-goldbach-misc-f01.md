@@ -10,3 +10,4 @@ Focused offline compat/property tests are running; gate is queued behind the bui
 Focused tests passed: all four oracle tests and all three algebraic/concurrency tests. Gate passed fmt and pedantic clippy; MSRV build is running.
 Changed Goldbach output ordering to the C reversal rather than sorting; removed unnecessary overflow branches using segment bounds.
 Review found existing lucky-family tests and benchmarks had been overwritten. Restored their exact baseline content and appended the assigned cases.
+The focused family unit tests passed, including native Chen limits and exhaustive semiprime checks. Added the C square shortcut and segment-overflow boundary tests.

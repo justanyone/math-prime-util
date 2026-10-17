@@ -79,3 +79,20 @@ fn sieve_segment(lo: u64, hi: u64, base: &[u64]) -> Vec<bool> {
     }
     sieve
 }
+
+#[cfg(test)]
+mod tests {
+    use super::sieve_segment;
+
+    #[test]
+    fn segment_boundaries() {
+        assert_eq!(sieve_segment(11, 11, &[2, 3]), vec![true]);
+        assert_eq!(sieve_segment(12, 12, &[2, 3]), vec![false]);
+        let lo = u64::MAX - 40;
+        let high = sieve_segment(lo, u64::MAX, &[2, 3, 5]);
+        for (offset, &unmarked) in high.iter().enumerate() {
+            let n = lo + u64::try_from(offset).unwrap();
+            assert_eq!(unmarked, [2, 3, 5].iter().all(|p| n % p != 0));
+        }
+    }
+}

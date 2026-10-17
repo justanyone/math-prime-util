@@ -135,7 +135,10 @@ pub fn legendre_phi(x: u64, a: u64) -> u64 {
         limit *= 2;
         counter = Counter::new(limit);
     }
-    counter.phi(x, usize::try_from(a).expect("prime index fits usize"))
+    // The shortcut above bounds a by 203,280,221, which fits usize.
+    #[allow(clippy::cast_possible_truncation)]
+    let index = a as usize;
+    counter.phi(x, index)
 }
 
 #[cfg(test)]

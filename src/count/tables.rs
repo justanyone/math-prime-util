@@ -1,4 +1,4 @@
-//! Tables copied verbatim from MPU 0.75 legendre_phi.c, tablephi.
+//! Tables copied verbatim from MPU 0.75 `legendre_phi.c`, `tablephi`.
 pub(super) const PHI3: [u8; 30] = [
     0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 8,
 ];

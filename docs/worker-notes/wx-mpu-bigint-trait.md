@@ -7,3 +7,5 @@ Offline test failed: num-bigint is absent from the registry cache. Remove the un
 Implemented all five Int methods for native widths, with overflow-safe u128 modular powers. Added fixture replay, algebraic properties, boundary and concurrent-call tests, and benchmarks; focused validation starts now.
 Focused tests and gate are running offline. The optional backend remains blocked by the missing num-bigint package; no tool, fixture, status, or crate-root file was changed.
 Focused tests exposed sieve fixtures with native overflow and alternate primality-status conventions. Keep sieve replay limited to next_prime and compare its bounded native result; clippy also requires must_use on gcd.
+All 11 new focused tests passed. Preserved the pre-existing primality tests and benchmarks by adding the generic cases alongside them; rerunning the gate after the must_use fix.
+Gate found benchmark style warnings after registering the existing primality benchmark. Fixed explicit imports and statement semicolons; the focused generic tests remain green.

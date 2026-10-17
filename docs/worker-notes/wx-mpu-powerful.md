@@ -6,3 +6,4 @@ Read the C recurrences and fixture boundaries. Private factoring dependencies ar
 Implemented powerful generation/count/sum recurrences and the powerfree Mobius/Mertens formulas. Next add the compatibility harness and run it.
 Focused fixture tests launched offline. Added property tests for counts, sums, parts, inverse ranks, boundaries, repeated calls, and concurrent calls. Added Criterion benchmark source.
 Initial fixtures passed 8/11 functions. Corrected zero-k API mapping and single-bound list arguments. Focused compatibility and property tests are running; begin the gate next.
+Ten fixture functions now pass. List fixtures encode an empty list as undef; adapted the harness. Fixed sieve index lint findings. Gate rerun is underway.

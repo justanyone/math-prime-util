@@ -40,13 +40,21 @@ fn powerful_numbers_oracle() {
         } else {
             (c.arg(0), c.arg(1))
         };
-        let k = if c.args.len() > 2 { c.arg(2) } else { 2 };
+        let k = if c.args.len() > 2 {
+            c.arg::<u64>(2).min(u64::from(u32::MAX)) as u32
+        } else {
+            2
+        };
         let result = powerful_numbers(lo, hi, k)
             .iter()
             .map(u64::to_string)
             .collect::<Vec<_>>()
             .join(" ");
-        c.check(Some(result));
+        c.check(if result.is_empty() {
+            None
+        } else {
+            Some(result)
+        });
     }
 }
 

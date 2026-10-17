@@ -1,4 +1,5 @@
 //! Powerfree integers, from MPU 0.75 `powerfree.c`.
+#![allow(clippy::cast_possible_truncation)] // Sieve indices are bounded by native roots.
 use super::powerful::factor_exponents;
 use crate::rootint;
 

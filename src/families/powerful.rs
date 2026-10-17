@@ -1,4 +1,5 @@
 //! Powerful integers, from MPU 0.75 `powerful.c`.
+#![allow(clippy::cast_possible_truncation)] // All indices are bounded by allocated sieve sizes.
 use crate::{gcd, int::is_power_exp, is_prime, rootint};
 
 pub(super) fn squarefree_flags(limit: u64) -> Vec<bool> {
@@ -122,7 +123,7 @@ pub fn powerful_numbers(lo: u64, hi: u64, k: u32) -> Vec<u64> {
     if k <= 1 {
         return (lo..=hi).collect();
     }
-    if k >= 64 || k > 63 - hi.leading_zeros() {
+    if k >= 64 || k > hi.ilog2() {
         return if lo == 1 { vec![1] } else { vec![] };
     }
     let threshold = if lo < 500_000 {

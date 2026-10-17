@@ -255,7 +255,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
 - [x] `nth_twin_prime`
-- [ ] `nth_twin_prime_approx`
+- [x] `nth_twin_prime_approx`
 - [ ] `numtoperm`
 - [ ] `omega_prime_count`
 - [ ] `omega_primes`
@@ -343,9 +343,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `rootmod`
 - [ ] `rough_count`
 - [x] `rshiftint`
-- [ ] `semiprime_count`
-- [ ] `semiprime_count_approx`
-- [ ] `semi_primes`
+- [x] `semiprime_count`
+- [x] `semiprime_count_approx`
+- [x] `semi_primes`
 - [x] `setbinop`
 - [x] `setcontains`
 - [x] `setcontainsany`

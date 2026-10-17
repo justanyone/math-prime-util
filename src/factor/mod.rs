@@ -53,3 +53,6 @@ pub use prime_bigomega::prime_bigomega;
 pub use prime_omega::prime_omega;
 pub use prime_signature::prime_signature;
 pub use squfof_factor::squfof_factor;
+
+mod factor128;
+pub use factor128::{factor_u128, is_prime_u128};

@@ -367,7 +367,7 @@ pub fn is_bpsw_prime(n: u64) -> u8 {
 ///
 /// Port of MPU `util.c`, `is_prime`, for the unsigned 64-bit range. The
 /// result follows `is_prob_prime`, which gives the deterministic answer for
-/// every `u64`.
+/// every `u64`. Inputs above 64 bits use [`is_prime_u128`](crate::is_prime_u128).
 ///
 /// ```
 /// use math_prime_util::is_prime;

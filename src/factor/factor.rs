@@ -5,6 +5,7 @@ use crate::{gcd, is_prime, rootint, sqrtint};
 /// Port of MPU 0.75 `factor.c::factor`, `_small_trial_factor`, and
 /// `_power_factor`. The split helpers use `holf32` and `pbrent_factor`.
 /// One returns an empty list. Zero returns `[0]`.
+/// Inputs above 64 bits use [`factor_u128`](crate::factor_u128).
 ///
 /// ```
 /// use math_prime_util::factor;

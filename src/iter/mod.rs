@@ -246,7 +246,6 @@ pub fn combinations_of(n: usize, k: Option<usize>) -> CombinationsOf {
     }
 }
 
-
 /// Visit each sum. See `XS.xs`, `forpart`.
 /// # Panics
 /// Panics for a size that cannot be represented or allocated.

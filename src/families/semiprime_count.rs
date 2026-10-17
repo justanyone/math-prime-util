@@ -1,4 +1,8 @@
-#![allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 use crate::{next_prime, prev_prime, prime_count, primes, primes_in, sqrtint};
 
 /// Count the semiprimes less than or equal to `n`.
@@ -13,7 +17,11 @@ use crate::{next_prime, prev_prime, prime_count, primes, primes_in, sqrtint};
 /// ```
 pub fn semiprime_count(n: u64) -> u64 {
     let root = sqrtint(n);
-    let xlim = if n > 1_000_000 { (n as f64).powf(0.70) as u64 } else { 0 };
+    let xlim = if n > 1_000_000 {
+        (n as f64).powf(0.70) as u64
+    } else {
+        0
+    };
     let mut cached = Vec::new();
     let mut beginning = 0;
     let mut offset = 0;

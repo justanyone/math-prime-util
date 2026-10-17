@@ -13,9 +13,11 @@ All four compat tests and both property tests pass, including max-u64 count roun
 Focused tests pass after overflow checks. Final gate fixes are limited to benchmark semicolons and criterion macro documentation lint.
 Formatting, pedantic Clippy, and MSRV 1.85 build pass. The full offline test and documentation gate is running.
 Diff whitespace check passes. Full gate is still running the pre-existing count compatibility tests.
-All new tests remain green. Waiting for the existing prime-count compatibility suite in the full gate; no network or external files were changed.
+All new tests remain green. Waiting for the existing prime-count compatibility suite in the full gate; no network or other repository files were changed.
 The full gate is spending over a minute in existing chebyshev, nth-prime and prime-count oracle tests. New family tests already passed offline.
 The existing Chebyshev oracle passed; the full gate continues with nth-prime and prime-count cases.
 The existing nth-prime and prime-count oracle cases are still running. The implementation is unchanged while the full gate validates it.
 About five minutes remain in the worker budget. All assigned implementation and tests are complete; the full gate is still in existing count oracle cases.
 - 2026-10-17T06:58:05Z launcher: no commit for 61 s; 609 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-ramanujan-f02.md, src/families/mod.rs, src/families/nth_ramanujan_prime.rs, src/families/nth_ramanujan_prime_approx.rs, src/families/nth_ramanujan_prime_lower.rs, src/families/ramanujan_prime_count_upper.rs, tests/compat_families.rs, tests/prop_families.rs.
+The existing nth-prime oracle has now passed. Only the existing prime-count oracle remains in this test executable.
+Ran the four Ramanujan documentation examples directly while the existing prime-count oracle continues in the gate.

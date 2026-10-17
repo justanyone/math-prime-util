@@ -29,7 +29,9 @@ pub fn prime_certificate(n: u64) -> String {
     if is_provable_prime(n) == 0 {
         return String::new();
     }
-    format!("[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n")
+    format!(
+        "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n"
+    )
 }
 
 /// Return the primality status and its MPU certificate.

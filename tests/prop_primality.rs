@@ -19,12 +19,18 @@ proptest! {
 }
 #[test]
 fn repeated_concurrent_calls() {
-    let threads: Vec<_> = (0..4).map(|_| std::thread::spawn(|| {
-        for n in [0, 2, 97, 101, 121, u64::MAX-58] {
-            let first = is_provable_prime_with_cert(n);
-            assert_eq!(first, is_provable_prime_with_cert(n));
-            assert_eq!(verify_prime(&first.1), Ok(first.0 == 2));
-        }
-    })).collect();
-    for thread in threads { thread.join().unwrap(); }
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for n in [0, 2, 97, 101, 121, u64::MAX - 58] {
+                    let first = is_provable_prime_with_cert(n);
+                    assert_eq!(first, is_provable_prime_with_cert(n));
+                    assert_eq!(verify_prime(&first.1), Ok(first.0 == 2));
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
 }

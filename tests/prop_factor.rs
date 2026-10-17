@@ -471,7 +471,6 @@ proptest! {
 }
 
 #[test]
-#[test]
 fn rough_count_is_bounded_by_n() {
     for n in 0..200 {
         for k in 0..12 {

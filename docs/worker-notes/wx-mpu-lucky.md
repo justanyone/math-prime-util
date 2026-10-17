@@ -7,3 +7,6 @@ Implemented the C tables, block-copy small sieve, compressed bit sieve with a ra
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 22 bytes)
 All ten oracle tests and three property/concurrency tests pass offline. The first gate stopped on numeric literal formatting and two Clippy style findings; correcting these before rerunning it.
+Replaced the provisional inverse search with the C linear-interpolation, Ridder, and binary-search stages. Added internal cross-checks for the bit sieve and rank tree, estimator endpoints, and inverse-search gaps. About five minutes remain; <<cut 36 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 12 bytes)

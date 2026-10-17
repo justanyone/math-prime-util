@@ -371,20 +371,118 @@ fn simple_upper(n: u64) -> u64 {
     (x / (1.065 * logn - a - 3.1 / logn - 2.85 / (logn * logn))) as u64
 }
 
-// MPU inverse_interpolate.c: find the first equality, or the predecessor of a gap.
+// MPU inverse_interpolate.c: _linear_interpolate and _inverse_interpolate.
+fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
+    if n == rlo {
+        return lo + 1;
+    }
+    if n == rhi {
+        return hi - 1;
+    }
+    let span = hi - lo;
+    let movement = ((n - rlo) as f64 * span as f64 / (rhi - rlo) as f64 + 0.5) as u64;
+    lo + movement.clamp(1, span - 1)
+}
 fn inverse(mut lo: u64, mut hi: u64, n: u64, f: fn(u64) -> Option<u64>) -> u64 {
-    if f(lo) == Some(n) {
+    let mut mid = lo + (hi - lo) / 2;
+    let rmid = f(mid).unwrap_or(0);
+    let (mut rlo, mut rhi);
+    if rmid >= n {
+        hi = mid;
+        rhi = rmid;
+        rlo = f(lo).unwrap_or(0);
+        if rlo == n {
+            return lo;
+        }
+    } else {
+        lo = mid;
+        rlo = rmid;
+        rhi = f(hi).unwrap_or(0);
+    }
+    if hi - lo <= 1 {
+        return if rlo == n || rhi > n { lo } else { hi };
+    }
+    mid = linear(lo, hi, rlo, rhi, n);
+    let mut iteration = 1;
+    while hi - lo > 1 && rhi > n {
+        let rmid = f(mid).unwrap_or(0);
+        if rmid >= n {
+            hi = mid;
+            rhi = rmid;
+        } else {
+            lo = mid;
+            rlo = rmid;
+        }
+        if rhi == n || hi - lo <= 1 {
+            break;
+        }
+        mid = linear(lo, hi, rlo, rhi, n);
+        if iteration % 6 == 0 {
+            let close = (0.003 * (hi - lo) as f64 + 1.0) as u64;
+            if lo + close > mid {
+                mid = lo + close;
+            } else if hi - close < mid {
+                mid = hi - close;
+            }
+        }
+        mid = mid.clamp(lo + 1, hi - 1);
+        iteration += 1;
+    }
+    if rlo == n {
         return lo;
     }
+    if hi - lo <= 1 {
+        return if rlo == n || rhi > n { lo } else { hi };
+    }
+    while hi - lo > 8 {
+        let mut x1 = lo + (hi - lo) / 2;
+        let mut rx1 = f(x1).unwrap_or(0);
+        let d0 = (n - rlo) as f64;
+        let d1 = rx1.abs_diff(n) as f64;
+        let d2 = (rhi - n + 1) as f64;
+        let sign = if rx1 >= n { 1.0 } else { -1.0 };
+        let pos = sign * (x1 - lo) as f64 * d1 / (d1 * d1 + d0 * d2).sqrt();
+        let movement = (pos + if pos >= 0.0 { 0.5 } else { -0.5 }) as i128;
+        let candidate = i128::from(x1) - movement;
+        if candidate <= i128::from(lo) || candidate >= i128::from(hi) || candidate == i128::from(x1)
+        {
+            if rx1 >= n {
+                hi = x1;
+                rhi = rx1;
+            } else {
+                lo = x1;
+                rlo = rx1;
+            }
+        } else {
+            let mut x3 = candidate as u64;
+            let mut rx3 = f(x3).unwrap_or(0);
+            if rx1 > rx3 {
+                std::mem::swap(&mut x1, &mut x3);
+                std::mem::swap(&mut rx1, &mut rx3);
+            }
+            if rx1 >= n {
+                hi = x1;
+                rhi = rx1;
+            } else if rx3 >= n {
+                lo = x1;
+                rlo = rx1;
+                hi = x3;
+                rhi = rx3;
+            } else {
+                lo = x3;
+                rlo = rx3;
+            }
+        }
+    }
     while hi - lo > 1 {
-        let mid = lo + (hi - lo) / 2;
+        mid = lo + (hi - lo) / 2;
         if f(mid).unwrap_or(0) < n {
             lo = mid;
         } else {
             hi = mid;
         }
     }
-    if f(hi).unwrap_or(0) > n { lo } else { hi }
+    hi
 }
 
 /// Estimate the count of lucky numbers at most `n`.
@@ -527,4 +625,64 @@ pub fn nth_lucky_upper(n: u64) -> Option<u64> {
     } else {
         est as u64
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn presieve_and_rank_tree_match_small_sieve() {
+        for n in [
+            0, 1, 47, 241, 258, 259, 600, 4096, 240_000, 240_001, 300_000,
+        ] {
+            let bit = BitSieve::new(n);
+            let values = bit.values();
+            assert_eq!(values, small_sieve(n));
+            for (index, &value) in values.iter().enumerate() {
+                assert_eq!(bit.get(index).0, value);
+            }
+        }
+    }
+
+    #[test]
+    fn estimator_endpoints() {
+        for n in 0..=6 {
+            let count = u64::from(n > 0) + u64::from(n > 2);
+            assert_eq!(simple_approx(n), count);
+            assert_eq!(simple_lower(n), count);
+            assert_eq!(simple_upper(n), count);
+        }
+        for n in [
+            7,
+            7000,
+            7001,
+            9000,
+            10_000,
+            1_000_000,
+            10_000_000,
+            100_000_000,
+            4_000_000_000,
+            10_000_000_000,
+        ] {
+            assert!(simple_lower(n) <= simple_upper(n));
+        }
+        assert_eq!(nth_lucky_approx(u64::MAX), Some(MAX_LUCKY));
+        assert_eq!(nth_lucky_upper(u64::MAX), Some(MAX_LUCKY));
+        assert!(lucky_count_upper(u64::MAX) > 0);
+        assert!(!is_lucky(MAX_LUCKY + 2));
+    }
+
+    #[test]
+    fn interpolation_handles_equal_values_and_gaps() {
+        assert_eq!(linear(10, 20, 100, 200, 100), 11);
+        assert_eq!(linear(10, 20, 100, 200, 200), 19);
+        assert_eq!(linear(10, 20, 100, 200, 150), 15);
+        for n in 2..=2000 {
+            let target = n / 3;
+            assert_eq!(inverse(0, 1000, n, |x| Some(x * 3)), target);
+            let first = n * 3;
+            assert_eq!(inverse(0, 10000, n, |x| Some(x / 3)), first);
+        }
+    }
 }

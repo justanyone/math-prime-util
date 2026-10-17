@@ -33,8 +33,8 @@ fn independent_and_concurrent_calls() {
     for thread in threads {
         assert_eq!(thread.join().unwrap(), expected);
     }
-    assert!(lucky_numbers(10, 1).is_empty());
-    assert!(lucky_numbers(0, 0).is_empty());
+    assert_eq!(lucky_numbers(10, 1), []);
+    assert_eq!(lucky_numbers(0, 0), []);
     assert_eq!(nth_lucky(0), None);
     assert_eq!(nth_lucky_approx(0), None);
     assert_eq!(nth_lucky_lower(0), None);

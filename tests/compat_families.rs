@@ -28,7 +28,7 @@ fn lucky_numbers_oracle() {
 #[test]
 fn is_lucky_oracle() {
     each("families", "is_lucky", |c| {
-        c.check(Some(u8::from(is_lucky(c.arg(0)))))
+        c.check(Some(u8::from(is_lucky(c.arg(0)))));
     });
 }
 #[test]
@@ -52,7 +52,7 @@ macro_rules! oracle {
         #[test]
         fn $name() {
             each("families", stringify!($name), |c| {
-                c.check(math_prime_util::$name(c.arg(0)))
+                c.check(math_prime_util::$name(c.arg(0)));
             });
         }
     };
@@ -64,18 +64,18 @@ oracle!(nth_lucky_upper);
 #[test]
 fn lucky_count_approx_oracle() {
     each("families", "lucky_count_approx", |c| {
-        c.check(Some(lucky_count_approx(c.arg(0))))
+        c.check(Some(lucky_count_approx(c.arg(0))));
     });
 }
 #[test]
 fn lucky_count_lower_oracle() {
     each("families", "lucky_count_lower", |c| {
-        c.check(Some(lucky_count_lower(c.arg(0))))
+        c.check(Some(lucky_count_lower(c.arg(0))));
     });
 }
 #[test]
 fn lucky_count_upper_oracle() {
     each("families", "lucky_count_upper", |c| {
-        c.check(Some(lucky_count_upper(c.arg(0))))
+        c.check(Some(lucky_count_upper(c.arg(0))));
     });
 }

@@ -53,7 +53,8 @@ fn count(n: u64) -> u64 {
         return crate::prime_count(n);
     }
     if n > 10_000_000_000_000_000 {
-        return super::prime_power_count_approx::li(n).integer(false);
+        // Li returns NV in MPU before the long double bound is formed.
+        return super::prime_power_count_approx::li(n).0 as u64;
     }
     let x = n as f64;
     let l = x.ln();

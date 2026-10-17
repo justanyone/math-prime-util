@@ -31,7 +31,8 @@ fn count(n: u64) -> u64 {
     if n > 10_000_000_000_000_000 {
         use super::prime_power_count_approx::{Wide, li};
         let x = n as f64;
-        let value = li(n).add(Wide(-2.0 * x.sqrt() / x.ln(), 0.0));
+        // Li returns NV in MPU before the long double subtraction.
+        let value = Wide(li(n).0, 0.0).add(Wide(-2.0 * x.sqrt() / x.ln(), 0.0));
         // ceil(v) = floor(v) + 1 unless v is already integral.
         let floor = value.integer(false);
         return floor + u64::from(value.1.fract() != 0.0);

@@ -7,3 +7,4 @@ Added the C approximation tolerance, both C bound formulas and float table, four
 The first focused build found that is_prime returns u8; corrected the property predicate. Investigating whether MPU's NV return rounding matters at u64::MAX.
 Focused tests are executing the large exact counts. Formatting is applied; next resolve any oracle precision differences before the gate.
 The u64::MAX approximation differs by 859 with f64. Added two-component arithmetic for the existing C logarithmic integral series and large Mobius sum. The gate also found benchmark semicolons; fixed them.
+All approximation fixtures now pass, including u64::MAX. Adjusted bounds to retain MPU's Li NV rounding before long-double arithmetic. Rechecking bounds, properties, and the full gate.

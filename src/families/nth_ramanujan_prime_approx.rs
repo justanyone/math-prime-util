@@ -18,6 +18,7 @@ fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
 }
 
 // MPU inverse_interpolate.c, _inverse_interpolate, known upper bound and zero threshold.
+#[allow(clippy::too_many_lines)] // Keep the three C interpolation stages together.
 pub(super) fn inverse(mut lo: u64, mut hi: u64, n: u64, f: impl Fn(u64) -> u64) -> u64 {
     let mid = lo + (hi - lo) / 2;
     let rmid = f(mid);

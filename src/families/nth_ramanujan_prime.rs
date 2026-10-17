@@ -3,7 +3,11 @@ use super::nth_ramanujan_prime_lower::{SMALL, axler, prime_bound};
 // MPU ramanujan_primes.c, nth_ramanujan_prime_upper.
 pub(super) fn upper(n: u64) -> u64 {
     if n <= 23 {
-        return if n == 0 { 0 } else { SMALL[(n - 1) as usize] };
+        return if n == 0 {
+            0
+        } else {
+            SMALL[usize::try_from(n - 1).expect("small index")]
+        };
     }
     let (c, d) = if n < 12_581 {
         match n {
@@ -57,7 +61,7 @@ pub fn nth_ramanujan_prime(n: u64) -> Option<u64> {
         return None;
     }
     if n <= 23 {
-        return Some(SMALL[(n - 1) as usize]);
+        return Some(SMALL[usize::try_from(n - 1).expect("small index")]);
     }
     let mut low = super::nth_ramanujan_prime_lower(n)? - 1;
     let high = upper(n).checked_add(1)?;
@@ -66,7 +70,7 @@ pub fn nth_ramanujan_prime(n: u64) -> Option<u64> {
         low -= 1;
     }
     let full = crate::primes(low, high);
-    let half = crate::primes((low + 1) / 2, high.div_ceil(2));
+    let half = crate::primes(low.div_ceil(2), high.div_ceil(2));
     let mut i = 0;
     let mut j = 0;
     let mut s = 1 + crate::prime_count(low - 2) - crate::prime_count((low - 1) / 2);
@@ -80,7 +84,7 @@ pub fn nth_ramanujan_prime(n: u64) -> Option<u64> {
             result = k + 1;
         }
         if k & 3 == 1 {
-            let h = (k + 1) / 2;
+            let h = k.div_ceil(2);
             while half.get(j).is_some_and(|&p| p < h) {
                 j += 1;
             }

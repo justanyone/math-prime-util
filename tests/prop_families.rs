@@ -8,7 +8,7 @@ proptest! {
     fn ramanujan_bounds(n in 1_u64..1000) {
         let p = nth_ramanujan_prime(n).unwrap();
         prop_assert!(nth_ramanujan_prime_lower(n).unwrap() <= p);
-        prop_assert!(is_prime(p));
+        prop_assert!(is_prime(p) != 0);
         prop_assert!(ramanujan_prime_count_upper(p) >= n);
         prop_assert!(prime_count(p)-prime_count(p/2) >= n);
         prop_assert!(nth_ramanujan_prime_approx(n).unwrap() >= nth_ramanujan_prime_lower(n).unwrap()-1);

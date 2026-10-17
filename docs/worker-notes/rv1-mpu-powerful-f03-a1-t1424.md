@@ -3,3 +3,4 @@ Read PLAN.md sections 5–8 before editing; only review and worker notes will ch
 Check C algorithm fidelity, boundary arithmetic, and whether existing tests establish completion.
 Write a concrete PASS/FAIL review; candidate tests cannot be validated by testing this base checkout.
 Compared C summatory algorithms and existing oracle coverage; wrote FAIL for lost range factorization and unbounded wide-input sieve allocation. Focused base tests started; next run required gate and record its scope.
+Review is on disk. Focused base tests are still running without output; gate reached clippy and is waiting for their build lock. No candidate code was changed or executed.

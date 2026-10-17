@@ -10,3 +10,5 @@ First focused build found a u8 primality predicate in the test; corrected it. Cl
 All nth-function oracle cases pass. The max-u64 count case exposed f64 Li error; replacing that private path with compensated extended precision.
 The private extended-precision Ei series now matches MPU Li rounding at u64::MAX. Threshold unit tests pass. Fixed numeric formatting before the final gate.
 All four compat tests and both property tests pass, including max-u64 count rounding. Added unrepresentable-index checks; no fixture skips.
+Focused tests pass after overflow checks. Final gate fixes are limited to benchmark semicolons and criterion macro documentation lint.
+Formatting, pedantic Clippy, and MSRV 1.85 build pass. The full offline test and documentation gate is running.

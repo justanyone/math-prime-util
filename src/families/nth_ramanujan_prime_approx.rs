@@ -138,7 +138,7 @@ fn count_approx(n: u64) -> u64 {
     pc(n) - pc(n / 2)
 }
 
-/// Estimate the nth Ramanujan prime. Return `None` for index zero.
+/// Estimate the nth Ramanujan prime. Return `None` for index zero or an index beyond the native range.
 ///
 /// Port of MPU 0.75 `ramanujan_primes.c`, `nth_ramanujan_prime_approx`.
 /// Interpolate the Ramanujan prime count estimate between the C bounds.

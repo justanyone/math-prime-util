@@ -181,7 +181,7 @@ pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
 /// Return a lower bound for the nth Ramanujan prime.
 ///
 /// Port of MPU 0.75 `ramanujan_primes.c`, `nth_ramanujan_prime_lower`.
-/// Return `None` for index zero.
+/// Return `None` for index zero or an index beyond the native range.
 ///
 /// ```
 /// assert_eq!(math_prime_util::nth_ramanujan_prime_lower(10), Some(97));

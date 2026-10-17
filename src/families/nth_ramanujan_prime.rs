@@ -44,7 +44,7 @@ pub(super) fn upper(n: u64) -> u64 {
     prime_bound(axler(n, c, d), true)
 }
 
-/// Return the nth Ramanujan prime. Return `None` for index zero.
+/// Return the nth Ramanujan prime. Return `None` for index zero or an index beyond the native range.
 ///
 /// Port of MPU 0.75 `ramanujan_primes.c`, `nth_ramanujan_prime` and
 /// `n_range_ramanujan_primes`. Use Noe's sieve between the index bounds.

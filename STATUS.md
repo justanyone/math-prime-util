@@ -146,7 +146,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_omega_prime`
 - [x] `is_palindrome`
 - [x] `is_perfect_number`
-- [ ] `is_perfect_power`
+- [x] `is_perfect_power`
 - [x] `is_perrin_pseudoprime`
 - [x] `is_pillai`
 - [x] `is_polygonal`
@@ -218,7 +218,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `next_calkin_wilf`
 - [x] `next_chen_prime`
 - [x] `next_farey`
-- [ ] `next_perfect_power`
+- [x] `next_perfect_power`
 - [x] `next_prime`
 - [x] `next_prime_power`
 - [x] `next_stern_brocot`
@@ -262,7 +262,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `partitions`
 - [x] `partitionsq`
 - [x] `pbrent_factor`
-- [ ] `perfect_power_count`
+- [x] `perfect_power_count`
 - [ ] `perfect_power_count_approx`
 - [ ] `perfect_power_count_lower`
 - [ ] `perfect_power_count_upper`
@@ -281,7 +281,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `powint`
 - [x] `powmod`
 - [x] `pplus1_factor`
-- [ ] `prev_perfect_power`
+- [x] `prev_perfect_power`
 - [x] `prev_prime`
 - [x] `prev_prime_power`
 - [x] `prho_factor`

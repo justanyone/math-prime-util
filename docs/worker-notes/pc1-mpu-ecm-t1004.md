@@ -11,3 +11,4 @@ oracle test, match Perl/XS output, then tools/gate.sh.
 - 2026-10-17T15:10:17Z launcher: no commit for 62 s; 340 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md.
 15:11:21 probing which B1/curve count yields factor 7 of 90950751857
 - 2026-10-17T15:13:24Z launcher: no commit for 62 s; 528 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md, src/factor/ecm.rs.
+- 2026-10-17T15:14:27Z launcher: no commit for 60 s; 590 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md, src/factor/ecm.rs.

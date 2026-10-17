@@ -12,3 +12,4 @@ The original focused test invocation still has no final output. Later checks rep
 Focused tests caught an incorrect new assertion: 4912 is divisible by 8. Changed it to the cube-free value 4910; interpolation and concurrent tests passed. The gate has advanced to clippy.
 Clippy rejected the benchmark function length after adding three cases. Moved the powerfree benchmarks into a helper and kept the existing Criterion registration.
 All compatibility tests completed before the property run. The only reported property failure was the corrected 4912 assertion. Rerunning that test and the gate after the benchmark split.
+The corrected shortcut test passes. The interpolation unit test also passes. The second gate is now running; compatibility fixtures required no changes.

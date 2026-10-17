@@ -17,26 +17,26 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `almost_prime_count_lower`
 - [ ] `almost_prime_count_upper`
 - [ ] `almost_primes`
-- [ ] `bell_number`
+- [x] `bell_number`
 - [x] `bernfrac`
 - [x] `bernreal`
 - [x] `bestrational`
-- [ ] `binomial`
+- [x] `binomial`
 - [x] `binomialmod`
-- [ ] `bitand`
-- [ ] `bitandnot`
+- [x] `bitand`
+- [x] `bitandnot`
 - [ ] `bitclear`
 - [ ] `bitflip`
-- [ ] `bitnot`
-- [ ] `bitor`
+- [x] `bitnot`
+- [x] `bitor`
 - [ ] `bitscan0`
 - [ ] `bitscan1`
 - [ ] `bitset`
 - [ ] `bittest`
-- [ ] `bitxor`
+- [x] `bitxor`
 - [x] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
-- [ ] `catalan_number`
+- [x] `catalan_number`
 - [x] `cdivint`
 - [x] `cdivrem`
 - [ ] `cheb_factor`
@@ -66,13 +66,13 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `ExponentialIntegral`
 - [ ] `factor`
 - [ ] `factor_exp`
-- [ ] `factorial`
+- [x] `factorial`
 - [x] `factorialmod`
 - [ ] `falling_factorial`
 - [x] `farey`
 - [x] `farey_rank`
 - [x] `fdivrem`
-- [ ] `fermat_factor`
+- [x] `fermat_factor`
 - [x] `fibonacci`
 - [ ] `floor_sum`
 - [ ] `foralmostprimes`
@@ -95,7 +95,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `from_contfrac`
 - [x] `fromdigits`
 - [x] `fromzeckendorf`
-- [ ] `fubini`
+- [x] `fubini`
 - [x] `gcd`
 - [x] `gcdext`
 - [ ] `goldbach_pair_count`
@@ -104,7 +104,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `harmfrac`
 - [x] `harmreal`
 - [ ] `hclassno`
-- [ ] `holf_factor`
+- [x] `holf_factor`
 - [ ] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
@@ -182,7 +182,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
-- [ ] `lehman_factor`
+- [x] `lehman_factor`
 - [ ] `liouville`
 - [ ] `LogarithmicIntegral`
 - [x] `logint`
@@ -212,7 +212,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `mulsubint`
 - [x] `mulsubmod`
 - [x] `mult_digital_root`
-- [ ] `multifactorial`
+- [x] `multifactorial`
 - [x] `negint`
 - [x] `negmod`
 - [x] `next_calkin_wilf`
@@ -261,7 +261,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `omega_primes`
 - [ ] `partitions`
 - [ ] `partitionsq`
-- [ ] `pbrent_factor`
+- [x] `pbrent_factor`
 - [ ] `perfect_power_count`
 - [ ] `perfect_power_count_approx`
 - [ ] `perfect_power_count_lower`
@@ -269,7 +269,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `permtonum`
 - [ ] `Pi`
 - [x] `pisano_period`
-- [ ] `pminus1_factor`
+- [x] `pminus1_factor`
 - [x] `pn_primorial`
 - [ ] `powerfree_count`
 - [ ] `powerfree_part`
@@ -280,11 +280,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `powersum`
 - [x] `powint`
 - [x] `powmod`
-- [ ] `pplus1_factor`
+- [x] `pplus1_factor`
 - [ ] `prev_perfect_power`
 - [x] `prev_prime`
 - [ ] `prev_prime_power`
-- [ ] `prho_factor`
+- [x] `prho_factor`
 - [ ] `prime_bigomega`
 - [ ] `prime_certificate`
 - [x] `prime_count`
@@ -373,12 +373,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sqrtint`
 - [ ] `sqrtmod`
 - [ ] `squarefree_kernel`
-- [ ] `squfof_factor`
+- [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`
-- [ ] `stirling`
+- [x] `stirling`
 - [x] `sub1int`
-- [ ] `subfactorial`
+- [x] `subfactorial`
 - [x] `subint`
 - [x] `submod`
 - [x] `sumdigits`

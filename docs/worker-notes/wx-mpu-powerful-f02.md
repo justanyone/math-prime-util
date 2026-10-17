@@ -15,3 +15,6 @@ All compatibility tests completed before the property run. The only reported pro
 The corrected shortcut test passes. The interpolation unit test also passes. The second gate is now running; compatibility fixtures required no changes.
 - 2026-10-17T18:50:58Z launcher: no commit for 62 s; 463 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-powerful-f02.md, src/families/is_powerfree.rs, src/families/mod.rs, src/families/nth_powerfree.rs, src/families/nth_powerful.rs, src/families/powerfree.rs, src/families/powerfree_count.rs, src/families/powerful.rs, tests/prop_families.rs.
 The second gate passed fmt, clippy with warnings denied, and the offline Rust 1.85 build. It is now compiling the full test suite.
+The full gate test run has reached factor compatibility tests. No new failure is reported. Waiting for the test and documentation stages to finish.
+With about five minutes left, all implementation work is complete and the offline gate printed == gate: green.
+Final: all tests and 435 runnable documentation examples passed, as did fmt, clippy, Rust 1.85, and documentation generation. Coverage was not measured locally; no tools, fixtures, dependencies, STATUS.md, or crate-root changes were made.

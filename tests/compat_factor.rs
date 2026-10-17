@@ -10,6 +10,16 @@ fn factor_oracle() {
     {
         let n = case.arg::<u128>(0);
         let factors = factor_u128(n).expect("fixture must split");
+        if let Ok(small) = u64::try_from(n) {
+            assert_eq!(
+                math_prime_util::factor::factor(small)
+                    .unwrap()
+                    .into_iter()
+                    .map(u128::from)
+                    .collect::<Vec<_>>(),
+                factors
+            );
+        }
         let result = factors
             .iter()
             .map(ToString::to_string)

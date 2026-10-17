@@ -262,3 +262,65 @@ pub fn factor_u128(mut n: u128) -> Result<Vec<u128>, u128> {
     factors.sort_unstable();
     Ok(factors)
 }
+
+/// Factors a u64 integer into sorted prime factors.
+///
+/// Uses the trial division and split stack from MPU `factor128.c`,
+/// `factorintp128`. See [`factor_u128`] for the u128 path and current limits.
+///
+/// # Errors
+/// Returns the unsplit cofactor if the bounded splitter fails.
+///
+/// # Panics
+/// Panics if the Lucas parameter exceeds 65535, as in MPU.
+///
+/// ```
+/// use math_prime_util::factor::factor;
+/// assert_eq!(factor(12), Ok(vec![2, 2, 3]));
+/// ```
+pub fn factor(n: u64) -> Result<Vec<u64>, u128> {
+    factor_u128(u128::from(n)).map(|factors| {
+        factors
+            .into_iter()
+            .map(|p| u64::try_from(p).expect("factor fits input"))
+            .collect()
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn arithmetic_edges() {
+        let n = u128::MAX - 158;
+        assert_eq!(add(n - 1, n - 1, n), n - 2);
+        assert_eq!(sub(0, 1, n), n - 1);
+        assert_eq!(mul(n - 1, n - 1, n), 1);
+        assert_eq!(half(n - 2, n), n - 1);
+        assert_eq!(half(4, n), 2);
+        assert!(square(0));
+        assert!(square(u128::from(u64::MAX).pow(2)));
+        assert!(!square(u128::MAX));
+        assert_eq!(jacobi(0, 3), 0);
+        assert_eq!(jacobi(3, 7), -1);
+        assert!(!miller_rabin(2047 * 3));
+        assert!(miller_rabin(2047));
+        assert!(!lucas(2047));
+        assert!(!lucas(10009u128.pow(2)));
+        for n in [10007, 10009, 65537, 104729] {
+            assert!(lucas(n));
+        }
+    }
+
+    #[test]
+    fn bounded_splitter() {
+        assert_eq!(brent(10007 * 10009, 1, 0), None);
+        assert_eq!(brent(13, 1, 32), None);
+        let n = 10007 * 10009;
+        let f = brent(n, 1, 1024).unwrap();
+        assert!(f > 1 && f < n && n % f == 0);
+        assert_eq!(factor(1), Ok(vec![]));
+        assert_eq!(factor(0), Ok(vec![0]));
+    }
+}

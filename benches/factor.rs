@@ -1,20 +1,13 @@
-#![allow(missing_docs)]
-//! Benchmarks for the factor predicates.
+//! Benchmarks for the u128 factor paths.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
+use math_prime_util::{factor_u128, is_prime_u128};
 
 fn bench_factor(c: &mut Criterion) {
-    c.bench_function("is_carmichael", |b| {
-        b.iter(|| is_carmichael(black_box(3_215_031_751)));
+    c.bench_function("factor_u128", |b| {
+        b.iter(|| factor_u128(black_box(2017 * 18_446_744_073_709_551_629u128)));
     });
-    c.bench_function("is_quasi_carmichael", |b| {
-        b.iter(|| is_quasi_carmichael(black_box(255_255)));
-    });
-    c.bench_function("is_cyclic", |b| {
-        b.iter(|| is_cyclic(black_box(1009 * 1013)));
-    });
-    c.bench_function("is_perfect_number", |b| {
-        b.iter(|| is_perfect_number(black_box(2_305_843_008_139_952_128)));
+    c.bench_function("is_prime_u128", |b| {
+        b.iter(|| is_prime_u128(black_box((1u128 << 127) - 1)));
     });
 }
 criterion_group!(benches, bench_factor);

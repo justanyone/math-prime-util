@@ -10,4 +10,4 @@ pub use is_perfect_number::is_perfect_number;
 pub use is_quasi_carmichael::is_quasi_carmichael;
 
 mod u128;
-pub use u128::{factor_u128, is_prime_u128};
+pub use u128::{factor, factor_u128, is_prime_u128};

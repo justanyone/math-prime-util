@@ -19,7 +19,7 @@ pub fn pbrent_factor(n: u64, rounds: Option<u64>, a: Option<u64>) -> Vec<u64> {
 /// Pollard-Brent in Montgomery form. Port of `factor.c::pbrent_factor`
 /// under `USE_MONTMATH`: `Xi` and `a` stay in Montgomery form, and the
 /// 63-bit path evaluates `Xi * (Xi + a)`.
-fn brent(n: u64, mut rounds: u64, mut a: u64) -> Vec<u64> {
+fn brent(n: u64, mut rounds: u64, a: u64) -> Vec<u64> {
     let ctx = Mont::new(n);
     let bits = 64 - n.leading_zeros();
     let inner: u64 = match bits {
@@ -75,7 +75,6 @@ fn brent(n: u64, mut rounds: u64, mut a: u64) -> Vec<u64> {
             fails -= 1;
             xi = ctx.one;
             a_m = add(a_m, ctx.to_mont(11), n);
-            a = add(a, 11, n);
         } else {
             return split(n, f);
         }

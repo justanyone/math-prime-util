@@ -6,3 +6,4 @@ Existing implementations and oracle tests were present; identified missing C tab
 Ported the four files with C small tables, 32 KiB Moebius segments, prefix memory clamps, and prime-power detection. Added summatory difference, boundary, and concurrent repeated-call checks plus benchmarks; focused offline tests started.
 Focused tests are still building; the gate has started offline. Reviewing the Mertens prefix storage against the C short-array and bounded cache before final validation.
 Matched C storage more closely: signed 16-bit prefix entries and an eight-probe bounded cache with collision tests. Gate waits on the Cargo build lock; focused tests have not returned yet.
+All requested implementations, docs, oracle coverage, properties, and benchmarks are written. Offline checks remain active, with Cargo compilation/locking delaying their output; no network or external repository changes were used.

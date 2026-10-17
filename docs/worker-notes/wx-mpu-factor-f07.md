@@ -7,3 +7,4 @@ Added all four API files and oracle tests. Smooth count retains the C cache tabl
 Fixed the helper's integer type. Added property tests, subset-sum practical checks, concurrency checks, and benchmark source. Restoring the C roughness p-1 fast path with bounds 500/500.
 All fixture and property tests pass. The first gate stopped on clippy's panic-doc lint for bounded unwraps; removing those unwraps before rerunning the gate.
 Private Brent retry and limit tests pass, including a near-u64 semiprime. The gate now reaches benchmark/test lints; fixing semicolons, generated benchmark docs, and numeric separators.
+The targeted oracle, property, and private-support tests pass. Clippy-only fixes are complete; the full offline gate is running. No fixture regeneration or network access is needed.

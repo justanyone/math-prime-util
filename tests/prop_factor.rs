@@ -53,7 +53,9 @@ proptest! {
         let mut phi = n;
         let mut prev = 0;
         for p in fs {
-            if p != prev { phi = phi / p * (p - 1); }
+            if p != prev {
+                phi = phi / p * (p - 1);
+            }
             prev = p;
         }
         prop_assert_eq!(is_cyclic(n), gcd(n, phi) == 1);
@@ -82,7 +84,9 @@ proptest! {
             0
         } else {
             (-i128::from(n)..i128::from(fs[0]))
-                .filter(|&b| b != 0 && fs.iter().all(|&p| (i128::from(n) - b) % (i128::from(p) - b) == 0))
+                .filter(|&b| {
+                    b != 0 && fs.iter().all(|&p| (i128::from(n) - b) % (i128::from(p) - b) == 0)
+                })
                 .count() as u64
         };
         prop_assert_eq!(is_quasi_carmichael(n), expected);

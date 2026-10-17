@@ -19,3 +19,4 @@ Clippy reached the new tests and required explicit PartitionOptions::default cal
 - 2026-10-17T18:53:47Z launcher: no commit for 60 s; 579 s elapsed. Files changed so far: benches/iter.rs, docs/worker-notes/wx-mpu-iterators-f03.md, src/iter/forcomb.rs, src/iter/forcomp.rs, src/iter/fordivisors.rs, src/iter/forpart.rs, src/iter/mod.rs, tests/compat_iter.rs, tests/prop_iter.rs.
 Separate compatibility runs for the four requested APIs are queued. Broad test compilation still holds the build lock; no further code changes are planned.
 Two-minute checkpoint: the final gate and isolated compatibility command still wait on the build directory lock. The current head has not been verified green.
+Focused validation passed: compat_iter 19/19 and prop_iter 20/20, including all four requested APIs and new regressions. Final gate and full suite remain pending.

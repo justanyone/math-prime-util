@@ -16,3 +16,4 @@ About five minutes remain. The remaining known mismatch is inherited long-double
 List/count, partition, and concurrent-call properties pass. Removed an invalid universal law: the C weighted estimate can round below its integer lower endpoint near u64::MAX. Replaced it with exact minimum-value checks for all k.
 Fixed all reported clippy issues in added tests and benchmarks. Moved the new benchmark block into its own function to preserve the existing benchmark function length limit. Full offline suite was launched once.
 The two k=1 maximum-input precision mismatches remain outside this row's editable module scope. All unsigned oracle assertions stay exact. Awaiting final gate and full-suite logs before recording the final status.
+Minimum-value tests exposed a real overflow: reduction can reach k=0 before approximation shifts. Added the degenerate result before shifting. Registered the almost-prime benchmarks separately to meet clippy's function length limit.

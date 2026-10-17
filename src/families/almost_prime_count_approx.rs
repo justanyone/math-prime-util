@@ -22,6 +22,9 @@ pub fn almost_prime_count_approx(mut k: u64, mut n: u64) -> u64 {
         return 0;
     }
     reduce(&mut k, &mut n);
+    if k == 0 {
+        return u64::from(n >= 1);
+    }
     if k == 1 {
         return crate::prime_count_approx(n);
     }

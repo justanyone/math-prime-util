@@ -38,7 +38,6 @@ fn bench_almost(c: &mut Criterion) {
     }
 }
 fn bench_families(c: &mut Criterion) {
-    bench_almost(c);
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
     });

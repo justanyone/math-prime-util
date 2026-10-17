@@ -12,3 +12,4 @@ Both bound fixture tests and the initial properties pass. Added large-input prec
 The gate passed fmt, clippy, and MSRV and is running existing suite tests. The named origin/dev ref is absent in this isolated checkout; inspect the initial snapshot to preserve any pre-existing family test content.
 Recovered the pre-existing lucky-family tests and benchmarks from the initial snapshot and retained them alongside the new cases. This corrects an accidental replacement of shared family files. Revalidate the combined files.
 The combined diff now preserves the original family cases. Full offline validation is still running in the existing prime-count compatibility tests; no new failure has been reported.
+At 06:53 UTC, the new focused tests are green. Full validation remains in the existing count-family oracle tests, which exceed one minute in this debug build. Continue waiting within the task deadline.

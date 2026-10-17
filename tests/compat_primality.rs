@@ -228,7 +228,10 @@ fn verify_prime_native_bls15() {
 #[test]
 fn verify_prime_field_validation() {
     let header = "[MPU - Primality Certificate]\nProof for:\nn\t101\n";
-    assert_eq!(verify_prime(&format!("{header}Type Small\nn 101")), Ok(true));
+    assert_eq!(
+        verify_prime(&format!("{header}Type Small\nn 101")),
+        Ok(true)
+    );
     let header = "[MPU - Primality Certificate]\nProof for:\nN 101\n";
     // MPU requires Q indices to arrive in order, even when all values are valid.
     for proof in [
@@ -237,6 +240,9 @@ fn verify_prime_field_validation() {
         "Type BLS5\nN 101\nA[1] 2\nQ[1] 5\n----",
         "Type BLS5\nN 101\nQ[1] -5\n----",
     ] {
-        assert!(verify_prime(&format!("{header}{proof}")).is_err(), "{proof}");
+        assert!(
+            verify_prime(&format!("{header}{proof}")).is_err(),
+            "{proof}"
+        );
     }
 }

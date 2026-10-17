@@ -4,3 +4,4 @@ I will add regression tests for parsing, proof validation, and independent repea
 I will run focused offline tests and the required gate. The launcher owns commits.
 Compared the existing parser with MPU; found missing target/proof linkage and am checking native proof types before adding regressions.
 Added failing regressions for BLS15, signed parameters, case-insensitive fields, and out-of-order factor indices; focused tests are running.
+Implemented native BLS15 with modular discriminant arithmetic and strict ordered indices; moved the verifier to its own verify_prime.rs module.

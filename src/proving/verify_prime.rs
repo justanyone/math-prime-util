@@ -69,7 +69,7 @@ fn check(kind: &str, fields: &BTreeMap<String, u64>) -> Result<bool, String> {
         }
     }
     for key in fields.keys() {
-        if key == "N" || (kind == "LUCAS" && key == "A") {
+        if key == "N" || (kind == "BLS15" && fields.len() == 4) || (kind == "LUCAS" && key == "A") {
             continue;
         }
         let valid = key
@@ -113,10 +113,76 @@ fn check(kind: &str, fields: &BTreeMap<String, u64>) -> Result<bool, String> {
     Ok(u128::from(n) < bound && (s == 0 || !square))
 }
 
+// Jacobi reduction from PrimalityProving.pm::_jacobi, for an odd native modulus.
+fn jacobi(mut a: u64, mut n: u64) -> i32 {
+    let mut sign = 1;
+    while a != 0 {
+        let twos = a.trailing_zeros();
+        a >>= twos;
+        if twos % 2 == 1 && matches!(n % 8, 3 | 5) {
+            sign = -sign;
+        }
+        if a % 4 == 3 && n % 4 == 3 {
+            sign = -sign;
+        }
+        (a, n) = (n % a, a);
+    }
+    if n == 1 { sign } else { 0 }
+}
+
+// Port of PrimalityProving.pm::_verify_bls15. Use residues to avoid D overflow.
+fn check_bls15(fields: &BTreeMap<String, i128>) -> Result<bool, String> {
+    let get = |key: &str| {
+        fields
+            .get(key)
+            .copied()
+            .ok_or_else(|| format!("Missing {key}"))
+    };
+    let n = u64::try_from(get("N")?).map_err(|_| "Invalid N")?;
+    let q = u64::try_from(get("Q")?).map_err(|_| "Invalid Q")?;
+    let lp = get("LP")?;
+    let lq = get("LQ")?;
+    if fields.len() != 4 || n < 3 || n % 2 == 0 || q <= 2 || q % 2 == 0 {
+        return Ok(false);
+    }
+    let np1 = u128::from(n) + 1;
+    if np1 % u128::from(q) != 0
+        || u128::from(q) * 2 - 1 <= u128::from(crate::sqrtint(n))
+        || is_prime(q) == 0
+    {
+        return Ok(false);
+    }
+    let modulus = i128::from(n);
+    let p = u64::try_from(lp.rem_euclid(modulus)).map_err(|_| "Invalid LP")?;
+    let r = u64::try_from(lq.rem_euclid(modulus)).map_err(|_| "Invalid LQ")?;
+    let d = (u128::from(p) * u128::from(p) % u128::from(n) + u128::from(n)
+        - 4 * u128::from(r) % u128::from(n))
+        % u128::from(n);
+    if jacobi(u64::try_from(d).map_err(|_| "Invalid discriminant")?, n) != -1 {
+        return Ok(false);
+    }
+    // Center each residue so lucasvmod can use its signed native API.
+    let centered = |v: u64| {
+        i64::try_from(if v > i64::MAX as u64 {
+            i128::from(v) - modulus
+        } else {
+            i128::from(v)
+        })
+        .map_err(|_| "Invalid Lucas parameter")
+    };
+    let p = centered(p)?;
+    let r = centered(r)?;
+    let half_m = u64::try_from(np1 / u128::from(q) / 2).map_err(|_| "Invalid M")?;
+    let half_n = u64::try_from(np1 / 2).map_err(|_| "Invalid N")?;
+    Ok(crate::lucasvmod(p, r, half_m, n) != 0 && crate::lucasvmod(p, r, half_n, n) == 0)
+}
+
 /// Verify an MPU certificate for a native integer.
 ///
-/// Port of `PrimalityProving.pm::verify_cert`, `_verify_small`, `_verify_bls5`,
-/// `_verify_bls3`, `_verify_pock`, and `_verify_lucas`.
+/// Port of `reference/mpu/lib/Math/Prime/Util/PrimalityProving.pm`:
+/// `verify_cert`, `_verify_small`, `_verify_bls5`, `_verify_bls3`,
+/// `_verify_bls15`, `_verify_pock`, and `_verify_lucas`.
+/// `reference/mpu/aks.c::is_aks_prime` is a separate primality test.
 /// ECPP and integers above `u64::MAX` are not supported.
 ///
 /// # Errors
@@ -153,8 +219,12 @@ pub fn verify_prime(certificate: &str) -> Result<bool, String> {
             target = Some(
                 lines
                     .next()
-                    .and_then(|l| l.strip_prefix("N "))
-                    .and_then(|n| n.trim().parse::<u64>().ok())
+                    .and_then(|l| {
+                        let mut words = l.split_whitespace();
+                        let key = words.next()?;
+                        let n = words.next()?.parse::<u64>().ok()?;
+                        (key.eq_ignore_ascii_case("N") && words.next().is_none()).then_some(n)
+                    })
                     .ok_or("Invalid target")?,
             );
             continue;
@@ -166,32 +236,70 @@ pub fn verify_prime(certificate: &str) -> Result<bool, String> {
         if target.is_none() {
             return Err("Proof before target".into());
         }
-        if !["SMALL", "BLS5", "BLS3", "POCKLINGTON", "LUCAS"].contains(&kind.as_str()) {
+        if !["SMALL", "BLS5", "BLS3", "BLS15", "POCKLINGTON", "LUCAS"].contains(&kind.as_str()) {
             return Err("Unsupported proof type".into());
         }
         let mut fields = BTreeMap::new();
+        let mut factor_index = 0;
         while let Some(&next) = lines.peek() {
             if next.starts_with("Type ") || next.starts_with('-') {
                 break;
             }
             let line = lines.next().ok_or("Missing field")?;
             let mut words = line.split_whitespace();
-            let key = words.next().ok_or("Missing key")?;
+            let key = words.next().ok_or("Missing key")?.to_ascii_uppercase();
             let number = words
                 .next()
-                .and_then(|w| w.parse::<u64>().ok())
+                .and_then(|w| w.parse::<i128>().ok())
                 .ok_or("Invalid integer")?;
-            if words.next().is_some() || fields.insert(key.to_string(), number).is_some() {
+            if number < -i128::from(u64::MAX)
+                || number > i128::from(u64::MAX)
+                || (number < 0 && !(kind == "BLS15" && (key == "LP" || key == "LQ")))
+            {
+                return Err("Integer outside native range".into());
+            }
+            if kind == "BLS5" || kind == "LUCAS" {
+                if let Some(index) = key.strip_prefix("Q[").and_then(|s| s.strip_suffix(']')) {
+                    factor_index += 1;
+                    if index.parse::<usize>().ok() != Some(factor_index) {
+                        return Err("Invalid Q index".into());
+                    }
+                }
+                if let Some(index) = key.strip_prefix("A[").and_then(|s| s.strip_suffix(']')) {
+                    if !index
+                        .parse::<usize>()
+                        .ok()
+                        .is_some_and(|i| i <= factor_index)
+                    {
+                        return Err("Invalid A index".into());
+                    }
+                }
+            }
+            if words.next().is_some() || fields.insert(key.clone(), number).is_some() {
                 return Err("Repeated or malformed field".into());
             }
             if kind == "SMALL"
                 || ((kind == "BLS3" || kind == "POCKLINGTON") && fields.len() == 3)
+                || (kind == "BLS15" && fields.len() == 4)
                 || (kind == "LUCAS" && key == "A")
             {
                 break;
             }
         }
-        if !check(&kind, &fields)? {
+        let valid = if kind == "BLS15" {
+            check_bls15(&fields)?
+        } else {
+            let fields = fields
+                .into_iter()
+                .map(|(key, n)| {
+                    u64::try_from(n)
+                        .map(|n| (key, n))
+                        .map_err(|_| "Invalid integer")
+                })
+                .collect::<Result<BTreeMap<_, _>, _>>()?;
+            check(&kind, &fields)?
+        };
+        if !valid {
             return Ok(false);
         }
         seen_proof = true;

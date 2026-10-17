@@ -12,3 +12,4 @@ Matched MPU's Shell-sort gap table for CRT ordering. Focused tests still hold th
 First checks found an unused parent import and a duplicate chinese2 compatibility test; removed both. The existing chinese2 test already reads its own oracle rows. Re-running focused tests, then the gate.
 All 31 arithmetic oracle tests and 22 property/regression tests pass offline. Clippy is clean. Gate reached the Rust 1.85 build; full test-script run follows.
 The full test script is queued behind the gate's MSRV build. Focused oracle and exhaustive tests passed; final whitespace checks are clean. No further code changes are needed unless the gate reports a failure.
+Rust 1.85 build passed. The full offline test script now holds the build lock; the gate will run its test and documentation stages afterward.

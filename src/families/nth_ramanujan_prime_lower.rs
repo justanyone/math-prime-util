@@ -72,7 +72,7 @@ pub(super) fn count_upper(n: u64) -> u64 {
         };
         logarithmic_integral(x) - a * l * x.sqrt() / (8.0 * std::f64::consts::PI)
     } else {
-        logarithmic_integral(x)
+        extended_li(n)
     };
     upper.floor() as u64
 }
@@ -302,4 +302,57 @@ mod tests {
             assert!(prime_bound(n, false) <= prime_bound(n, true));
         }
     }
+}
+
+// MPU real.c, Li: evaluate in extended precision and return NV (double).
+// Two f64 limbs preserve the long-double intermediate without platform FFI.
+#[derive(Clone, Copy)]
+struct Wide(f64, f64);
+impl Wide {
+    fn add(self, rhs: Self) -> Self {
+        let s = self.0 + rhs.0;
+        let v = s - self.0;
+        let e = (self.0 - (s - v)) + (rhs.0 - v) + self.1 + rhs.1;
+        let h = s + e;
+        Self(h, e - (h - s))
+    }
+    fn mul(self, rhs: Self) -> Self {
+        let p = self.0 * rhs.0;
+        let e = self.0.mul_add(rhs.0, -p) + self.0 * rhs.1 + self.1 * rhs.0 + self.1 * rhs.1;
+        let h = p + e;
+        Self(h, e - (h - p))
+    }
+    fn div(self, rhs: Self) -> Self {
+        let q = self.0 / rhs.0;
+        let r = self.add(rhs.mul(Self(-q, 0.0)));
+        Self(q, 0.0).add(Self((r.0 + r.1) / rhs.0, 0.0))
+    }
+}
+fn extended_li(n: u64) -> f64 {
+    let x = n as f64;
+    let exponent = x.log2().floor();
+    let m = Wide(x * 2.0_f64.powf(-exponent), 0.0);
+    let y = m.add(Wide(-1.0, 0.0)).div(m.add(Wide(1.0, 0.0)));
+    let yy = y.mul(y);
+    let mut term = y;
+    let mut log = y;
+    for k in 1..80 {
+        term = term.mul(yy);
+        log = log.add(term.div(Wide(f64::from(2 * k + 1), 0.0)));
+    }
+    log = log
+        .mul(Wide(2.0, 0.0))
+        .add(Wide(std::f64::consts::LN_2, 2.319_046_813_846_299_6e-17).mul(Wide(exponent, 0.0)));
+    let mut term = log;
+    let mut sum = term;
+    for k in 2..400 {
+        term = term.mul(log).div(Wide(f64::from(k), 0.0));
+        let part = term.div(Wide(f64::from(k), 0.0));
+        sum = sum.add(part);
+        if part.0.abs() < 1e-18 {
+            break;
+        }
+    }
+    sum = sum.add(Wide(0.577_215_664_901_532_9 + log.0.ln(), 0.0));
+    sum.0 + sum.1
 }

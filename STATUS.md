@@ -178,7 +178,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_totient`
 - [x] `jordan_totient`
 - [x] `kronecker`
-- [ ] `LambertW`
+- [x] `LambertW`
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
@@ -267,7 +267,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `perfect_power_count_lower`
 - [ ] `perfect_power_count_upper`
 - [x] `permtonum`
-- [ ] `Pi`
+- [x] `Pi`
 - [x] `pisano_period`
 - [x] `pminus1_factor`
 - [x] `pn_primorial`
@@ -336,7 +336,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `remove_factors`
 - [x] `remove_factors_exp`
 - [x] `reverse_digits`
-- [ ] `RiemannR`
+- [x] `RiemannR`
 - [ ] `RiemannZeta`
 - [x] `rising_factorial`
 - [x] `rootint`

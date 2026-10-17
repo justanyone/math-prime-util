@@ -11,3 +11,4 @@ Unit and focused tests pass. Added concurrent signed-proof calls interleaved wit
 The gate passed fmt, clippy, and the MSRV build and is running the full tests. Added boundary cases for native BLS15 and range validation.
 Final focused run passed all 15 compatibility and 15 property tests. Diff whitespace checks pass; the full gate is still running offline.
 No focused failures remain. The full gate is waiting in the existing iterator compatibility tests; no new verifier code is running there.
+- 2026-10-17T19:52:56Z launcher: no commit for 60 s; 336 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-aks-proving-f02-a2.md, src/proving/mod.rs, src/proving/verify_prime.rs, tests/compat_primality.rs, tests/prop_primality.rs.

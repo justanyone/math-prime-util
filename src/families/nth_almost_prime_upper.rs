@@ -193,3 +193,72 @@ fn prime_bound(n: u64, upper: bool) -> u64 {
             .min(MAX_PRIME as f64) as u64
     }
 }
+
+// MPU inverse_interpolate.c: _linear_interpolate and _inverse_interpolate.
+fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
+    if n == rlo { return lo+1; }
+    if n == rhi { return hi-1; }
+    let movement = ((n-rlo) as f64 * (hi-lo) as f64 / (rhi-rlo) as f64 + 0.5) as u64;
+    lo + movement.clamp(1, hi-lo-1)
+}
+
+pub(super) fn interpolate(mut lo: u64, mut hi: u64, n: u64, threshold: u64, f: impl Fn(u64) -> u64) -> Option<u64> {
+    let (mut rlo, mut rhi);
+    if hi != 0 {
+        let mid = lo + (hi-lo)/2;
+        let rmid = f(mid);
+        if rmid >= n { hi=mid; rhi=rmid; rlo=f(lo); if rlo==n { return Some(lo); } }
+        else { lo=mid; rlo=rmid; rhi=f(hi); }
+    } else {
+        rlo=f(lo);
+        if rlo==n { return Some(lo); }
+        loop {
+            let scale = (n as f64 / rlo as f64 - 0.004).clamp(1.004, 8.0);
+            let mid = if u64::MAX as f64 / lo as f64 <= scale { u64::MAX } else { (scale*lo as f64+1.0) as u64 };
+            let rmid = f(mid);
+            if rmid>=n { hi=mid; rhi=rmid; break; }
+            lo=mid; rlo=rmid;
+            if lo==u64::MAX { return None; }
+        }
+    }
+    if hi-lo <= 1 { return Some(if rlo==n || rhi>n { lo } else { hi }); }
+    let mut mid=linear(lo,hi,rlo,rhi,n);
+    let mut iteration=1;
+    while hi-lo>1 && rhi>n {
+        let rmid=f(mid);
+        if rmid>=n { hi=mid; rhi=rmid; } else { lo=mid; rlo=rmid; }
+        if rhi==n || hi-lo<=1 { break; }
+        mid=linear(lo,hi,rlo,rhi,n);
+        if iteration % 6 == 0 {
+            let close=(0.003*(hi-lo) as f64+1.0) as u64;
+            if lo+close>mid { mid=lo+close; } else if hi-close<mid { mid=hi-close; }
+        }
+        mid=mid.clamp(lo+1, hi-1); iteration+=1;
+    }
+    if rlo==n { return Some(lo); }
+    if hi-lo<=1 { return Some(if rhi>n { lo } else { hi }); }
+    while hi-lo>8 && (hi-lo>threshold || rhi>n) {
+        let mut x1=lo+(hi-lo)/2;
+        let mut rx1=f(x1);
+        let d0=(n-rlo) as f64;
+        let d1=rx1.abs_diff(n) as f64;
+        let d2=(rhi-n+1) as f64;
+        let sign=if rx1>=n { 1.0 } else { -1.0 };
+        let pos=sign*((x1-lo) as f64*d1)/(d1*d1+d0*d2).sqrt();
+        let mut x3=if pos>=0.0 { x1.saturating_sub((pos+0.5) as u64) } else { x1.saturating_add((-pos+0.5) as u64) };
+        if x3>=hi || x3<=lo || x3==x1 {
+            if rx1>=n { hi=x1; rhi=rx1; } else { lo=x1; rlo=rx1; }
+        } else {
+            let mut rx3=f(x3);
+            if rx1>rx3 { std::mem::swap(&mut x1,&mut x3); std::mem::swap(&mut rx1,&mut rx3); }
+            if rx1>=n { hi=x1; rhi=rx1; }
+            else if rx3>=n { lo=x1; rlo=rx1; hi=x3; rhi=rx3; }
+            else { lo=x3; rlo=rx3; }
+        }
+    }
+    while hi-lo>1 && (hi-lo>threshold || rhi>n) {
+        let mid=lo+(hi-lo)/2;
+        if f(mid)<n { lo=mid; } else { hi=mid; }
+    }
+    Some(hi)
+}

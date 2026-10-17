@@ -1,6 +1,6 @@
 use super::{moebius, moebius_range};
 use crate::{rootint, sqrtint};
-use std::collections::HashMap;
+
 
 // MPU moebius.c::_mertens_context_create clamps the prefix allocation.
 #[allow(
@@ -18,8 +18,8 @@ fn prefix_limit(n: u64) -> u64 {
 }
 
 pub(super) struct Mertens {
-    prefix: Vec<i64>,
-    cache: HashMap<u64, i64>,
+    prefix: Vec<i16>,
+    cache: Vec<(u64, i64)>,
 }
 impl Mertens {
     pub(super) fn new(n: u64) -> Self {
@@ -32,23 +32,54 @@ impl Mertens {
             let hi = (lo + 32_767).min(limit);
             for value in moebius_range(lo, hi) {
                 sum += i64::from(value);
-                prefix.push(sum);
+                prefix.push(i16::try_from(sum).unwrap());
             }
             lo = hi + 1;
         }
         Self {
             prefix,
-            cache: HashMap::new(),
+            cache: {
+                let cube = rootint(n, 3);
+                let mut size = crate::next_prime(100 + 8 * cube).unwrap();
+                if cube * cube > 100_000_000 {
+                    size = crate::next_prime(size * 16).unwrap();
+                }
+                vec![(0, 0); usize::try_from(size).unwrap()]
+            },
         }
     }
+    fn cached(&self, n: u64) -> Option<i64> {
+        let mut index = usize::try_from(n % u64::try_from(self.cache.len()).unwrap()).unwrap();
+        for _ in 0..8 {
+            let (key, value) = self.cache[index];
+            if key == 0 { return None; }
+            if key == n { return Some(value); }
+            index = (index + 1) % self.cache.len();
+        }
+        None
+    }
+
+    fn insert(&mut self, n: u64, value: i64) {
+        let base = usize::try_from(n % u64::try_from(self.cache.len()).unwrap()).unwrap();
+        let mut index = base;
+        for _ in 0..8 {
+            if self.cache[index].0 == 0 || self.cache[index].0 == n {
+                self.cache[index] = (n, value);
+                return;
+            }
+            index = (index + 1) % self.cache.len();
+        }
+        self.cache[base] = (n, value);
+    }
+
     pub(super) fn get(&mut self, n: u64) -> i64 {
         if let Ok(i) = usize::try_from(n) {
             if let Some(&v) = self.prefix.get(i) {
-                return v;
+                return i64::from(v);
             }
         }
-        if let Some(&v) = self.cache.get(&n) {
-            return v;
+        if let Some(value) = self.cached(n) {
+            return value;
         }
         let s = sqrtint(n);
         let ns = n / (s + 1);
@@ -63,7 +94,7 @@ impl Mertens {
                 * i128::from(n / s - n / (s + 1));
         }
         let sum = i64::try_from(sum).unwrap();
-        self.cache.insert(n, sum);
+        self.insert(n, sum);
         sum
     }
 }
@@ -102,6 +133,27 @@ mod tests {
         assert_eq!(prefix_limit(1_000_000), 10_000);
         assert!(prefix_limit(1_001_000_000_000) < rootint(1_001_000_000_000, 3).pow(2));
         assert_eq!(prefix_limit(u64::MAX), 7_613_644_883);
+    }
+
+    #[test]
+    fn bounded_cache_collisions() {
+        let mut ctx = Mertens { prefix: vec![], cache: vec![(0, 0); 11] };
+        assert_eq!(ctx.cached(10), None);
+        for k in 0..8 { ctx.insert(10 + 11 * k, -1); }
+        assert_eq!(ctx.cached(87), Some(-1));
+        assert_eq!(ctx.cached(98), None);
+        ctx.insert(87, 2);
+        assert_eq!(ctx.cached(87), Some(2));
+        ctx.insert(98, 3);
+        assert_eq!(ctx.cached(98), Some(3));
+        assert_eq!(ctx.cached(10), None);
+    }
+
+    #[test]
+    fn segmented_prefix() {
+        let ctx = Mertens::new(8_000_000);
+        assert_eq!(ctx.prefix.len(), 40_001);
+        assert_eq!(ctx.prefix[40_000], -10);
     }
 
     #[test]

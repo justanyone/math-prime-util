@@ -198,7 +198,6 @@ proptest! {
     }
 }
 
-<<<<<<< HEAD
 #[test]
 fn requested_iterator_bounds_and_state() {
     assert_eq!(almost_primes_in(64, 0..=u64::MAX).next(), None);
@@ -254,7 +253,17 @@ fn requested_iterator_bounds_and_state() {
                     ControlFlow::Continue(())
                 });
                 seen
-=======
+            })
+        })
+        .collect();
+    for worker in workers {
+        assert_eq!(
+            worker.join().unwrap(),
+            squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>()
+        );
+    }
+}
+
 proptest! {
     #[test]
     fn multiset_matches_unique_index_permutations(values in prop::collection::vec(0_u8..4, 0..7)) {
@@ -347,24 +356,15 @@ fn arrangement_callbacks_are_reentrant_and_stop() {
                     multipermutations_of(&[1, 1, 2, 2]).count(),
                     set_product(&[vec![1, 2], vec![3, 4]]).count(),
                 )
->>>>>>> origin/dev-001
             })
         })
         .collect();
     for worker in workers {
-<<<<<<< HEAD
-        assert_eq!(
-            worker.join().unwrap(),
-            squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>()
-        );
-=======
         assert_eq!(worker.join().unwrap(), (120, 44, 6, 4));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn requested_iterator_unwind_and_relaunch() {
     assert!(
         std::panic::catch_unwind(|| {
@@ -398,7 +398,9 @@ proptest! {
         }).collect();
         prop_assert_eq!(squarefree_integers_in(lo..=lo + len).collect::<Vec<_>>(), expected);
     }
-=======
+}
+
+#[test]
 fn arrangement_empty_and_singleton_boundaries() {
     assert_eq!(
         permutations_of(0).collect::<Vec<_>>(),
@@ -430,5 +432,4 @@ fn arrangement_empty_and_singleton_boundaries() {
         set_product(&[vec![2, 2]]).collect::<Vec<_>>(),
         [vec![2], vec![2]]
     );
->>>>>>> origin/dev-001
 }

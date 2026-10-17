@@ -7,3 +7,6 @@ Wrote prime-power LCM, Round Robin, polygonal discriminant, and squarefree Tunne
 Focused compatibility and property tests started offline. First gate stopped at formatting; formatted the new files.
 Oracle checks pass for the Tunnell core; one Frobenius oracle resource failure needs an explicit named skip because native overflow returns None. Clippy requested midpoint, which is newer than MSRV; added a local justified allowance.
 All 4 compatibility tests and 10 algebraic/boundary tests pass. Frobenius uses u128 intermediates so a valid u64 final result survives product overflow. Congruent filter acceleration remains unported; Tunnell fixtures pass.
+Focused checks now pass: 4 compatibility tests, 11 property/boundary/concurrency tests, and the large-discriminant unit test. Added an independent reachability oracle for Round Robin and fixed polygonal discriminant overflow with checked qu <<cut 20 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -4 bytes)

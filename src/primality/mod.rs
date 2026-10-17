@@ -723,14 +723,22 @@ pub fn is_frobenius_underwood_pseudoprime(n: u64) -> bool {
     let expected = addmod_u(addmod_u(x, x, n), m.to_mont(5), n);
     let (mut a, mut b) = (m.one, two);
     let np1 = n + 1;
-    for bit in (0..63 - np1.leading_zeros()).rev() {
-        let t = addmod_u(m.mul(a, x), addmod_u(b, b, n), n);
+    for bit in (0..np1.ilog2()).rev() {
+        let t = if x == 0 {
+            addmod_u(b, b, n)
+        } else {
+            addmod_u(m.mul(a, x), addmod_u(b, b, n), n)
+        };
         b = m.mul(sub(b, a, n), addmod_u(b, a, n));
         a = m.mul(a, t);
         if (np1 >> bit) & 1 != 0 {
             let t = b;
             b = sub(addmod_u(b, b, n), a, n);
-            a = addmod_u(m.mul(a, multiplier), t, n);
+            a = if x == 0 {
+                addmod_u(addmod_u(a, a, n), t, n)
+            } else {
+                addmod_u(m.mul(a, multiplier), t, n)
+            };
         }
     }
     a == 0 && b == expected

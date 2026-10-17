@@ -10,3 +10,4 @@ Focused compat and property tests passed. Added MPU native fallback and whitespa
 Unit and focused tests pass. Added concurrent signed-proof calls interleaved with malformed input and duplicate proof blocks to check independence.
 The gate passed fmt, clippy, and the MSRV build and is running the full tests. Added boundary cases for native BLS15 and range validation.
 Final focused run passed all 15 compatibility and 15 property tests. Diff whitespace checks pass; the full gate is still running offline.
+No focused failures remain. The full gate is waiting in the existing iterator compatibility tests; no new verifier code is running there.

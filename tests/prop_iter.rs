@@ -143,3 +143,57 @@ fn terminal_and_duplicate_state() {
     };
     assert_eq!(partitions_of(5, options).count(), 0);
 }
+
+proptest! {
+    #[test]
+    fn semiprimes_have_two_factors(hi in 0_u64..2000) {
+        for n in semiprimes_in(0..=hi) {
+            let omega: u32 = factored_in(n..=n).next().unwrap().1.iter().map(|&(_, e)| e).sum();
+            prop_assert_eq!(omega, 2);
+        }
+        let mut count = 0;
+        forsemiprimes(0..=hi, |_| { count += 1; ControlFlow::<()>::Continue(()) });
+        prop_assert_eq!(count, semiprimes_in(0..=hi).count());
+    }
+    #[test]
+    fn almost_primes_match_omega(k in 1_u32..5, hi in 0_u64..500) {
+        for n in almost_primes_in(k, 0..=hi) {
+            let omega: u32 = factored_in(n..=n).next().unwrap().1.iter().map(|&(_, e)| e).sum();
+            prop_assert_eq!(omega, k);
+        }
+        let expected = (1..=hi).filter(|&n| factored_in(n..=n).next().unwrap().1.iter().map(|&(_, e)| e).sum::<u32>() == k).count();
+        prop_assert_eq!(almost_primes_in(k, 0..=hi).count(), expected);
+    }
+    #[test]
+    fn factored_products_rebuild_n(lo in 1_u64..1000, len in 0_u64..50) {
+        for (n, factors) in factored_in(lo..=lo + len) {
+            let product: u64 = factors.iter().map(|&(p, e)| p.pow(e)).product();
+            prop_assert_eq!(product, n);
+            prop_assert!(factors.windows(2).all(|w| w[0].0 < w[1].0));
+        }
+        prop_assert_eq!(factored_in(lo..=lo + len).count(), usize::try_from(len + 1).unwrap());
+    }
+    #[test]
+    fn squarefree_has_unit_exponents(hi in 1_u64..2000) {
+        let mut seen = 0_usize;
+        for (n, factors) in squarefree_in(1..=hi) {
+            prop_assert!(factors.iter().all(|&(_, e)| e == 1));
+            prop_assert_eq!(factors.iter().map(|&(p, _)| p).product::<u64>(), n);
+            seen += 1;
+        }
+        let expected = (1..=hi).filter(|&n| factored_in(n..=n).next().unwrap().1.iter().all(|&(_, e)| e == 1)).count();
+        prop_assert_eq!(seen, expected);
+    }
+    #[test]
+    fn divisors_divide_and_ascend(n in 1_u64..100_000) {
+        let divs: Vec<u64> = divisors_of(n).collect();
+        prop_assert!(divs.windows(2).all(|w| w[0] < w[1]));
+        prop_assert!(divs.iter().all(|&d| n % d == 0));
+        prop_assert_eq!(divs.first().copied(), Some(1));
+        prop_assert_eq!(divs.last().copied(), Some(n));
+        let mut visited = 0_usize;
+        let flow = fordivisors(n, |d| { visited += 1; let _ = d; ControlFlow::<()>::Continue(()) });
+        prop_assert_eq!(flow, ControlFlow::Continue(()));
+        prop_assert_eq!(visited, divs.len());
+    }
+}

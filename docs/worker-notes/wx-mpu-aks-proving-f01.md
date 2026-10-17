@@ -11,3 +11,5 @@ Focused runs and the gate are active; the gate currently waits for the Cargo bui
 Added the product-compositeness law for all proving and certificate APIs, with unsigned input limits documented in the oracle tests.
 Initial offline oracle and property runs passed (12 compatibility tests and 11 property tests); the final optimized implementation is now building for unit and lint checks.
 All requested code is written. Native certificates keep the MPU text format; no bigint or ECPP work is needed for this slice. Final compatibility, property, benchmark-build, and gate checks are in progress.
+The proving unit tests passed, and clippy completed with -D warnings. The gate has advanced to the offline MSRV build.
+Final focused oracle/property tests passed, benchmark compilation passed, and Rust 1.85 build passed. Full-suite and gate test stages remain active.

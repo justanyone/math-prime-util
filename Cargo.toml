@@ -20,6 +20,66 @@ getrandom = { version = "0.3", features = ["std"] }
 proptest = "1"
 criterion = { version = "0.5", default-features = false }
 
+[lib]
+# The lib test harness rejects criterion flags (`--output-format bencher`); benches live in benches/.
+bench = false
+
+[[bench]]
+name = "arith"
+harness = false
+
+[[bench]]
+name = "bits_ops1"
+harness = false
+
+[[bench]]
+name = "combinat"
+harness = false
+
+[[bench]]
+name = "digits"
+harness = false
+
+[[bench]]
+name = "factor"
+harness = false
+
+[[bench]]
+name = "families"
+harness = false
+
+[[bench]]
+name = "int"
+harness = false
+
+[[bench]]
+name = "lucas"
+harness = false
+
+[[bench]]
+name = "modular"
+harness = false
+
+[[bench]]
+name = "random"
+harness = false
+
+[[bench]]
+name = "rational"
+harness = false
+
+[[bench]]
+name = "real"
+harness = false
+
+[[bench]]
+name = "sieve"
+harness = false
+
+[[bench]]
+name = "vec"
+harness = false
+
 [profile.release]
 lto = "fat"
 codegen-units = 1

@@ -30,6 +30,7 @@ fn skip_case(c: &Case) -> bool {
     c.func == "is_polygonal" && c.args.first().is_some_and(|s| s.parse::<i128>().is_err())
 }
 
+#[derive(Clone, Copy)]
 enum Wide {
     U128,
     I128,

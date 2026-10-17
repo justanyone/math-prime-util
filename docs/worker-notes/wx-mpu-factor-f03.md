@@ -9,3 +9,6 @@ Correction: the fixture contains 10foo, not undef. Named that typed-API skip exp
 All four fixture tests and all three property/edge/concurrency tests pass offline. The gate is running after the benchmark lint fix.
 Gate printed green. Added direct retry, wide arithmetic, bound, recovery, and independent Lucas-recurrence tests to improve kernel coverage.
 Direct tests exposed two incorrect expected p-1 outcomes; corrected them from the modular-order calculation (simultaneous smooth factors can remain unsplit). cargo-llvm-cov is absent, so coverage cannot be measured here.
+Final: all four ports, runnable docs, fixture/property/unit tests, and benchmarks are written. Focused and full tools/test.sh runs pass; final tools/gate.sh prints green. Coverage measurement remains unavailable because cargo-llvm-cov is no <<cut 83 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 59 bytes)

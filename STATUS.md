@@ -17,11 +17,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `almost_prime_count_lower`
 - [ ] `almost_prime_count_upper`
 - [ ] `almost_primes`
-- [ ] `bell_number`
+- [x] `bell_number`
 - [x] `bernfrac`
 - [x] `bernreal`
 - [x] `bestrational`
-- [ ] `binomial`
+- [x] `binomial`
 - [x] `binomialmod`
 - [ ] `bitand`
 - [ ] `bitandnot`
@@ -36,7 +36,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `bitxor`
 - [x] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
-- [ ] `catalan_number`
+- [x] `catalan_number`
 - [x] `cdivint`
 - [x] `cdivrem`
 - [ ] `cheb_factor`
@@ -72,7 +72,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `farey`
 - [x] `farey_rank`
 - [x] `fdivrem`
-- [ ] `fermat_factor`
+- [x] `fermat_factor`
 - [x] `fibonacci`
 - [ ] `floor_sum`
 - [ ] `foralmostprimes`
@@ -104,7 +104,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `harmfrac`
 - [x] `harmreal`
 - [ ] `hclassno`
-- [ ] `holf_factor`
+- [x] `holf_factor`
 - [ ] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
@@ -182,7 +182,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
-- [ ] `lehman_factor`
+- [x] `lehman_factor`
 - [ ] `liouville`
 - [ ] `LogarithmicIntegral`
 - [x] `logint`
@@ -373,10 +373,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sqrtint`
 - [ ] `sqrtmod`
 - [ ] `squarefree_kernel`
-- [ ] `squfof_factor`
+- [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`
-- [ ] `stirling`
+- [x] `stirling`
 - [x] `sub1int`
 - [ ] `subfactorial`
 - [x] `subint`

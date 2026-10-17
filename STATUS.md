@@ -233,9 +233,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_lucky_upper`
 - [ ] `nth_omega_prime`
 - [ ] `nth_perfect_power`
-- [ ] `nth_perfect_power_approx`
-- [ ] `nth_perfect_power_lower`
-- [ ] `nth_perfect_power_upper`
+- [x] `nth_perfect_power_approx`
+- [x] `nth_perfect_power_lower`
+- [x] `nth_perfect_power_upper`
 - [ ] `nth_powerfree`
 - [ ] `nth_powerful`
 - [x] `nth_prime`

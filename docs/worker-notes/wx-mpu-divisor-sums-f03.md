@@ -8,3 +8,5 @@ Ported the signed-bound CRT fallback, bounded order reduction, and primitive-roo
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 6 bytes)
 Focused tests and the offline gate are running. All task functions have C citations and runnable examples; no tools, fixtures, dependencies, crate root, or generated status changes were made.
+Matched MPU's Shell-sort gap table for CRT ordering. Focused tests still hold the build lock; the gate waits for the same build directory. Diff whitespace check passed.
+First checks found an unused parent import and a duplicate chinese2 compatibility test; removed both. The existing chinese2 test already reads its own oracle rows. Re-running focused tests, then the gate.

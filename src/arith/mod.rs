@@ -1,7 +1,7 @@
 //! Totients and multiplicative arithmetic from MPU 0.75.
 //! Divisor sums, discriminants, and arithmetic in residue rings.
 
-use crate::{gcd, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
+use crate::{gcd, is_prime, is_square, next_prime, rootint, sqrtint};
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {

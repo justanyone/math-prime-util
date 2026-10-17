@@ -15,7 +15,18 @@ pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
         return Some((0, 0));
     }
     let mut pairs = congruences.to_vec();
-    pairs.sort_unstable_by_key(|a| std::cmp::Reverse(a.1));
+    // MPU's Shell sort orders moduli from largest to smallest.
+    for gap in [7983, 3548, 1577, 701, 301, 132, 57, 23, 10, 4, 1] {
+        for i in gap..pairs.len() {
+            let pair = pairs[i];
+            let mut j = i;
+            while j >= gap && pairs[j - gap].1 < pair.1 {
+                pairs[j] = pairs[j - gap];
+                j -= gap;
+            }
+            pairs[j] = pair;
+        }
+    }
     if pairs.last()?.1 == 0 {
         return None;
     }

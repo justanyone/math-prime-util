@@ -1,0 +1,2 @@
+- Plan: resolve the 4 conflicted files (benches/factor.rs, src/factor/mod.rs, tests/compat_factor.rs, tests/prop_factor.rs) keeping both sides; keep diff minimal; run focused tests with mw-test.
+- Started: reading conflict markers first.

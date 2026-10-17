@@ -19,6 +19,10 @@ fn pair<T: std::fmt::Display>(p: (T, T)) -> String {
 #[test]
 fn lucas_sequence_oracle() {
     each("lucas", "lucas_sequence", |c| {
+        if c.error {
+            assert!(std::panic::catch_unwind(|| lucas_sequence(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
+            return;
+        }
         let (u, v, qk) = lucas_sequence(c.arg(0), c.arg(1), c.arg(2), c.arg(3));
         c.check(Some(format!("{u} {v} {qk}")));
     });
@@ -27,6 +31,10 @@ fn lucas_sequence_oracle() {
 #[test]
 fn lucasuvmod_oracle() {
     each("lucas", "lucasuvmod", |c| {
+        if c.error {
+            assert!(std::panic::catch_unwind(|| lucasuvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
+            return;
+        }
         c.check(Some(pair(lucasuvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3)))));
     });
 }
@@ -34,6 +42,10 @@ fn lucasuvmod_oracle() {
 #[test]
 fn lucasumod_oracle() {
     each("lucas", "lucasumod", |c| {
+        if c.error {
+            assert!(std::panic::catch_unwind(|| lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
+            return;
+        }
         c.check(Some(lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))));
     });
 }
@@ -41,6 +53,10 @@ fn lucasumod_oracle() {
 #[test]
 fn lucasvmod_oracle() {
     each("lucas", "lucasvmod", |c| {
+        if c.error {
+            assert!(std::panic::catch_unwind(|| lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
+            return;
+        }
         c.check(Some(lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))));
     });
 }

@@ -155,7 +155,8 @@ fn is_powerful_oracle() {
         .into_iter()
         .filter(|c| c.func == "is_powerful")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed n (including -8 and -16..=-1), bigint n above u64::MAX,
+        // and k above u32::MAX. These inputs have no native unsigned API value.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -178,7 +179,8 @@ fn powerful_numbers_oracle() {
         .into_iter()
         .filter(|c| c.func == "powerful_numbers")
     {
-        // Skip signed and bigint inputs; the API takes native unsigned integers.
+        // Skip powerful_numbers(1, 121, -1): k has no unsigned API value.
+        // Also skip inputs above u64::MAX if oracle cases add them.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -211,7 +213,8 @@ fn powerful_count_oracle() {
         .into_iter()
         .filter(|c| c.func == "powerful_count")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed n (including -8 and -16..=-1), bigint n above u64::MAX,
+        // and k above u32::MAX. These inputs have no native unsigned API value.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -234,7 +237,8 @@ fn sumpowerful_oracle() {
         .into_iter()
         .filter(|c| c.func == "sumpowerful")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed n (including -8 and -16..=-1), bigint n above u64::MAX,
+        // and k above u32::MAX. These inputs have no native unsigned API value.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }

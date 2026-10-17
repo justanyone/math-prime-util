@@ -25,6 +25,8 @@ fn sum_rec(n: u64, k: u32, flags: &[bool], m: u64, r: u32) -> u128 {
 
 /// Sum the `k`-powerful integers up to `n` with wide arithmetic.
 /// Port of `powerful.c` / `sumpowerful` and `_sumpowerful`.
+/// A zero `k` acts as one, as in MPU's public API.
+/// The `u128` result also holds sums above MPU's native word limit.
 /// ```
 /// assert_eq!(math_prime_util::sumpowerful(10, 2), 22);
 /// ```

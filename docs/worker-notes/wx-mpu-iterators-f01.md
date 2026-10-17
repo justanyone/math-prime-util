@@ -11,3 +11,4 @@ Offline checks remain pending on Cargo compilation and the shared build lock. Re
 - 2026-10-17T18:49:43Z launcher: no commit for 60 s; 335 s elapsed. Files changed so far: benches/iter.rs, docs/worker-notes/wx-mpu-iterators-f01.md, src/iter/forcomposites.rs, src/iter/foroddcomposites.rs, src/iter/forprimes.rs, src/iter/forsemiprimes.rs, src/iter/mod.rs, tests/compat_iter.rs, tests/prop_iter.rs.
 Focused compilation found fixture test names shadowing imported closure functions. Qualified the macro calls through math_prime_util::iter to fix the name collision.
 Revalidation is running after the fixture macro correction. Waiting for offline focused tests and the gate; no tools, fixtures, dependency files, or unrelated source files changed.
+Revalidation is running after the fixture macro correction. Waiting for offline focused tests and the gate; no tools, fixtures, dependency files, or unrelated source files changed.

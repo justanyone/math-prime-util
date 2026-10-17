@@ -1,0 +1,2 @@
+- Plan: port ecm_factor (MPU factor.c) into src/factor/ecm.rs, Montgomery curve stage 1+2, add compat/prop tests.
+- Found ecm.rs and compat/prop tests already present; running focused tests.

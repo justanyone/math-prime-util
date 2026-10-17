@@ -250,8 +250,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_ramanujan_prime_approx`
 - [x] `nth_ramanujan_prime_lower`
 - [ ] `nth_ramanujan_prime_upper`
-- [ ] `nth_semiprime`
-- [ ] `nth_semiprime_approx`
+- [x] `nth_semiprime`
+- [x] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
 - [x] `nth_twin_prime`

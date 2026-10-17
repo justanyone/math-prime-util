@@ -18,3 +18,6 @@ Gate reached Clippy and found three pre-existing float_cmp errors in src/count/m
 Final focused result: all six native compatibility tests and nine property/regression tests pass offline. Signed and bigint fixture inputs are explicitly skipped. The full offline test wrapper and final gate have been launched; no tools, fi <<cut 76 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 52 bytes)
+Fixed remaining compatibility-test semicolon warnings. Scoped Clippy now passes with -D warnings for the library, modular benchmark, and both modular test targets. The repository gate remains blocked by the unrelated count-module float comp <<cut 39 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)

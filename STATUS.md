@@ -98,8 +98,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `fubini`
 - [x] `gcd`
 - [x] `gcdext`
-- [ ] `goldbach_pair_count`
-- [ ] `goldbach_pairs`
+- [x] `goldbach_pair_count`
+- [x] `goldbach_pairs`
 - [x] `hammingweight`
 - [x] `harmfrac`
 - [x] `harmreal`
@@ -202,7 +202,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `lucky_numbers`
 - [x] `mertens`
 - [ ] `miller_rabin_random`
-- [ ] `minimal_goldbach_pair`
+- [x] `minimal_goldbach_pair`
 - [x] `modint`
 - [x] `moebius`
 - [x] `muladdint`
@@ -216,7 +216,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `negint`
 - [x] `negmod`
 - [x] `next_calkin_wilf`
-- [ ] `next_chen_prime`
+- [x] `next_chen_prime`
 - [x] `next_farey`
 - [ ] `next_perfect_power`
 - [x] `next_prime`

@@ -66,13 +66,13 @@ pub(super) fn range(first: u64, last: u64) -> Vec<u64> {
     let mut pi = 0;
     let mut qi = 0;
     let mut s = if first == 1 {
-        1
+        2
     } else {
         1 + prime_count(start - 2) - prime_count((start - 1) / 2)
     };
     // The monolithic C version indexes L[s], the range version indexes L[s-first].
     if first == 1 {
-        s = 1;
+        s = 2;
     }
     for k in (start..=end).step_by(2) {
         if ps.get(pi) == Some(&k) {

@@ -10,6 +10,9 @@ fn is_pseudoprime_oracle() {
             return;
         };
         let result = std::panic::catch_unwind(|| {
+            if c.args.len() == 1 {
+                return Some(u8::from(is_pseudoprime(n, 2)));
+            }
             Some(u8::from(
                 c.args
                     .iter()
@@ -33,6 +36,9 @@ fn is_euler_pseudoprime_oracle() {
             return;
         };
         let result = std::panic::catch_unwind(|| {
+            if c.args.len() == 1 {
+                return Some(u8::from(is_euler_pseudoprime(n, 2)));
+            }
             Some(u8::from(
                 c.args
                     .iter()
@@ -56,6 +62,9 @@ fn is_strong_pseudoprime_oracle() {
             return;
         };
         let result = std::panic::catch_unwind(|| {
+            if c.args.len() == 1 {
+                return Some(u8::from(is_strong_pseudoprime(n, 2)));
+            }
             Some(u8::from(
                 c.args
                     .iter()

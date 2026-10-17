@@ -18,3 +18,4 @@ Full-suite runs continue in the existing count compatibility tests. Formatting, 
 No further code changes are needed. Full-gate completion and local coverage measurement remain unverified; existing count tests have not yet finished.
 The existing nth_prime oracle test has now passed. The gate is waiting for prime_count before it can continue with the remaining suite and docs.
 prime_count remains the only unfinished test in the current count test binary. No code changes or focused-test failures occurred during final validation.
+Finished: tools/gate.sh printed == gate: green, and the required full tools/test.sh run passed offline, including 213 doctests. All four native oracle tests and modular properties/unit tests passed. Coverage was not measured; signed and bigint fixture inputs remain outside this native API and are documented skips.

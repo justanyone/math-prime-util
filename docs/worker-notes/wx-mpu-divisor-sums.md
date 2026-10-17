@@ -14,3 +14,4 @@ Documented native overflow, zero-modulus behavior, and signed abundance conversi
 Both full-suite runs remain in the pre-existing count compatibility tests. No arithmetic failure has appeared; focused tests and lint/MSRV checks are green, while full gate and coverage confirmation remain pending.
 - 2026-10-17T07:31:09Z launcher: no commit for 60 s; 484 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-divisor-sums.md, src/arith/mod.rs, tests/compat_arith.rs, tests/prop_arith.rs.
 The gate's nth-prime compatibility test has passed; prime-count is still running. All requested source, tests, examples, and benchmarks are written; no further implementation change is pending.
+About five minutes remain. All fifteen arithmetic doc examples pass (16 matching doctests total); the two full-suite runs remain in the existing prime-count compatibility test, so a green gate is not yet confirmed.

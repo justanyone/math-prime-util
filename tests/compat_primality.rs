@@ -27,7 +27,7 @@ fn prime_certificate_compat() {
         prime_certificate(101),
         "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN 101\n\nType Small\nN 101\n"
     );
-    assert!(prime_certificate(1).is_empty());
+    assert_eq!(prime_certificate(1), "");
 }
 #[test]
 fn is_provable_prime_with_cert_compat() {

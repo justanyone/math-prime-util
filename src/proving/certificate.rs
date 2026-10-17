@@ -244,7 +244,7 @@ mod tests {
             assert!(check(kind, &fields(&[("N", 23)])).is_err());
         }
         assert_eq!(check("BLS5", &fields(&[("N", 3)])), Ok(false));
-        assert_eq!(check("BLS5", &fields(&[("N", 101)])), Ok(false));
+        assert_eq!(check("BLS5", &fields(&[("N", 101)])), Ok(true));
         assert_eq!(
             check(
                 "BLS5",

@@ -520,7 +520,7 @@ fn ext_gcd_coeffs(a: i64, b: i64) -> (i64, i64) {
 /// ```
 /// use math_prime_util::farey_rank;
 ///
-/// assert_eq!(farey_rank(5, 1, 2), 6);
+/// assert_eq!(farey_rank(5, 1, 2), 5);
 /// assert_eq!(farey_rank(1, 0, 1), 0);
 /// ```
 #[must_use]

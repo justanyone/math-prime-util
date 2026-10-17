@@ -5,3 +5,4 @@ Run focused offline tests and the repository gate; leave git writes to the launc
 Focused tests exposed native-range and Perl fallback mismatches. Next: fix bounds, add explicit skips, and implement Farey selection.
 Added Farey arrays, indexed rank search, properties and hot-function benchmarks. Running compatibility and property tests next.
 Compatibility now passes most functions. Finished the C direct totient sum; checking remaining native overflow and wrapper validation cases.
+All compatibility and property tests pass; clippy and MSRV passed. Gate found one stale rank example (strict rank is 5, not 6); corrected it and rerunning the gate.

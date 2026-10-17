@@ -4,6 +4,8 @@ use super::binomial;
 /// second kind (kind 2), or a Lah number (kind 3).
 ///
 /// Port of `stirling1`, `stirling2`, and `stirling3` in MPU 0.75 `util.c`.
+/// The first-kind overflow fallback uses the direct recurrence from
+/// `lib/Math/Prime/Util/PP.pm`, `stirling`, as MPU does after C overflow.
 /// These use binomial sums and factorial products. Intermediates use
 /// 128 bits. Return `None` if the magnitude exceeds `u64` or an
 /// intermediate cannot be represented.
@@ -26,7 +28,7 @@ pub fn stirling(n: u64, m: u64, kind: u64) -> Option<i128> {
         return Some(0);
     }
     let value = match kind {
-        1 => first(n, m)?,
+        1 => first(n, m).or_else(|| first_direct(n, m))?,
         2 => second(n, m)?,
         _ => {
             let a = u128::from(binomial(n, m)?);
@@ -47,6 +49,9 @@ fn factorial(n: u64) -> Option<u128> {
 fn second(n: u64, m: u64) -> Option<i128> {
     if m == 1 {
         return Some(1);
+    }
+    if m == n - 1 {
+        return binomial(n, 2).map(i128::from);
     }
     let f = i128::try_from(factorial(m)?).ok()?;
     let mut sum = 0_i128;
@@ -82,4 +87,28 @@ fn first(n: u64, m: u64) -> Option<i128> {
         };
     }
     Some(sum)
+}
+
+// MPU's PP fallback computes unsigned first-kind numbers, then sets the sign.
+// Values above the result bound can be capped: this recurrence is positive.
+fn first_direct(n: u64, m: u64) -> Option<i128> {
+    if n > 64 {
+        return None;
+    }
+    let n = usize::try_from(n).ok()?;
+    let m = usize::try_from(m).ok()?;
+    let limit = u128::from(u64::MAX) + 1;
+    let mut row = [0_u128; 65];
+    row[1] = 1;
+    for k in 2..=n {
+        for j in (1..=k).rev() {
+            row[j] = (u128::try_from(k - 1).ok()? * row[j] + row[j - 1]).min(limit);
+        }
+    }
+    let magnitude = i128::from(u64::try_from(row[m]).ok()?);
+    Some(if (n - m) % 2 == 1 {
+        -magnitude
+    } else {
+        magnitude
+    })
 }

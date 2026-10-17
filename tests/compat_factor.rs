@@ -5,7 +5,11 @@ use math_prime_util::ecm_factor;
 
 #[test]
 fn ecm_factor_oracle() {
-    common::each("factor", "ecm_factor", |c| {
+    let mut failures = Vec::new();
+    for c in common::load("factor")
+        .into_iter()
+        .filter(|c| c.func == "ecm_factor")
+    {
         let factors = ecm_factor(
             c.arg(0),
             c.args.get(1).map(|_| c.arg(1)),
@@ -23,6 +27,14 @@ fn ecm_factor_oracle() {
                     .join(" "),
             )
         };
-        c.check(result);
-    });
+        if result != c.result {
+            failures.push(format!(
+                "{}: {:?} != {:?}",
+                c.args.join(" "),
+                result,
+                c.result
+            ));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

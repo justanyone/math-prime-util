@@ -45,7 +45,7 @@ fn multiply(p: Point, k: u64, a24: u64, c: Mont) -> Point {
     if k == 2 {
         return r1;
     }
-    let mut bit = (1_u64 << (63 - k.leading_zeros())) >> 1;
+    let mut bit = (1_u64 << k.ilog2()) >> 1;
     while bit != 0 {
         if k & bit != 0 {
             r0 = dadd(r0, r1, p, c);

@@ -1,5 +1,4 @@
-//! Algebraic laws and boundary regressions for the factor predicates.
-//! Independent algebraic checks for the factor predicates.
+//! Algebraic laws, independent algebraic checks, and boundary regressions for the factor predicates.
 use math_prime_util::{
     gcd, is_carmichael, is_cyclic, is_perfect_number, is_practical, is_quasi_carmichael, is_rough,
     is_smooth, smooth_count,

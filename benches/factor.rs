@@ -1,8 +1,10 @@
 #![allow(missing_docs)]
-<<<<<<< HEAD
-//! Benchmarks for the smooth, rough, and practical predicates.
+//! Benchmarks for the factor predicates.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{is_practical, is_rough, is_smooth, smooth_count};
+use math_prime_util::{
+    is_carmichael, is_cyclic, is_perfect_number, is_practical, is_quasi_carmichael, is_rough,
+    is_smooth, smooth_count,
+};
 
 fn bench_factor(c: &mut Criterion) {
     c.bench_function("is_practical", |b| {
@@ -17,14 +19,6 @@ fn bench_factor(c: &mut Criterion) {
     c.bench_function("smooth_count", |b| {
         b.iter(|| smooth_count(black_box(10_000_000), 400));
     });
-}
-
-=======
-//! Benchmarks for the factor predicates.
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
-
-fn bench_factor(c: &mut Criterion) {
     c.bench_function("is_carmichael", |b| {
         b.iter(|| is_carmichael(black_box(3_215_031_751)));
     });
@@ -38,6 +32,6 @@ fn bench_factor(c: &mut Criterion) {
         b.iter(|| is_perfect_number(black_box(2_305_843_008_139_952_128)));
     });
 }
->>>>>>> origin/dev-001
+
 criterion_group!(benches, bench_factor);
 criterion_main!(benches);

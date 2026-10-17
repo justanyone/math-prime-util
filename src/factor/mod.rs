@@ -1,22 +1,19 @@
 //! factor: see PLAN.md section 5. Filled by the port rows; the crate root re-exports `pub use factor::*`.
 
-<<<<<<< HEAD
+mod is_carmichael;
+mod is_cyclic;
+mod is_perfect_number;
 mod is_practical;
+mod is_quasi_carmichael;
 mod is_rough;
 mod is_smooth;
 mod smooth_count;
 
-pub use is_practical::is_practical;
-pub use is_rough::is_rough;
-pub use is_smooth::is_smooth;
-pub use smooth_count::smooth_count;
-=======
-mod is_carmichael;
-mod is_cyclic;
-mod is_perfect_number;
-mod is_quasi_carmichael;
 pub use is_carmichael::is_carmichael;
 pub use is_cyclic::is_cyclic;
 pub use is_perfect_number::is_perfect_number;
+pub use is_practical::is_practical;
 pub use is_quasi_carmichael::is_quasi_carmichael;
->>>>>>> origin/dev-001
+pub use is_rough::is_rough;
+pub use is_smooth::is_smooth;
+pub use smooth_count::smooth_count;

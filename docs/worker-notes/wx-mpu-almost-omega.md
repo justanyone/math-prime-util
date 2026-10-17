@@ -20,3 +20,5 @@ Property suite passed: 9 tests, including existing family properties. Fixed benc
 Exact almost-prime counts pass the oracle. Three count estimates fail at u64::MAX because existing f64 prime estimates differ from MPU long-double outputs. Investigating nth compatibility separately.
 
 Compensated large-input prime estimates now preserve low integer bits. This keeps small-input behavior unchanged while testing the long-double dependency gap.
+
+Omega count compatibility passes. Large-input prime estimates still differ by integer units; reference real.c is needed to match its truncation, not only mathematical accuracy.

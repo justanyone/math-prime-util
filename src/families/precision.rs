@@ -63,7 +63,7 @@ pub(super) fn prime_approx(n: u64) -> u64 {
     for k in 1..180 {
         term = term.mul(l).div(Wide(f64::from(k), 0.0));
         let z = if k < 13 {
-            Wide(crate::riemann_zeta(f64::from(k + 1)), 0.0)
+            Wide(1.0 + crate::riemann_zeta(f64::from(k + 1)), 0.0)
         } else {
             let mut z = Wide(1.0, 0.0);
             for j in (2..=1000).rev() {

@@ -10,8 +10,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `addint`
 - [x] `addmod`
 - [ ] `aliquot_sum`
-- [ ] `allrootmod`
-- [ ] `allsqrtmod`
+- [x] `allrootmod`
+- [x] `allsqrtmod`
 - [ ] `almost_prime_count`
 - [ ] `almost_prime_count_approx`
 - [ ] `almost_prime_count_lower`
@@ -48,7 +48,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `consecutive_integer_lcm`
 - [x] `contfrac`
 - [x] `convergents`
-- [ ] `cornacchia`
+- [x] `cornacchia`
 - [x] `crootint`
 - [x] `csrand`
 - [ ] `dedekind_psi`
@@ -56,7 +56,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `divint`
 - [ ] `divisors`
 - [ ] `divisor_sum`
-- [ ] `divmod`
+- [x] `divmod`
 - [x] `divrem`
 - [x] `drand`
 - [ ] `ecm_factor`
@@ -64,8 +64,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `euler_phi`
 - [ ] `exp_mangoldt`
 - [ ] `ExponentialIntegral`
-- [ ] `factor`
-- [ ] `factor_exp`
+- [x] `factor`
+- [x] `factor_exp`
 - [ ] `factorial`
 - [ ] `factorialmod`
 - [ ] `falling_factorial`
@@ -340,7 +340,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `RiemannZeta`
 - [ ] `rising_factorial`
 - [x] `rootint`
-- [ ] `rootmod`
+- [x] `rootmod`
 - [ ] `rough_count`
 - [x] `rshiftint`
 - [ ] `semiprime_count`
@@ -371,7 +371,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `sopf`
 - [ ] `sopfr`
 - [x] `sqrtint`
-- [ ] `sqrtmod`
+- [x] `sqrtmod`
 - [ ] `squarefree_kernel`
 - [ ] `squfof_factor`
 - [x] `srand`

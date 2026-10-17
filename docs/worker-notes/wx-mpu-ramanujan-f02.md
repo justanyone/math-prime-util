@@ -18,3 +18,4 @@ The full gate is spending over a minute in existing chebyshev, nth-prime and pri
 The existing Chebyshev oracle passed; the full gate continues with nth-prime and prime-count cases.
 The existing nth-prime and prime-count oracle cases are still running. The implementation is unchanged while the full gate validates it.
 About five minutes remain in the worker budget. All assigned implementation and tests are complete; the full gate is still in existing count oracle cases.
+- 2026-10-17T06:58:05Z launcher: no commit for 61 s; 609 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-ramanujan-f02.md, src/families/mod.rs, src/families/nth_ramanujan_prime.rs, src/families/nth_ramanujan_prime_approx.rs, src/families/nth_ramanujan_prime_lower.rs, src/families/ramanujan_prime_count_upper.rs, tests/compat_families.rs, tests/prop_families.rs.

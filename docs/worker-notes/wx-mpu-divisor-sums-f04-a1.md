@@ -5,3 +5,4 @@ Port `qnr`, `is_qr`, and `is_fundamental` from MPU 0.75 `util.c` into `src/arith
 Dependencies are on origin/dev. Read current arith code and the C algorithms, then add only these three functions.
 
 Next: locate PLAN.md sections 5–8, existing arith module shape, and the C functions.
+- 2026-10-17T18:59:35Z launcher: no commit for 61 s; 121 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.

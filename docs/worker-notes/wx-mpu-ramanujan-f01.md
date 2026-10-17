@@ -22,3 +22,9 @@ All known pedantic lint findings in the new code have been fixed. Final gate and
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 14 bytes)
 Final gate has passed formatting, Clippy with warnings denied, and the Rust 1.85 build. It has reached the tests. This slice must remain PARTIAL until the two maximum-input oracle discrepancies are fixed and the gate reports green.
 The full suite and gate are still in the existing compat_count tests, before the Ramanujan fixture tests. Focused tests already identify the two remaining failures. No benchmark timing or coverage percentage was measured.
+A Decimal numerical check showed that even the more accurate mathematical lower estimate differs from the C oracle by 8 at u64::MAX. Matching this case requires the C long-double evaluation behavior, not a fixture-specific correction or a m <<cut 33 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 9 bytes)
+Stopping with the implementation and active regression tests on disk. Known remaining work: reproduce MPU long-double outputs for lower/approx at u64::MAX, then get the gate green and measure coverage. Full suite and gate were launched offl <<cut 148 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 123 bytes)

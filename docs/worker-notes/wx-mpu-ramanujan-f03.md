@@ -1,0 +1,1 @@
+- Plan: port nth_ramanujan_prime_upper and is_ramanujan_prime from ramanujan_primes.c into src/families/, add compat/prop tests, gate.

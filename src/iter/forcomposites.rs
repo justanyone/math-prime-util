@@ -1,6 +1,7 @@
 use std::ops::{ControlFlow, RangeInclusive};
 
-/// Composite range state. See `XS.xs`, `foroddcomposites`.
+/// Composite range state from MPU 0.75 `XS.xs::foroddcomposites`.
+/// It uses the reference predicate loop and its `forcomposites` alias.
 #[derive(Debug, Clone)]
 pub struct CompositesIn {
     pub(super) range: RangeInclusive<u64>,
@@ -14,7 +15,9 @@ impl Iterator for CompositesIn {
     }
 }
 
-/// Iterate over composites. See `XS.xs`, `forcomposites`.
+/// Iterate over composites.
+/// Port of MPU 0.75 `XS.xs::foroddcomposites`, the `forcomposites` alias.
+/// It uses the reference predicate loop.
 /// ```
 /// assert_eq!(math_prime_util::composites_in(0..=9).collect::<Vec<_>>(), [4,6,8,9]);
 /// ```

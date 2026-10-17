@@ -23,6 +23,9 @@ impl Iterator for SemiprimesIn {
 /// ```
 #[must_use]
 pub fn semiprimes_in(range: RangeInclusive<u64>) -> SemiprimesIn {
+    if range.is_empty() {
+        return SemiprimesIn { range };
+    }
     let (lo, hi) = range.into_inner();
     SemiprimesIn {
         range: lo.max(4)..=hi.min(18_446_744_073_709_551_601),

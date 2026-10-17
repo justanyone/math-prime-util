@@ -1,7 +1,8 @@
 use super::CompositesIn;
 use std::ops::{ControlFlow, RangeInclusive};
 
-/// Iterate over odd composites. See `XS.xs`, `foroddcomposites`.
+/// Iterate over odd composites.
+/// Port of MPU 0.75 `XS.xs::foroddcomposites`, the predicate loop.
 /// ```
 /// assert_eq!(math_prime_util::odd_composites_in(0..=15).collect::<Vec<_>>(), [9,15]);
 /// ```

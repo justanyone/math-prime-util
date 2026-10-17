@@ -269,3 +269,15 @@ fn range_iterators_end_at_native_bounds() {
     assert_eq!(odd_composites_in(0..=8).next(), None);
     assert_eq!(primes_in(max..=max).next(), None);
 }
+
+#[test]
+fn semiprime_exhausted_input_stays_empty() {
+    let mut range = 4..=4;
+    assert_eq!(range.next(), Some(4));
+    assert_eq!(semiprimes_in(range).next(), None);
+    assert_eq!(semiprimes_in(10..=4).next(), None);
+    let mut iter = semiprimes_in(0..=10);
+    assert_eq!(iter.next(), Some(4));
+    assert_eq!(iter.clone().collect::<Vec<_>>(), [6, 9, 10]);
+    assert_eq!(iter.collect::<Vec<_>>(), [6, 9, 10]);
+}

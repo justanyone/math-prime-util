@@ -7,6 +7,18 @@ pub use is_gaussian_prime::is_gaussian_prime;
 pub use is_sum_of_squares::is_sum_of_squares;
 pub use lucky::*;
 
+mod prime_power_count;
+pub use prime_power_count::prime_power_count;
+
+mod prime_power_count_approx;
+pub use prime_power_count_approx::prime_power_count_approx;
+
+mod prime_power_count_lower;
+pub use prime_power_count_lower::prime_power_count_lower;
+
+mod prime_power_count_upper;
+pub use prime_power_count_upper::prime_power_count_upper;
+
 mod minimal_goldbach_pair;
 pub use minimal_goldbach_pair::minimal_goldbach_pair;
 mod goldbach_pair_count;
@@ -72,6 +84,10 @@ pub use semiprime_count::semiprime_count;
 mod semiprime_count_approx;
 pub use semiprime_count_approx::semiprime_count_approx;
 
+mod is_ramanujan_prime;
+pub use is_ramanujan_prime::is_ramanujan_prime;
+mod nth_ramanujan_prime_upper;
+pub use nth_ramanujan_prime_upper::nth_ramanujan_prime_upper;
 mod ramanujan_primes;
 pub use ramanujan_primes::ramanujan_primes;
 mod ramanujan_prime_count;
@@ -93,3 +109,11 @@ mod perfect_power_count_upper;
 pub use perfect_power_count_upper::perfect_power_count_upper;
 mod nth_perfect_power;
 pub use nth_perfect_power::nth_perfect_power;
+mod is_perfect_power;
+pub use is_perfect_power::is_perfect_power;
+mod next_perfect_power;
+pub use next_perfect_power::next_perfect_power;
+mod prev_perfect_power;
+pub use prev_perfect_power::prev_perfect_power;
+mod perfect_power_count;
+pub use perfect_power_count::perfect_power_count;

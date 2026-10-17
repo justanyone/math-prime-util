@@ -59,7 +59,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `divmod`
 - [x] `divrem`
 - [x] `drand`
-- [ ] `ecm_factor`
+- [x] `ecm_factor`
 - [x] `entropy_bytes`
 - [x] `euler_phi`
 - [x] `exp_mangoldt`
@@ -146,14 +146,14 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_omega_prime`
 - [x] `is_palindrome`
 - [x] `is_perfect_number`
-- [ ] `is_perfect_power`
+- [x] `is_perfect_power`
 - [x] `is_perrin_pseudoprime`
 - [x] `is_pillai`
 - [x] `is_polygonal`
 - [x] `is_power`
 - [x] `is_powerfree`
 - [x] `is_powerful`
-- [ ] `is_practical`
+- [x] `is_practical`
 - [x] `is_prime`
 - [x] `is_prime_power`
 - [x] `is_primitive_root`
@@ -163,12 +163,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_pseudoprime`
 - [x] `is_qr`
 - [x] `is_quasi_carmichael`
-- [ ] `is_ramanujan_prime`
-- [ ] `is_rough`
+- [x] `is_ramanujan_prime`
+- [x] `is_rough`
 - [x] `is_safe_prime`
 - [x] `is_semiprime`
 - [x] `is_sidon_set`
-- [ ] `is_smooth`
+- [x] `is_smooth`
 - [x] `is_square`
 - [x] `is_square_free`
 - [x] `is_strong_lucas_pseudoprime`
@@ -218,7 +218,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `next_calkin_wilf`
 - [x] `next_chen_prime`
 - [x] `next_farey`
-- [ ] `next_perfect_power`
+- [x] `next_perfect_power`
 - [x] `next_prime`
 - [x] `next_prime_power`
 - [x] `next_stern_brocot`
@@ -249,7 +249,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_ramanujan_prime`
 - [x] `nth_ramanujan_prime_approx`
 - [x] `nth_ramanujan_prime_lower`
-- [ ] `nth_ramanujan_prime_upper`
+- [x] `nth_ramanujan_prime_upper`
 - [x] `nth_semiprime`
 - [x] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`
@@ -262,7 +262,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `partitions`
 - [x] `partitionsq`
 - [x] `pbrent_factor`
-- [ ] `perfect_power_count`
+- [x] `perfect_power_count`
 - [x] `perfect_power_count_approx`
 - [x] `perfect_power_count_lower`
 - [x] `perfect_power_count_upper`
@@ -281,7 +281,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `powint`
 - [x] `powmod`
 - [x] `pplus1_factor`
-- [ ] `prev_perfect_power`
+- [x] `prev_perfect_power`
 - [x] `prev_prime`
 - [x] `prev_prime_power`
 - [x] `prho_factor`
@@ -296,10 +296,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_iterator_object`
 - [x] `prime_memfree`
 - [x] `prime_omega`
-- [ ] `prime_power_count`
-- [ ] `prime_power_count_approx`
-- [ ] `prime_power_count_lower`
-- [ ] `prime_power_count_upper`
+- [x] `prime_power_count`
+- [x] `prime_power_count_approx`
+- [x] `prime_power_count_lower`
+- [x] `prime_power_count_upper`
 - [x] `prime_powers`
 - [x] `prime_precalc`
 - [x] `primes`
@@ -367,7 +367,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sieve_prime_cluster`
 - [x] `sieve_range`
 - [x] `signint`
-- [ ] `smooth_count`
+- [x] `smooth_count`
 - [x] `sopf`
 - [x] `sopfr`
 - [x] `sqrtint`

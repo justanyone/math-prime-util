@@ -5,11 +5,12 @@ mod common;
 // 18450931744652885087, 36803912137803496523, and 36832540935240707603.
 use common::{Case, each};
 use math_prime_util::{
-    cheb_factor, divisors, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
-    is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime_u128,
-    is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
-    pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
-    rough_count, squarefree_kernel, squfof_factor, trial_factor,
+    cheb_factor, divisors, ecm_factor, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
+    is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_practical,
+    is_prime_u128, is_quasi_carmichael, is_rough, is_semiprime, is_smooth, is_square_free,
+    lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor, prime_bigomega,
+    prime_omega, prime_signature, rough_count, smooth_count, squarefree_kernel, squfof_factor,
+    trial_factor,
 };
 
 fn check(name: &str, method: impl Fn(u64, Option<u64>) -> Vec<u64>) {
@@ -188,6 +189,30 @@ fn prime_signature_oracle() {
 }
 
 #[test]
+fn ecm_factor_oracle() {
+    common::each("factor", "ecm_factor", |c| {
+        let factors = ecm_factor(
+            c.arg(0),
+            c.args.get(1).map(|_| c.arg(1)),
+            c.args.get(2).map(|_| c.arg(2)),
+            c.args.get(3).map(|_| c.arg(3)),
+        );
+        let result = if factors.is_empty() {
+            None
+        } else {
+            Some(
+                factors
+                    .iter()
+                    .map(u64::to_string)
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            )
+        };
+        c.check(result);
+    });
+}
+
+#[test]
 fn is_square_free_oracle() {
     each("factor", "is_square_free", |c| {
         // Skip bigint and signed arguments outside this native unsigned API.
@@ -350,6 +375,43 @@ fn u128_paths_agree_with_u64_on_the_fixtures() {
                 "{n}"
             );
         }
+    });
+}
+
+#[test]
+fn is_practical_oracle() {
+    each("factor", "is_practical", |c| {
+        // Signed is_practical arguments are outside the native u64 API.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            c.check(Some(u8::from(is_practical(n))));
+        }
+    });
+}
+
+#[test]
+fn is_smooth_oracle() {
+    each("factor", "is_smooth", |c| {
+        // Signed is_smooth arguments are outside the native u64 API.
+        if let (Ok(n), Ok(k)) = (c.args[0].parse::<u64>(), c.args[1].parse::<u64>()) {
+            c.check(Some(u8::from(is_smooth(n, k))));
+        }
+    });
+}
+
+#[test]
+fn is_rough_oracle() {
+    each("factor", "is_rough", |c| {
+        // Signed is_rough arguments are outside the native u64 API.
+        if let (Ok(n), Ok(k)) = (c.args[0].parse::<u64>(), c.args[1].parse::<u64>()) {
+            c.check(Some(u8::from(is_rough(n, k))));
+        }
+    });
+}
+
+#[test]
+fn smooth_count_oracle() {
+    each("factor", "smooth_count", |c| {
+        c.check(Some(smooth_count(c.arg(0), c.arg(1))));
     });
 }
 

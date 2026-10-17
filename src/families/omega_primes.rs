@@ -47,7 +47,10 @@ pub fn omega_primes(k: u32, mut lo: u64, hi: u64) -> Vec<u64> {
         let mut residual: Vec<u64> = (lo..=end).collect();
         let mut counts = vec![0_u8; residual.len()];
         for &p in &ps {
-            let first = lo.div_ceil(p) * p;
+            let offset = (p - lo % p) % p;
+            let Some(first) = lo.checked_add(offset) else {
+                continue;
+            };
             if first > end {
                 continue;
             }

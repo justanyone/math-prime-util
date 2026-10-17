@@ -61,6 +61,9 @@ pub fn nth_almost_prime_upper(k: u32, n: u64) -> Option<u64> {
 }
 
 fn count_lower(mut k: u32, mut n: u64) -> u64 {
+    if k == 2 && n < 256 {
+        return semiprime_count(n);
+    }
     if k >= 64 || n >> k == 0 {
         return 0;
     }
@@ -76,9 +79,7 @@ fn count_lower(mut k: u32, mut n: u64) -> u64 {
     if k == 1 {
         return prime_count_lower(n);
     }
-    if k == 2 && n < 256 {
-        return semiprime_count(n);
-    }
+
     if n < 3 * (1 << (k - 1)) {
         return 1;
     }

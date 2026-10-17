@@ -7,3 +7,4 @@ Implemented the four functions and private C helpers; next add fixture and algeb
 Focused fixture/property tests are running offline. Added hot-function benchmarks; no tools, fixture, or manifest edits.
 Found pre-existing family test files in the diff; restored their contents and isolated the new tests in a nested module.
 Reviewing native overflow and test integration while the first offline build runs; all added APIs have runnable examples.
+Fixed overflow when locating the first sieve multiple near u64::MAX. The gate is queued behind the focused build lock.

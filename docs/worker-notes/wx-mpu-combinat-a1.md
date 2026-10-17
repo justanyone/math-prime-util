@@ -35,3 +35,4 @@ Wrote `src/combinat/{mod,arith,special}.rs`, compat and property tests, and a be
 - 2026-10-17T00:34:22Z launcher: no commit for 61 s; 1361 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md.
 - 2026-10-17T00:35:22Z launcher: no commit for 60 s; 1421 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md.
 - 2026-10-17T00:38:53Z launcher: no commit for 60 s; 1633 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md, src/combinat/arith.rs, src/combinat/mod.rs, src/combinat/special.rs.
+- 2026-10-17T00:41:25Z launcher: no commit for 60 s; 1784 s elapsed. Files changed so far: benches/combinat.rs, docs/worker-notes/wx-mpu-combinat-a1.md, src/combinat/arith.rs, src/combinat/mod.rs, src/combinat/special.rs, tests/compat_combinat.rs, tests/prop_combinat.rs.

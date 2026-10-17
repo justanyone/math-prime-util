@@ -18,7 +18,7 @@ fn prime_count_oracle() {
 #[test]
 fn legendre_phi_oracle() {
     each("count", "legendre_phi", |c| {
-        c.check(Some(legendre_phi(c.arg(0), c.arg(1))))
+        c.check(Some(legendre_phi(c.arg(0), c.arg(1))));
     });
 }
 

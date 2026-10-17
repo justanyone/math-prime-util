@@ -8,3 +8,5 @@ Added the C tablephi wheel tables to reduce recursion. Focused unit tests are ru
 Unit counts and concurrent duplicate calls passed. Compatibility and property tests are running offline; next check the gate and address concrete failures.
 Gate found doc_markdown and a provably bounded conversion flagged as a possible panic. Fixed both without changing the API. Compatibility fixtures are still running.
 The second gate is running after lint fixes. No network, fixture edits, dependencies, root exports, or STATUS changes were needed. LMO, analytic bounds, nth-prime APIs, Chebyshev functions, count tables, and MPU benchmarks remain outstanding.
+Fixed the remaining test closure semicolon lint. Large debug-mode oracle cases are still running; final validation will report their actual outcome.
+Final gate retry includes all lint fixes. Exact-count unit tests passed; compatibility runtime is still unresolved. The remaining requested algorithms are not represented as completed.

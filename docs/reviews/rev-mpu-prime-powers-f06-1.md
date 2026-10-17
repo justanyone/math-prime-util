@@ -11,3 +11,5 @@ Verdict: FAIL
 - src/families/mod.rs:5 — the new module is exported once.
 
 No earlier findings were supplied. Review uses the candidate digest; the checkout is the base, so local checks do not establish candidate correctness.
+
+Validation: tools/test.sh perfect_power exited successfully on the base with no matching tests. tools/gate.sh was started on the base; counting compatibility tests were still running at handoff, and no green result was observed.

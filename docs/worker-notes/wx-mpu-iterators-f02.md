@@ -24,3 +24,6 @@ Implementation, compatibility dispatch, state regression tests, property tests, 
 The first build returned a compatibility-test name collision: fixture test names shadow the closure APIs. Fixed calls to use math_prime_util:: qualification; checking subsequent diagnostics.
 The original build lock cleared and the gate is now checking dependencies with Clippy. The iterator library compiled; the fixture-test naming collision was fixed before subsequent checks.
 - 2026-10-17T18:56:45Z launcher: no commit for 60 s; 761 s elapsed. Files changed so far: benches/iter.rs, docs/worker-notes/wx-mpu-iterators-f02.md, src/iter/foralmostprimes.rs, src/iter/forfactored.rs, src/iter/forsquarefree.rs, src/iter/forsquarefreeint.rs, src/iter/mod.rs, tests/compat_iter.rs, tests/prop_iter.rs.
+Final gate result: blocked by four existing clippy::float_cmp errors in src/count/mod.rs:247-249 and src/proving/aks.rs:164. Those files are outside task scope and were not changed. Focused test jobs have not yet returned final results; for <<cut 56 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 32 bytes)

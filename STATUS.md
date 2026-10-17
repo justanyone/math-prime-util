@@ -23,17 +23,17 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `bestrational`
 - [x] `binomial`
 - [x] `binomialmod`
-- [ ] `bitand`
-- [ ] `bitandnot`
+- [x] `bitand`
+- [x] `bitandnot`
 - [ ] `bitclear`
 - [ ] `bitflip`
-- [ ] `bitnot`
-- [ ] `bitor`
+- [x] `bitnot`
+- [x] `bitor`
 - [ ] `bitscan0`
 - [ ] `bitscan1`
 - [ ] `bitset`
 - [ ] `bittest`
-- [ ] `bitxor`
+- [x] `bitxor`
 - [x] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
 - [x] `catalan_number`

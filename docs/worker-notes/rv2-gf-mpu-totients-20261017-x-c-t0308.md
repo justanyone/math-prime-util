@@ -6,3 +6,4 @@ Confirmed candidate line 285 and the C higher-order fallback sentinel; wrote FAI
 Focused base prop_arith checks passed (8 tests); base gate passed formatting, clippy and MSRV and is running its suite. Candidate correctness finding remains independent of these base checks.
 Base gate is still in compatibility tests; chebyshev passed after a slow run, while prime-count/nth-prime fixtures remain active. No production files changed; review verdict is settled.
 Approximately five minutes remain in the review budget. All review content is written; only the base gate result is outstanding, and it cannot establish candidate acceptance.
+- 2026-10-17T08:12:52Z launcher: no commit for 61 s; 243 s elapsed. Files changed so far: docs/reviews/rev-gf-mpu-totients-20261017-x-c-2.md, docs/worker-notes/rv2-gf-mpu-totients-20261017-x-c-t0308.md.

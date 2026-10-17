@@ -3,3 +3,5 @@
 - 2026-10-17T18:42:10Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01.md.
 - 2026-10-17T18:43:10Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01.md.
 - Ran compat_factor/prop_factor filters; checking ecm test lines.
+- compat_factor: 35 passed incl ecm_factor_oracle. Next: prop_factor, then gate.
+- prop_factor: 47 passed. tools/gate.sh was refused by permission (two shapes); gate not run. Stopping; left for launcher/user.

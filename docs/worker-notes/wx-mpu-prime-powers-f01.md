@@ -9,3 +9,4 @@ The gate found four missing benchmark semicolons under pedantic clippy. Fixed th
 The second gate passed formatting, clippy, and the offline Rust 1.85 build. Full tests and docs are still running; git diff --check is clean.
 - 2026-10-17T06:51:07Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f01.md, src/families/is_prime_power.rs, src/families/mod.rs, src/families/next_prime_power.rs, src/families/prev_prime_power.rs, src/families/prime_powers.rs, tests/compat_families.rs, tests/prop_families.rs.
 The full gate is still in existing compat_count tests; no failure has appeared. All task-specific tests pass and the code is ready while the gate completes.
+Existing chebyshev, nth-prime, and prime-count oracle tests exceed 60 seconds. The gate remains active; no new code changes are needed.

@@ -16,3 +16,5 @@ Powerful-only oracle validation is running offline. The full gate remains pendin
 About five minutes remain. Code, docs, benchmarks, oracle skip comments, and algebraic regressions are complete; formatting passed, while cargo validation is still pending behind builds.
 Validation remains pending with no compiler or test failure output. Continuing to wait for the focused test results.
 No focused test results yet. Gate formatting is green; clippy, MSRV, tests, and docs cannot yet be confirmed because the build lock has not cleared.
+Final validation wait: offline test commands still have no results, and the gate still reports a build-directory lock. No additional source changes are planned.
+Finished: four exports split into individual files, C membership/count fast paths restored, docs and benchmarks updated, and oracle/algebraic/boundary/concurrency coverage added. Formatting passed. Offline focused tests and both gate attempts remained pending behind build-directory locks; clippy, MSRV, tests, and docs are unconfirmed. Fixtures, tools, dependencies, STATUS, and git metadata were not edited.

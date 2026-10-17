@@ -26,7 +26,9 @@ pub fn next_chen_prime(n: u64) -> Option<u64> {
 }
 
 // MPU util.c, is_semiprime: divide small factors, then use the cube-root
-// bound. Continue trial division when the shared factor_one port is absent.
+// bound. This crate has no factor_one port yet, so the factor search uses
+// trial division up to the cube root. That search is exact: a composite with
+// no prime factor up to its cube root has exactly two prime factors.
 fn is_semiprime(n: u64) -> bool {
     if n < 6 {
         return n == 4;

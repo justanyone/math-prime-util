@@ -332,3 +332,12 @@ pub fn urandomr(low: u64, high: u64) -> Option<u64> {
         low + urandomm(width + 1)
     })
 }
+
+mod random_maurer_prime_with_cert;
+pub use random_maurer_prime_with_cert::random_maurer_prime_with_cert;
+mod random_shawe_taylor_prime;
+pub use random_shawe_taylor_prime::random_shawe_taylor_prime;
+mod random_shawe_taylor_prime_with_cert;
+pub use random_shawe_taylor_prime_with_cert::random_shawe_taylor_prime_with_cert;
+mod random_semiprime;
+pub use random_semiprime::random_semiprime;

@@ -178,3 +178,16 @@ fn jordan_totient_power_of_two_boundary() {
     assert_eq!(jordan_totient(63, 2), Some(u64::MAX >> 1));
     assert_eq!(jordan_totient(128, 2), None);
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn inverse_sigma0_matches_divisor_count(k in 1_u64..40, lo in 0_u64..2000, width in 0_u64..2000) {
+        let hi = lo + width;
+        let want: Vec<u64> = (lo.max(1)..=hi)
+            .filter(|&n| divisor_sum(n, 0) == Some(k))
+            .collect();
+        prop_assert_eq!(inverse_sigma0(k, lo, hi), Some(want.clone()));
+        prop_assert_eq!(inverse_sigma0_count(k, lo, hi), Some(want.len() as u64));
+    }
+}

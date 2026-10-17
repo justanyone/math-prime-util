@@ -27,6 +27,7 @@
 pub mod arith;
 pub mod bigint;
 pub mod bits;
+pub mod bits_pos;
 pub mod combinat;
 pub mod config;
 pub mod count;
@@ -36,6 +37,7 @@ pub mod families;
 pub mod int;
 pub mod iter;
 pub mod lucas;
+pub mod misc_gap;
 pub mod modular;
 pub mod primality;
 pub mod proving;
@@ -50,6 +52,7 @@ pub use arith::*;
 #[allow(unused_imports)] // until the module has public items
 pub use bigint::*;
 pub use bits::*;
+pub use bits_pos::*;
 #[allow(unused_imports)] // until the module has public items
 pub use combinat::*;
 #[allow(unused_imports)] // until the module has public items
@@ -68,6 +71,7 @@ pub use int::*;
 pub use iter::*;
 #[allow(unused_imports)] // until the module has public items
 pub use lucas::*;
+pub use misc_gap::*;
 #[allow(unused_imports)] // until the module has public items
 pub use modular::*;
 #[allow(unused_imports)] // until the module has public items

@@ -8,3 +8,5 @@ Native oracle tests pass. Properties found one incorrect expected value in a new
 Focused compatibility and property tests pass. Added the C rho fallback and segmented factorial prime grouping to retain the reference algorithm paths.
 All native fixtures and six property/edge tests pass; fixed reduced rho restart state. Lint now only reports benchmark style, which is corrected. Added direct BSGS/rho and Granville branch tests.
 Final validation phase: compatibility, properties, and direct BSGS/rho checks pass. Gate lint fixes are complete; checking MSRV and all offline tests next.
+Gate passed formatting, pedantic Clippy, and MSRV 1.85; the full offline suite is running. Native unsigned fixture exclusions are documented in compat_modular.rs.
+About five minutes remain in the session budget. Implementation and focused tests are complete; waiting for the offline full suite and gate results.

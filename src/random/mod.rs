@@ -333,6 +333,24 @@ pub fn urandomr(low: u64, high: u64) -> Option<u64> {
     })
 }
 
+mod random_maurer_prime_with_cert;
+pub use random_maurer_prime_with_cert::random_maurer_prime_with_cert;
+mod random_shawe_taylor_prime;
+pub use random_shawe_taylor_prime::random_shawe_taylor_prime;
+mod random_shawe_taylor_prime_with_cert;
+pub use random_shawe_taylor_prime_with_cert::random_shawe_taylor_prime_with_cert;
+mod random_semiprime;
+pub use random_semiprime::random_semiprime;
+
+mod random_maurer_prime;
+mod random_proven_prime;
+mod random_proven_prime_with_cert;
+mod random_strong_prime;
+pub use random_maurer_prime::random_maurer_prime;
+pub use random_proven_prime::random_proven_prime;
+pub use random_proven_prime_with_cert::random_proven_prime_with_cert;
+pub use random_strong_prime::random_strong_prime;
+
 mod random_unrestricted_semiprime;
 pub use random_unrestricted_semiprime::random_unrestricted_semiprime;
 mod random_factored_integer;

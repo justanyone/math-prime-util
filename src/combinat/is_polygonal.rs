@@ -47,6 +47,8 @@ fn sqrt_u128(n: u128) -> u128 {
     }
     let mut x = 1u128 << ((128 - n.leading_zeros()).div_ceil(2));
     loop {
+        // x and n/x are at most 2^64 after initialization.
+        #[allow(clippy::manual_midpoint)] // midpoint is newer than MSRV 1.85.
         let next = (x + n / x) / 2;
         if next >= x {
             return x;

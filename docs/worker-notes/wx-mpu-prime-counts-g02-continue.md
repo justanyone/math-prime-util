@@ -5,3 +5,4 @@ Previous run left nth_prime_lower, nth_prime_upper, and nth_prime_approx failing
 Plan: read PLAN.md sections 5-8, compare the three Rust functions with prime_counts.c and the count.tsv cases, fix the algorithms, then run focused tests and the gate.
 
 Next: locate the C functions and the failing fixture rows.
+- 2026-10-17T14:08:21Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-prime-counts-g02-continue.md.

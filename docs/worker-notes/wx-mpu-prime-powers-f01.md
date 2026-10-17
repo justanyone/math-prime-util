@@ -3,3 +3,4 @@ Keep each public function in its own file and use the existing integer and prime
 Use the committed families fixtures without changing tools or oracle data.
 Add compatibility, algebraic, boundary, and benchmark coverage; run offline checks.
 Read the native reference and existing test patterns; implemented all four functions with the C scan threshold and neighbor bounds.
+Added all oracle tests, prime-root and neighbor laws, boundary and concurrent repeat-call tests, plus four benchmarks. Focused offline tests are running; corrected undef handling for previous prime powers.

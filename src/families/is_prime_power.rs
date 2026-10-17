@@ -16,7 +16,11 @@ pub fn is_prime_power(mut n: u64) -> u32 {
         return 0;
     }
     if n % 2 == 0 {
-        return if n.is_power_of_two() { n.trailing_zeros() } else { 0 };
+        return if n.is_power_of_two() {
+            n.trailing_zeros()
+        } else {
+            0
+        };
     }
     for p in [3, 5, 7] {
         if n % p == 0 {

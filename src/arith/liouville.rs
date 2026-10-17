@@ -13,7 +13,10 @@ pub(super) const SMALL: [i8; 16] = [-1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -
 /// ```
 pub fn liouville(n: u64) -> i8 {
     if n < 16 {
-        return SMALL[usize::try_from(n).unwrap()];
+        // The table guard bounds n below 16 on all supported targets.
+        #[allow(clippy::cast_possible_truncation)]
+        let index = n as usize;
+        return SMALL[index];
     }
     if factors(n).iter().map(|&(_, e)| e).sum::<u32>() % 2 == 0 {
         1

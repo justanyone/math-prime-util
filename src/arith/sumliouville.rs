@@ -25,6 +25,9 @@ fn liouville_array(n: u64) -> Vec<i8> {
 ///
 /// Port of MPU 0.75 `moebius.c::sumliouville` and `liouville_array`.
 ///
+/// # Panics
+/// Panics if the prefix array is too large to allocate.
+///
 /// ```
 /// assert_eq!(math_prime_util::sumliouville(10), 0);
 /// assert_eq!(math_prime_util::sumliouville(0), 0);

@@ -9,3 +9,4 @@ Matched C storage more closely: signed 16-bit prefix entries and an eight-probe 
 All requested implementations, docs, oracle coverage, properties, and benchmarks are written. Offline checks remain active, with Cargo compilation/locking delaying their output; no network or external repository changes were used.
 - 2026-10-17T18:46:01Z launcher: no commit for 60 s; 307 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients-f02.md, src/arith/exp_mangoldt.rs, src/arith/liouville.rs, src/arith/mertens.rs, src/arith/mod.rs, src/arith/sumliouville.rs, tests/prop_arith.rs.
 Compilation is still pending with buffered focused-test output and a gate build-lock wait. Continuing to wait for actionable compiler or test diagnostics before making further changes.
+Focused compatibility tests passed (31/31), and arithmetic property tests passed (21/21). Awaiting final library tests and gate for the bounded-cache revision.

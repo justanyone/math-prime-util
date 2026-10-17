@@ -107,6 +107,9 @@ impl Mertens {
 /// Port of MPU 0.75 `moebius.c::mertens`, `_small_mertens`,
 /// `_mertens_context_create`, and `_rmertens`.
 ///
+/// # Panics
+/// Panics if the prefix array is too large to allocate.
+///
 /// ```
 /// assert_eq!(math_prime_util::mertens(10), -1);
 /// assert_eq!(math_prime_util::mertens(0), 0);

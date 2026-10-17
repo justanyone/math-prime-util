@@ -17,3 +17,6 @@ The existing nth_prime oracle passed. Ran focused bit-position doc tests separat
 All six public doc examples passed offline. Gate still awaiting the existing prime_count oracle; no bit-position failures observed.
 Final diff remains whitespace-clean. Pending full tests are unrelated count oracle work. The requested C/Perl port cannot be certified because all six reference functions are absent; native implementation and laws are complete.
 Minute update: gate and wrapper test run continue without reported errors; the long-running prime_count oracle is the current wait.
+Still waiting on full-suite prime_count; no code changes since the lint fix. This run uses only offline checks and leaves the reference untouched.
+Gate count compatibility tests completed; gate advanced to later property tests without failures. Waiting for docs and the final green marker.
+Gate finished successfully with == gate: green (fmt, all-target pedantic Clippy, MSRV 1.85, all tests, docs). All 242 doc tests passed. Remaining task gap: no MPU 0.75 implementation exists for the requested C citations or oracle semantics.

@@ -267,3 +267,6 @@ mod tests {
         }
     }
 }
+
+mod roots;
+pub use roots::{allsqrtmod, cornacchia, divmod, sqrtmod};

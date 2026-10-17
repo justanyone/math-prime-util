@@ -3,3 +3,4 @@ Keep all changes within the task paths and use existing arithmetic dependencies.
 The task forbids fixture and tools changes; use the existing modular oracle cases.
 Run focused offline tests, then the required gate, and record any remaining gaps.
 The factoring API is absent. The fixture includes signed and bigint cases outside the native unsigned API; compatibility tests will name these skips.
+Implemented prime square roots, prime-power lifting, CRT, all square roots, modular division, and Cornacchia. Next: general roots and fixture checks.

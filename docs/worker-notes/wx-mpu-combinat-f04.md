@@ -4,3 +4,4 @@ Use existing offline oracle fixtures; do not change tools, fixtures, or STATUS.m
 Validate compatibility, algebraic properties, and the repository gate offline.
 The C fraction routines have narrow native limits; inspect MPU's Seidel fallback to cover the requested i128/u128 results without new dependencies.
 Implemented the C primorial tables and binary splitting; Bernoulli uses the C table then MPU's Seidel fallback with fixed three-limb intermediates.
+Added oracle comparisons, algebraic properties, repeated/concurrent calls, overflow boundaries, and Criterion benchmarks. Focused offline tests are running; reduced the cross-product property domain to avoid test-only overflow.

@@ -9,7 +9,7 @@
 /// assert_eq!(math_prime_util::harmfrac(0), Some((0, 1)));
 /// ```
 pub fn harmfrac(n: u64) -> Option<(i128, u128)> {
-    // H_89 exceeds i128. Later positive sums cannot fit this representation.
+    // H_89 is the first sum outside the native fraction range.
     if n >= 89 {
         return None;
     }

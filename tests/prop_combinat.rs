@@ -1,6 +1,8 @@
 //! Algebraic laws and native overflow boundaries.
 use math_prime_util::{
-    bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling,
+    bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
+    harmfrac, integer_complexity, multifactorial, pn_primorial, powersum, primorial,
+    rising_factorial, stirling, subfactorial,
 };
 use proptest::prelude::*;
 
@@ -59,6 +61,64 @@ proptest! {
     fn bell_binomial_transform(n in 0_u64..24) {
         let sum: u64 = (0..=n).map(|k| binomial(n, k).unwrap() * bell_number(k).unwrap()).sum();
         prop_assert_eq!(bell_number(n + 1), Some(sum));
+    }
+
+    #[test]
+    fn factorial_recurrence(n in 1_u64..=20) {
+        prop_assert_eq!(factorial(n), factorial(n - 1).and_then(|v| v.checked_mul(n)));
+        prop_assert_eq!(multifactorial(n, 1), factorial(n));
+    }
+
+    #[test]
+    fn multifactorial_recurrence(n in any::<u64>(), k in 1_u64..) {
+        let expected = if n == 0 {
+            Some(1)
+        } else if n <= k {
+            Some(n)
+        } else {
+            multifactorial(n - k, k).and_then(|value| value.checked_mul(n))
+        };
+        prop_assert_eq!(multifactorial(n, k), expected);
+    }
+
+    #[test]
+    fn derangement_recurrence(n in 2_u64..=20) {
+        let previous = subfactorial(n - 1).unwrap() + subfactorial(n - 2).unwrap();
+        prop_assert_eq!(subfactorial(n), Some((n - 1) * previous));
+    }
+
+    #[test]
+    fn ordered_partition_recurrence(n in 1_u64..=18) {
+        let mut binomial = 1_u128;
+        let mut sum = 0_u128;
+        for k in 1..=n {
+            binomial = binomial * u128::from(n - k + 1) / u128::from(k);
+            sum += binomial * u128::from(fubini(n - k).unwrap());
+        }
+        prop_assert_eq!(fubini(n), u64::try_from(sum).ok());
+    }
+
+    #[test]
+    fn factorial_products(n in 0_u64..1000, m in 0_u64..30) {
+        let falling = if m > n { Some(0) } else {
+            (0..m).try_fold(1_u64, |r, i| r.checked_mul(n - i))
+        };
+        let rising = (0..m).try_fold(1_u64, |r, i| r.checked_mul(n + i));
+        prop_assert_eq!(falling_factorial(n, m), falling);
+        prop_assert_eq!(rising_factorial(n, m), rising);
+    }
+
+    #[test]
+    fn power_sum_direct(n in 0_u64..200, k in 0_u32..20) {
+        let expected = (1..=n).try_fold(0_u64, |sum, i| sum.checked_add(i.checked_pow(k)?));
+        prop_assert_eq!(powersum(n, u64::from(k)), expected);
+    }
+
+    #[test]
+    fn complexity_composition(a in 1_u64..100, b in 1_u64..100) {
+        let bound = integer_complexity(a).unwrap() + integer_complexity(b).unwrap();
+        prop_assert!(integer_complexity(a + b).unwrap() <= bound);
+        prop_assert!(integer_complexity(a * b).unwrap() <= bound);
     }
 }
 
@@ -173,5 +233,97 @@ fn independent_calls_are_repeatable() {
     );
     for call in calls {
         assert_eq!(call.join().unwrap(), expected);
+    }
+}
+
+#[test]
+fn native_boundaries_factorial() {
+    assert_eq!(factorial(0), Some(1));
+    assert_eq!(factorial(20), Some(2_432_902_008_176_640_000));
+    assert_eq!(factorial(21), None);
+    assert_eq!(factorial(u64::MAX), None);
+    assert_eq!(subfactorial(0), Some(1));
+    assert_eq!(subfactorial(1), Some(0));
+    assert_eq!(subfactorial(2), Some(1));
+    assert_eq!(subfactorial(3), Some(2));
+    assert_eq!(subfactorial(20), Some(895_014_631_192_902_121));
+    assert_eq!(subfactorial(21), None);
+    assert_eq!(subfactorial(u64::MAX), None);
+    assert_eq!(fubini(0), Some(1));
+    assert_eq!(fubini(15), Some(230_283_190_977_853));
+    assert_eq!(fubini(16), Some(5_315_654_681_981_355));
+    assert_eq!(fubini(17), Some(130_370_767_029_135_901));
+    assert_eq!(fubini(18), Some(3_385_534_663_256_845_323));
+    assert_eq!(fubini(19), None);
+    assert_eq!(fubini(u64::MAX), None);
+    assert_eq!(multifactorial(0, 1), Some(1));
+    assert_eq!(multifactorial(0, u64::MAX), Some(1));
+    assert_eq!(multifactorial(u64::MAX, u64::MAX), Some(u64::MAX));
+    assert_eq!(multifactorial(u64::MAX, u64::MAX - 1), Some(u64::MAX));
+    assert_eq!(multifactorial(u64::MAX, 1), None);
+    assert_eq!(multifactorial(33, 2), Some(6_332_659_870_762_850_625));
+    assert_eq!(multifactorial(35, 2), None);
+}
+
+#[test]
+#[should_panic(expected = "k must be positive")]
+fn zero_step_rejected_for_empty_product() {
+    let _ = multifactorial(0, 0);
+}
+
+#[test]
+fn concurrent_repeated_calls() {
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..3 {
+                    native_boundaries();
+                }
+            });
+        }
+    });
+}
+
+#[test]
+fn native_boundaries_rising_falling() {
+    assert_eq!(falling_factorial(u64::MAX, 0), Some(1));
+    assert_eq!(falling_factorial(u64::MAX, 1), Some(u64::MAX));
+    assert_eq!(falling_factorial(u64::MAX, 2), None);
+    assert_eq!(rising_factorial(u64::MAX, 2), None);
+    assert_eq!(rising_factorial(0, u64::MAX), Some(0));
+    assert_eq!(powersum(u64::MAX, 0), Some(u64::MAX));
+    assert_eq!(powersum(0, u64::MAX), Some(0));
+    assert_eq!(powersum(1, u64::MAX), Some(1));
+    assert_eq!(powersum(2, 64), None);
+    for (k, n) in [
+        (1, 6_074_000_999),
+        (2, 3_810_777),
+        (3, 92_681),
+        (4, 9839),
+        (5, 2190),
+        (6, 745),
+        (7, 331),
+        (8, 175),
+    ] {
+        assert!(powersum(n, k).is_some());
+        assert_eq!(powersum(n + 1, k), None);
+    }
+}
+
+#[test]
+fn complexity_matches_exhaustive_recurrence() {
+    let mut exact = vec![0_u64; 301];
+    exact[1] = 1;
+    for n in 2..exact.len() {
+        exact[n] = (1..=n / 2).map(|a| exact[a] + exact[n - a]).min().unwrap();
+        for a in 2..=n / 2 {
+            if n % a == 0 {
+                exact[n] = exact[n].min(exact[a] + exact[n / a]);
+            }
+        }
+        assert_eq!(
+            integer_complexity(u64::try_from(n).unwrap()),
+            Some(exact[n])
+        );
     }
 }

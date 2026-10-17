@@ -1,5 +1,6 @@
 #![allow(
     clippy::cast_precision_loss,
+    clippy::unreadable_literal,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
 )]

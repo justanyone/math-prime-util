@@ -2,6 +2,7 @@
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
+    clippy::unreadable_literal,
     clippy::excessive_precision
 )]
 use crate::{exponential_integral, is_prime};

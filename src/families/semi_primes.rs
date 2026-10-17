@@ -5,6 +5,10 @@ use crate::{is_prime, primes_in, sqrtint};
 /// Port of `semi_primes.c`, `range_semiprime_sieve`, in MPU 0.75.
 /// A semiprime is a product of two primes, which may be equal.
 ///
+/// # Panics
+///
+/// Panics if the range length does not fit in `usize`.
+///
 /// ```
 /// use math_prime_util::semi_primes;
 /// assert_eq!(semi_primes(4, 15), vec![4, 6, 9, 10, 14, 15]);

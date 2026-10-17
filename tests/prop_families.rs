@@ -100,6 +100,7 @@ fn prime_power_boundaries_and_repeated_calls() {
     assert_eq!(prime_powers(10, 20), [11, 13, 16, 17, 19]);
     assert_eq!(prime_powers(0, 10), [2, 3, 4, 5, 7, 8, 9]);
     assert_eq!(prime_powers(0, 2), [2]);
+    assert_eq!(prime_powers(82, 96), [83, 89]);
     assert_eq!(prime_powers(MAX_PRIME, u64::MAX), [MAX_PRIME]);
     for k in 2..64 {
         let n = 1u64 << k;

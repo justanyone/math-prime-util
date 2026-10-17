@@ -7,16 +7,16 @@ use math_prime_util::{
 };
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_powers", |b| {
-        b.iter(|| prime_powers(0, black_box(100_000)))
+        b.iter(|| prime_powers(0, black_box(100_000)));
     });
     c.bench_function("is_prime_power", |b| {
-        b.iter(|| is_prime_power(black_box(1_000_000_014_000_000_049)))
+        b.iter(|| is_prime_power(black_box(1_000_000_014_000_000_049)));
     });
     c.bench_function("next_prime_power", |b| {
-        b.iter(|| next_prime_power(black_box(1_000_000)))
+        b.iter(|| next_prime_power(black_box(1_000_000)));
     });
     c.bench_function("prev_prime_power", |b| {
-        b.iter(|| prev_prime_power(black_box(1_000_000)))
+        b.iter(|| prev_prime_power(black_box(1_000_000)));
     });
     c.bench_function("lucky_numbers", |b| {
         b.iter(|| lucky_numbers(0, black_box(1_000_000)));

@@ -31,7 +31,23 @@ pub fn ramanujan_primes(low: u64, high: u64) -> Vec<u64> {
     }
     let first = super::ramanujan_prime_count_lower(low).max(1);
     // R_n lies between p_(2n) and p_(3n).
-    let last = prime_count(high) / 2 + 1;
+    let mut lo = count_bound(high, false) / 3;
+    let mut hi = count_bound(high, true) / 2;
+    let last = if nth_bound(lo, false) > high {
+        lo
+    } else if nth_bound(hi, false) < high {
+        hi
+    } else {
+        while hi - lo > 1 {
+            let mid = lo + (hi - lo) / 2;
+            if nth_bound(mid, false) <= high {
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        }
+        lo
+    };
     range(first, last)
         .into_iter()
         .filter(|&p| p >= low && p <= high)
@@ -71,10 +87,6 @@ pub(super) fn range(first: u64, last: u64) -> Vec<u64> {
     } else {
         1 + prime_count(start - 2) - prime_count((start - 1) / 2)
     };
-    // The monolithic C version indexes L[s], the range version indexes L[s-first].
-    if first == 1 {
-        s = 2;
-    }
     for k in (start..=end).step_by(2) {
         if ps.get(pi) == Some(&k) {
             s += 1;
@@ -372,5 +384,70 @@ pub(super) fn count_bound(n: u64, upper: bool) -> u64 {
         v.floor() as u64
     } else {
         v.ceil() as u64
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn private_bound_edges() {
+        assert!(range(3, 2).is_empty());
+        assert_eq!(nth_bound(0, true), 0);
+        assert_eq!(
+            prime_nth_bound(425_656_284_035_217_743, true),
+            18_446_744_073_709_551_557
+        );
+        assert_eq!(prime_nth_bound(u64::MAX, false), 0);
+        for n in [
+            24,
+            168,
+            189,
+            1245,
+            2290,
+            2984,
+            5225,
+            12581,
+            14303,
+            18175,
+            34816,
+            76400,
+            82883,
+            280816,
+            316314,
+            915887,
+            1_000_001,
+            4_000_001,
+            16_000_001,
+            64_000_001,
+            128_000_001,
+            256_000_001,
+            384_000_001,
+            512_000_001,
+            640_000_001,
+            10_000_000_000,
+            1_000_000_000_000,
+            100_000_000_000_000,
+        ] {
+            assert!(nth_bound(n, false) <= nth_bound(n, true));
+        }
+        for n in [
+            33_000,
+            69_720,
+            70_120,
+            88_800,
+            176_000,
+            299_270,
+            300_070,
+            300_071,
+            1_000_000,
+            10_000_000,
+            1_000_000_000,
+            10_000_000_000,
+            1_000_000_000_000,
+        ] {
+            assert!(count_bound(n, false) <= count_bound(n, true));
+        }
     }
 }

@@ -31,9 +31,12 @@ fn prime_certificate_compat() {
         assert_eq!(prime_certificate(n), "");
     }
     for n in [2, 3, 4_294_967_311, u64::MAX - 58] {
-        assert_eq!(prime_certificate(n), format!(
-            "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n"
-        ));
+        assert_eq!(
+            prime_certificate(n),
+            format!(
+                "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n"
+            )
+        );
     }
 }
 #[test]

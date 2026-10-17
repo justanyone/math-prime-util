@@ -94,6 +94,10 @@ fn first(n: u64, m: u64) -> Option<i128> {
 // Capping is exact for the native range because every term is positive.
 fn direct(n: u64, m: u64, kind: u64) -> Option<i128> {
     let deficit = n - m;
+    if deficit == 1 {
+        let value = i128::from(binomial(n, 2)?);
+        return Some(if kind == 1 { -value } else { value });
+    }
     // With m >= 2, S(m + d, m) >= S(d + 2, 2) = 2^(d+1) - 1.
     // First-kind magnitudes are at least as large. The m == 1 cases
     // have already been handled by the native formulas.

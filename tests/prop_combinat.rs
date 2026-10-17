@@ -56,6 +56,7 @@ fn native_boundaries() {
     assert_eq!(bell_number(u64::MAX), None);
     for kind in 1..=3 {
         assert_eq!(stirling(u64::MAX, u64::MAX, kind), Some(1));
+        assert_eq!(stirling(u64::MAX, u64::MAX - 1, kind), None);
         assert_eq!(stirling(0, 1, kind), Some(0));
         assert_eq!(
             stirling(40, 1, kind),
@@ -78,8 +79,33 @@ fn stirling_cancellation_regressions() {
     assert_eq!(stirling(64, 62, 2), Some(1_947_792));
     assert_eq!(stirling(65, 2, 2), Some(i128::from(u64::MAX)));
     assert_eq!(stirling(66, 2, 2), None);
-    assert_eq!(stirling(100, 98, 1), Some(11_924_550));
-    assert_eq!(stirling(100, 98, 2), Some(11_924_550 - 161_700));
+    assert_eq!(stirling(100, 98, 1), Some(12_087_075));
+    assert_eq!(stirling(100, 98, 2), Some(11_925_375));
     assert_eq!(stirling(1000, 2, 1), None);
     assert_eq!(stirling(1000, 2, 2), None);
+}
+
+#[test]
+fn independent_calls_are_repeatable() {
+    let calls: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    binomial(67, 31),
+                    catalan_number(36),
+                    stirling(22, 12, 1),
+                    bell_number(25),
+                )
+            })
+        })
+        .collect();
+    let expected = (
+        binomial(67, 31),
+        catalan_number(36),
+        stirling(22, 12, 1),
+        bell_number(25),
+    );
+    for call in calls {
+        assert_eq!(call.join().unwrap(), expected);
+    }
 }

@@ -7,3 +7,5 @@ Implementation and fixture/property tests are written. Running focused offline t
 Focused tests are compiling offline. Formatting completed; the launcher is snapshotting the new files while checks run.
 Focused checks found bigint binomial inputs to skip and Stirling cancellation beyond i128 despite a small final answer. The first gate found benchmark lint issues; fixing those and the Stirling fallback next.
 Added the first-kind direct recurrence used by MPU PP.pm after C overflow, plus its second-kind near-diagonal shortcut. Focused fixtures now rerunning after the cancellation fix.
+Near-diagonal review found fitting second-kind values beyond the C intermediate range. Added a capped positive recurrence fallback and regression cases; it stops on proven result overflow.
+Near-diagonal and concurrent-repeat tests are complete. Corrected a hand-calculated regression constant; added a constant-time overflow check for deficit one to avoid billions of recurrence steps on u64::MAX.

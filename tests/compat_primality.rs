@@ -67,3 +67,131 @@ fn verify_prime_compat() {
     assert_eq!(verify_prime(""), Ok(false));
     assert!(verify_prime("garbage").is_err());
 }
+
+#[test]
+fn is_frobenius_pseudoprime_oracle() {
+    common::each("primality", "is_frobenius_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        // A lone P argument is a Perl arity error; Rust requires both P and Q.
+        if c.args.len() == 2 {
+            assert!(c.error);
+            return;
+        }
+        let parameters = if c.args.len() == 3 {
+            let (Ok(p), Ok(q)) = (c.args[1].parse::<i64>(), c.args[2].parse::<i64>()) else {
+                return;
+            };
+            // MPU uses its bigint fallback outside the native C P,Q bound.
+            if p.unsigned_abs() > 3_037_000_497 || q.unsigned_abs() > 3_037_000_497 {
+                return;
+            }
+            Some((p, q))
+        } else {
+            None
+        };
+        let result = std::panic::catch_unwind(|| {
+            parameters.map_or_else(
+                || is_frobenius_pseudoprime(n),
+                |(p, q)| is_frobenius_pseudoprime_pq(n, p, q),
+            )
+        });
+        if c.error {
+            assert!(result.is_err(), "{c:?}");
+        } else {
+            c.check(Some(u8::from(result.unwrap())));
+        }
+    });
+}
+
+#[test]
+fn is_frobenius_khashin_pseudoprime_oracle() {
+    common::each("primality", "is_frobenius_khashin_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        c.check(Some(u8::from(is_frobenius_khashin_pseudoprime(n))));
+    });
+}
+
+#[test]
+fn is_frobenius_underwood_pseudoprime_oracle() {
+    common::each("primality", "is_frobenius_underwood_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        c.check(Some(u8::from(is_frobenius_underwood_pseudoprime(n))));
+    });
+}
+
+#[test]
+fn is_perrin_pseudoprime_oracle() {
+    common::each("primality", "is_perrin_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        // The optional second argument is the restriction level (default 0).
+        let restricted = c.args.get(1).map_or(Ok(0), |r| r.parse::<u32>());
+        let Ok(restricted) = restricted else {
+            // A negative restriction is an error in MPU and unrepresentable here.
+            assert!(c.error, "{c:?}");
+            return;
+        };
+        let result = std::panic::catch_unwind(|| u8::from(is_perrin_pseudoprime(n, restricted)));
+        if c.error {
+            assert!(result.is_err(), "{c:?}");
+        } else {
+            c.check(Some(result.unwrap()));
+        }
+    });
+}
+
+#[test]
+fn is_catalan_pseudoprime_oracle() {
+    common::each("primality", "is_catalan_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        c.check(Some(u8::from(is_catalan_pseudoprime(n))));
+    });
+}
+
+#[test]
+fn is_chen_prime_oracle() {
+    common::each("primality", "is_chen_prime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        c.check(Some(u8::from(is_chen_prime(n))));
+    });
+}
+
+#[test]
+fn is_delicate_prime_oracle() {
+    common::each("primality", "is_delicate_prime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let b = c
+            .args
+            .get(1)
+            .map_or(10, |b| b.parse::<u32>().expect("base"));
+        let result = std::panic::catch_unwind(|| is_delicate_prime(n, b));
+        if c.error {
+            assert!(result.is_err(), "{c:?}");
+        } else {
+            // None: MPU leaves the result to its bigint backend; this native API cannot answer.
+            if let Some(r) = result.unwrap() {
+                c.check(Some(u8::from(r)));
+            }
+        }
+    });
+}

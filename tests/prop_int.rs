@@ -7,6 +7,45 @@
 
 use math_prime_util::*;
 use proptest::prelude::*;
+use std::sync::Mutex;
+
+/// Serializes the configuration tests in this file.
+static LOCK: Mutex<()> = Mutex::new(());
+
+#[test]
+fn prop_int_rh_aliases_match_assume_rh() {
+    // Every spelling MPU accepts for assume_rh must give the same state as assume_rh.
+    let _guard = LOCK.lock().unwrap();
+    for key in [
+        "rh",
+        "grh",
+        "erh",
+        "assume rh",
+        "assume_rh",
+        "riemann hypothesis",
+    ] {
+        for value in [0_u64, 1] {
+            let set = prime_set_config(&[(key, value)]).unwrap();
+            assert_eq!(set.assume_rh, value != 0, "alias {key} with value {value}");
+        }
+    }
+    prime_set_config(&[("assume_rh", 0)]).unwrap();
+}
+
+#[test]
+fn prop_int_maxbits_is_rejected_not_stored() {
+    // MPU has no maxbits setter: the set fails and the stored settings do not change.
+    let _guard = LOCK.lock().unwrap();
+    let before = prime_get_config();
+    let err = prime_set_config(&[("verbose", 4), ("maxbits", 32)]).unwrap_err();
+    assert_eq!(
+        err,
+        ConfigError::UnknownKey {
+            key: "maxbits".to_owned()
+        }
+    );
+    assert_eq!(prime_get_config(), before);
+}
 
 proptest! {
     #![proptest_config(ProptestConfig {

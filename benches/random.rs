@@ -1,5 +1,6 @@
 #![allow(missing_docs)]
 //! Benchmarks for native random sampling.
+#![allow(clippy::wildcard_imports)]
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::*;
 

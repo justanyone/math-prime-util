@@ -11,7 +11,7 @@ use common::each;
 use math_prime_util::*;
 
 /// Formats a pair as the fixture does: `"U V"`.
-fn pair<T: std::fmt::Display>(p: (T, T)) -> String {
+fn pair<T: std::fmt::Display + Copy>(p: (T, T)) -> String {
     format!("{} {}", p.0, p.1)
 }
 

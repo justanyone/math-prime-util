@@ -19,3 +19,6 @@ Final focused run: both compatibility tests and both property tests pass, includ
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 84 bytes)
 Final gate also exposed Criterion-generated missing_docs in the new benchmark; applied the same benchmark-only allowance as benches/int.rs. Count-module lint failures remain outside scope.
+Stopping with a partial port and passing focused tests. Gate is not green: existing count-module float comparisons block clippy, so MSRV and docs gate stages were not reached. Full-suite completion and coverage are not verified. No fixtures <<cut 65 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 41 bytes)

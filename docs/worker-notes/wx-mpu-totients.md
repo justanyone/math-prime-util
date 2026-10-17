@@ -11,3 +11,4 @@ All arithmetic oracle and property tests now pass. The gate passed fmt, Clippy, 
 Arithmetic benchmarks compile through tools/test.sh benches/arith.rs. The full gate is still in the existing compat_count tests; arithmetic verification has completed.
 Final arithmetic implementation and tests are on disk; diff whitespace checks pass. Awaiting the full gate result; no network, dependencies, or git writes were used.
 - 2026-10-17T07:39:35Z launcher: no commit for 60 s; 362 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients.md, src/arith/mod.rs, tests/compat_arith.rs, tests/prop_arith.rs.
+- 2026-10-17T07:40:37Z launcher: no commit for 61 s; 424 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients.md, src/arith/mod.rs, tests/compat_arith.rs, tests/prop_arith.rs.

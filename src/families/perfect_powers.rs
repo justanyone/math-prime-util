@@ -129,3 +129,43 @@ fn clamp(pp: f64) -> u64 {
         pp as u64
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn zero_and_one() {
+        assert_eq!(nth_perfect_power_lower(0), None);
+        assert_eq!(nth_perfect_power_upper(0), None);
+        assert_eq!(nth_perfect_power_approx(0), None);
+        assert_eq!(nth_perfect_power_lower(1), Some(1));
+        assert_eq!(nth_perfect_power_upper(1), Some(1));
+        assert_eq!(nth_perfect_power_approx(1), Some(1));
+    }
+
+    #[test]
+    fn small_values_are_ordered() {
+        for n in 2..2000_u64 {
+            let lo = nth_perfect_power_lower(n).unwrap();
+            let hi = nth_perfect_power_upper(n).unwrap();
+            let ap = nth_perfect_power_approx(n).unwrap();
+            assert!(lo <= ap && ap <= hi, "{n}: {lo} {ap} {hi}");
+        }
+    }
+
+    #[test]
+    fn index_cap() {
+        for n in [MAX_PERFECT_POW_IDX, u64::MAX] {
+            assert_eq!(nth_perfect_power_lower(n), Some(MAX_PERFECT_POW));
+            assert_eq!(nth_perfect_power_upper(n), Some(MAX_PERFECT_POW));
+            assert_eq!(nth_perfect_power_approx(n), Some(MAX_PERFECT_POW));
+        }
+    }
+
+    #[test]
+    fn clamp_saturates() {
+        assert_eq!(clamp(1e30), u64::MAX);
+        assert_eq!(clamp(12.7), 12);
+    }
+}

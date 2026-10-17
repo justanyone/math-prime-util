@@ -7,3 +7,4 @@ Added independent factor-exponent, prefix, range-threshold, native-edge, and par
 Focused tests are running offline. Oracle inspection confirms k=0 uses the public k=1 sum convention; unsigned APIs skip only signed and oversized arguments.
 The gate reached clippy and is waiting for the focused build lock. Added exact signed-case skip comments and documented the public zero-exponent sum behavior.
 All requested code and regression tests are written. Waiting for offline validation; no fixture, tooling, dependency, or STATUS changes are needed.
+- 2026-10-17T18:48:02Z launcher: no commit for 62 s; 246 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-powerful-f01.md, src/families/is_powerful.rs, src/families/mod.rs, src/families/powerful.rs, src/families/powerful_count.rs, src/families/powerful_numbers.rs, src/families/sumpowerful.rs, tests/compat_families.rs, tests/prop_families.rs.

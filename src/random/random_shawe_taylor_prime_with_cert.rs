@@ -241,7 +241,13 @@ mod tests {
 
     #[test]
     fn sha_vectors_and_seed_carry() {
-        let hex = |bytes: [u8; 32]| bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
+        use std::fmt::Write as _;
+        let hex = |bytes: [u8; 32]| {
+            bytes.iter().fold(String::new(), |mut out, b| {
+                write!(out, "{b:02x}").unwrap();
+                out
+            })
+        };
         assert_eq!(
             hex(sha256(b"abc")),
             "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"

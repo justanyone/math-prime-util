@@ -48,7 +48,7 @@ proptest! {
         csrand(&seed);
         let n = random_semiprime(bits).unwrap();
         prop_assert_eq!(64 - n.leading_zeros(), bits);
-        let p = (2..).find(|p| n % p == 0).unwrap();
+        let p = (2..=(1_u64 << bits.div_ceil(2))).find(|p| n % p == 0).unwrap();
         prop_assert_eq!(is_prime(p), 2);
         prop_assert_eq!(is_prime(n/p), 2);
         prop_assert_eq!(64 - p.leading_zeros(), bits/2);
@@ -87,4 +87,16 @@ fn bounds_reseed_and_threads() {
         let (p, cert) = random_shawe_taylor_prime_with_cert(bits).unwrap().unwrap();
         verify(p, &cert);
     }
+}
+
+#[test]
+fn unsupported_sizes_leave_stream_unchanged() {
+    csrand(&[7; 40]);
+    let expected = math_prime_util::irand64();
+    csrand(&[7; 40]);
+    assert_eq!(random_maurer_prime_with_cert(65), None);
+    assert_eq!(random_shawe_taylor_prime(65), None);
+    assert_eq!(random_shawe_taylor_prime_with_cert(65), Ok(None));
+    assert_eq!(random_semiprime(65), None);
+    assert_eq!(math_prime_util::irand64(), expected);
 }

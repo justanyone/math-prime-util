@@ -21,3 +21,4 @@ The whole-suite run remains active; no additional code changes are needed. MSRV 
 Final record: all four functions, runnable docs, properties, compatibility coverage, and benchmarks are complete. Passed 31 oracle, 21 property, and 17 library tests. Whole-suite execution is still pending at the worker deadline. Gate fmt p <<cut 111 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 86 bytes)
+- 2026-10-17T18:54:10Z launcher: about 60 s to the time limit of 14 minutes; 796 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients-f02.md, src/arith/exp_mangoldt.rs, src/arith/liouville.rs, src/arith/mertens.rs, src/arith/mod.rs, src/arith/sumliouville.rs, tests/prop_arith.rs.

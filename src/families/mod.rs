@@ -12,6 +12,9 @@ pub use nth_ramanujan_prime_lower::nth_ramanujan_prime_lower;
 mod ramanujan_prime_count_upper;
 pub use ramanujan_prime_count_upper::ramanujan_prime_count_upper;
 
+mod perfect_powers;
+pub use perfect_powers::*;
+
 mod nth_prime_power;
 pub use nth_prime_power::nth_prime_power;
 

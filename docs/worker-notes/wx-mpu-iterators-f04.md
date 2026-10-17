@@ -3,3 +3,7 @@ The four APIs already exist in src/iter/mod.rs; reassess their algorithms and te
 Move only this task's APIs into separate files and preserve the existing public API.
 Keep tools, fixtures, STATUS.md, and the crate root unchanged as explicitly required.
 Run focused offline tests and the gate; record any environment blockers.
+Verified XS permutation/derangement transitions, product snapshots, and PP multiset recursion. Moved the four existing ports into separate files and made fixture tests exercise closures and early exit.
+Added independent multiset/product laws, derangement recurrence, clone/exhaustion, nested callbacks, unwind recovery, and concurrent traversal checks. Input validation remains enforced by typed Rust arguments; no Perl validation inputs can  <<cut 17 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -7 bytes)

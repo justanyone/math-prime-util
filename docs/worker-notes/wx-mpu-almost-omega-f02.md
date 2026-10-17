@@ -13,3 +13,4 @@ Shared build lock has not cleared. Started the focused oracle tests in a worktre
 - 2026-10-17T18:49:38Z launcher: no commit for 60 s; 366 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-almost-omega-f02.md, src/families/almost_prime_count_upper.rs, src/families/mod.rs, src/families/nth_almost_prime.rs, src/families/nth_almost_prime_approx.rs, src/families/nth_almost_prime_lower.rs, tests/compat_families.rs, tests/prop_families.rs.
 Offline validation remains running. No fixture or tool changes were made; all test cases outside the native u64 API are explicitly skipped.
 About five minutes remain. Both Cargo target directories still have pending builds, so no validation result is available yet.
+Formatting passes. Gate and focused tests remain pending behind Cargo compilation; native count recursion currently omits the C prime-count cache optimization.

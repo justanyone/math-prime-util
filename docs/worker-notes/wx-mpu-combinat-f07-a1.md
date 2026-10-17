@@ -14,3 +14,4 @@ Next: read PLAN.md sections 5–8, the combinat module, and the C sources for th
 Tried: read util.c npartitions, npartitionsq, perm_to_num and the combinat fixtures. Next: fmt and focused tests.
 - 2026-10-17T07:06:55Z launcher: no commit for 60 s; 514 s elapsed. Files changed so far: benches/combinat.rs, docs/worker-notes/wx-mpu-combinat-f07-a1.md, src/combinat/mod.rs, src/combinat/partitions.rs, src/combinat/partitionsq.rs, src/combinat/permtonum.rs, tests/compat_combinat.rs, tests/prop_combinat.rs.
 Clippy is clean. Compat and property tests passed. Next: full gate (fmt, clippy, MSRV, tests, docs).
+- 2026-10-17T07:09:27Z launcher: no commit for 60 s; 665 s elapsed. Files changed so far: benches/combinat.rs, docs/worker-notes/wx-mpu-combinat-f07-a1.md, src/combinat/mod.rs, src/combinat/partitions.rs, src/combinat/partitionsq.rs, src/combinat/permtonum.rs, tests/compat_combinat.rs, tests/prop_combinat.rs.

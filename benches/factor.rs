@@ -2,7 +2,7 @@
 //! Benchmarks for the factor family.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    cheb_factor, divisors, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
+    cheb_factor, divisors, ecm_factor, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
     is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime_u128,
     is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
     pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
@@ -50,6 +50,9 @@ fn bench_factor(c: &mut Criterion) {
             b.iter(|| pplus1_factor(black_box(n), None));
         });
     }
+    c.bench_function("ecm_factor", |b| {
+        b.iter(|| ecm_factor(black_box(1_000_036_000_099), None, None, None));
+    });
     c.bench_function("cheb_factor", |b| {
         b.iter(|| cheb_factor(black_box(1_000_036_000_099), 0, 0));
     });

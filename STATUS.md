@@ -59,7 +59,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `divmod`
 - [x] `divrem`
 - [x] `drand`
-- [ ] `ecm_factor`
+- [x] `ecm_factor`
 - [x] `entropy_bytes`
 - [x] `euler_phi`
 - [x] `exp_mangoldt`

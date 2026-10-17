@@ -5,7 +5,7 @@ mod common;
 // 18450931744652885087, 36803912137803496523, and 36832540935240707603.
 use common::{Case, each};
 use math_prime_util::{
-    cheb_factor, divisors, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
+    cheb_factor, divisors, ecm_factor, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
     is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime_u128,
     is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
     pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
@@ -184,6 +184,30 @@ fn prime_signature_oracle() {
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(list(&prime_signature(n)));
         }
+    });
+}
+
+#[test]
+fn ecm_factor_oracle() {
+    common::each("factor", "ecm_factor", |c| {
+        let factors = ecm_factor(
+            c.arg(0),
+            c.args.get(1).map(|_| c.arg(1)),
+            c.args.get(2).map(|_| c.arg(2)),
+            c.args.get(3).map(|_| c.arg(3)),
+        );
+        let result = if factors.is_empty() {
+            None
+        } else {
+            Some(
+                factors
+                    .iter()
+                    .map(u64::to_string)
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            )
+        };
+        c.check(result);
     });
 }
 

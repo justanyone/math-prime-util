@@ -74,7 +74,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `fdivrem`
 - [x] `fermat_factor`
 - [x] `fibonacci`
-- [ ] `floor_sum`
+- [x] `floor_sum`
 - [ ] `foralmostprimes`
 - [ ] `forcomb`
 - [ ] `forcomp`
@@ -306,7 +306,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_set_config`
 - [x] `prime_signature`
 - [x] `primorial`
-- [ ] `print_primes`
+- [x] `print_primes`
 - [x] `qnr`
 - [ ] `ramanujan_prime_count`
 - [ ] `ramanujan_prime_count_approx`
@@ -333,8 +333,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `random_unrestricted_semiprime`
 - [x] `randperm`
 - [x] `rashiftint`
-- [ ] `remove_factors`
-- [ ] `remove_factors_exp`
+- [x] `remove_factors`
+- [x] `remove_factors_exp`
 - [x] `reverse_digits`
 - [ ] `RiemannR`
 - [ ] `RiemannZeta`

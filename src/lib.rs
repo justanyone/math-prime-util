@@ -37,6 +37,7 @@ pub mod families;
 pub mod int;
 pub mod iter;
 pub mod lucas;
+pub mod misc_gap;
 pub mod modular;
 pub mod primality;
 pub mod proving;
@@ -70,6 +71,7 @@ pub use int::*;
 pub use iter::*;
 #[allow(unused_imports)] // until the module has public items
 pub use lucas::*;
+pub use misc_gap::*;
 #[allow(unused_imports)] // until the module has public items
 pub use modular::*;
 #[allow(unused_imports)] // until the module has public items

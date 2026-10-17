@@ -16,3 +16,5 @@ Diff whitespace check passes. Full gate is still running the pre-existing count 
 All new tests remain green. Waiting for the existing prime-count compatibility suite in the full gate; no network or external files were changed.
 The full gate is spending over a minute in existing chebyshev, nth-prime and prime-count oracle tests. New family tests already passed offline.
 The existing Chebyshev oracle passed; the full gate continues with nth-prime and prime-count cases.
+The existing nth-prime and prime-count oracle cases are still running. The implementation is unchanged while the full gate validates it.
+About five minutes remain in the worker budget. All assigned implementation and tests are complete; the full gate is still in existing count oracle cases.

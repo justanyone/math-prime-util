@@ -4,3 +4,4 @@ The stopped run is incomplete unless the diff meets the faithful-port and compat
 Verify the C boundary/refinement paths, record concrete open findings, and run available review checks.
 Recorded FAIL review: incomplete C ports, skipped oracle coverage, absent upper bound, wrong doctest, and tautological property; checking available base test commands next.
 Review file is written. Focused base tests are still running; gate passed fmt and is waiting for the test build lock. Candidate failures are established by the digest independently of these checks.
+Focused test command exited 0 with no matching base tests. Base gate passed fmt and clippy, then started MSRV; candidate acceptance remains FAIL.

@@ -11,3 +11,5 @@ The stopped run is not complete against the acceptance criteria. There were no e
 ## Validation scope
 
 The digest is sufficient to establish these failures. No code was modified. Checks run in this checkout exercise the base, not the candidate, and cannot establish candidate acceptance.
+
+`tools/test.sh nth_semiprime` exited successfully but selected zero tests in the base checkout; it provides no candidate validation.

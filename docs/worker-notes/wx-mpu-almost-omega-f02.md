@@ -19,3 +19,5 @@ Clippy reached the new code and rejected ungrouped numeric literals. Added separ
 - 2026-10-17T18:53:11Z launcher: no commit for 60 s; 579 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-almost-omega-f02.md, src/families/almost_prime_count_upper.rs, src/families/mod.rs, src/families/nth_almost_prime.rs, src/families/nth_almost_prime_approx.rs, src/families/nth_almost_prime_lower.rs, tests/compat_families.rs, tests/prop_families.rs.
 Added an explicit native-input skip for bigint fixture n. Final gate still pending; exact counting lacks the C prime-count cache and full k>=5 threshold optimization.
 Added the C cache-size policy and a per-call prime-count cache to the recursive exact count. Approximation inversion uses the full Ridder search.
+Near deadline: no green gate yet. The four public APIs and tests are written; validation and the C k>=5 bounded-search optimization remain to verify.
+Gate found the existing benchmark function exceeded its line limit after additions. Moved the new benchmarks to a separate registered function.

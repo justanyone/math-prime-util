@@ -7,6 +7,18 @@ pub use is_gaussian_prime::is_gaussian_prime;
 pub use is_sum_of_squares::is_sum_of_squares;
 pub use lucky::*;
 
+mod prime_power_count;
+pub use prime_power_count::prime_power_count;
+
+mod prime_power_count_approx;
+pub use prime_power_count_approx::prime_power_count_approx;
+
+mod prime_power_count_lower;
+pub use prime_power_count_lower::prime_power_count_lower;
+
+mod prime_power_count_upper;
+pub use prime_power_count_upper::prime_power_count_upper;
+
 mod minimal_goldbach_pair;
 pub use minimal_goldbach_pair::minimal_goldbach_pair;
 mod goldbach_pair_count;
@@ -107,3 +119,11 @@ pub use powerfree_count::powerfree_count;
 
 mod nth_powerfree;
 pub use nth_powerfree::nth_powerfree;
+mod nth_almost_prime_upper;
+pub use nth_almost_prime_upper::nth_almost_prime_upper;
+mod omega_primes;
+pub use omega_primes::omega_primes;
+mod omega_prime_count;
+pub use omega_prime_count::omega_prime_count;
+mod nth_omega_prime;
+pub use nth_omega_prime::nth_omega_prime;

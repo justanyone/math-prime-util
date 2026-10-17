@@ -30,6 +30,9 @@ fn proving(c: &mut Criterion) {
     c.bench_function("certificate", |b| {
         b.iter(|| prime_certificate(black_box(u64::MAX - 58)));
     });
+    c.bench_function("provable_with_certificate", |b| {
+        b.iter(|| is_provable_prime_with_cert(black_box(u64::MAX - 58)));
+    });
     let cert = prime_certificate(u64::MAX - 58);
     c.bench_function("verify", |b| b.iter(|| verify_prime(black_box(&cert))));
 }

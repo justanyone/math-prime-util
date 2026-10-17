@@ -125,3 +125,66 @@ fn clamp(pp: f64) -> u64 {
         pp as u64
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn zero_index_is_none_for_all_bounds() {
+        assert_eq!(nth_perfect_power_lower(0), None);
+        assert_eq!(nth_perfect_power_upper(0), None);
+        assert_eq!(nth_perfect_power_approx(0), None);
+    }
+
+    #[test]
+    fn index_one_returns_itself() {
+        assert_eq!(nth_perfect_power_lower(1), Some(1));
+        assert_eq!(nth_perfect_power_upper(1), Some(1));
+        assert_eq!(nth_perfect_power_approx(1), Some(1));
+    }
+
+    #[test]
+    fn saturation_threshold_returns_max_perfect_power() {
+        let n = MAX_PERFECT_POW_IDX;
+        assert_eq!(nth_perfect_power_lower(n), Some(MAX_PERFECT_POW));
+        assert_eq!(nth_perfect_power_upper(n), Some(MAX_PERFECT_POW));
+        assert_eq!(nth_perfect_power_approx(n), Some(MAX_PERFECT_POW));
+        assert_eq!(nth_perfect_power_lower(u64::MAX), Some(MAX_PERFECT_POW));
+        assert_eq!(nth_perfect_power_upper(u64::MAX), Some(MAX_PERFECT_POW));
+        assert_eq!(nth_perfect_power_approx(u64::MAX), Some(MAX_PERFECT_POW));
+    }
+
+    #[test]
+    fn just_below_threshold_saturates_in_clamp() {
+        // The polynomial is about n^2, which exceeds u64::MAX here, so clamp caps it.
+        let n = MAX_PERFECT_POW_IDX - 1;
+        assert_eq!(nth_perfect_power_lower(n), Some(u64::MAX));
+        assert_eq!(nth_perfect_power_upper(n), Some(u64::MAX));
+        assert_eq!(nth_perfect_power_approx(n), Some(u64::MAX));
+    }
+
+    #[test]
+    fn clamp_below_and_above_limit() {
+        assert_eq!(clamp(0.0), 0);
+        assert_eq!(clamp(1234.9), 1234);
+        assert_eq!(clamp(u64::MAX as f64), u64::MAX);
+        assert_eq!(clamp(f64::INFINITY), u64::MAX);
+    }
+
+    #[test]
+    fn small_indices_match_doc_examples() {
+        assert_eq!(nth_perfect_power_lower(10), Some(14));
+        assert_eq!(nth_perfect_power_upper(10), Some(92));
+        assert_eq!(nth_perfect_power_approx(10), Some(56));
+    }
+
+    #[test]
+    fn bounds_are_some_and_ordered_for_small_indices() {
+        for n in 2..=1000 {
+            let lo = nth_perfect_power_lower(n).unwrap();
+            let up = nth_perfect_power_upper(n).unwrap();
+            assert!(lo <= up, "lower {lo} > upper {up} at n={n}");
+        }
+    }
+}

@@ -1,0 +1,1 @@
+- Plan: fix finding 1 (tests for perfect_powers.rs) and finding 2 (tick STATUS.md) in worktree; decide on fixture generator.

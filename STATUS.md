@@ -120,20 +120,20 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_almost_prime`
 - [x] `is_bpsw_prime`
 - [x] `is_carmichael`
-- [ ] `is_catalan_pseudoprime`
-- [ ] `is_chen_prime`
+- [x] `is_catalan_pseudoprime`
+- [x] `is_chen_prime`
 - [x] `is_congruent`
 - [ ] `is_congruent_number`
 - [x] `is_cyclic`
-- [ ] `is_delicate_prime`
+- [x] `is_delicate_prime`
 - [x] `is_divisible`
 - [x] `is_euler_plumb_pseudoprime`
 - [x] `is_euler_pseudoprime`
 - [x] `is_even`
 - [x] `is_extra_strong_lucas_pseudoprime`
-- [ ] `is_frobenius_khashin_pseudoprime`
-- [ ] `is_frobenius_pseudoprime`
-- [ ] `is_frobenius_underwood_pseudoprime`
+- [x] `is_frobenius_khashin_pseudoprime`
+- [x] `is_frobenius_pseudoprime`
+- [x] `is_frobenius_underwood_pseudoprime`
 - [x] `is_fundamental`
 - [x] `is_gaussian_prime`
 - [ ] `is_happy`
@@ -147,7 +147,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_palindrome`
 - [x] `is_perfect_number`
 - [ ] `is_perfect_power`
-- [ ] `is_perrin_pseudoprime`
+- [x] `is_perrin_pseudoprime`
 - [ ] `is_pillai`
 - [ ] `is_polygonal`
 - [x] `is_power`

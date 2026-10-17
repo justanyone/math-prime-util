@@ -50,6 +50,7 @@ pub use pminus1_factor::pminus1_factor;
 pub use pplus1_factor::pplus1_factor;
 pub use prho_factor::prho_factor;
 pub use prime_bigomega::prime_bigomega;
+pub(crate) use prime_bigomega::sorted_factors;
 pub use prime_omega::prime_omega;
 pub use prime_signature::prime_signature;
 pub use squfof_factor::squfof_factor;

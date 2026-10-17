@@ -8,3 +8,5 @@ Existing definitions confirmed; moving the four implementations and checking C f
 Moved the four functions. Restored C totient tables, sieve thresholds, chunks, and lambda fast paths.
 
 Added range, overflow, identity, and concurrency regressions; focused tests are running.
+
+Implementation and added regressions are written; offline gate started, with about five minutes reserved for fixes.

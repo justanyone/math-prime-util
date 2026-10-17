@@ -19,3 +19,4 @@ The rounding regression passes. Existing count oracles have run for several minu
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -21 bytes)
 About five minutes remain. All four ports, docs, benchmarks, preserved lucky cases, and new regressions are on disk. The optimized final gate is compiling its test profile; earlier gates passed fmt, clippy, and MSRV.
+- 2026-10-17T06:57:15Z launcher: no commit for 60 s; 577 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f02.md, src/families/mod.rs, src/families/prime_power_count.rs, src/families/prime_power_count_approx.rs, src/families/prime_power_count_lower.rs, src/families/prime_power_count_upper.rs, tests/compat_families.rs, tests/prop_families.rs.

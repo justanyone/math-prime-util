@@ -13,3 +13,4 @@ No new failures. Gate full-suite compat_count is still running; final tools/test
 Minute update: waiting on repository-wide offline tests; no source or test changes needed after the benchmark lint fix.
 Gate compat_count: chebyshev passed; nth_prime and prime_count exceeded 60 seconds without reporting failure. Focused tests remain green. Waiting for the required gate outcome.
 Progress: existing nth_prime and prime_count oracle tests remain active. No new failures, and no network used. Launcher owns all commits; no git metadata was written.
+The existing nth_prime oracle passed. Ran focused bit-position doc tests separately while prime_count continues, so runnable public examples can be verified without waiting for the full gate.

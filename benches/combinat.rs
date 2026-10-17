@@ -9,7 +9,7 @@ fn combinat() {
     c.bench_function("harmfrac_60", |b| b.iter(|| harmfrac(black_box(60))));
     c.bench_function("primorial_52", |b| b.iter(|| primorial(black_box(52))));
     c.bench_function("pn_primorial_15", |b| {
-        b.iter(|| pn_primorial(black_box(15)))
+        b.iter(|| pn_primorial(black_box(15)));
     });
     c.final_summary();
 }

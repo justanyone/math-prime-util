@@ -17,14 +17,14 @@ fn check_fraction(c: &common::Case, got: Option<(i128, u128)>) {
 #[test]
 fn bernfrac_oracle() {
     each("combinat", "bernfrac", |c| {
-        check_fraction(c, bernfrac(c.arg(0)))
+        check_fraction(c, bernfrac(c.arg(0)));
     });
 }
 
 #[test]
 fn harmfrac_oracle() {
     each("combinat", "harmfrac", |c| {
-        check_fraction(c, harmfrac(c.arg(0)))
+        check_fraction(c, harmfrac(c.arg(0)));
     });
 }
 

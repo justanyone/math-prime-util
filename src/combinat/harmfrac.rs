@@ -32,7 +32,7 @@ fn harmonic_split(a: u128, b: u128) -> Option<(u128, u128)> {
         1 => return Some((1, a)),
         2 => (2 * a + 1, a * (a + 1)),
         _ => {
-            let mid = (a + b) / 2;
+            let mid = a + (b - a) / 2;
             let (p, q) = harmonic_split(a, mid)?;
             let (r, s) = harmonic_split(mid, b)?;
             let g = gcd(q, s);

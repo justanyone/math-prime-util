@@ -11,3 +11,4 @@ First focused build found the prime-neighbor API returns Option; mapped missing 
 Offline dependency compilation and lock waits continue. No network, tool, fixture, or dependency changes were made.
 Gate found Clippy int_plus_one in the faithful C early-exit condition; used the equivalent strict comparison.
 Five-minute checkpoint: all requested code, tests, docs, and benchmarks are written. Focused tests and the corrected gate remain in progress.
+- 2026-10-17T18:50:44Z launcher: no commit for 60 s; 396 s elapsed. Files changed so far: benches/iter.rs, docs/worker-notes/wx-mpu-iterators-f03.md, src/iter/forcomb.rs, src/iter/forcomp.rs, src/iter/fordivisors.rs, src/iter/forpart.rs, src/iter/mod.rs, tests/compat_iter.rs, tests/prop_iter.rs.

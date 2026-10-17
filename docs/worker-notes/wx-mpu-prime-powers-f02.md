@@ -14,3 +14,7 @@ Recovered the pre-existing lucky-family tests and benchmarks from the initial sn
 The combined diff now preserves the original family cases. Full offline validation is still running in the existing prime-count compatibility tests; no new failure has been reported.
 At 06:53 UTC, the new focused tests are green. Full validation remains in the existing count-family oracle tests, which exceed one minute in this debug build. Continue waiting within the task deadline.
 Review found and fixed a fractional-high-component rounding edge in Wide::integer. Added direct regression cases for floor, nearest, and negative residuals. This requires a final gate rerun after ongoing full tests finish.
+At roughly six minutes remaining, the implementation and regression tests are written. Full-suite and gate validation are still running offline; preserve the completed source and record any deadline blocker.
+The rounding regression passes. Existing count oracles have run for several minutes in debug mode. Start the final gate with CARGO_PROFILE_TEST_OPT_LEVEL=2 to finish the same tests faster without changing repository tooling or test semantic <<cut 2 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -21 bytes)

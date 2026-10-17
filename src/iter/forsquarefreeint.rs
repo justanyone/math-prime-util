@@ -1,3 +1,23 @@
+use std::ops::{ControlFlow, RangeInclusive};
+use super::run;
+
+/// Visit each squarefree integer in an inclusive range. See `XS.xs`, `forsquarefreeint`.
+/// ```
+/// use std::ops::ControlFlow;
+/// let mut sum = 0;
+/// let _: ControlFlow<()> = math_prime_util::forsquarefreeint(1..=10, |n| {
+///     sum += n;
+///     ControlFlow::Continue(())
+/// });
+/// assert_eq!(sum, 34);
+/// ```
+pub fn forsquarefreeint<B>(
+    range: RangeInclusive<u64>,
+    f: impl FnMut(u64) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(squarefree_integers_in(range), f)
+}
+
 
 /// State for the squarefree sieve in `XS.xs::forsquarefreeint`.
 #[derive(Clone, Debug)]

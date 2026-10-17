@@ -15,6 +15,8 @@ Moved `ramanujan_sum` and `valuation` into their own files and added property te
 Compat and property tests passed after two law fixes: composite bases are not additive, and `ramanujan_sum(12, 1)` is the zero case. Next: the gate script. About five minutes remain.
 
 Gate printed `== gate: green` (fmt, clippy, MSRV 1.85, full tests, docs). Fixed the bench literal to `360_360` and will rerun the gate.
+
+Second gate also printed `== gate: green`. Done. No remaining work for `ramanujan_sum` or `valuation`.
 - 2026-10-17T19:01:45Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-totients-f04-a1.md.
 - 2026-10-17T19:02:46Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-totients-f04-a1.md.
 - 2026-10-17T19:03:46Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-totients-f04-a1.md.

@@ -15,3 +15,4 @@ Offline validation remains running. No fixture or tool changes were made; all te
 About five minutes remain. Both Cargo target directories still have pending builds, so no validation result is available yet.
 Formatting passes. Gate and focused tests remain pending behind Cargo compilation; native count recursion currently omits the C prime-count cache optimization.
 Independent compilation found u32/u64 mismatches at is_almost_prime calls; fixed with lossless conversions and restarted focused tests.
+Clippy reached the new code and rejected ungrouped numeric literals. Added separators without changing values; focused fixture tests are still pending.

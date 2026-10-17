@@ -179,14 +179,14 @@ pub(super) fn prime_lower(n: u64) -> u64 {
     let x = n as f64;
     let l = x.ln();
     let ll = l.ln();
-    if n < 2000000 {
+    if n < 2_000_000 {
         let a = if n < 228 {
             0.6483
         } else if n < 948 {
             0.8032
         } else if n < 2195 {
             0.8800
-        } else if n < 39017 {
+        } else if n < 39_017 {
             0.9019
         } else {
             0.9484
@@ -203,7 +203,11 @@ pub(super) fn prime_lower(n: u64) -> u64 {
         }
         return lo;
     }
-    let b = if n < 56000000 { 11.200 } else { 11.50800000002 };
+    let b = if n < 56_000_000 {
+        11.200
+    } else {
+        11.508_000_000_02
+    };
     (x * (l + ll - 1.0 + (ll - 2.0) / l - (ll * ll - 6.0 * ll + b) / (2.0 * l * l)))
         .ceil()
         .min(max_nth(1) as f64) as u64
@@ -241,4 +245,24 @@ pub fn nth_almost_prime_lower(k: u32, n: u64) -> Option<u64> {
     Some(inverse(3_u64 << k, 0, n, |x| {
         super::almost_prime_count_upper(k, x)
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn interpolation_brackets_and_jumps() {
+        assert_eq!(inverse(10, 0, 10, |x| x), 10);
+        assert_eq!(inverse(1, 100, 40, |x| x), 40);
+        assert_eq!(inverse(1, 100, 40, |x| 2 * x), 20);
+        assert_eq!(inverse(1, 100, 41, |x| 2 * x), 20);
+        assert_eq!(inverse(1, 0, 1000, |x| x / 10), 10_000);
+        assert_eq!(inverse(u64::MAX - 1, 0, 2, |_| 1), 0);
+        for n in [1000, 2_000_000, 56_000_000] {
+            assert!(prime_lower(n) > n);
+        }
+        assert_eq!(prime_lower(max_count(1)), max_nth(1));
+        assert_eq!(prime_lower(max_count(1) + 1), 0);
+        assert_eq!(reduction(50, FIRST_3[49]), 0);
+    }
 }

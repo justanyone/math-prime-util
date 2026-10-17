@@ -94,7 +94,7 @@ fn interpolate_approx(k: u32, n: u64) -> u64 {
     for _ in 2..20 {
         iterations += 1;
         count = exact_count(k, guess);
-        if n.abs_diff(count) < 20000 {
+        if n.abs_diff(count) < 20_000 {
             break;
         }
         let estimate = nth(count);
@@ -113,12 +113,12 @@ fn interpolate_approx(k: u32, n: u64) -> u64 {
             let span = max - min;
             guess = if span <= 1 {
                 if guess <= min { max } else { min }
-            } else if 19999 >= span {
+            } else if 19_999 >= span {
                 min + span / 2
             } else if guess <= min {
-                min + 19999
+                min + 19_999
             } else {
-                max - 19999
+                max - 19_999
             };
         }
     }

@@ -5,10 +5,10 @@ use math_prime_util::{
     goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_prime_power,
     is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair, next_chen_prime,
     next_prime_power, nth_lucky, nth_ramanujan_prime, nth_ramanujan_prime_approx,
-    nth_ramanujan_prime_lower, nth_twin_prime, nth_twin_prime_approx, powerfree_count,
-    powerful_count, powerful_numbers, prev_prime_power, prime_powers, ramanujan_prime_count_upper,
-    semi_primes, semiprime_count, semiprime_count_approx, sumpowerful, twin_prime_count,
-    twin_prime_count_approx, twin_primes,
+    nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx, nth_twin_prime,
+    nth_twin_prime_approx, powerfree_count, powerful_count, powerful_numbers, prev_prime_power,
+    prime_powers, ramanujan_prime_count_upper, semi_primes, semiprime_count,
+    semiprime_count_approx, sumpowerful, twin_prime_count, twin_prime_count_approx, twin_primes,
 };
 use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
@@ -103,6 +103,14 @@ fn bench_families(c: &mut Criterion) {
     c.bench_function("semiprime_count_approx", |b| {
         b.iter(|| semiprime_count_approx(black_box(1_000_000)));
     });
+    c.bench_function("nth_semiprime", |b| {
+        b.iter(|| nth_semiprime(black_box(100_000)));
+    });
+    c.bench_function("nth_semiprime_approx", |b| {
+        b.iter(|| nth_semiprime_approx(black_box(100)));
+    });
+}
+fn bench_ramanujan(c: &mut Criterion) {
     c.bench_function("ramanujan_primes", |b| {
         b.iter(|| ramanujan_primes(black_box(10_000), black_box(20_000)));
     });
@@ -138,5 +146,11 @@ fn bench_squares(c: &mut Criterion) {
         b.iter(|| is_sum_of_squares(black_box(18_446_744_073_709_551_557), 2));
     });
 }
-criterion_group!(benches, bench_families, bench_goldbach_misc, bench_squares);
+criterion_group!(
+    benches,
+    bench_families,
+    bench_ramanujan,
+    bench_goldbach_misc,
+    bench_squares
+);
 criterion_main!(benches);

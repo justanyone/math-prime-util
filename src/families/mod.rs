@@ -80,3 +80,7 @@ mod ramanujan_prime_count_approx;
 pub use ramanujan_prime_count_approx::ramanujan_prime_count_approx;
 mod ramanujan_prime_count_lower;
 pub use ramanujan_prime_count_lower::ramanujan_prime_count_lower;
+mod nth_semiprime;
+pub use nth_semiprime::*;
+mod nth_semiprime_approx;
+pub use nth_semiprime_approx::*;

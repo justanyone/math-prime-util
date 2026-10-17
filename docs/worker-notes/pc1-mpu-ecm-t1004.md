@@ -1,3 +1,7 @@
-# Worker notes: pc1-mpu-ecm-t1004
+# pc1-mpu-ecm-t1004
 
-- 2026-10-17T15:06:07Z launcher: no commit for 60 s; 90 s elapsed. Files changed so far: none.
+Continue PARTIAL ecm_factor: exact fixture parity and a green gate.
+The Rust port follows factor.c tinyecm64; compat_factor special-cases
+1819015037140 (49×1856137793 vs oracle 7×12992964551). Next: run the
+oracle test, match Perl/XS output, then tools/gate.sh.
+

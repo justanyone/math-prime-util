@@ -13,3 +13,4 @@ Updated assertions for the installed pedantic clippy version. Full offline suite
 Full-word regression cases added; final suite and gate are running offline. Checking that shared modular test files retain prior coverage.
 The checkout has no origin/dev ref, so comparison against that ref is unavailable; using local file history to verify scope.
 Local history revealed pre-existing sibling tests in the shared modular files. Restored them verbatim and placed the new root tests in nested modules to retain all coverage.
+Restored all sibling oracle and property tests. New comments name signed fixture examples that the u64 API cannot accept.

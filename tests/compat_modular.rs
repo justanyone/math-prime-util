@@ -39,7 +39,9 @@ mod roots {
     use math_prime_util::{allrootmod, allsqrtmod, rootmod, sqrtmod};
 
     fn unsigned(c: &common::Case) -> bool {
-        // Signed radicands and negative exponents need a future signed API.
+        // Skip signed radicands (such as sqrtmod(-1, 17)) and negative
+        // exponents (rootmod(14, -3, 101), (13, -6, 107), and (9, -2, 101)).
+        // Bigint arguments also need a future API.
         // Skip each such fixture case by its parsed argument, rather than changing it.
         c.args.iter().all(|a| a.parse::<u64>().is_ok())
     }

@@ -4,7 +4,7 @@ static CACHE: Mutex<Vec<u8>> = Mutex::new(Vec::new());
 
 /// Returns the least number of ones needed to express `n` with `+` and `*`.
 ///
-/// Zero returns zero and clears the cache. Uses MPU 0.75 `intcomplexity.c`,
+/// Zero returns `None` and clears the cache. Uses MPU 0.75 `intcomplexity.c`,
 /// `integer_complexity`, `expand_ic`, and `_calcg`, including cache growth.
 ///
 /// # Panics
@@ -12,9 +12,9 @@ static CACHE: Mutex<Vec<u8>> = Mutex::new(Vec::new());
 /// Panics if `n` is `u64::MAX`, or the cache size exceeds the address space.
 ///
 /// ```
-/// assert_eq!(math_prime_util::integer_complexity(12), 7);
+/// assert_eq!(math_prime_util::integer_complexity(12), Some(7));
 /// ```
-pub fn integer_complexity(n: u64) -> u64 {
+pub fn integer_complexity(n: u64) -> Option<u64> {
     assert!(n != u64::MAX, "integer_complexity: input too large");
     let index = usize::try_from(n).expect("integer_complexity: input too large");
     // Recovering the guard also permits a reset after an allocation panic.
@@ -23,12 +23,12 @@ pub fn integer_complexity(n: u64) -> u64 {
         .unwrap_or_else(std::sync::PoisonError::into_inner);
     if n == 0 {
         *cache = Vec::new();
-        return 0;
+        return None;
     }
     if index >= cache.len() {
         expand(&mut cache, index);
     }
-    u64::from(cache[index])
+    Some(u64::from(cache[index]))
 }
 
 fn calc_g(mut n: usize) -> u64 {
@@ -94,7 +94,7 @@ mod tests {
         assert_eq!(cache[12], 7);
         let old_len = cache.len();
         expand(&mut cache, old_len);
-        assert_eq!(cache[old_len], 30);
+        assert_eq!(cache[59_049], 30);
     }
 
     #[test]
@@ -102,10 +102,10 @@ mod tests {
         let threads: Vec<_> = (0..4)
             .map(|_| {
                 std::thread::spawn(|| {
-                    assert_eq!(integer_complexity(0), 0);
+                    assert_eq!(integer_complexity(0), None);
                     for _ in 0..2 {
-                        assert_eq!(integer_complexity(12), 7);
-                        assert_eq!(integer_complexity(27), 9);
+                        assert_eq!(integer_complexity(12), Some(7));
+                        assert_eq!(integer_complexity(27), Some(9));
                     }
                 })
             })

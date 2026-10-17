@@ -38,6 +38,6 @@ fn powersum_oracle() {
 #[test]
 fn integer_complexity_oracle() {
     each("combinat", "integer_complexity", |case| {
-        case.check(Some(integer_complexity(case.arg(0))));
+        case.check(integer_complexity(case.arg(0)));
     });
 }

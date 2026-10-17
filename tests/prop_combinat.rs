@@ -21,9 +21,9 @@ proptest! {
 
     #[test]
     fn complexity_composition(a in 1_u64..100, b in 1_u64..100) {
-        let bound = integer_complexity(a) + integer_complexity(b);
-        prop_assert!(integer_complexity(a + b) <= bound);
-        prop_assert!(integer_complexity(a * b) <= bound);
+        let bound = integer_complexity(a).unwrap() + integer_complexity(b).unwrap();
+        prop_assert!(integer_complexity(a + b).unwrap() <= bound);
+        prop_assert!(integer_complexity(a * b).unwrap() <= bound);
     }
 }
 

@@ -87,7 +87,7 @@ pub fn powersum(n: u64, k: u64) -> Option<u64> {
         return Some(1 + (1_u64 << k));
     }
     let n128 = u128::from(n);
-    let a = u128::from((n + 1) / 2) * u128::from(n | 1);
+    let a = u128::from(n.div_ceil(2)) * u128::from(n | 1);
     let a2 = a * a;
     let result = match k {
         1 => a,

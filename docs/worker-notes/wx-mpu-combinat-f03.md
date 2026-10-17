@@ -5,3 +5,5 @@ Run focused offline tests and the required gate; record any blockers here.
 Read PLAN sections 5–8 and the C algorithms. Preserve the integer-complexity cache and power-sum bounds; skip named signed factorial cases in the unsigned API.
 Added four function files, fixture checks, algebraic properties, concurrency/reset checks, and criterion source. Existing fixtures contain bigint outputs, mapped to native overflow None.
 Focused compatibility/property tests and cache unit tests are running offline. Started the required gate to catch formatting, lint, MSRV, and documentation issues.
+Reviewed cache growth tests and used the known value complexity(3^10) = 30 across the growth boundary. The gate is waiting for the focused test build lock.
+Focused tests found MPU exposes cache reset at zero as undef, so integer_complexity must return Option. Clippy also requests div_ceil. Correct both and rerun; the cache-growth expectation was corrected before its earlier build finished.

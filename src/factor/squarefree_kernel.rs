@@ -60,7 +60,7 @@ fn pollard_brent(n: u64) -> u64 {
         let f = |x: u64| mulmod(x, x, n).wrapping_add(c) % n;
         let m = 128;
         let mut y = 2;
-        let mut x;
+        let mut x = y;
         let mut ys = y;
         let mut g = 1;
         let mut q = 1;
@@ -149,7 +149,7 @@ mod tests {
         let q = 4_294_967_279_u64;
         assert_eq!(squarefree_kernel(p * q), p * q);
         assert_eq!(squarefree_kernel(p * p), p);
-        assert_eq!(squarefree_kernel(p * p * q), p * q);
+        assert_eq!(squarefree_kernel(p * 9), 3 * p);
     }
 
     #[test]

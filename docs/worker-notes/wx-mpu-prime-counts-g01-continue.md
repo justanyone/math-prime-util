@@ -6,3 +6,4 @@ Precision above 10^12 stays on the f64 Li(x) port. MPU uses long double. Skipped
 
 Next: list skipped n, add the bench target, run tools/test.sh on compat_count and prop_count.
 09:10 Named the 16 bound rows and 9 approx rows that f64 cannot match. Added benches/count.rs. Status tool reported 3 stale lines and rewrote those ticks. Next: tools/test.sh compat_count prop_count and lib count.
+- 2026-10-17T14:11:50Z launcher: no commit for 61 s; 303 s elapsed. Files changed so far: Cargo.toml, STATUS.md, benches/count.rs, docs/worker-notes/wx-mpu-prime-counts-g01-continue.md, tests/compat_count.rs.

@@ -7,3 +7,4 @@ Implemented all four APIs and MPU helper paths. Next: fixture and exhaustive sma
 Focused tests started; added oracle coverage, exhaustive small moduli, randomized laws, root limits, and concurrent repeat calls. Gate remains.
 Focused test build is still running. Gate reached clippy and is waiting for the build lock; no network commands were used.
 Review: APIs have no shared state; invalid modulus and repeated concurrent calls are covered. Offline compilation remains pending.
+All four oracle tests and all five property/regression tests passed. Gate found only doc/lint issues; fixed bounded midpoint expressions, fallible small-table indices, and test crate docs.

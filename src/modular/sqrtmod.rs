@@ -88,9 +88,9 @@ pub(super) fn prime_power(a: u64, p: u64, e: u32) -> Option<u64> {
         return None;
     }
     let ered = if p > 2 || e < 5 {
-        (e + 1) >> 1
+        e.div_ceil(2)
     } else {
-        (e + 3) >> 1
+        e.div_ceil(2) + 1
     };
     let s = prime_power(a, p, ered)?;
     let np = if p == 2 {
@@ -116,13 +116,6 @@ pub(super) fn crt(r: u64, n: u64, s: u64, m: u64) -> u64 {
 /// assert_eq!(sqrtmod(3, 7), None);
 /// ```
 pub fn sqrtmod(a: u64, n: u64) -> Option<u64> {
-    if n == 0 {
-        return None;
-    }
-    let a = a % n;
-    if n <= 2 || a <= 1 {
-        return Some(a);
-    }
     // Preserve MPU's small-root lookup table.
     const SMALL: [&[u64]; 14] = [
         &[0],
@@ -140,8 +133,15 @@ pub fn sqrtmod(a: u64, n: u64) -> Option<u64> {
         &[0, 0, 2, 0, 6, 0, 0, 3, 5, 0, 0, 0, 0],
         &[0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
     ];
+    if n == 0 {
+        return None;
+    }
+    let a = a % n;
+    if n <= 2 || a <= 1 {
+        return Some(a);
+    }
     if n <= 16 {
-        let r = SMALL[usize::try_from(n - 3).unwrap()][usize::try_from(a - 2).unwrap()];
+        let r = SMALL[usize::try_from(n - 3).ok()?][usize::try_from(a - 2).ok()?];
         return (r != 0).then_some(r);
     }
     let s = sqrtint(a);

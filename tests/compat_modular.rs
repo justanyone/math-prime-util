@@ -1,3 +1,4 @@
+//! Oracle compatibility tests for the four modular root APIs.
 mod common;
 use math_prime_util::{allrootmod, allsqrtmod, rootmod, sqrtmod};
 

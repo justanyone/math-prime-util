@@ -1,3 +1,4 @@
+//! Algebraic, exhaustive, and concurrency tests for modular roots.
 use math_prime_util::{allrootmod, allsqrtmod, powmod, rootmod, sqrtmod};
 use proptest::prelude::*;
 

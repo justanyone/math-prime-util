@@ -91,9 +91,9 @@ fn prime_power(a: u64, k: u64, p: u64, e: u32) -> Vec<u64> {
         n
     };
     let ered = if p > 2 || e < 5 {
-        (e + 1) >> 1
+        e.div_ceil(2)
     } else {
-        (e + 3) >> 1
+        e.div_ceil(2) + 1
     };
     let roots = prime_power(a, k, p, ered);
     let mut result = vec![];

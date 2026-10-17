@@ -146,7 +146,7 @@ mod tests {
 
     #[test]
     fn factor_support_keeps_order_and_multiplicity() {
-        assert!(prime_factors(1).is_empty());
+        assert_eq!(prime_factors(1), [] as [u64; 0]);
         assert_eq!(prime_factors(1_000_003 * 1_000_033), [1_000_003, 1_000_033]);
         assert_eq!(prime_factors(47_u64.pow(4)), [47, 47, 47, 47]);
         assert_eq!(

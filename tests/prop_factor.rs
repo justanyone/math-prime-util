@@ -88,3 +88,23 @@ fn quasi_carmichael_includes_negative_bases() {
     // 2093 = 7 * 13 * 23 admits the bases 5 and -1.
     assert_eq!(is_quasi_carmichael(2093), 2);
 }
+
+#[test]
+fn repeated_and_concurrent_calls_agree() {
+    let check = || {
+        assert!(is_carmichael(561));
+        assert!(!is_carmichael(47 * 53));
+        assert!(is_cyclic(47 * 53));
+        assert!(!is_cyclic(47 * 47));
+        assert_eq!(is_quasi_carmichael(2093), 2);
+        assert!(is_perfect_number(8128));
+    };
+    check();
+    std::thread::scope(|scope| {
+        let first = scope.spawn(check);
+        let second = scope.spawn(check);
+        first.join().unwrap();
+        second.join().unwrap();
+    });
+    check();
+}

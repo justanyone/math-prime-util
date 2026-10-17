@@ -103,7 +103,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `hammingweight`
 - [x] `harmfrac`
 - [x] `harmreal`
-- [ ] `hclassno`
+- [x] `hclassno`
 - [x] `holf_factor`
 - [x] `integer_complexity`
 - [x] `inverse_li`
@@ -136,7 +136,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_frobenius_underwood_pseudoprime`
 - [x] `is_fundamental`
 - [x] `is_gaussian_prime`
-- [ ] `is_happy`
+- [x] `is_happy`
 - [x] `is_harshad`
 - [ ] `is_higgs_prime`
 - [x] `is_lucas_pseudoprime`
@@ -148,7 +148,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_perfect_number`
 - [ ] `is_perfect_power`
 - [x] `is_perrin_pseudoprime`
-- [ ] `is_pillai`
+- [x] `is_pillai`
 - [x] `is_polygonal`
 - [x] `is_power`
 - [x] `is_powerfree`
@@ -256,7 +256,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_stern_diatomic`
 - [x] `nth_twin_prime`
 - [x] `nth_twin_prime_approx`
-- [ ] `numtoperm`
+- [x] `numtoperm`
 - [ ] `omega_prime_count`
 - [ ] `omega_primes`
 - [x] `partitions`

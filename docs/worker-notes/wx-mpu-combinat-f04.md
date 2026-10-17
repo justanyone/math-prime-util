@@ -7,3 +7,4 @@ Implemented the C primorial tables and binary splitting; Bernoulli uses the C ta
 Added oracle comparisons, algebraic properties, repeated/concurrent calls, overflow boundaries, and Criterion benchmarks. Focused offline tests are running; reduced the cross-product property domain to avoid test-only overflow.
 All four oracle tests and six property/boundary/concurrency tests pass offline. Fixed the Seidel direction state to match Perl's pre-decrement loop. Running the required gate next.
 Gate lint found literal separators, midpoint spelling, and trailing closure semicolons; corrected these without changing results. No dependencies or shared tooling changed.
+Final validation: tools/gate.sh printed == gate: green (fmt, pedantic Clippy, MSRV 1.85 build, tests, docs). The final offline tools/test.sh whole-suite run passed. All requested code is written; no remaining blocker and no network used.

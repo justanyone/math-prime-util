@@ -9,3 +9,4 @@ The new tau(3011) regression failed with None before the fix. The exponent-one s
 All 53 arithmetic integration tests passed offline, including the previously failing tau regression. The gate is checking all targets; added small class-number helper cases and final wide-sum overflow checks for line coverage.
 The first gate stopped on a test literal without digit separators. Fixed that clippy warning; rerunning the gate after the final coverage tests. No dependency, fixture, tooling, or status changes were needed.
 Final validation phase, with about five minutes reserved for the gate. The regression, fixture tests, algebraic laws, and concurrency tests have passed; the final helper and overflow tests are compiling with the gate.
+Formatting, clippy with warnings denied, and the MSRV 1.85 build passed. The helper boundary test passed. The gate's full suite and the required final tools/test.sh run are in progress offline.

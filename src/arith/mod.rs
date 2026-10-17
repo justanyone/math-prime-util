@@ -128,7 +128,6 @@ fn sigma(n: u64, k: u64) -> Option<u128> {
 /// Return the sum of the k-th powers of the divisors of n.
 ///
 /// Port of MPU 0.75 `factor.c::divisor_sum`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::divisor_sum(12, 1), Some(28));
@@ -190,7 +189,6 @@ const TAU: &[i64] = &[
 /// Return the native Ramanujan tau value.
 ///
 /// Port of MPU 0.75 `util.c::ramanujan_tau` and `PP.pm::_tauprime`, `_taupower`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::ramanujan_tau(2), Some(-24));
@@ -289,7 +287,6 @@ fn class_number(n: u64) -> i128 {
 /// Return the sum of the proper divisors of n.
 ///
 /// Port of MPU 0.75 `factor.c::aliquot_sum`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::aliquot_sum(12), Some(16));
@@ -305,7 +302,6 @@ pub fn aliquot_sum(n: u64) -> Option<u64> {
 /// MPU converts the difference to i64 with wraparound.
 ///
 /// Port of MPU 0.75 `factor.c::aliquot_sum (abundance wrapper)`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::abundance(12), Some(4));
@@ -318,7 +314,6 @@ pub fn abundance(n: u64) -> Option<i64> {
 /// Return the sum of prime factors with repetition.
 ///
 /// Port of MPU 0.75 `factor.c::sopfr`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::sopfr(12), 7);
@@ -330,7 +325,6 @@ pub fn sopfr(n: u64) -> u64 {
 /// Return the sum of distinct prime factors.
 ///
 /// Port of MPU 0.75 `factor.c::sopf`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::sopf(12), 5);
@@ -374,7 +368,6 @@ fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
 /// Return the signed Kronecker symbol (a/b).
 ///
 /// Port of MPU 0.75 `util.c::kronecker_ss, kronecker_su, kronecker_uu_sign`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::kronecker(-1, 3), -1);
@@ -405,7 +398,6 @@ pub fn kronecker(a: i64, b: i64) -> i32 {
 /// Test whether n is a fundamental discriminant.
 ///
 /// Port of MPU 0.75 `util.c::is_fundamental`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert!(math_prime_util::is_fundamental(-4));
@@ -424,7 +416,6 @@ pub fn is_fundamental(n: i64) -> bool {
 /// Solve simultaneous congruences. Each pair is (residue, modulus).
 ///
 /// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::chinese(&[(2, 3), (3, 5)]), Some(8));
@@ -436,7 +427,6 @@ pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
 /// Return the least solution and the combined modulus.
 ///
 /// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::chinese2(&[(2, 3), (3, 5)]), Some((8, 15)));
@@ -488,7 +478,6 @@ fn lambda(n: u64) -> u64 {
 /// Return the multiplicative order of a modulo n.
 ///
 /// Port of MPU 0.75 `util.c::znorder`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::znorder(2, 7), Some(3));
@@ -518,7 +507,6 @@ pub fn znorder(a: u64, n: u64) -> Option<u64> {
 /// Return the least primitive root modulo n.
 ///
 /// Port of MPU 0.75 `util.c::znprimroot`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::znprimroot(7), Some(3));
@@ -569,7 +557,6 @@ pub fn znprimroot(n: u64) -> Option<u64> {
 /// Test whether a is a primitive root modulo n.
 ///
 /// Port of MPU 0.75 `util.c::is_primitive_root`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::is_primitive_root(3, 7), Some(true));
@@ -617,7 +604,6 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
 /// Return the least quadratic nonresidue modulo n.
 ///
 /// Port of MPU 0.75 `util.c::qnr`.
-/// Returns `None` when the native result is not available.
 ///
 /// ```
 /// assert_eq!(math_prime_util::qnr(7), Some(3));
@@ -662,8 +648,7 @@ pub fn qnr(n: u64) -> Option<u64> {
 
 /// Test whether a is a square modulo n.
 ///
-/// Port of MPU 0.75 `util.c::is_qr and rootmod.c::_sqrtmod_prime_power`.
-/// Returns `None` when the native result is not available.
+/// Port of MPU 0.75 `util.c::is_qr and rootmod.c::_sqrtmod_composite`.
 ///
 /// ```
 /// assert!(math_prime_util::is_qr(2, 7));

@@ -32,13 +32,13 @@ fn divisor_sum() {
 #[test]
 fn sopfr() {
     each("arith", "sopfr", |c| {
-        c.check(Some(math_prime_util::sopfr(c.arg(0))))
+        c.check(Some(math_prime_util::sopfr(c.arg(0))));
     });
 }
 #[test]
 fn sopf() {
     each("arith", "sopf", |c| {
-        c.check(Some(math_prime_util::sopf(c.arg(0))))
+        c.check(Some(math_prime_util::sopf(c.arg(0))));
     });
 }
 #[test]
@@ -58,13 +58,13 @@ fn is_fundamental() {
         if c.args[0].parse::<i64>().is_err() {
             return;
         }
-        c.check(Some(u8::from(math_prime_util::is_fundamental(c.arg(0)))))
+        c.check(Some(u8::from(math_prime_util::is_fundamental(c.arg(0)))));
     });
 }
 #[test]
 fn znorder() {
     each("arith", "znorder", |c| {
-        c.check(math_prime_util::znorder(c.arg(0), c.arg(1)))
+        c.check(math_prime_util::znorder(c.arg(0), c.arg(1)));
     });
 }
 #[test]
@@ -74,7 +74,7 @@ fn is_primitive_root() {
         if c.args.iter().any(|s| s.starts_with('-')) {
             return;
         }
-        c.check(math_prime_util::is_primitive_root(c.arg(0), c.arg(1)).map(u8::from))
+        c.check(math_prime_util::is_primitive_root(c.arg(0), c.arg(1)).map(u8::from));
     });
 }
 #[test]
@@ -84,7 +84,7 @@ fn is_qr() {
         if c.args.iter().any(|s| s.starts_with('-')) {
             return;
         }
-        c.check(Some(u8::from(math_prime_util::is_qr(c.arg(0), c.arg(1)))))
+        c.check(Some(u8::from(math_prime_util::is_qr(c.arg(0), c.arg(1)))));
     });
 }
 fn pairs(c: &common::Case) -> Option<Vec<(u64, u64)>> {

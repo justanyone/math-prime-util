@@ -1,15 +1,11 @@
-<<<<<<< HEAD
-//! Algebraic laws and native boundary checks for the factorial family.
-use math_prime_util::{factorial, fubini, multifactorial, subfactorial};
-=======
 //! Algebraic laws and native overflow boundaries.
-use math_prime_util::{bernfrac, harmfrac, pn_primorial, primorial};
->>>>>>> origin/dev-001
+use math_prime_util::{
+    bernfrac, factorial, fubini, harmfrac, multifactorial, pn_primorial, primorial, subfactorial,
+};
 use proptest::prelude::*;
 
 proptest! {
     #[test]
-<<<<<<< HEAD
     fn factorial_recurrence(n in 1_u64..=20) {
         prop_assert_eq!(factorial(n), factorial(n - 1).and_then(|v| v.checked_mul(n)));
         prop_assert_eq!(multifactorial(n, 1), factorial(n));
@@ -42,7 +38,9 @@ proptest! {
             sum += binomial * u128::from(fubini(n - k).unwrap());
         }
         prop_assert_eq!(fubini(n), u64::try_from(sum).ok());
-=======
+    }
+
+    #[test]
     fn odd_bernoulli_vanishes(k in 1..u64::MAX / 2) {
         prop_assert_eq!(bernfrac(2 * k + 1), Some((0, 1)));
     }
@@ -61,12 +59,10 @@ proptest! {
         let prime = (2..n).all(|d| n % d != 0);
         let previous = primorial(n - 1).unwrap();
         prop_assert_eq!(primorial(n), Some(previous * if prime { n } else { 1 }));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn native_boundaries() {
     assert_eq!(factorial(0), Some(1));
     assert_eq!(factorial(20), Some(2_432_902_008_176_640_000));
@@ -112,7 +108,9 @@ fn concurrent_repeated_calls() {
             });
         }
     });
-=======
+}
+
+#[test]
 fn prime_index_products() {
     let primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
     let mut product = 1;
@@ -153,5 +151,4 @@ fn concurrent_calls() {
     for worker in workers {
         assert_eq!(worker.join().unwrap(), expected);
     }
->>>>>>> origin/dev-001
 }

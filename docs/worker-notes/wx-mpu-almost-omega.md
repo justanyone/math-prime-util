@@ -44,3 +44,5 @@ Final focused verification includes all 26 compatibility tests and a new large-i
 Focused results: 26 compatibility tests and 10 property tests passed offline. Family doctests are running; the gate remains in existing prime-count compatibility tests, with no reported failure.
 
 All 26 family doctests passed offline. No dependencies, fixture changes, tooling changes, status edits, or crate-root edits were made. The full gate is still waiting for existing count-family tests.
+
+Final status so far: 26 oracle tests, 10 property tests, and 26 family doctests passed. Full gate has no reported failure but three existing count compatibility tests remain active. Coverage was not measured separately.

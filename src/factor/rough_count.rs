@@ -2,7 +2,7 @@
 
 /// Counts the integers in `1..=n` with no prime factor below `k`.
 ///
-/// Ported from `rough_count` in Math::Prime::Util (`lib/Math/Prime/Util/PP.pm`,
+/// Ported from `rough_count` in `Math::Prime::Util` (`lib/Math/Prime/Util/PP.pm`,
 /// `sub rough_count`, MPU 0.75). MPU has no C version of `rough_count`. The
 /// cases `k <= 2` and `k == 3` use the same shortcuts as MPU. For `k >= 4`
 /// MPU calls `legendre_phi(n, prime_count(k-1))`, and this port uses the
@@ -39,7 +39,7 @@ pub fn rough_count(n: u64, k: u64) -> u64 {
 
 /// Trial-division primality test for the small bound `k`.
 fn is_prime_small(p: u64) -> bool {
-    p >= 2 && (2..).take_while(|d| d * d <= p).all(|d| p % d != 0)
+    p >= 2 && (2..=p).take_while(|d| d * d <= p).all(|d| p % d != 0)
 }
 
 /// `phi(x, a)`: integers in `1..=x` not divisible by any prime in `primes`.

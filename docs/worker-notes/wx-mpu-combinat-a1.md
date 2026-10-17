@@ -5,3 +5,4 @@ Port combinatorics from MPU 0.75 (util.c, real.c, intcomplexity.c, congruent_num
 Why: origin/dev now has the int/modular patterns and combinat fixtures. Match those APIs, cite C functions, return None on u64 overflow.
 
 Next: read PLAN.md §§5–8, existing module patterns, fixture columns, then implement and test.
+- 2026-10-17T00:13:11Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md.

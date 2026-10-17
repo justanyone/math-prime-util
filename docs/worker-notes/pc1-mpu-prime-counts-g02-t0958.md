@@ -3,6 +3,7 @@
 Continuing a PARTIAL run. `nth_prime_lower`, `nth_prime_upper`, and `nth_prime_approx` fail compat fixtures. Plan: read PLAN.md §§5–8 and the three count modules, match the C reference bounds, fix the mismatches, then run focused tests, `prop_count`, benches if required, and `tools/gate.sh`. Tick STATUS only for functions that pass. Do not mark READY.
 
 - t0: notes written; next is PLAN sections 5–8 and the three nth_prime sources.
+- t1: compat fails because n<2e6/15360 returns the exact prime; C binary-searches prime_count_upper/lower. Large upper bounds need more than f64 (1e14 off by 1+). Approx off by 1 at 1e13. Next: port the search and a double-double Axler evaluation.
 - 2026-10-17T15:00:47Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-prime-counts-g02-t0958.md.
 - 2026-10-17T15:01:47Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-prime-counts-g02-t0958.md.
 - 2026-10-17T15:02:48Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-prime-counts-g02-t0958.md.

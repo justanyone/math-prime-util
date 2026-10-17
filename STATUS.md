@@ -341,7 +341,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `rising_factorial`
 - [x] `rootint`
 - [ ] `rootmod`
-- [ ] `rough_count`
+- [x] `rough_count`
 - [x] `rshiftint`
 - [x] `semiprime_count`
 - [x] `semiprime_count_approx`
@@ -372,7 +372,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sopfr`
 - [x] `sqrtint`
 - [ ] `sqrtmod`
-- [ ] `squarefree_kernel`
+- [x] `squarefree_kernel`
 - [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`

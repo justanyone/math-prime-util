@@ -8,3 +8,5 @@ The stopped run is not complete against its acceptance criteria. There were no e
 Examined the supplied diff: bounded partition tables and recurrences, distinct-part correction, checked factorial/rank arithmetic, duplicate and out-of-range rejection, empty inputs, repeat/concurrent calls, oracle expectations, and benchmarks. The partition algorithms and native cutoffs agree with `reference/mpu/util.c:npartitions` and `npartitionsq`. All loops in the three implementations have finite bounds; duplicate permutation entries cannot reach success.
 
 Validation: candidate code was reviewed from the digest; this checkout is the base. Local test/gate results cannot establish that the candidate passes.
+
+`tools/test.sh --test compat_combinat` passed all four base tests. `tools/gate.sh` was started but had not printed `== gate: green` when the review was finalized; the base counting compatibility tests were still running. Candidate gate and coverage remain unverified.

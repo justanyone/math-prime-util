@@ -25,3 +25,4 @@ Next: read PLAN.md sections 5-8, crate patterns, and the C sieve entry points, t
 19:15 Wrote sieve module, compat, prop, bench. Running lib tests.
 Lib tests: is_prime treated 5 and 7 as composite. Fixed the trial division. Re-run lib tests, then compat.
 19:17 Compat and prop tests passed. Clippy clean. Running gate.
+19:18 Gate printed == gate: green. Sieve API, cache, compat, prop, and bench are on disk. Done.

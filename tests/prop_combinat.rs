@@ -15,16 +15,19 @@ proptest! {
     #[test]
     fn binomial_symmetry(n in 0u64..60, k in 0u64..60) {
         if k <= n {
-            prop_assert_eq!(binomial(i128::from(n), k), binomial(i128::from(n), n - k));
+            prop_assert_eq!(
+                binomial(i128::from(n), i128::from(k)),
+                binomial(i128::from(n), i128::from(n - k))
+            );
         }
     }
 
     #[test]
     fn binomial_pascal(n in 1u64..40, k in 1u64..40) {
         if k <= n {
-            let a = binomial(i128::from(n), k);
-            let b = binomial(i128::from(n - 1), k);
-            let c = binomial(i128::from(n - 1), k - 1);
+            let a = binomial(i128::from(n), i128::from(k));
+            let b = binomial(i128::from(n - 1), i128::from(k));
+            let c = binomial(i128::from(n - 1), i128::from(k - 1));
             if let (Some(b), Some(c)) = (b, c) {
                 prop_assert_eq!(a, b.checked_add(c));
             }
@@ -56,7 +59,7 @@ proptest! {
     #[test]
     fn catalan_from_binomial(n in 0u64..12) {
         let c = catalan_number(n).unwrap();
-        let b = binomial(i128::from(2 * n), n).unwrap();
+        let b = binomial(i128::from(2 * n), i128::from(n)).unwrap();
         prop_assert_eq!(c * u128::from(n + 1), u128::try_from(b).unwrap());
     }
 

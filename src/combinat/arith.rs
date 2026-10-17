@@ -88,42 +88,60 @@ pub(crate) fn binomial_mag(mut n: u128, mut k: u128) -> Option<u128> {
     Some(r)
 }
 
+/// Finish a binomial magnitude with the sign `(-1)^exp` when `negative`.
+fn binomial_finish(mag: u128, negative: bool) -> Option<i128> {
+    if negative {
+        i128::try_from(mag).ok()?.checked_neg()
+    } else if mag > u128::from(u64::MAX) {
+        None
+    } else {
+        Some(mag as i128)
+    }
+}
+
 /// Binomial coefficient `C(n, k)`.
 ///
 /// Port of `binomial` in `util.c`. A non-negative value that does not fit in
-/// `u64` is `None`. A negative `n` uses `C(-n, k) = (-1)^k C(n + k - 1, k)`
-/// and is `None` when that value does not fit in `i128`.
+/// `u64` is `None`. A negative upper index uses
+/// `C(-n, k) = (-1)^k C(n + k - 1, k)`. A negative lower index uses
+/// `C(-a, -b) = (-1)^{a - b} C(b - 1, a - 1)` (and 0 when the upper index is
+/// non-negative). `None` when a negative value does not fit in `i128`.
 ///
 /// ```
 /// use math_prime_util::binomial;
 /// assert_eq!(binomial(10, 3), Some(120));
 /// assert_eq!(binomial(5, 8), Some(0));
 /// assert_eq!(binomial(-4, 2), Some(10));
+/// assert_eq!(binomial(-9, -10), Some(-9));
 /// ```
 #[must_use]
-pub fn binomial(n: i128, k: u64) -> Option<i128> {
-    let k = u128::from(k);
+pub fn binomial(n: i128, k: i128) -> Option<i128> {
+    if k < 0 {
+        if n >= 0 {
+            return Some(0);
+        }
+        let top = k.checked_neg()?.checked_sub(1)?;
+        let choose = n.checked_neg()?.checked_sub(1)?;
+        if choose < 0 || top < choose {
+            return Some(0);
+        }
+        let mag = binomial_mag(u128::try_from(top).ok()?, u128::try_from(choose).ok()?)?;
+        let negative = n.checked_sub(k)?.rem_euclid(2) == 1;
+        return binomial_finish(mag, negative);
+    }
+    let k = u128::try_from(k).ok()?;
     if k == 0 {
         return Some(1);
     }
     if n >= 0 {
         let mag = binomial_mag(u128::try_from(n).ok()?, k)?;
-        return (mag <= u128::from(u64::MAX)).then_some(mag as i128);
+        return binomial_finish(mag, false);
     }
     // C(-m, k) = (-1)^k * C(m + k - 1, k).
     let m = u128::try_from(n.checked_neg()?).ok()?;
     let top = m.checked_add(k)?.checked_sub(1)?;
     let mag = binomial_mag(top, k)?;
-    if k % 2 == 0 {
-        if mag > u128::from(u64::MAX) {
-            None
-        } else {
-            Some(mag as i128)
-        }
-    } else {
-        let mag = i128::try_from(mag).ok()?;
-        mag.checked_neg()
-    }
+    binomial_finish(mag, k % 2 == 1)
 }
 
 /// Catalan number `C(2n, n) / (n + 1)`.

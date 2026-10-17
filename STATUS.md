@@ -291,7 +291,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `prime_count_approx`
 - [ ] `prime_count_lower`
 - [ ] `prime_count_upper`
-- [ ] `prime_get_config`
+- [x] `prime_get_config`
 - [ ] `prime_iterator`
 - [ ] `prime_iterator_object`
 - [x] `prime_memfree`
@@ -303,7 +303,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_powers`
 - [x] `prime_precalc`
 - [x] `primes`
-- [ ] `prime_set_config`
+- [x] `prime_set_config`
 - [x] `prime_signature`
 - [x] `primorial`
 - [ ] `print_primes`

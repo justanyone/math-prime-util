@@ -14,3 +14,8 @@ pub use nth_prime_power_lower::nth_prime_power_lower;
 
 mod nth_prime_power_upper;
 pub use nth_prime_power_upper::nth_prime_power_upper;
+
+mod almost;
+pub use almost::*;
+mod omega;
+pub use omega::*;

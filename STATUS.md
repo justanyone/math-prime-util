@@ -98,8 +98,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `fubini`
 - [x] `gcd`
 - [x] `gcdext`
-- [ ] `goldbach_pair_count`
-- [ ] `goldbach_pairs`
+- [x] `goldbach_pair_count`
+- [x] `goldbach_pairs`
 - [x] `hammingweight`
 - [x] `harmfrac`
 - [x] `harmreal`
@@ -202,7 +202,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `lucky_numbers`
 - [x] `mertens`
 - [ ] `miller_rabin_random`
-- [ ] `minimal_goldbach_pair`
+- [x] `minimal_goldbach_pair`
 - [x] `modint`
 - [x] `moebius`
 - [x] `muladdint`
@@ -216,7 +216,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `negint`
 - [x] `negmod`
 - [x] `next_calkin_wilf`
-- [ ] `next_chen_prime`
+- [x] `next_chen_prime`
 - [x] `next_farey`
 - [ ] `next_perfect_power`
 - [x] `next_prime`
@@ -255,7 +255,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
 - [x] `nth_twin_prime`
-- [ ] `nth_twin_prime_approx`
+- [x] `nth_twin_prime_approx`
 - [ ] `numtoperm`
 - [ ] `omega_prime_count`
 - [ ] `omega_primes`
@@ -343,9 +343,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `rootmod`
 - [ ] `rough_count`
 - [x] `rshiftint`
-- [ ] `semiprime_count`
-- [ ] `semiprime_count_approx`
-- [ ] `semi_primes`
+- [x] `semiprime_count`
+- [x] `semiprime_count_approx`
+- [x] `semi_primes`
 - [x] `setbinop`
 - [x] `setcontains`
 - [x] `setcontainsany`

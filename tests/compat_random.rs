@@ -312,3 +312,40 @@ fn random_nbit_prime_oracle() {
 fn random_safe_prime_oracle() {
     check_prime("random_safe_prime");
 }
+
+// Every `vecsample` row uses a hex seed, a non-negative `k`, and list items.
+// MPU dies on a malformed `k` such as "2foo". This fixture has no such row.
+// An empty selection is recorded as `undef`.
+#[test]
+fn vecsample_oracle() {
+    let mut count = 0;
+    for c in common::load("random")
+        .into_iter()
+        .filter(|c| c.func == "vecsample")
+    {
+        let Ok(k) = c.args[1].parse::<u64>() else {
+            continue;
+        };
+        count += 1;
+        csrand(&unhex(&c.args[0]));
+        let items: Vec<&str> = c.args[2..].iter().map(String::as_str).collect();
+        let got = vecsample(k, &items);
+        if got.is_empty() {
+            c.check(None::<String>);
+        } else {
+            c.check(Some(got.join(" ")));
+        }
+    }
+    assert!(count > 0);
+}
+
+// `tests/fixtures/random.tsv` has no `miller_rabin_random` rows.
+// Signed `n` is outside the native API. Values above 64 bits return `None`.
+#[test]
+fn miller_rabin_random_oracle() {
+    let n = common::load("random")
+        .into_iter()
+        .filter(|c| c.func == "miller_rabin_random")
+        .count();
+    assert_eq!(n, 0, "add a dispatch when the oracle grows");
+}

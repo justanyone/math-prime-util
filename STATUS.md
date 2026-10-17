@@ -308,11 +308,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `primorial`
 - [x] `print_primes`
 - [x] `qnr`
-- [ ] `ramanujan_prime_count`
-- [ ] `ramanujan_prime_count_approx`
-- [ ] `ramanujan_prime_count_lower`
+- [x] `ramanujan_prime_count`
+- [x] `ramanujan_prime_count_approx`
+- [x] `ramanujan_prime_count_lower`
 - [x] `ramanujan_prime_count_upper`
-- [ ] `ramanujan_primes`
+- [x] `ramanujan_primes`
 - [x] `ramanujan_sum`
 - [x] `ramanujan_tau`
 - [x] `rand`

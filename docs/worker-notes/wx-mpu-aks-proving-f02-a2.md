@@ -17,3 +17,5 @@ The required gate remains in the pre-existing forsquarefreeint test. All verifie
 The full offline gate has not advanced beyond forsquarefreeint; there is no verifier failure. Waiting for its result before final reporting.
 The full-suite iterator test is still running after several minutes. Running the verifier doctest separately so its documented example is checked despite that delay.
 About five minutes remain in the session. The gate is blocked on the existing long-running iterator test; the final notes will report this limit explicitly.
+The verify_prime doctest passed. Remaining validation is the full gate, which is still in forsquarefreeint and has not reached documentation generation.
+Final result: tools/gate.sh completed with == gate: green. All focused compatibility, property, proving unit, and verifier doc tests passed offline. No validation remains pending.

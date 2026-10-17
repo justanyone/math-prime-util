@@ -16,3 +16,4 @@ Rust 1.85 build passed. The full offline test script now holds the build lock; t
 - 2026-10-17T18:47:40Z launcher: no commit for 62 s; 461 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-divisor-sums-f03.md, src/arith/chinese2.rs, src/arith/is_primitive_root.rs, src/arith/mod.rs, src/arith/znorder.rs, src/arith/znprimroot.rs, tests/prop_arith.rs.
 Full-suite compilation completed and both required runners are executing tests. No reported failures so far; focused tests, clippy, and MSRV checks passed.
 About five minutes remain. Implementation and focused validation are complete. Full-suite runs continue through factor oracle tests without failures; wait for the final gate result.
+The required gate printed == gate: green: formatting, clippy, Rust 1.85, all tests, doctests, and docs passed. The separately required whole-suite test.sh run is finishing; no implementation changes remain.

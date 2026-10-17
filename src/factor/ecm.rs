@@ -354,6 +354,27 @@ mod tests {
     }
 
     #[test]
+    fn debug_ambiguous_split() {
+        let n = 90_950_751_857_u64;
+        let mut msg = String::new();
+        for (b1, curves) in [
+            (500_u64, 40_u64),
+            (4000, 100),
+            (4000, 40),
+            (2000, 40),
+            (2000, 100),
+            (100, 40),
+            (8000, 40),
+            (500, 10),
+            (500, 100),
+        ] {
+            let f = find_factor(n, b1, b1.saturating_mul(20), curves);
+            msg.push_str(&format!("b1={b1} curves={curves} f={f}\n"));
+        }
+        panic!("{msg}");
+    }
+
+    #[test]
     fn bounds_and_unsuccessful_search() {
         assert_eq!(ecm_factor(0, None, None, None), vec![0]);
         assert_eq!(ecm_factor(1, None, None, None), vec![]);

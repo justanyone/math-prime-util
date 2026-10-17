@@ -357,20 +357,24 @@ mod tests {
     fn debug_ambiguous_split() {
         let n = 90_950_751_857_u64;
         let mut msg = String::new();
-        for (b1, curves) in [
-            (500_u64, 40_u64),
-            (4000, 100),
-            (4000, 40),
-            (2000, 40),
-            (2000, 100),
-            (100, 40),
-            (8000, 40),
-            (500, 10),
-            (500, 100),
-        ] {
-            let f = find_factor(n, b1, b1.saturating_mul(20), curves);
-            msg.push_str(&format!("b1={b1} curves={curves} f={f}\n"));
+        for &sigma in SIGMAS.iter().take(8) {
+            let sigma = u64::from(sigma);
+            let u = sigma * sigma - 5;
+            let v = 4 * sigma;
+            let umv = u - v;
+            let u3 = mulmod_u(mulmod_u(u % n, u % n, n), u % n, n);
+            let umv3 = mulmod_u(mulmod_u(umv % n, umv % n, n), umv % n, n);
+            let den = mulmod_u(mulmod_u(u3, v % n, n), 16 % n, n);
+            let gden = gcd(den, n);
+            let gz = gcd(u3, n);
+            let gv = gcd(v, n);
+            msg.push_str(&format!(
+                "sigma={sigma} gcd(den)={gden} gcd(u3)={gz} gcd(v)={gv} den={den}\n"
+            ));
         }
+        // Stage-1 only: B2 <= B1 skips stage 2.
+        let f = find_factor(n, 100, 100, 1);
+        msg.push_str(&format!("stage1-only first curve f={f}\n"));
         panic!("{msg}");
     }
 

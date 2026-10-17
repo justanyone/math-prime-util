@@ -32,3 +32,4 @@ API: `Option<u128>` or `Option<i128>` while the value fits, `None` past that (an
 - 2026-10-17T00:33:20Z launcher: no commit for 60 s; 1300 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md.
 - 2026-10-17T00:34:22Z launcher: no commit for 61 s; 1361 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md.
 - 2026-10-17T00:35:22Z launcher: no commit for 60 s; 1421 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md.
+- 2026-10-17T00:38:53Z launcher: no commit for 60 s; 1633 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-combinat-a1.md, src/combinat/arith.rs, src/combinat/mod.rs, src/combinat/special.rs.

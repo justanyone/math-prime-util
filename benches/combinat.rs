@@ -1,6 +1,8 @@
 //! Benchmarks for the four native combinat functions.
 use criterion::{Criterion, black_box};
-use math_prime_util::{bernfrac, harmfrac, pn_primorial, primorial};
+use math_prime_util::{
+    bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling,
+};
 
 #[test]
 fn combinat() {
@@ -11,5 +13,16 @@ fn combinat() {
     c.bench_function("pn_primorial_15", |b| {
         b.iter(|| pn_primorial(black_box(15)));
     });
+
+    c.bench_function("binomial", |b| {
+        b.iter(|| binomial(black_box(67), black_box(31)));
+    });
+    c.bench_function("catalan_number", |b| {
+        b.iter(|| catalan_number(black_box(36)));
+    });
+    c.bench_function("stirling", |b| {
+        b.iter(|| stirling(black_box(15), black_box(7), black_box(1)));
+    });
+    c.bench_function("bell_number", |b| b.iter(|| bell_number(black_box(25))));
     c.final_summary();
 }

@@ -16,3 +16,5 @@ The gate found two pedantic test-style lints. Replaced string collection and emp
 Fixed the benchmark macro documentation lint. Final full-suite tests and the gate are running offline.
 
 Status check is current (four new ticks). The checkout has no origin/dev ref, so that diff check is unavailable; the working-tree whitespace check passed.
+
+Gate passed fmt, pedantic Clippy, and MSRV. The existing compatibility suite is still running; no failures have appeared.

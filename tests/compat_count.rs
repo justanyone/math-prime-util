@@ -17,13 +17,19 @@ fn prime_count_oracle() {
 
 #[test]
 fn legendre_phi_oracle() {
-    each("count", "legendre_phi", |c| c.check(Some(legendre_phi(c.arg(0), c.arg(1)))));
+    each("count", "legendre_phi", |c| {
+        c.check(Some(legendre_phi(c.arg(0), c.arg(1))))
+    });
 }
 
 #[test]
 fn sum_primes_oracle() {
     each("count", "sum_primes", |c| {
-        let (lo, hi) = if c.args.len() == 1 { (0, c.arg(0)) } else { (c.arg(0), c.arg(1)) };
+        let (lo, hi) = if c.args.len() == 1 {
+            (0, c.arg(0))
+        } else {
+            (c.arg(0), c.arg(1))
+        };
         c.check(sum_primes(lo, hi));
     });
 }

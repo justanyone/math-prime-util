@@ -4,6 +4,8 @@ use std::collections::HashMap;
 
 use crate::{primes, rootint, sqrtint};
 
+mod tables;
+
 struct Counter {
     primes: Vec<u64>,
     limit: u64,
@@ -22,18 +24,39 @@ impl Counter {
     }
 
     fn phi(&mut self, x: u64, a: usize) -> u64 {
-        if a == 0 { return x; }
-        if x == 0 { return 0; }
-        if a == 1 { return x - x / 2; }
+        if a == 0 {
+            return x;
+        }
+        if x == 0 {
+            return 0;
+        }
+        if a == 1 {
+            return x - x / 2;
+        }
+        if a == 2 {
+            return x - x / 2 - x / 3 + x / 6;
+        }
+        if a == 3 {
+            return (x / 30) * 8 + u64::from(tables::PHI3[(x % 30) as usize]);
+        }
+        if a == 4 {
+            return (x / 210) * 48 + u64::from(tables::PHI4[(x % 210) as usize]);
+        }
         let p = self.primes[a - 1];
-        if p >= x { return 1; }
+        if p >= x {
+            return 1;
+        }
         if x <= self.limit && p > x / p {
             return self.count(x) - a as u64 + 1;
         }
-        if let Some(&value) = self.phis.get(&(x, a)) { return value; }
+        if let Some(&value) = self.phis.get(&(x, a)) {
+            return value;
+        }
         let value = self.phi(x, a - 1) - self.phi(x / p, a - 1);
         // Bound the cache independently of the input size.
-        if a <= 100 && x <= 100_000 { self.phis.insert((x, a), value); }
+        if a <= 100 && x <= 100_000 {
+            self.phis.insert((x, a), value);
+        }
         value
     }
 
@@ -42,7 +65,9 @@ impl Counter {
         if n <= self.limit {
             return self.primes.partition_point(|&p| p <= n) as u64;
         }
-        if let Some(&value) = self.counts.get(&n) { return value; }
+        if let Some(&value) = self.counts.get(&n) {
+            return value;
+        }
         let a = self.count(sqrtint(sqrtint(n)));
         let b = self.count(sqrtint(n));
         let c = self.count(rootint(n, 3));
@@ -75,7 +100,9 @@ impl Counter {
 /// ```
 #[must_use]
 pub fn prime_count(n: u64) -> u64 {
-    if n < 2 { return 0; }
+    if n < 2 {
+        return 0;
+    }
     Counter::new(sqrtint(n).max(100)).count(n)
 }
 
@@ -90,9 +117,15 @@ pub fn prime_count(n: u64) -> u64 {
 /// ```
 #[must_use]
 pub fn legendre_phi(x: u64, a: u64) -> u64 {
-    if a == 0 { return x; }
-    if x == 0 || a >= x || a > x / 2 { return u64::from(x > 0); }
-    if a == 1 { return x - x / 2; }
+    if a == 0 {
+        return x;
+    }
+    if x == 0 || a >= x || a > x / 2 {
+        return u64::from(x > 0);
+    }
+    if a == 1 {
+        return x - x / 2;
+    }
     if a >= sqrtint(x) || a > 203_280_221 {
         return prime_count(x).saturating_sub(a) + 1;
     }
@@ -111,16 +144,27 @@ mod tests {
 
     #[test]
     fn count_known_values() {
-        for (n, count) in [(0, 0), (1, 0), (2, 1), (100, 25), (10_000, 1229),
-            (1_000_000, 78_498), (100_000_000, 5_761_455)] {
+        for (n, count) in [
+            (0, 0),
+            (1, 0),
+            (2, 1),
+            (100, 25),
+            (10_000, 1229),
+            (1_000_000, 78_498),
+            (100_000_000, 5_761_455),
+        ] {
             assert_eq!(prime_count(n), count);
         }
     }
 
     #[test]
     fn independent_calls() {
-        let threads: Vec<_> = (0..4).map(|_| std::thread::spawn(|| prime_count(100_000))).collect();
-        for thread in threads { assert_eq!(thread.join().unwrap(), 9592); }
+        let threads: Vec<_> = (0..4)
+            .map(|_| std::thread::spawn(|| prime_count(100_000)))
+            .collect();
+        for thread in threads {
+            assert_eq!(thread.join().unwrap(), 9592);
+        }
         assert_eq!(prime_count(100_000), 9592);
     }
 }

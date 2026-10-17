@@ -57,6 +57,36 @@ fn logarithm(n: u64) -> Wide {
 }
 // real.c: RiemannR, Gram series with the same zeta coefficients.
 pub(super) fn prime_approx(n: u64) -> u64 {
+    if n > 10_000_000_000_000_000_000 {
+        let mut sum = li(n);
+        for k in 2..=100 {
+            let mut rem = k;
+            let mut mu = 1;
+            for p in 2..=10 {
+                if rem % p == 0 {
+                    rem /= p;
+                    mu = -mu;
+                    if rem % p == 0 {
+                        mu = 0;
+                        break;
+                    }
+                }
+            }
+            if rem > 1 {
+                mu = -mu;
+            }
+            if mu == 0 {
+                continue;
+            }
+            let root = ((n as f64).ln() / f64::from(k)).exp();
+            let term = f64::from(mu) * crate::logarithmic_integral(root) / f64::from(k);
+            sum = sum.add(Wide(term, 0.0));
+            if term.abs() <= 1e-6 {
+                break;
+            }
+        }
+        return sum.add(Wide(0.5, 0.0)).integer(false);
+    }
     let l = logarithm(n);
     let mut term = Wide(1.0, 0.0);
     let mut sum = term;
@@ -76,7 +106,7 @@ pub(super) fn prime_approx(n: u64) -> u64 {
     sum.add(Wide(0.5, 0.0)).integer(false)
 }
 // real.c: Li via the convergent Ei series, evaluated with a residual.
-pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
+fn li(n: u64) -> Wide {
     let l = logarithm(n);
     let mut term = l;
     let mut sum = Wide(0.577_215_664_901_532_9 + (l.0 + l.1).ln(), 0.0).add(term);
@@ -84,9 +114,15 @@ pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
         term = term.mul(l).div(Wide(f64::from(k), 0.0));
         sum = sum.add(term.div(Wide(f64::from(k), 0.0)));
     }
+    sum
+}
+
+pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
+    let sum = li(n);
     if upper {
         Wide(sum.0, 0.0).integer(false)
     } else {
+        let l = logarithm(n);
         Wide(sum.0, 0.0)
             .add(Wide(-2.0 * (n as f64).sqrt() / (l.0 + l.1), 0.0))
             .integer(true)

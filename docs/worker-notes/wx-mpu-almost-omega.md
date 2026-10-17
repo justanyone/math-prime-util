@@ -36,3 +36,5 @@ Large omega prefixes need a minimum distinct-prime-product check to prune imposs
 Added bounded repeated-factor sieving for narrow almost-prime ranges, matching the reference range algorithm and avoiding prefix construction below lo.
 
 All 26 family compatibility tests pass in 1.73 seconds. All nine family property tests pass. Final gate is running against the current source; generated status, fixtures, tools, and crate root remain unchanged.
+
+About five minutes remain. The complete family oracle suite passes; compensated RiemannR now also follows the reference large-input Moebius/Li branch. The full gate spends minutes in existing count compatibility tests.

@@ -8,16 +8,16 @@ use math_prime_util::{
 fn bench_random(c: &mut Criterion) {
     csrand(&[42; 40]);
     c.bench_function("random/prime", |b| {
-        b.iter(|| random_prime(black_box(1_000_000), black_box(2_000_000)))
+        b.iter(|| random_prime(black_box(1_000_000), black_box(2_000_000)));
     });
     c.bench_function("random/ndigit_prime", |b| {
-        b.iter(|| random_ndigit_prime(black_box(12)))
+        b.iter(|| random_ndigit_prime(black_box(12)));
     });
     c.bench_function("random/nbit_prime", |b| {
-        b.iter(|| random_nbit_prime(black_box(64)))
+        b.iter(|| random_nbit_prime(black_box(64)));
     });
     c.bench_function("random/safe_prime", |b| {
-        b.iter(|| random_safe_prime(black_box(32)))
+        b.iter(|| random_safe_prime(black_box(32)));
     });
     c.bench_function("random/irand32", |b| b.iter(irand32));
     c.bench_function("random/irand64", |b| b.iter(irand64));

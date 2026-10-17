@@ -1,4 +1,0 @@
-- Plan: resolve conflict markers in tests/prop_arith.rs keeping both sides; run focused tests via mw-test.
-- Resolved conflict markers in tests/prop_arith.rs (kept both sides). Next: mw-test tests/prop_arith.rs
-- Tests NOT run: mw-test rejects all arg forms (internal --collect-only clash); direct cargo calls were denied approval. Conflict resolved by reading; test run still needed.
-- Final: resolved tests/prop_arith.rs; unverified by compile. Launcher should run prop_arith tests.

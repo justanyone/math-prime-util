@@ -198,6 +198,7 @@ proptest! {
     }
 }
 
+<<<<<<< HEAD
 #[test]
 fn requested_iterator_bounds_and_state() {
     assert_eq!(almost_primes_in(64, 0..=u64::MAX).next(), None);
@@ -253,18 +254,117 @@ fn requested_iterator_bounds_and_state() {
                     ControlFlow::Continue(())
                 });
                 seen
-            })
-        })
-        .collect();
-    for worker in workers {
-        assert_eq!(
-            worker.join().unwrap(),
-            squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>()
-        );
+=======
+proptest! {
+    #[test]
+    fn multiset_matches_unique_index_permutations(values in prop::collection::vec(0_u8..4, 0..7)) {
+        let expected: std::collections::BTreeSet<_> = permutations_of(values.len())
+            .map(|indices| indices.into_iter().map(|i| values[i]).collect::<Vec<_>>())
+            .collect();
+        let actual: Vec<_> = multipermutations_of(&values).collect();
+        prop_assert_eq!(&actual, &expected.into_iter().collect::<Vec<_>>());
+        prop_assert!(actual.windows(2).all(|pair| pair[0] < pair[1]));
+    }
+
+    #[test]
+    fn product_preserves_order_and_duplicates(
+        left in prop::collection::vec(0_u8..3, 0..5),
+        right in prop::collection::vec(0_u8..3, 0..5),
+    ) {
+        let expected: Vec<_> = left.iter().flat_map(|&a| right.iter().map(move |&b| vec![a, b])).collect();
+        prop_assert_eq!(set_product(&[left, right]).collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn derangement_count_obeys_recurrence(n in 2_usize..9) {
+        let expected = (n - 1) * (derangements_of(n - 1).count() + derangements_of(n - 2).count());
+        prop_assert_eq!(derangements_of(n).count(), expected);
     }
 }
 
 #[test]
+fn arrangement_state_is_independent() {
+    macro_rules! independent {
+        ($iterator:expr) => {{
+            let mut first = $iterator;
+            let saved = first.next().unwrap();
+            let mut duplicate = first.clone();
+            assert_eq!(first.next(), duplicate.next());
+            let tail = first.collect::<Vec<_>>();
+            assert_eq!(tail, duplicate.by_ref().collect::<Vec<_>>());
+            assert_eq!(duplicate.next(), None);
+            assert_eq!(duplicate.next(), None);
+            assert!(!saved.is_empty());
+        }};
+    }
+    independent!(permutations_of(4));
+    independent!(derangements_of(4));
+    independent!(multipermutations_of(&[1, 1, 2, 3]));
+    independent!(set_product(&[vec![1, 2], vec![3, 4]]));
+}
+
+#[test]
+fn arrangement_callbacks_are_reentrant_and_stop() {
+    macro_rules! callback {
+        ($function:ident, $argument:expr, $expected:expr) => {{
+            let mut calls = 0;
+            let result = $function($argument, |mut value| {
+                calls += 1;
+                value.clear();
+                assert_eq!(
+                    $function($argument, |_| ControlFlow::Break(17)),
+                    ControlFlow::Break(17)
+                );
+                ControlFlow::Break(23)
+            });
+            assert_eq!(result, ControlFlow::Break(23));
+            assert_eq!(calls, 1);
+            assert!(
+                std::panic::catch_unwind(|| {
+                    let _: ControlFlow<()> = $function($argument, |_| panic!("callback"));
+                })
+                .is_err()
+            );
+            let mut count = 0;
+            let result: ControlFlow<()> = $function($argument, |_| {
+                count += 1;
+                ControlFlow::Continue(())
+            });
+            assert!(result.is_continue());
+            assert_eq!(count, $expected);
+        }};
+    }
+    callback!(forperm, 4, 24);
+    callback!(forderange, 4, 9);
+    callback!(formultiperm, &[1, 1, 2], 3);
+    callback!(forsetproduct, &[vec![1, 2], vec![3, 4]], 4);
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    permutations_of(5).count(),
+                    derangements_of(5).count(),
+                    multipermutations_of(&[1, 1, 2, 2]).count(),
+                    set_product(&[vec![1, 2], vec![3, 4]]).count(),
+                )
+>>>>>>> origin/dev-001
+            })
+        })
+        .collect();
+    for worker in workers {
+<<<<<<< HEAD
+        assert_eq!(
+            worker.join().unwrap(),
+            squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>()
+        );
+=======
+        assert_eq!(worker.join().unwrap(), (120, 44, 6, 4));
+>>>>>>> origin/dev-001
+    }
+}
+
+#[test]
+<<<<<<< HEAD
 fn requested_iterator_unwind_and_relaunch() {
     assert!(
         std::panic::catch_unwind(|| {
@@ -298,4 +398,37 @@ proptest! {
         }).collect();
         prop_assert_eq!(squarefree_integers_in(lo..=lo + len).collect::<Vec<_>>(), expected);
     }
+=======
+fn arrangement_empty_and_singleton_boundaries() {
+    assert_eq!(
+        permutations_of(0).collect::<Vec<_>>(),
+        [Vec::<usize>::new()]
+    );
+    assert_eq!(permutations_of(1).collect::<Vec<_>>(), [vec![0]]);
+    assert_eq!(
+        derangements_of(0).collect::<Vec<_>>(),
+        [Vec::<usize>::new()]
+    );
+    assert_eq!(derangements_of(1).next(), None);
+    assert_eq!(derangements_of(2).collect::<Vec<_>>(), [vec![1, 0]]);
+    let mut empty = multipermutations_of::<u8>(&[]);
+    assert_eq!(empty.next(), Some(vec![]));
+    assert_eq!(empty.next(), None);
+    assert_eq!(empty.next(), None);
+    assert_eq!(multipermutations_of(&[7]).collect::<Vec<_>>(), [vec![7]]);
+    assert_eq!(set_product::<u8>(&[]).next(), None);
+    for sets in [vec![vec![]], vec![vec![], vec![1]], vec![vec![1], vec![]]] {
+        let mut calls = 0;
+        let result: ControlFlow<()> = forsetproduct(&sets, |_| {
+            calls += 1;
+            ControlFlow::Continue(())
+        });
+        assert!(result.is_continue());
+        assert_eq!(calls, 0);
+    }
+    assert_eq!(
+        set_product(&[vec![2, 2]]).collect::<Vec<_>>(),
+        [vec![2], vec![2]]
+    );
+>>>>>>> origin/dev-001
 }

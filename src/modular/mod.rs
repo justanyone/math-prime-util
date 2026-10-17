@@ -269,4 +269,11 @@ mod tests {
 }
 
 mod native;
-pub use native::{binomialmod, factorialmod, pisano_period, znlog};
+mod binomialmod;
+pub use binomialmod::binomialmod;
+mod factorialmod;
+pub use factorialmod::factorialmod;
+mod pisano_period;
+pub use pisano_period::pisano_period;
+mod znlog;
+pub use znlog::znlog;

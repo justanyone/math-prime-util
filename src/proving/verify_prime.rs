@@ -232,7 +232,6 @@ fn read_fields<'a>(
 /// Port of `reference/mpu/lib/Math/Prime/Util/PrimalityProving.pm`:
 /// `verify_cert`, `_verify_small`, `_verify_bls5`, `_verify_bls3`,
 /// `_verify_bls15`, `_verify_pock`, and `_verify_lucas`.
-/// `reference/mpu/aks.c::is_aks_prime` is a separate primality test.
 /// ECPP and integers above `u64::MAX` are not supported.
 ///
 /// # Errors

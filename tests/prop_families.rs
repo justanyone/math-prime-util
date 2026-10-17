@@ -406,6 +406,55 @@ proptest! {
     }
 }
 
+const SMALL_RAM: [u64; 23] = [
+    2, 11, 17, 29, 41, 47, 59, 67, 71, 97, 101, 107, 127, 149, 151, 167, 179, 181, 227, 229, 233,
+    239, 241,
+];
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn ramanujan_upper_is_at_least_the_prime_on_the_small_range(k in 1u64..24) {
+        let prime = SMALL_RAM[usize::try_from(k).unwrap() - 1];
+        prop_assert_eq!(nth_ramanujan_prime_upper(k), Some(prime));
+        prop_assert!(is_ramanujan_prime(prime));
+        prop_assert_eq!(is_prime(prime), 2);
+    }
+
+    #[test]
+    fn ramanujan_upper_grows_past_the_table(k in 24u64..80) {
+        let lo = nth_ramanujan_prime_upper(k).unwrap();
+        let hi = nth_ramanujan_prime_upper(k + 1).unwrap();
+        prop_assert!(lo <= hi);
+        prop_assert!(lo > k);
+    }
+}
+
+#[test]
+fn ramanujan_validation_repeat_and_threads() {
+    assert_eq!(nth_ramanujan_prime_upper(0), None);
+    assert!(!is_ramanujan_prime(0));
+    assert!(!is_ramanujan_prime(1));
+    assert!(!is_ramanujan_prime(u64::MAX));
+    let bound = nth_ramanujan_prime_upper(100);
+    assert_eq!(bound, nth_ramanujan_prime_upper(100));
+    assert_eq!(is_ramanujan_prime(97), is_ramanujan_prime(97));
+    let threads: Vec<_> = (0..4)
+        .map(|_| std::thread::spawn(|| (nth_ramanujan_prime_upper(80), is_ramanujan_prime(241))))
+        .collect();
+    for thread in threads {
+        assert_eq!(thread.join().unwrap(), (Some(1123), true));
+    }
+    for (index, &prime) in SMALL_RAM.iter().enumerate() {
+        assert!(is_ramanujan_prime(prime));
+        if index + 1 < SMALL_RAM.len() {
+            for n in prime + 1..SMALL_RAM[index + 1] {
+                assert!(!is_ramanujan_prime(n), "{n}");
+            }
+        }
+    }
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
@@ -501,6 +550,88 @@ proptest! {
     }
 }
 
+proptest! {
+    #[test]
+    fn count_changes_at_positive_perfect_powers(n in 1..=u64::MAX) {
+        prop_assert_eq!(perfect_power_count(n) - perfect_power_count(n - 1),
+                        u64::from(is_perfect_power(n)));
+    }
+
+    #[test]
+    fn neighbors_are_strict_and_adjacent(n in any::<u64>()) {
+        if let Some(next) = next_perfect_power(n) {
+            prop_assert!(next > n);
+            prop_assert!(is_perfect_power(next));
+            prop_assert!(prev_perfect_power(next).is_some_and(|prev| prev <= n));
+            prop_assert_eq!(perfect_power_count(next), perfect_power_count(n) + 1);
+        }
+        if let Some(prev) = prev_perfect_power(n) {
+            prop_assert!(prev < n);
+            prop_assert!(is_perfect_power(prev));
+            prop_assert!(next_perfect_power(prev).is_none_or(|next| next >= n));
+        }
+    }
+
+    #[test]
+    fn generated_powers_are_recognized(base in 2u64..=1000, exponent in 2u32..=63) {
+        if let Some(power) = base.checked_pow(exponent) {
+            prop_assert!(is_perfect_power(power));
+            prop_assert_eq!(next_perfect_power(power - 1), Some(power));
+            prop_assert_eq!(prev_perfect_power(power + 1), Some(power));
+        }
+    }
+}
+
+#[test]
+fn small_values_match_enumeration() {
+    let powers: Vec<u64> = (0u64..=1000)
+        .filter(|&n| n <= 1 || (2u64..=31).any(|b| (2..=10).any(|k| b.checked_pow(k) == Some(n))))
+        .collect();
+    for n in 0..1000 {
+        assert_eq!(is_perfect_power(n), powers.contains(&n));
+        assert_eq!(
+            next_perfect_power(n),
+            powers.iter().copied().find(|&p| p > n)
+        );
+        assert_eq!(
+            prev_perfect_power(n),
+            powers.iter().copied().rev().find(|&p| p < n)
+        );
+        assert_eq!(
+            perfect_power_count(n),
+            u64::try_from(powers.iter().filter(|&&p| p != 0 && p <= n).count()).unwrap()
+        );
+    }
+}
+
+#[test]
+fn native_boundaries_and_repeat_calls() {
+    let largest = 18_446_744_065_119_617_025;
+    for _ in 0..2 {
+        assert_eq!(next_perfect_power(largest - 1), Some(largest));
+        assert_eq!(next_perfect_power(largest), None);
+        assert_eq!(next_perfect_power(u64::MAX), None);
+        assert_eq!(prev_perfect_power(u64::MAX), Some(largest));
+        assert_eq!(perfect_power_count(u64::MAX), 4_297_615_581);
+        assert!(is_perfect_power(largest));
+        assert!(!is_perfect_power(u64::MAX));
+    }
+}
+
+#[test]
+fn concurrent_calls_agree() {
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                assert_eq!(next_perfect_power(64), Some(81));
+                assert_eq!(prev_perfect_power(64), Some(49));
+                assert_eq!(perfect_power_count(64), 11);
+                assert!(is_perfect_power(64));
+            });
+        }
+    });
+}
+
 #[test]
 fn small_counts_and_repeat_calls() {
     for (n, expected) in [0, 0, 1, 2, 3, 4, 4, 5, 6, 7].into_iter().enumerate() {
@@ -532,4 +663,13 @@ fn large_estimates_and_concurrent_calls() {
             });
         }
     });
+}
+#[test]
+fn all_binary_exponents_are_perfect_powers() {
+    for k in 2..=63 {
+        let n = 1u64 << k;
+        assert!(is_perfect_power(n), "exponent {k}");
+        assert_eq!(next_perfect_power(n - 1), Some(n));
+        assert_eq!(prev_perfect_power(n + 1), Some(n));
+    }
 }

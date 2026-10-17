@@ -84,6 +84,10 @@ pub use semiprime_count::semiprime_count;
 mod semiprime_count_approx;
 pub use semiprime_count_approx::semiprime_count_approx;
 
+mod is_ramanujan_prime;
+pub use is_ramanujan_prime::is_ramanujan_prime;
+mod nth_ramanujan_prime_upper;
+pub use nth_ramanujan_prime_upper::nth_ramanujan_prime_upper;
 mod ramanujan_primes;
 pub use ramanujan_primes::ramanujan_primes;
 mod ramanujan_prime_count;
@@ -96,3 +100,12 @@ mod nth_semiprime;
 pub use nth_semiprime::*;
 mod nth_semiprime_approx;
 pub use nth_semiprime_approx::*;
+
+mod is_perfect_power;
+pub use is_perfect_power::is_perfect_power;
+mod next_perfect_power;
+pub use next_perfect_power::next_perfect_power;
+mod prev_perfect_power;
+pub use prev_perfect_power::prev_perfect_power;
+mod perfect_power_count;
+pub use perfect_power_count::perfect_power_count;

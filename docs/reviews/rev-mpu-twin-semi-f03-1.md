@@ -13,3 +13,5 @@ The stopped run is not complete against the acceptance criteria. There were no e
 The digest is sufficient to establish these failures. No code was modified. Checks run in this checkout exercise the base, not the candidate, and cannot establish candidate acceptance.
 
 `tools/test.sh nth_semiprime` exited successfully but selected zero tests in the base checkout; it provides no candidate validation.
+
+`tools/gate.sh` passed fmt, clippy, and the MSRV build on the base. At review handoff it was still running the base compatibility count tests; no `== gate: green` result was observed. Candidate checks remain unverified.

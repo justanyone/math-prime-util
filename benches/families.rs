@@ -16,19 +16,22 @@ use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
 };
-fn bench_families(c: &mut Criterion) {
+fn bench_almost_omega(c: &mut Criterion) {
     c.bench_function("nth_almost_prime_upper", |b| {
-        b.iter(|| math_prime_util::nth_almost_prime_upper(4, black_box(5678)))
+        b.iter(|| math_prime_util::nth_almost_prime_upper(4, black_box(5678)));
     });
     c.bench_function("omega_primes", |b| {
-        b.iter(|| math_prime_util::omega_primes(3, 1, black_box(100_000)))
+        b.iter(|| math_prime_util::omega_primes(3, 1, black_box(100_000)));
     });
     c.bench_function("omega_prime_count", |b| {
-        b.iter(|| math_prime_util::omega_prime_count(3, black_box(100_000)))
+        b.iter(|| math_prime_util::omega_prime_count(3, black_box(100_000)));
     });
     c.bench_function("nth_omega_prime", |b| {
-        b.iter(|| math_prime_util::nth_omega_prime(3, black_box(1000)))
+        b.iter(|| math_prime_util::nth_omega_prime(3, black_box(1000)));
     });
+}
+
+fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
     });
@@ -186,6 +189,7 @@ fn bench_perfect_powers(c: &mut Criterion) {
 }
 criterion_group!(
     benches,
+    bench_almost_omega,
     bench_families,
     bench_ramanujan,
     bench_goldbach_misc,

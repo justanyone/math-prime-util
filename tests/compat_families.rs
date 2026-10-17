@@ -725,7 +725,7 @@ mod almost_omega_f03 {
             && case
                 .result
                 .as_ref()
-                .is_none_or(|r| r == "" || r.contains(' ') || r.parse::<u64>().is_ok())
+                .is_none_or(|r| r.is_empty() || r.contains(' ') || r.parse::<u64>().is_ok())
     }
 
     #[test]
@@ -778,7 +778,7 @@ mod almost_omega_f03 {
                 .map(u64::to_string)
                 .collect::<Vec<_>>()
                 .join(" ");
-            case.check(Some(text));
+            case.check((!result.is_empty()).then_some(text));
         }
     }
 }

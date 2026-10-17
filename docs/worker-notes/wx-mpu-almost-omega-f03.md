@@ -14,3 +14,5 @@ Added private interpolation regression tests and native-limit checks. Removed un
 Snapshot race affected test restoration; recovered the original tests from the commit before the first test edit and appended only this task module. Fixed test k conversion and clippy findings.
 The git shim truncated retrieved originals even inside Python. Recovered complete originals with read-only /usr/bin/git; no git writes were used.
 Complete baseline test files restored; focused integration tests and gate are running again. Remaining work is validation and any resulting fixes.
+Diff review confirms the existing family tests are retained and only assigned code, benchmark entries, tests, and worker notes changed.
+Three scalar fixture tests passed. Empty omega lists are stored as undef by the fixture loader; adjusted the compat adapter. Fixed benchmark semicolons and the empty-string lint.

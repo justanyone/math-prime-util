@@ -15,3 +15,4 @@ The checkout has no origin/dev ref, so comparison against that ref is unavailabl
 Local history revealed pre-existing sibling tests in the shared modular files. Restored them verbatim and placed the new root tests in nested modules to retain all coverage.
 Restored all sibling oracle and property tests. New comments name signed fixture examples that the u64 API cannot accept.
 Full suite compilation still holds the build lock. Preserved sibling tests; no algorithm failures have appeared in the completed focused tests.
+Waiting on the full offline suite and gate. The test wrapper buffers its output until completion, so current full-suite progress is unavailable.

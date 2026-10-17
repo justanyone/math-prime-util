@@ -1,4 +1,5 @@
 use super::{divisor_sum, factor_powers};
+use crate::is_square;
 
 const TAU: &[i64] = &[
     0,

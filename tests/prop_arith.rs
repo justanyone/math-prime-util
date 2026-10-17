@@ -191,3 +191,56 @@ proptest! {
         prop_assert_eq!(inverse_sigma0_count(k, lo, hi), Some(want.len() as u64));
     }
 }
+
+#[test]
+fn tau_prime_does_not_require_the_prime_power_term() {
+    // From the q-series recurrence for Delta, independent of the class-number path.
+    assert_eq!(ramanujan_tau(3011), Some(-6_602_349_165_399_272_388));
+}
+
+proptest! {
+    #[test]
+    fn divisor_power_sums_match_enumeration(n in 0_u64..300, k in 0_u32..5) {
+        let expected = (1..=n).filter(|d| n % d == 0).map(|d| d.pow(k)).sum();
+        prop_assert_eq!(divisor_sum(n, u64::from(k)), Some(expected));
+    }
+
+    #[test]
+    fn divisor_sums_are_multiplicative(a in 1_u64..100, b in 1_u64..100, k in 0_u64..4) {
+        if gcd(a, b) == 1 {
+            prop_assert_eq!(divisor_sum(a * b, k), Some(divisor_sum(a, k).unwrap() * divisor_sum(b, k).unwrap()));
+        }
+    }
+}
+
+#[test]
+fn divisor_sum_native_boundaries_and_prime_powers() {
+    assert_eq!(divisor_sum(1, u64::MAX), Some(1));
+    assert_eq!(divisor_sum(2, 63), Some((1_u64 << 63) + 1));
+    assert_eq!(divisor_sum(2, 64), None);
+    assert_eq!(divisor_sum(2, 128), None);
+    assert_eq!(divisor_sum(4, 127), None);
+    assert_eq!(divisor_sum(6, 63), None);
+    assert_eq!(divisor_sum(1_u64 << 63, 0), Some(64));
+    assert_eq!(divisor_sum(1_u64 << 63, 1), Some(u64::MAX));
+    assert_eq!(aliquot_sum(1_u64 << 63), Some((1_u64 << 63) - 1));
+    assert_eq!(aliquot_sum(18_446_744_073_709_551_557), Some(1));
+    // Sigma exceeds u64, but the proper divisor sum still fits.
+    assert_eq!(aliquot_sum(3_u64 << 62), Some(23_058_430_092_136_939_772_u128 as u64));
+}
+
+#[test]
+fn divisor_sums_have_no_shared_call_state() {
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(divisor_sum(12, 2), Some(210));
+                    assert_eq!(aliquot_sum(27), Some(13));
+                    assert_eq!(abundance(28), Some(0));
+                    assert_eq!(ramanujan_tau(49), Some(-16_991_628_512));
+                }
+            });
+        }
+    });
+}

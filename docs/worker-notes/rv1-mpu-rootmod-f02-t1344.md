@@ -11,3 +11,4 @@ Review is complete with FAIL. Base validation remains in progress without test o
 Focused base compat_modular validation passed all four existing oracle tests. These are exactly the tests removed by the candidate; candidate correctness remains assessed from the digest. Gate is continuing.
 Approximately five minutes remain. The focused base tests passed; gate is still running. All requested review content is already written, and no code was modified.
 - 2026-10-17T18:49:52Z launcher: no commit for 62 s; 282 s elapsed. Files changed so far: docs/reviews/rev-mpu-rootmod-f02-1.md, docs/worker-notes/rv1-mpu-rootmod-f02-t1344.md.
+Base gate passed fmt, clippy and MSRV build; full tests are compiling. FAIL review and focused-test evidence are saved; waiting only for the required gate result.

@@ -99,3 +99,18 @@ fn pminus1(n: u64, b1: u64, b2: u64) -> Vec<u64> {
     }
     split(n, f)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{pminus1, prime_power};
+
+    #[test]
+    fn bounds_and_recovery() {
+        assert_eq!(prime_power(2, 32), 32);
+        assert_eq!(prime_power(3, 32), 27);
+        assert_eq!(pminus1(49, 0, 0), vec![49]);
+        assert_eq!(pminus1(49, 0, 10), vec![7, 7]);
+        assert_eq!(pminus1(91, 1000, 1000), vec![91]);
+        assert_eq!(pminus1(563_777_293, 1000, 20_000), vec![23_099, 24_407]);
+    }
+}

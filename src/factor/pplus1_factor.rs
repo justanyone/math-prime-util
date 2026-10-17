@@ -66,3 +66,26 @@ fn pplus1(n: u64, bound: u64) -> Vec<u64> {
     }
     split(n, f)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{lucas_power, pplus1, subtract};
+
+    #[test]
+    fn lucas_recurrence_and_small_bounds() {
+        let n = 101;
+        let mut previous = 2;
+        let mut current = 7;
+        for exponent in 2..64 {
+            let next = (7 * current + n - previous) % n;
+            assert_eq!(lucas_power(7, exponent, n), next);
+            previous = current;
+            current = next;
+        }
+        assert_eq!(subtract(1, 2, 101), 100);
+        assert_eq!(subtract(100, 2, 101), 98);
+        assert_eq!(pplus1(49, 0), vec![49]);
+        assert_eq!(pplus1(49, 1), vec![49]);
+        assert_eq!(pplus1(7, 200), vec![7]);
+    }
+}

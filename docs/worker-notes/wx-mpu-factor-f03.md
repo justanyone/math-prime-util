@@ -7,3 +7,5 @@ Added p-1 stage-one recovery and stage-two gap cache, p+1 Lucas powering, fixtur
 First focused run: rho, p-1, and p+1 fixtures pass. Brent fixture parsing hit an explicit undef bound; handling default arguments next.
 Correction: the fixture contains 10foo, not undef. Named that typed-API skip explicitly; first gate found benchmark semicolons, now fixed.
 All four fixture tests and all three property/edge/concurrency tests pass offline. The gate is running after the benchmark lint fix.
+Gate printed green. Added direct retry, wide arithmetic, bound, recovery, and independent Lucas-recurrence tests to improve kernel coverage.
+Direct tests exposed two incorrect expected p-1 outcomes; corrected them from the modular-order calculation (simultaneous smooth factors can remain unsplit). cargo-llvm-cov is absent, so coverage cannot be measured here.

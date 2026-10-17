@@ -82,3 +82,24 @@ fn step(x: u64, a: u64, n: u64) -> u64 {
         add(multiply(x, x, n), a, n)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{brent, step};
+
+    #[test]
+    fn retries_and_polynomial_paths() {
+        assert_eq!(brent(7, 4096, 0), vec![7]);
+        assert_eq!(brent(49, 4096, 1), vec![7, 7]);
+        assert_eq!(step(7, 3, 101), 70);
+        assert_eq!(step(7, 1, u64::MAX - 58), 56);
+        assert_eq!(step(7, 3, u64::MAX - 58), 52);
+        for n in [(1_u64 << 33) + 1, (1 << 38) + 1, (1 << 48) + 1, u64::MAX] {
+            let factors = brent(n, 512, 2);
+            assert_eq!(
+                factors.iter().map(|&f| u128::from(f)).product::<u128>(),
+                u128::from(n)
+            );
+        }
+    }
+}

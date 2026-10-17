@@ -95,3 +95,18 @@ fn rho(n: u64, rounds: u64) -> Vec<u64> {
     }
     vec![n]
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{add, multiply, rho, split};
+
+    #[test]
+    fn arithmetic_and_unsplit_results() {
+        assert_eq!(add(u64::MAX - 1, u64::MAX - 1, u64::MAX), u64::MAX - 2);
+        assert_eq!(multiply(u64::MAX - 1, u64::MAX - 1, u64::MAX), 1);
+        assert_eq!(split(77, 1), vec![77]);
+        assert_eq!(split(77, 11), vec![7, 11]);
+        assert_eq!(rho(7, 4096), vec![7]);
+        assert_eq!(rho(49, 64), vec![7, 7]);
+    }
+}

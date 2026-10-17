@@ -1,0 +1,1 @@
+- Plan: port inverse_sigma0 and inverse_sigma0_count from reference/mpu into src/arith/, add compat/prop tests from arith.tsv, tick STATUS only if asked.

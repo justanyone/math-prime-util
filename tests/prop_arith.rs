@@ -191,3 +191,55 @@ proptest! {
         prop_assert_eq!(inverse_sigma0_count(k, lo, hi), Some(want.len() as u64));
     }
 }
+
+proptest! {
+    #[test]
+    fn totient_slice_identities(n in 1_u64..20_000) {
+        prop_assert_eq!(sumtotient(n).unwrap() - sumtotient(n - 1).unwrap(), euler_phi(n));
+        let inverse = inverse_totient(n);
+        prop_assert!(inverse.windows(2).all(|pair| pair[0] < pair[1]));
+        prop_assert!(inverse.iter().all(|&value| euler_phi(value) == n));
+        prop_assert_eq!(is_totient(n), !inverse.is_empty());
+        let squarefree_sum: u64 = (1..=n).filter(|d| n % d == 0 && moebius(*d) != 0)
+            .map(|d| n / d).sum();
+        prop_assert_eq!(dedekind_psi(n), Some(squarefree_sum));
+    }
+}
+
+#[test]
+fn totient_slice_boundaries_and_independent_calls() {
+    assert_eq!(sumtotient(0), Some(0));
+    assert_eq!(sumtotient(7_790_208_951), None);
+    assert_eq!(sumtotient(u64::MAX), None);
+    assert_eq!(dedekind_psi(0), Some(0));
+    assert_eq!(dedekind_psi(1_u64 << 63), Some(3_u64 << 62));
+    assert_eq!(dedekind_psi(u64::MAX), None);
+    assert_eq!(inverse_totient(0), []);
+    assert_eq!(inverse_totient(1), [1, 2]);
+    assert_eq!(inverse_totient(3), []);
+    assert_eq!(inverse_totient(10), [11, 22]);
+    assert_eq!(inverse_totient(14), []);
+    assert_eq!(inverse_totient(u64::MAX), []);
+    assert!(!is_totient(0));
+    assert!(is_totient(1));
+    assert!(!is_totient(u64::MAX));
+    // Exercise both C summation paths at their boundary.
+    for n in [3, 4, 8, 9, 3999, 4000, 4001, 100_000] {
+        assert_eq!(sumtotient(n), Some(euler_phi_range(0, n).iter().sum()));
+    }
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(sumtotient(4000), Some(4_863_602));
+                    assert_eq!(inverse_totient(4), [5, 8, 10, 12]);
+                    assert_eq!(dedekind_psi(12), Some(24));
+                    assert!(is_totient(12));
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}

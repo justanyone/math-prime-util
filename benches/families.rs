@@ -18,7 +18,23 @@ use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
 };
+fn bench_powerfree(c: &mut Criterion) {
+    c.bench_function("is_powerfree", |b| {
+        b.iter(|| is_powerfree(black_box(1_000_000_007), 3));
+    });
+    c.bench_function("nth_powerful", |b| {
+        b.iter(|| nth_powerful(black_box(10_000), 2));
+    });
+    c.bench_function("nth_powerfree", |b| {
+        b.iter(|| nth_powerfree(black_box(100_000), 3));
+    });
+    c.bench_function("powerfree_count", |b| {
+        b.iter(|| powerfree_count(black_box(1_000_000_000), 2));
+    });
+}
+
 fn bench_families(c: &mut Criterion) {
+    bench_powerfree(c);
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
     });
@@ -91,18 +107,6 @@ fn bench_families(c: &mut Criterion) {
     });
     c.bench_function("sumpowerful", |b| {
         b.iter(|| sumpowerful(black_box(1_000_000_000), 2));
-    });
-    c.bench_function("is_powerfree", |b| {
-        b.iter(|| is_powerfree(black_box(1_000_000_007), 3));
-    });
-    c.bench_function("nth_powerful", |b| {
-        b.iter(|| nth_powerful(black_box(10_000), 2));
-    });
-    c.bench_function("nth_powerfree", |b| {
-        b.iter(|| nth_powerfree(black_box(100_000), 3));
-    });
-    c.bench_function("powerfree_count", |b| {
-        b.iter(|| powerfree_count(black_box(1_000_000_000), 2));
     });
     c.bench_function("nth_twin_prime_approx", |b| {
         b.iter(|| nth_twin_prime_approx(black_box(100_000)));

@@ -348,11 +348,12 @@ pub fn lucasvmod(p: i64, q: i64, k: u64, n: u64) -> u64 {
 }
 
 /// Exact `(U_k, V_k)` for `P`, `Q` as `i64`, or `None` when a value
-/// does not fit in `i64`.
+/// is larger than `u64::MAX` in magnitude.
 ///
-/// Port of `lucasuv` in `reference/mpu/lucas_seq.c` (MPU 0.75). MPU
-/// stops when an operand is at or above `2^31` in magnitude. This port does the
-/// same and then checks that the results fit `i64`.
+/// Follows the ladder of `lucasuv` in `reference/mpu/lucas_seq.c` (MPU 0.75).
+/// MPU gives up when an operand reaches `2^31`. This port keeps going with
+/// checked `i128` arithmetic and returns `None` only when a value would
+/// overflow `i128` or is larger than `u64::MAX` in magnitude.
 ///
 /// # Examples
 ///
@@ -360,68 +361,43 @@ pub fn lucasvmod(p: i64, q: i64, k: u64, n: u64) -> u64 {
 /// // Fibonacci pair: U_10 = 55, V_10 = 123.
 /// assert_eq!(math_prime_util::lucasuv(1, -1, 10), Some((55, 123)));
 /// ```
-pub fn lucasuv(p: i64, q: i64, k: u64) -> Option<(i64, i64)> {
+pub fn lucasuv(p: i64, q: i64, k: u64) -> Option<(i128, i128)> {
     if k == 0 {
         return Some((0, 2));
     }
-    let lim: i128 = 1 << 31;
-    let over = |v: i128| v.abs() >= lim;
     let (p, q) = (i128::from(p), i128::from(q));
-    if over(p) || over(q) {
-        return None;
-    }
     let (mut uh, mut vl, mut vh, mut ql, mut qh): (i128, i128, i128, i128, i128) = (1, 2, p, 1, 1);
     let s = k.trailing_zeros();
     let m = top_bit(k);
     for j in (s + 1..=m).rev() {
-        if [uh, vh, vl, ql, qh].iter().any(|&x| over(x)) {
-            return None;
-        }
-        ql *= qh;
-        if over(ql) {
-            return None;
-        }
+        ql = ql.checked_mul(qh)?;
         if (k >> j) & 1 == 1 {
-            qh = ql * q;
-            if over(qh) {
-                return None;
-            }
-            uh *= vh;
-            vl = vh * vl - p * ql;
-            vh = vh * vh - 2 * qh;
+            qh = ql.checked_mul(q)?;
+            uh = uh.checked_mul(vh)?;
+            vl = vh.checked_mul(vl)?.checked_sub(p.checked_mul(ql)?)?;
+            vh = vh.checked_mul(vh)?.checked_sub(qh.checked_mul(2)?)?;
         } else {
             qh = ql;
-            uh = uh * vl - ql;
-            vh = vh * vl - p * ql;
-            vl = vl * vl - 2 * ql;
+            uh = uh.checked_mul(vl)?.checked_sub(ql)?;
+            vh = vh.checked_mul(vl)?.checked_sub(p.checked_mul(ql)?)?;
+            vl = vl.checked_mul(vl)?.checked_sub(ql.checked_mul(2)?)?;
         }
     }
-    if over(ql) || over(qh) {
-        return None;
-    }
-    ql *= qh;
-    if over(ql) {
-        return None;
-    }
-    qh = ql * q;
-    if [uh, vh, vl, ql, qh].iter().any(|&x| over(x)) {
-        return None;
-    }
-    uh = uh * vl - ql;
-    vl = vh * vl - p * ql;
-    ql *= qh;
+    ql = ql.checked_mul(qh)?;
+    qh = ql.checked_mul(q)?;
+    uh = uh.checked_mul(vl)?.checked_sub(ql)?;
+    vl = vh.checked_mul(vl)?.checked_sub(p.checked_mul(ql)?)?;
+    ql = ql.checked_mul(qh)?;
     for _ in 0..s {
-        if [uh, vl, ql].iter().any(|&x| over(x)) {
-            return None;
-        }
-        uh *= vl;
-        vl = vl * vl - 2 * ql;
-        ql *= ql;
+        uh = uh.checked_mul(vl)?;
+        vl = vl.checked_mul(vl)?.checked_sub(ql.checked_mul(2)?)?;
+        ql = ql.checked_mul(ql)?;
     }
-    Some((i64::try_from(uh).ok()?, i64::try_from(vl).ok()?))
+    let fits = |x: i128| x.unsigned_abs() <= u128::from(u64::MAX);
+    (fits(uh) && fits(vl)).then_some((uh, vl))
 }
 
-/// Exact `U_k(P, Q)`, or `None` when it does not fit in `i64`.
+/// Exact `U_k(P, Q)`, or `None` when it is larger than `u64::MAX` in magnitude.
 ///
 /// Port of the `U` half of `lucasuv` in `reference/mpu/lucas_seq.c` (MPU 0.75).
 ///
@@ -430,11 +406,11 @@ pub fn lucasuv(p: i64, q: i64, k: u64) -> Option<(i64, i64)> {
 /// ```
 /// assert_eq!(math_prime_util::lucasu(1, -1, 10), Some(55));
 /// ```
-pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i64> {
+pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i128> {
     lucasuv(p, q, k).map(|(u, _)| u)
 }
 
-/// Exact `V_k(P, Q)`, or `None` when it does not fit in `i64`.
+/// Exact `V_k(P, Q)`, or `None` when it is larger than `u64::MAX` in magnitude.
 ///
 /// Port of the `V` half of `lucasuv` in `reference/mpu/lucas_seq.c` (MPU 0.75).
 ///
@@ -443,7 +419,7 @@ pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i64> {
 /// ```
 /// assert_eq!(math_prime_util::lucasv(1, -1, 10), Some(123));
 /// ```
-pub fn lucasv(p: i64, q: i64, k: u64) -> Option<i64> {
+pub fn lucasv(p: i64, q: i64, k: u64) -> Option<i128> {
     lucasuv(p, q, k).map(|(_, v)| v)
 }
 

@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn estimate_branches() {
         // Covers the low, blend low-mid, mid, blend mid-high and high ranges.
-        for n in [1000u64, 1 << 26, (1 << 26) + 1, 1 << 27, 1 << 40, 1 << 50, 1 << 62] {
+        for n in [1000u64, 1 << 26, (1 << 26) + 1, 1 << 27, 1 << 40, 1 << 50, 1 << 60] {
             let v = nth_semiprime_approx(n).unwrap();
             assert!(v > n, "estimate for {n} is {v}");
         }

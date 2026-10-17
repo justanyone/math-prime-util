@@ -11,3 +11,4 @@ Matched the XS signed-native bound for integer_complexity and its zero-to-undef 
 Cache unit tests pass, including growth and concurrent reset/repeat calls. Fixed benchmark lint findings; the focused fixtures/properties and the updated gate are running.
 All four fixture tests and five property/boundary tests pass offline. Corrected the final checked-conversion lint; rerun the gate against this source.
 Final source passes the focused oracle and property checks. The required gate and the single whole-suite tools/test.sh run are in progress; no fixture, tooling, dependency, root export, or STATUS changes were made.
+Gate formatting, clippy, and MSRV build passed. The full suites reached existing sieve tests; waiting for those and the documentation steps to finish.

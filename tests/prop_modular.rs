@@ -87,3 +87,11 @@ fn native_word_edges() {
 fn square_root_count_limit() {
     allsqrtmod(0, 1 << 62);
 }
+
+#[test]
+fn large_composite_cornacchia() {
+    let n = 5_u64.pow(24);
+    let (x, y) = cornacchia(1, n).unwrap();
+    assert_eq!(x * x + y * y, n);
+    assert_eq!(cornacchia(1, 1 << 54), Some((1 << 27, 0)));
+}

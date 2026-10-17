@@ -14,3 +14,4 @@ The C recursive all-root path also passes native fixtures and properties. Added 
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -1 bytes)
 Word-boundary tests and exhaustive small root-existence checks passed. Restored the C small-modulus table and fixed a transcription error caught by the oracle. The final gate is running offline.
+Gate reached Clippy and found three pre-existing float_cmp errors in src/count/mod.rs:240-242, outside the authorized paths. Fixed the benchmark semicolon warning in scope. Will leave count untouched and report the gate blocker.

@@ -7,7 +7,7 @@ fn bench_modular(c: &mut Criterion) {
     c.bench_function("allsqrtmod", |b| b.iter(|| allsqrtmod(black_box(1), 72)));
     c.bench_function("rootmod", |b| b.iter(|| rootmod(black_box(8), 3, 1009)));
     c.bench_function("allrootmod", |b| {
-        b.iter(|| allrootmod(black_box(1), 6, 1009))
+        b.iter(|| allrootmod(black_box(1), 6, 1009));
     });
     c.bench_function("cornacchia", |b| b.iter(|| cornacchia(black_box(5), 29)));
     c.bench_function("divmod", |b| b.iter(|| divmod(black_box(6), 2, 1009)));

@@ -1,0 +1,1 @@
+- Plan: fix findings 2-4 (rough_count Legendre port, squarefree_kernel native-width prime regression), decline if too large. Started 06:44:19

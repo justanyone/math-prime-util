@@ -15,3 +15,4 @@ Clippy failed on assert_is_empty in factorize tests and prop_modular zero-modulu
 - 2026-10-17T15:10:13Z launcher: no commit for 60 s; 340 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-rootmod-t1004.md.
 - 2026-10-17T15:11:13Z launcher: no commit for 60 s; 401 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-rootmod-t1004.md.
 - 2026-10-17T15:12:17Z launcher: no commit for 63 s; 465 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-rootmod-t1004.md.
+- 2026-10-17T15:16:30Z launcher: no commit for 60 s; 717 s elapsed. Files changed so far: STATUS.md, docs/worker-notes/pc1-mpu-rootmod-t1004.md, src/factor/factorize.rs, src/factor/is_carmichael.rs, src/factor/mod.rs, src/modular/roots.rs, tests/compat_factor.rs, tests/prop_modular.rs.

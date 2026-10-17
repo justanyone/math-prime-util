@@ -7,3 +7,4 @@ oracle test, match Perl/XS output, then tools/gate.sh.
 
 15:06:58 locating perl oracle and whether XS ecm matches the one mismatched fixture
 - 2026-10-17T15:08:12Z launcher: no commit for 60 s; 216 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md.
+15:09:10 running tools/test.sh ecm_factor to see current parity

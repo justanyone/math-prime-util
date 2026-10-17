@@ -14,3 +14,5 @@ Oracle, four property tests, and six unit tests passed offline. The full gate is
 The gate found two pedantic test-style lints. Replaced string collection and empty assertions; rerun the gate next.
 
 Fixed the benchmark macro documentation lint. Final full-suite tests and the gate are running offline.
+
+Status check is current (four new ticks). The checkout has no origin/dev ref, so that diff check is unavailable; the working-tree whitespace check passed.

@@ -4,3 +4,5 @@ I will verify fixtures, algebraic laws, range sieves, and offline gate checks.
 STATUS.md, tools, and fixture files will remain unchanged as required by the task.
 
 Existing definitions confirmed; moving the four implementations and checking C fast paths next.
+
+Moved the four functions. Restored C totient tables, sieve thresholds, chunks, and lambda fast paths.

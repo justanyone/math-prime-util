@@ -17,29 +17,29 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `almost_prime_count_lower`
 - [ ] `almost_prime_count_upper`
 - [ ] `almost_primes`
-- [ ] `bell_number`
+- [x] `bell_number`
 - [x] `bernfrac`
 - [x] `bernreal`
 - [x] `bestrational`
-- [ ] `binomial`
-- [ ] `binomialmod`
-- [ ] `bitand`
-- [ ] `bitandnot`
+- [x] `binomial`
+- [x] `binomialmod`
+- [x] `bitand`
+- [x] `bitandnot`
 - [ ] `bitclear`
 - [ ] `bitflip`
-- [ ] `bitnot`
-- [ ] `bitor`
+- [x] `bitnot`
+- [x] `bitor`
 - [ ] `bitscan0`
 - [ ] `bitscan1`
 - [ ] `bitset`
 - [ ] `bittest`
-- [ ] `bitxor`
+- [x] `bitxor`
 - [x] `calkin_wilf_n`
 - [ ] `carmichael_lambda`
-- [ ] `catalan_number`
+- [x] `catalan_number`
 - [x] `cdivint`
 - [x] `cdivrem`
-- [ ] `cheb_factor`
+- [x] `cheb_factor`
 - [x] `chebyshev_psi`
 - [x] `chebyshev_theta`
 - [x] `chinese`
@@ -66,13 +66,13 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `ExponentialIntegral`
 - [ ] `factor`
 - [ ] `factor_exp`
-- [ ] `factorial`
-- [ ] `factorialmod`
-- [ ] `falling_factorial`
+- [x] `factorial`
+- [x] `factorialmod`
+- [x] `falling_factorial`
 - [x] `farey`
 - [x] `farey_rank`
 - [x] `fdivrem`
-- [ ] `fermat_factor`
+- [x] `fermat_factor`
 - [x] `fibonacci`
 - [ ] `floor_sum`
 - [ ] `foralmostprimes`
@@ -95,7 +95,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `from_contfrac`
 - [x] `fromdigits`
 - [x] `fromzeckendorf`
-- [ ] `fubini`
+- [x] `fubini`
 - [x] `gcd`
 - [x] `gcdext`
 - [ ] `goldbach_pair_count`
@@ -104,8 +104,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `harmfrac`
 - [x] `harmreal`
 - [ ] `hclassno`
-- [ ] `holf_factor`
-- [ ] `integer_complexity`
+- [x] `holf_factor`
+- [x] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
 - [ ] `inverse_sigma0`
@@ -182,7 +182,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
-- [ ] `lehman_factor`
+- [x] `lehman_factor`
 - [ ] `liouville`
 - [ ] `LogarithmicIntegral`
 - [x] `logint`
@@ -212,7 +212,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `mulsubint`
 - [x] `mulsubmod`
 - [x] `mult_digital_root`
-- [ ] `multifactorial`
+- [x] `multifactorial`
 - [x] `negint`
 - [x] `negmod`
 - [x] `next_calkin_wilf`
@@ -233,9 +233,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_lucky_upper`
 - [ ] `nth_omega_prime`
 - [ ] `nth_perfect_power`
-- [ ] `nth_perfect_power_approx`
-- [ ] `nth_perfect_power_lower`
-- [ ] `nth_perfect_power_upper`
+- [x] `nth_perfect_power_approx`
+- [x] `nth_perfect_power_lower`
+- [x] `nth_perfect_power_upper`
 - [ ] `nth_powerfree`
 - [ ] `nth_powerful`
 - [x] `nth_prime`
@@ -246,30 +246,30 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_prime_power_lower`
 - [x] `nth_prime_power_upper`
 - [ ] `nth_prime_upper`
-- [ ] `nth_ramanujan_prime`
-- [ ] `nth_ramanujan_prime_approx`
-- [ ] `nth_ramanujan_prime_lower`
+- [x] `nth_ramanujan_prime`
+- [x] `nth_ramanujan_prime_approx`
+- [x] `nth_ramanujan_prime_lower`
 - [ ] `nth_ramanujan_prime_upper`
 - [ ] `nth_semiprime`
 - [ ] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
-- [ ] `nth_twin_prime`
+- [x] `nth_twin_prime`
 - [ ] `nth_twin_prime_approx`
 - [ ] `numtoperm`
 - [ ] `omega_prime_count`
 - [ ] `omega_primes`
 - [ ] `partitions`
 - [ ] `partitionsq`
-- [ ] `pbrent_factor`
+- [x] `pbrent_factor`
 - [ ] `perfect_power_count`
 - [ ] `perfect_power_count_approx`
 - [ ] `perfect_power_count_lower`
 - [ ] `perfect_power_count_upper`
 - [ ] `permtonum`
 - [ ] `Pi`
-- [ ] `pisano_period`
-- [ ] `pminus1_factor`
+- [x] `pisano_period`
+- [x] `pminus1_factor`
 - [x] `pn_primorial`
 - [ ] `powerfree_count`
 - [ ] `powerfree_part`
@@ -277,15 +277,15 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `powerfree_sum`
 - [ ] `powerful_count`
 - [ ] `powerful_numbers`
-- [ ] `powersum`
+- [x] `powersum`
 - [x] `powint`
 - [x] `powmod`
-- [ ] `pplus1_factor`
+- [x] `pplus1_factor`
 - [ ] `prev_perfect_power`
 - [x] `prev_prime`
 - [ ] `prev_prime_power`
-- [ ] `prho_factor`
-- [ ] `prime_bigomega`
+- [x] `prho_factor`
+- [x] `prime_bigomega`
 - [ ] `prime_certificate`
 - [x] `prime_count`
 - [ ] `prime_count_approx`
@@ -295,7 +295,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `prime_iterator`
 - [ ] `prime_iterator_object`
 - [x] `prime_memfree`
-- [ ] `prime_omega`
+- [x] `prime_omega`
 - [ ] `prime_power_count`
 - [ ] `prime_power_count_approx`
 - [ ] `prime_power_count_lower`
@@ -304,32 +304,32 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_precalc`
 - [x] `primes`
 - [ ] `prime_set_config`
-- [ ] `prime_signature`
+- [x] `prime_signature`
 - [x] `primorial`
 - [ ] `print_primes`
 - [x] `qnr`
 - [ ] `ramanujan_prime_count`
 - [ ] `ramanujan_prime_count_approx`
 - [ ] `ramanujan_prime_count_lower`
-- [ ] `ramanujan_prime_count_upper`
+- [x] `ramanujan_prime_count_upper`
 - [ ] `ramanujan_primes`
 - [ ] `ramanujan_sum`
 - [x] `ramanujan_tau`
 - [x] `rand`
 - [x] `random_bytes`
 - [x] `random_factored_integer`
-- [ ] `random_maurer_prime`
-- [ ] `random_maurer_prime_with_cert`
+- [x] `random_maurer_prime`
+- [x] `random_maurer_prime_with_cert`
 - [x] `random_nbit_prime`
 - [x] `random_ndigit_prime`
 - [x] `random_prime`
-- [ ] `random_proven_prime`
-- [ ] `random_proven_prime_with_cert`
+- [x] `random_proven_prime`
+- [x] `random_proven_prime_with_cert`
 - [x] `random_safe_prime`
-- [ ] `random_semiprime`
-- [ ] `random_shawe_taylor_prime`
-- [ ] `random_shawe_taylor_prime_with_cert`
-- [ ] `random_strong_prime`
+- [x] `random_semiprime`
+- [x] `random_shawe_taylor_prime`
+- [x] `random_shawe_taylor_prime_with_cert`
+- [x] `random_strong_prime`
 - [x] `random_unrestricted_semiprime`
 - [x] `randperm`
 - [x] `rashiftint`
@@ -338,7 +338,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `reverse_digits`
 - [ ] `RiemannR`
 - [ ] `RiemannZeta`
-- [ ] `rising_factorial`
+- [x] `rising_factorial`
 - [x] `rootint`
 - [ ] `rootmod`
 - [ ] `rough_count`
@@ -373,12 +373,12 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sqrtint`
 - [ ] `sqrtmod`
 - [ ] `squarefree_kernel`
-- [ ] `squfof_factor`
+- [x] `squfof_factor`
 - [x] `srand`
 - [x] `stern_brocot_n`
-- [ ] `stirling`
+- [x] `stirling`
 - [x] `sub1int`
-- [ ] `subfactorial`
+- [x] `subfactorial`
 - [x] `subint`
 - [x] `submod`
 - [x] `sumdigits`
@@ -394,9 +394,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `toset`
 - [x] `tozeckendorf`
 - [ ] `trial_factor`
-- [ ] `twin_prime_count`
-- [ ] `twin_prime_count_approx`
-- [ ] `twin_primes`
+- [x] `twin_prime_count`
+- [x] `twin_prime_count_approx`
+- [x] `twin_primes`
 - [x] `urandomb`
 - [x] `urandomm`
 - [x] `urandomr`
@@ -429,6 +429,6 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `vecuniq`
 - [x] `vecwindow`
 - [ ] `verify_prime`
-- [ ] `znlog`
+- [x] `znlog`
 - [x] `znorder`
 - [x] `znprimroot`

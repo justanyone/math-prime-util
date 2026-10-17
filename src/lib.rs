@@ -26,6 +26,7 @@
 // Each module re-exports its public functions at the crate root (`pub use`), MPU-style flat names.
 pub mod arith;
 pub mod bigint;
+pub mod bits;
 pub mod combinat;
 pub mod config;
 pub mod count;
@@ -48,6 +49,7 @@ pub mod vec;
 pub use arith::*;
 #[allow(unused_imports)] // until the module has public items
 pub use bigint::*;
+pub use bits::*;
 #[allow(unused_imports)] // until the module has public items
 pub use combinat::*;
 #[allow(unused_imports)] // until the module has public items

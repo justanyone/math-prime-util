@@ -18,3 +18,6 @@ About five minutes remain in the session. All task code and focused tests are co
 - 2026-10-17T06:58:23Z launcher: no commit for 61 s; 639 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f04.md, src/families/is_perfect_power.rs, src/families/mod.rs, src/families/next_perfect_power.rs, src/families/perfect_power_count.rs, src/families/prev_perfect_power.rs, tests/compat_families.rs, tests/prop_families.rs.
 Still waiting on the existing prime_count oracle check. The gate has not reported any failures; no additional implementation edits are warranted.
 The full gate is still pending on prime_count after several minutes. Focused tests (four compat and seven property/edge tests), fmt, clippy, and Rust 1.85 build passed offline; full gate success is unverified.
+Final: tools/gate.sh completed offline and printed == gate: green. All tests and 197 doc examples passed, including the four new API examples; no remaining implementation or validation blockers. No dependencies, tools, fixtures, STATUS.md,  <<cut 28 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 4 bytes)

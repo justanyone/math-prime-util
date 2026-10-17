@@ -12,3 +12,4 @@ The private extended-precision Ei series now matches MPU Li rounding at u64::MAX
 All four compat tests and both property tests pass, including max-u64 count rounding. Added unrepresentable-index checks; no fixture skips.
 Focused tests pass after overflow checks. Final gate fixes are limited to benchmark semicolons and criterion macro documentation lint.
 Formatting, pedantic Clippy, and MSRV 1.85 build pass. The full offline test and documentation gate is running.
+Diff whitespace check passes. Full gate is still running the pre-existing count compatibility tests.

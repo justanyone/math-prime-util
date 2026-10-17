@@ -54,4 +54,3 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
             .all(|&(q, _)| q <= 5 || powmod(a, phi / q, p) != Some(1)),
     )
 }
-

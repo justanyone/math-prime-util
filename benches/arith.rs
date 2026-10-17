@@ -2,8 +2,8 @@
 //! Benchmarks for the totient, Moebius, divisor-sum and residue-ring functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    chinese2, is_primitive_root, divisor_sum, euler_phi, euler_phi_range, inverse_sigma0, inverse_sigma0_count, mertens,
-    moebius, sumtotient, znorder, znprimroot,
+    chinese2, divisor_sum, euler_phi, euler_phi_range, inverse_sigma0, inverse_sigma0_count,
+    is_primitive_root, mertens, moebius, sumtotient, znorder, znprimroot,
 };
 fn bench_arith(c: &mut Criterion) {
     c.bench_function("euler_phi", |b| {

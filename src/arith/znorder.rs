@@ -52,4 +52,3 @@ pub fn znorder(a: u64, n: u64) -> Option<u64> {
     }
     Some(k)
 }
-

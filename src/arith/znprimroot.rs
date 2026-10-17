@@ -51,4 +51,3 @@ pub fn znprimroot(n: u64) -> Option<u64> {
     }
     None
 }
-

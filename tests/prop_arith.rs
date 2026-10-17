@@ -191,3 +191,82 @@ proptest! {
         prop_assert_eq!(inverse_sigma0_count(k, lo, hi), Some(want.len() as u64));
     }
 }
+
+proptest! {
+    #[test]
+    fn crt_shared_moduli(x in any::<u64>(), m in 1_u64..1000, n in 1_u64..1000) {
+        let input = [(x % m, m), (x % n, n), (x % m, m)];
+        let result = chinese2(&input).unwrap();
+        let modulus = m / gcd(m, n) * n;
+        prop_assert_eq!(result, (x % modulus, modulus));
+        prop_assert_eq!(input[0], (x % m, m));
+    }
+
+    #[test]
+    fn order_divides_group_exponent(a in any::<u64>(), n in 2_u64..5000) {
+        let order = znorder(a, n);
+        prop_assert_eq!(order.is_some(), gcd(a, n) == 1);
+        if let Some(order) = order {
+            prop_assert_eq!(carmichael_lambda(n) % order, 0);
+            prop_assert_eq!(powmod(a, order, n), Some(1));
+        }
+    }
+}
+
+#[test]
+fn residue_ring_exhaustive() {
+    for n in 1..150 {
+        let mut least_root = None;
+        for a in 0..n {
+            let expected_order = if n == 1 {
+                Some(1)
+            } else {
+                (1..=euler_phi(n)).find(|&k| powmod(a, k, n) == Some(1))
+            };
+            assert_eq!(znorder(a, n), expected_order, "order({a}, {n})");
+            let primitive = expected_order == Some(euler_phi(n));
+            assert_eq!(is_primitive_root(a, n), Some(primitive), "root({a}, {n})");
+            if primitive && least_root.is_none() {
+                least_root = Some(a);
+            }
+            assert_eq!(is_primitive_root(a + n, n), Some(primitive));
+        }
+        assert_eq!(znprimroot(n), least_root, "least root({n})");
+    }
+}
+
+#[test]
+fn crt_native_bounds() {
+    let high = 1_u64 << 63;
+    assert_eq!(chinese2(&[(7, high)]), Some((7, high)));
+    assert_eq!(chinese2(&[(7, high), (7, high)]), None);
+    assert_eq!(chinese2(&[(0, high), (0, 2)]), None);
+    assert_eq!(chinese2(&[(0, high), (0, 3)]), None);
+    assert_eq!(chinese2(&[(0, high), (0, 1)]), None);
+    assert_eq!(chinese2(&[(7, high - 1), (1, 2)]), Some((7, u64::MAX - 1)));
+    assert_eq!(chinese2(&[(0, 2), (0, 0)]), None);
+    assert_eq!(chinese2(&[(u64::MAX, 1), (4, 5)]), Some((4, 5)));
+}
+
+#[test]
+fn residue_ring_repeated_parallel_inputs() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(chinese2(&[(5, 12), (17, 18), (5, 12)]), Some((17, 36)));
+                    assert_eq!(znorder(2, 27), Some(18));
+                    assert_eq!(znprimroot(54), Some(5));
+                    assert_eq!(is_primitive_root(5, 54), Some(true));
+                    assert_eq!(znorder(0, 0), None);
+                    assert_eq!(znorder(0, 2), None);
+                    assert_eq!(znprimroot(0), None);
+                    assert_eq!(is_primitive_root(0, 0), None);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}

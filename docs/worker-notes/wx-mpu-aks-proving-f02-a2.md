@@ -9,3 +9,4 @@ The pre-change regressions failed as expected. Parser regressions now pass; corr
 Focused compat and property tests passed. Added MPU native fallback and whitespace properties; approximately five minutes remain for lint, final tests, and review.
 Unit and focused tests pass. Added concurrent signed-proof calls interleaved with malformed input and duplicate proof blocks to check independence.
 The gate passed fmt, clippy, and the MSRV build and is running the full tests. Added boundary cases for native BLS15 and range validation.
+Final focused run passed all 15 compatibility and 15 property tests. Diff whitespace checks pass; the full gate is still running offline.

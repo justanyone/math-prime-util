@@ -1,0 +1,1 @@
+- 19:10 Plan: fix conflict markers and duplicate tests in tests/prop_iter.rs (findings 1 and 2). Check current file first.

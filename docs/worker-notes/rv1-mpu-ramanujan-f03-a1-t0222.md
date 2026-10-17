@@ -4,3 +4,4 @@ Check completeness, reference fidelity, boundary behavior, and meaningful oracle
 Write a PASS/FAIL review with concrete candidate line references; validate only through authorized scripts.
 Confirmed absent Ramanujan oracle rows and unchecked candidate STATUS entries; wrote FAIL review with boundary and lint findings. Next run authorized validation scripts on the base, explicitly recording their limited relevance.
 Base focused compatibility tests passed (10 lucky-family cases); base gate passed fmt, clippy, and MSRV and is running tests. These results do not validate the candidate's new functions.
+- 2026-10-17T07:24:48Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/reviews/rev-mpu-ramanujan-f03-a1-1.md, docs/worker-notes/rv1-mpu-ramanujan-f03-a1-t0222.md.

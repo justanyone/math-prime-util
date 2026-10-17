@@ -5,3 +5,4 @@ I will verify reference semantics for a specific doubt and record concrete accep
 Compared all three active C polynomial bodies with the digest; wrote FAIL for absent regression/oracle tests and checklist updates. Next run the required local checks, noting they execute the base.
 Focused tools/test.sh perfect_power completed successfully on the base with no matching tests; gate is running after waiting for the build lock. Candidate remains untested locally.
 The base gate passed fmt/clippy/build and is still in compatibility tests; review findings are independent of those base checks. Waiting for the required gate result.
+- 2026-10-17T06:53:09Z launcher: no commit for 60 s; 213 s elapsed. Files changed so far: docs/reviews/rev-mpu-prime-powers-f06-1.md, docs/worker-notes/rv1-mpu-prime-powers-f06-t0149.md.

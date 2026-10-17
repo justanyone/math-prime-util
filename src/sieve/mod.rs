@@ -22,8 +22,9 @@ struct PrimeCache {
     limit: u64,
 }
 
+static CACHE: OnceLock<Mutex<PrimeCache>> = OnceLock::new();
+
 fn cache() -> &'static Mutex<PrimeCache> {
-    static CACHE: OnceLock<Mutex<PrimeCache>> = OnceLock::new();
     CACHE.get_or_init(|| {
         Mutex::new(PrimeCache {
             sieve: Vec::new(),
@@ -85,7 +86,8 @@ pub fn prime_precalc(mut n: u64) {
 /// assert_eq!(prev_prime(10), Some(7));
 /// ```
 pub fn prime_memfree() {
-    let Some(lock) = cache_if_init() else {
+    // `cache.c`: return when `prime_precalc` has never run (`mutex_init == 0`).
+    let Some(lock) = CACHE.get() else {
         return;
     };
     let padded = pad_limit(INITIAL_CACHE_SIZE);
@@ -93,24 +95,6 @@ pub fn prime_memfree() {
     let mut guard = lock.lock().unwrap_or_else(|e| e.into_inner());
     guard.sieve = sieve;
     guard.limit = padded;
-}
-
-fn cache_if_init() -> Option<&'static Mutex<PrimeCache>> {
-    static CACHE_PROBE: OnceLock<Mutex<PrimeCache>> = OnceLock::new();
-    // Same static as `cache()`: get_or_init identity, then only act if it was
-    // already created. Probe by comparing the OnceLock address via get on the
-    // shared lock. `cache()` creates it, so use an atomic flag instead.
-    let _ = CACHE_PROBE;
-    INIT_FLAG.load(std::sync::atomic::Ordering::Acquire).then(|| {
-        // `cache()` has been called. Calling it again returns the same mutex.
-        cache()
-    })
-}
-
-static INIT_FLAG: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-
-fn ensure_flag() {
-    INIT_FLAG.store(true, std::sync::atomic::Ordering::Release);
 }
 
 /// Primes `p` with `lo <= p <= hi`.
@@ -304,8 +288,8 @@ pub fn prev_prime(n: u64) -> Option<u64> {
     if n <= 2 {
         return None;
     }
-    if let Some(hit) = cache_prev(n) {
-        return hit;
+    if let Some(Some(p)) = cache_prev(n) {
+        return Some(p);
     }
     wheel_prev(n)
 }
@@ -632,18 +616,9 @@ fn sum_leq_lucy(n: u64) -> u128 {
     s[0]
 }
 
-// Mark the cache as initialised only through `cache()`, which `prime_precalc`
-// and the lookup paths call. `prime_memfree` must see that flag.
-#[inline]
-fn touch_cache() -> std::sync::MutexGuard<'static, PrimeCache> {
-    ensure_flag();
-    lock_cache()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::Ordering;
 
     fn assert_send_sync<T: Send + Sync>() {}
 
@@ -681,15 +656,23 @@ mod tests {
 
     #[test]
     fn precalc_then_memfree_keeps_answers() {
-        assert!(!INIT_FLAG.load(Ordering::Acquire) || cache().lock().is_ok());
+        prime_memfree();
         prime_precalc(0);
         prime_precalc(30_000);
         prime_precalc(1_000);
+        assert_eq!(
+            primes(0, 100),
+            vec![
+                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
+                79, 83, 89, 97
+            ]
+        );
         assert_eq!(primes(0, 30), primes_in(0..=30).collect::<Vec<_>>());
         assert_eq!(next_prime(20), Some(23));
         prime_memfree();
         prime_memfree();
         assert_eq!(prev_prime(20), Some(19));
+        assert_eq!(next_prime(100), Some(101));
         assert_eq!(sum_primes(10, 30), Some(11 + 13 + 17 + 19 + 23 + 29));
     }
 
@@ -707,7 +690,7 @@ mod tests {
                 assert_eq!(next_prime(90), Some(97));
                 assert_eq!(prev_prime(90), Some(89));
                 assert_eq!(primes(14, 18), vec![17]);
-                assert!(sieve_prime_cluster(0, 30, &[0, 0, 2]).is_empty() || true);
+                assert_eq!(sieve_prime_cluster(0, 30, &[2]).len(), 4);
             }));
         }
         for join in joins {

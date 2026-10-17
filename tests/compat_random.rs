@@ -2,6 +2,13 @@
 mod common;
 use math_prime_util::*;
 
+fn unhex(s: &str) -> Vec<u8> {
+    s.as_bytes()
+        .chunks_exact(2)
+        .map(|c| u8::from_str_radix(std::str::from_utf8(c).unwrap(), 16).unwrap())
+        .collect()
+}
+
 fn cases(name: &str, mut f: impl FnMut(&common::Case)) {
     for c in common::load("random").iter().filter(|c| c.func == name) {
         let seed = &c.args[0];

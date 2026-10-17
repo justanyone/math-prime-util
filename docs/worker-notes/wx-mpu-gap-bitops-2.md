@@ -9,3 +9,4 @@ Focused checks passed: six unit tests and four property tests (4,000 cases each)
 Gate found benchmark semicolon style and Criterion macro missing-docs warnings. Fixed the benchmark in the existing repository style; rerun gate next.
 Gate now passed formatting, pedantic Clippy on all targets, and MSRV 1.85 build. Full offline tests are in progress. All operations are pure and have no shared state or duplicate-launch paths.
 Final review: public docs explicitly identify absent MPU source instead of inventing C citations. Exactly six status ticks changed; git diff --check passed. Waiting on existing full-suite count tests and the required final wrapper run.
+No new failures. Gate full-suite compat_count is still running; final tools/test.sh run is queued behind Cargo test execution. Reference compatibility remains the only known implementation blocker.

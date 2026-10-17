@@ -3,7 +3,11 @@ use crate::{rootint, sqrtint};
 use std::collections::HashMap;
 
 // MPU moebius.c::_mertens_context_create clamps the prefix allocation.
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 fn prefix_limit(n: u64) -> u64 {
     let mut limit = rootint(n, 3).pow(2);
     if limit > 100_000_000 {
@@ -22,10 +26,10 @@ impl Mertens {
         let limit = prefix_limit(n);
         let mut prefix = Vec::with_capacity(usize::try_from(limit + 1).unwrap());
         let mut sum = 0;
-        // moebius.c::mertens_array uses segments of one million values.
+        // moebius.c::mertens_array uses segments of 32,768 values.
         let mut lo = 0;
         while lo <= limit {
-            let hi = (lo + 999_999).min(limit);
+            let hi = (lo + 32_767).min(limit);
             for value in moebius_range(lo, hi) {
                 sum += i64::from(value);
                 prefix.push(sum);
@@ -75,10 +79,15 @@ impl Mertens {
 /// ```
 pub fn mertens(n: u64) -> i64 {
     if n <= 512 {
-        const MV16: [i8; 33] = [0,-1,-4,-3,-1,-4,2,-4,-2,-1,0,-4,-5,-3,3,-1,-1,-3,-7,-2,-4,2,1,-1,-2,1,1,-3,-6,-6,-6,-5,-4];
+        const MV16: [i8; 33] = [
+            0, -1, -4, -3, -1, -4, 2, -4, -2, -1, 0, -4, -5, -3, 3, -1, -1, -3, -7, -2, -4, 2, 1,
+            -1, -2, 1, 1, -3, -6, -6, -6, -5, -4,
+        ];
         let block = n / 16;
         return i64::from(MV16[usize::try_from(block).unwrap()])
-            + (block * 16 + 1..=n).map(|j| i64::from(moebius(j))).sum::<i64>();
+            + (block * 16 + 1..=n)
+                .map(|j| i64::from(moebius(j)))
+                .sum::<i64>();
     }
     Mertens::new(n).get(n)
 }

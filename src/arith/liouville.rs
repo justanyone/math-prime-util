@@ -15,5 +15,9 @@ pub fn liouville(n: u64) -> i8 {
     if n < 16 {
         return SMALL[usize::try_from(n).unwrap()];
     }
-    if factors(n).iter().map(|&(_, e)| e).sum::<u32>() % 2 == 0 { 1 } else { -1 }
+    if factors(n).iter().map(|&(_, e)| e).sum::<u32>() % 2 == 0 {
+        1
+    } else {
+        -1
+    }
 }

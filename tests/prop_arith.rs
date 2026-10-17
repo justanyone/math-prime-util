@@ -191,3 +191,69 @@ proptest! {
         prop_assert_eq!(inverse_sigma0_count(k, lo, hi), Some(want.len() as u64));
     }
 }
+
+proptest! {
+    #[test]
+    fn arithmetic_summatory_differences(n in 1_u64..10_000) {
+        prop_assert_eq!(mertens(n) - mertens(n - 1), i64::from(moebius(n)));
+        prop_assert_eq!(sumliouville(n) - sumliouville(n - 1), i64::from(liouville(n)));
+    }
+
+    #[test]
+    fn mangoldt_prime_powers(n in 0_u64..100_000) {
+        let base = exp_mangoldt(n);
+        let exponent = is_prime_power(n);
+        if exponent == 0 {
+            prop_assert_eq!(base, 1);
+        } else {
+            prop_assert_ne!(is_prime(base), 0);
+            prop_assert_eq!(base.checked_pow(exponent), Some(n));
+        }
+    }
+}
+
+#[test]
+fn summatory_table_and_sieve_boundaries() {
+    let (mut m, mut l) = (0, 0);
+    for n in 0..=1_025 {
+        if n > 0 {
+            m += i64::from(moebius(n));
+            l += i64::from(liouville(n));
+        }
+        assert_eq!(mertens(n), m, "M({n})");
+        assert_eq!(sumliouville(n), l, "L({n})");
+    }
+    assert_eq!(liouville(0), -1);
+    assert_eq!(liouville(1_u64 << 63), -1);
+    assert_eq!(liouville(1_u64 << 62), 1);
+    for n in [0, 1, 12, 36, u64::MAX] {
+        assert_eq!(exp_mangoldt(n), 1);
+    }
+    for (n, p) in [
+        (1_u64 << 63, 2),
+        (3_u64.pow(40), 3),
+        (11_u64.pow(18), 11),
+        (18_446_744_073_709_551_557, 18_446_744_073_709_551_557),
+    ] {
+        assert_eq!(exp_mangoldt(n), p);
+    }
+}
+
+#[test]
+fn liouville_concurrent_repeated_calls() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(sumliouville(100), -2);
+                    assert_eq!(sumliouville(0), 0);
+                    assert_eq!(liouville(1), 1);
+                    assert_eq!(exp_mangoldt(121), 11);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}

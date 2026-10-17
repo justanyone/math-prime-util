@@ -9,5 +9,9 @@
 /// ```
 pub fn exp_mangoldt(n: u64) -> u64 {
     let exponent = crate::is_prime_power(n);
-    if exponent == 0 { 1 } else { crate::rootint(n, exponent) }
+    if exponent == 0 {
+        1
+    } else {
+        crate::rootint(n, exponent)
+    }
 }

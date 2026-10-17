@@ -31,7 +31,10 @@ fn liouville_array(n: u64) -> Vec<i8> {
 /// ```
 pub fn sumliouville(n: u64) -> i64 {
     if n <= 96 {
-        return liouville_array(n)[1..=usize::try_from(n).unwrap()].iter().map(|&v| i64::from(v)).sum();
+        return liouville_array(n)[1..=usize::try_from(n).unwrap()]
+            .iter()
+            .map(|&v| i64::from(v))
+            .sum();
     }
     let mut ctx = Mertens::new(n);
     let root = sqrtint(n);
@@ -39,7 +42,9 @@ pub fn sumliouville(n: u64) -> i64 {
     let mut k = 2;
     while k <= root {
         let quotient = n / (k * k);
-        if quotient == 1 { break; }
+        if quotient == 1 {
+            break;
+        }
         sum += ctx.get(quotient);
         k += 1;
     }

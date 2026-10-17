@@ -68,7 +68,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `factor_exp`
 - [x] `factorial`
 - [x] `factorialmod`
-- [ ] `falling_factorial`
+- [x] `falling_factorial`
 - [x] `farey`
 - [x] `farey_rank`
 - [x] `fdivrem`
@@ -105,7 +105,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `harmreal`
 - [ ] `hclassno`
 - [x] `holf_factor`
-- [ ] `integer_complexity`
+- [x] `integer_complexity`
 - [x] `inverse_li`
 - [x] `inverse_li_nv`
 - [ ] `inverse_sigma0`
@@ -254,7 +254,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_semiprime_approx`
 - [x] `nth_stern_brocot`
 - [x] `nth_stern_diatomic`
-- [ ] `nth_twin_prime`
+- [x] `nth_twin_prime`
 - [ ] `nth_twin_prime_approx`
 - [ ] `numtoperm`
 - [ ] `omega_prime_count`
@@ -277,7 +277,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `powerfree_sum`
 - [ ] `powerful_count`
 - [ ] `powerful_numbers`
-- [ ] `powersum`
+- [x] `powersum`
 - [x] `powint`
 - [x] `powmod`
 - [x] `pplus1_factor`
@@ -338,7 +338,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `reverse_digits`
 - [ ] `RiemannR`
 - [ ] `RiemannZeta`
-- [ ] `rising_factorial`
+- [x] `rising_factorial`
 - [x] `rootint`
 - [ ] `rootmod`
 - [ ] `rough_count`
@@ -394,9 +394,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `toset`
 - [x] `tozeckendorf`
 - [ ] `trial_factor`
-- [ ] `twin_prime_count`
-- [ ] `twin_prime_count_approx`
-- [ ] `twin_primes`
+- [x] `twin_prime_count`
+- [x] `twin_prime_count_approx`
+- [x] `twin_primes`
 - [x] `urandomb`
 - [x] `urandomm`
 - [x] `urandomr`

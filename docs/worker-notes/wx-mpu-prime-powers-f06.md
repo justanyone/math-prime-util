@@ -1,2 +1,0 @@
-- Plan: port nth_perfect_power_{approx,lower,upper} from perfect_powers.c into src/families/, fixtures family 'families', compat+prop tests.
-- Wrote perfect_powers.rs, compat/prop tests; running compat_families.

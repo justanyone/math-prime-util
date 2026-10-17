@@ -12,3 +12,7 @@ Changed Goldbach output ordering to the C reversal rather than sorting; removed 
 Review found existing lucky-family tests and benchmarks had been overwritten. Restored their exact baseline content and appended the assigned cases.
 The focused family unit tests passed, including native Chen limits and exhaustive semiprime checks. Added the C square shortcut and segment-overflow boundary tests.
 The first offline gate printed == gate: green. Final rerun covers restored lucky tests and the last square/overflow tests; baseline diff has no whitespace errors.
+Final offline gate printed == gate: green: fmt, pedantic clippy, MSRV 1.85 build, all tests, runnable docs, and documentation passed.
+Finished all four requested APIs, tests, and benchmarks; preserved lucky-family coverage. One named bigint fixture is skipped by the native API; Chen's private semiprime fallback uses extended trial division pending factor_one. No dependenc <<cut 39 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)

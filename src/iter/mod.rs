@@ -286,23 +286,100 @@ pub fn permutations_of(n: usize) -> PermutationsOf<usize> {
 /// ```
 /// assert_eq!(math_prime_util::multipermutations_of(&[1,1,2]).count(), 3);
 /// ```
-pub fn multipermutations_of<T: Ord + Clone>(values: &[T]) -> PermutationsOf<T> {
-    let mut current = values.to_vec();
-    current.sort();
-    PermutationsOf {
-        current: Some(current),
+pub fn multipermutations_of<T: Ord + Clone>(values: &[T]) -> MultipermutationsOf<T> {
+    let mut sorted = values.to_vec();
+    sorted.sort();
+    let mut counts: Vec<(T, usize)> = Vec::new();
+    for value in sorted {
+        if let Some(last) = counts.last_mut().filter(|last| last.0 == value) {
+            last.1 += 1;
+        } else {
+            counts.push((value, 1));
+        }
+    }
+    MultipermutationsOf {
+        counts,
+        prefix: Vec::new(),
+        frames: vec![0],
+        size: values.len(),
+        done: false,
     }
 }
-/// Derangement state. See `XS.xs`, `forderange`.
+
+/// Explicit recursion stack for `PP.pm`, `_multiset_permutations`.
+#[derive(Debug, Clone)]
+pub struct MultipermutationsOf<T> {
+    counts: Vec<(T, usize)>,
+    prefix: Vec<usize>,
+    frames: Vec<usize>,
+    size: usize,
+    done: bool,
+}
+impl<T: Clone> Iterator for MultipermutationsOf<T> {
+    type Item = Vec<T>;
+    fn next(&mut self) -> Option<Self::Item> {
+        while !self.done {
+            if self.prefix.len() == self.size {
+                let out = self
+                    .prefix
+                    .iter()
+                    .map(|&i| self.counts[i].0.clone())
+                    .collect();
+                self.frames.pop();
+                if let Some(i) = self.prefix.pop() {
+                    self.counts[i].1 += 1;
+                } else {
+                    self.done = true;
+                }
+                return Some(out);
+            }
+            let depth = self.prefix.len();
+            let start = self.frames[depth];
+            if let Some(i) = (start..self.counts.len()).find(|&i| self.counts[i].1 > 0) {
+                self.frames[depth] = i + 1;
+                self.counts[i].1 -= 1;
+                self.prefix.push(i);
+                self.frames.push(0);
+            } else {
+                self.frames.pop();
+                if let Some(i) = self.prefix.pop() {
+                    self.counts[i].1 += 1;
+                } else {
+                    self.done = true;
+                }
+            }
+        }
+        None
+    }
+}
+
+/// Derangement state. See `XS.xs`, `_comb_init` and `_comb_iterate`.
 #[derive(Debug, Clone)]
 pub struct DerangementsOf {
-    inner: PermutationsOf<usize>,
+    current: Option<Vec<usize>>,
 }
 impl Iterator for DerangementsOf {
     type Item = Vec<usize>;
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner
-            .find(|p| p.iter().enumerate().all(|(i, &v)| i != v))
+        let mut cm = self.current.take()?;
+        let n = cm.len();
+        let out = cm.iter().rev().map(|v| v - 1).collect();
+        // Keep the C array reversed. This also preserves its early skip.
+        while let Some(j) = (1..n).find(|&j| cm[j] <= cm[j - 1]) {
+            let m = (0..n)
+                .find(|&m| cm[j] <= cm[m])
+                .expect("greater suffix element");
+            cm.swap(j, m);
+            if cm[j] == n - j {
+                continue;
+            }
+            cm[..j].reverse();
+            if cm.iter().rev().enumerate().all(|(i, &v)| v - 1 != i) {
+                self.current = Some(cm);
+                break;
+            }
+        }
+        Some(out)
     }
 }
 /// Iterate over permutations with no fixed points. See `XS.xs`, `forderange`.
@@ -310,9 +387,20 @@ impl Iterator for DerangementsOf {
 /// assert_eq!(math_prime_util::derangements_of(4).count(), 9);
 /// ```
 pub fn derangements_of(n: usize) -> DerangementsOf {
-    DerangementsOf {
-        inner: permutations_of(n),
-    }
+    let current = if n == 1 {
+        None
+    } else {
+        let mut cm = vec![0; n];
+        for i in 0..n {
+            cm[n - i - 1] = if i % 2 == 1 { i } else { i + 2 };
+        }
+        if n % 2 == 1 {
+            cm[0] = n - 2;
+            cm[1] = n;
+        }
+        Some(cm)
+    };
+    DerangementsOf { current }
 }
 
 /// Cartesian product state from `XS.xs`, `forsetproduct`.

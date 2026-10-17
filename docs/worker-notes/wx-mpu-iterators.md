@@ -8,3 +8,4 @@ Focused tests started. A truncated long generated match line caused a syntax err
 Native fixtures exposed output truncation in some oracle rows and a partition-option edge. Added compact mismatch diagnostics to avoid printing large fixture values.
 Focused offline tests pass: 13 compatibility tests and 7 property/state tests. Gate is running; factor-based loops and full PrimeIterator object methods remain outside the implemented subset.
 Gate lint failures were limited to documentation formatting, explicit default types, portable test conversions, and generated benchmark documentation; these are fixed.
+Replaced permutation filtering with the C derangement initializer and skip transitions. Multiset traversal now uses the reference count/prefix recursion as an explicit stack.

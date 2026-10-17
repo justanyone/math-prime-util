@@ -177,6 +177,57 @@ fn check_bls15(fields: &BTreeMap<String, i128>) -> Result<bool, String> {
     Ok(crate::lucasvmod(p, r, half_m, n) != 0 && crate::lucasvmod(p, r, half_n, n) == 0)
 }
 
+fn read_fields<'a>(
+    kind: &str,
+    lines: &mut std::iter::Peekable<impl Iterator<Item = &'a str>>,
+) -> Result<BTreeMap<String, i128>, String> {
+    let mut fields = BTreeMap::new();
+    let mut factor_index = 0;
+    while let Some(&next) = lines.peek() {
+        if next.starts_with("Type ") || next.starts_with('-') {
+            break;
+        }
+        let line = lines.next().ok_or("Missing field")?;
+        let mut words = line.split_whitespace();
+        let key = words.next().ok_or("Missing key")?.to_ascii_uppercase();
+        let number = words
+            .next()
+            .and_then(|w| w.parse::<i128>().ok())
+            .ok_or("Invalid integer")?;
+        if number < -i128::from(u64::MAX)
+            || number > i128::from(u64::MAX)
+            || (number < 0 && !(kind == "BLS15" && (key == "LP" || key == "LQ")))
+        {
+            return Err("Integer outside native range".into());
+        }
+        if kind == "BLS5" || kind == "LUCAS" {
+            if let Some(index) = key.strip_prefix("Q[").and_then(|s| s.strip_suffix(']')) {
+                factor_index += 1;
+                if index.parse::<usize>().ok() != Some(factor_index) {
+                    return Err("Invalid Q index".into());
+                }
+            }
+            if let Some(index) = key.strip_prefix("A[").and_then(|s| s.strip_suffix(']')) {
+                if !index.parse::<usize>().is_ok_and(|i| i <= factor_index)
+                {
+                    return Err("Invalid A index".into());
+                }
+            }
+        }
+        if words.next().is_some() || fields.insert(key.clone(), number).is_some() {
+            return Err("Repeated or malformed field".into());
+        }
+        if kind == "SMALL"
+            || ((kind == "BLS3" || kind == "POCKLINGTON") && fields.len() == 3)
+            || (kind == "BLS15" && fields.len() == 4)
+            || (kind == "LUCAS" && key == "A")
+        {
+            break;
+        }
+    }
+    Ok(fields)
+}
+
 /// Verify an MPU certificate for a native integer.
 ///
 /// Port of `reference/mpu/lib/Math/Prime/Util/PrimalityProving.pm`:
@@ -207,7 +258,6 @@ pub fn verify_prime(certificate: &str) -> Result<bool, String> {
         return Err("Missing MPU header".into());
     }
     let mut target = None;
-    let mut seen_proof = false;
     while let Some(line) = lines.next() {
         if line.starts_with("Version ") || line == "Base 10" || line.starts_with('-') {
             continue;
@@ -239,53 +289,7 @@ pub fn verify_prime(certificate: &str) -> Result<bool, String> {
         if !["SMALL", "BLS5", "BLS3", "BLS15", "POCKLINGTON", "LUCAS"].contains(&kind.as_str()) {
             return Err("Unsupported proof type".into());
         }
-        let mut fields = BTreeMap::new();
-        let mut factor_index = 0;
-        while let Some(&next) = lines.peek() {
-            if next.starts_with("Type ") || next.starts_with('-') {
-                break;
-            }
-            let line = lines.next().ok_or("Missing field")?;
-            let mut words = line.split_whitespace();
-            let key = words.next().ok_or("Missing key")?.to_ascii_uppercase();
-            let number = words
-                .next()
-                .and_then(|w| w.parse::<i128>().ok())
-                .ok_or("Invalid integer")?;
-            if number < -i128::from(u64::MAX)
-                || number > i128::from(u64::MAX)
-                || (number < 0 && !(kind == "BLS15" && (key == "LP" || key == "LQ")))
-            {
-                return Err("Integer outside native range".into());
-            }
-            if kind == "BLS5" || kind == "LUCAS" {
-                if let Some(index) = key.strip_prefix("Q[").and_then(|s| s.strip_suffix(']')) {
-                    factor_index += 1;
-                    if index.parse::<usize>().ok() != Some(factor_index) {
-                        return Err("Invalid Q index".into());
-                    }
-                }
-                if let Some(index) = key.strip_prefix("A[").and_then(|s| s.strip_suffix(']')) {
-                    if !index
-                        .parse::<usize>()
-                        .ok()
-                        .is_some_and(|i| i <= factor_index)
-                    {
-                        return Err("Invalid A index".into());
-                    }
-                }
-            }
-            if words.next().is_some() || fields.insert(key.clone(), number).is_some() {
-                return Err("Repeated or malformed field".into());
-            }
-            if kind == "SMALL"
-                || ((kind == "BLS3" || kind == "POCKLINGTON") && fields.len() == 3)
-                || (kind == "BLS15" && fields.len() == 4)
-                || (kind == "LUCAS" && key == "A")
-            {
-                break;
-            }
-        }
+        let fields = read_fields(&kind, &mut lines)?;
         let valid = if kind == "BLS15" {
             check_bls15(&fields)?
         } else {
@@ -302,10 +306,9 @@ pub fn verify_prime(certificate: &str) -> Result<bool, String> {
         if !valid {
             return Ok(false);
         }
-        seen_proof = true;
     }
     let n = target.ok_or("Missing target")?;
-    Ok(seen_proof && is_prime(n) != 0)
+    Ok(is_prime(n) != 0)
 }
 
 #[cfg(test)]

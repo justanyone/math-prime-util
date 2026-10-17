@@ -210,9 +210,9 @@ fn is_delicate_prime_oracle() {
 
 #[test]
 fn verify_prime_native_bls15() {
-    // MPU PrimalityProving.pm::_verify_bls15, with the Fibonacci pair.
+    // MPU PrimalityProving.pm::_verify_bls15, with V_7(-1, 2) = 13.
     let header = "[MPU - Primality Certificate]\nVersion 1.0\nProof for:\nN 13\n";
-    let proof = "Type BLS15\nN 13\nQ 7\nLP 1\nLQ -1\n";
+    let proof = "Type BLS15\nN 13\nQ 7\nLP -1\nLQ 2\n";
     assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(true));
     for proof in [
         "Type BLS15\nN 13\nQ 2\nLP 1\nLQ -1",

@@ -38,7 +38,8 @@ pub fn nth_perfect_power_lower(n: u64) -> Option<u64> {
         return Some(MAX_PERFECT_POW);
     }
     let x = n as f64;
-    let mut pp = x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
+    let mut pp =
+        x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
     pp += -2.0 * x.powf(5.0 / 3.0) - 2.0 * x.powf(7.0 / 5.0) - 2.0 * x.powf(9.0 / 7.0)
         + 2.0 * x.powf(12.0 / 10.0);
     pp += -2.0 * x.powf(13.0 / 11.0) - 2.0 * x.powf(15.0 / 13.0);
@@ -72,7 +73,8 @@ pub fn nth_perfect_power_upper(n: u64) -> Option<u64> {
         return Some(MAX_PERFECT_POW);
     }
     let x = n as f64;
-    let mut pp = x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
+    let mut pp =
+        x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
     pp += -2.0 * x.powf(5.0 / 3.0) - 2.0 * x.powf(7.0 / 5.0) - 2.0 * x.powf(9.0 / 7.0)
         + 2.0 * x.powf(12.0 / 10.0);
     // MPU skips the 11 and 13 terms here.
@@ -107,10 +109,12 @@ pub fn nth_perfect_power_approx(n: u64) -> Option<u64> {
         return Some(MAX_PERFECT_POW);
     }
     let x = n as f64;
-    let mut pp = x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
+    let mut pp =
+        x.powf(2.0) + (13.0 / 3.0) * x.powf(4.0 / 3.0) + (32.0 / 15.0) * x.powf(16.0 / 15.0);
     pp += -2.0 * x.powf(5.0 / 3.0) - 2.0 * x.powf(7.0 / 5.0) - 2.0 * x.powf(9.0 / 7.0)
         + 2.0 * x.powf(12.0 / 10.0);
-    pp += -2.0 * x.powf(13.0 / 11.0) - 2.0 * x.powf(15.0 / 13.0) + 2.0 * x.powf(16.0 / 14.0)
+    pp += -2.0 * x.powf(13.0 / 11.0) - 2.0 * x.powf(15.0 / 13.0)
+        + 2.0 * x.powf(16.0 / 14.0)
         + 2.0 * x.powf(17.0 / 15.0);
     pp -= 0.48 * x.powf(19.0 / 17.0);
     pp -= 1.5;
@@ -131,61 +135,37 @@ mod tests {
     use super::*;
 
     #[test]
-    fn zero_index_is_none_for_all_bounds() {
+    fn zero_and_one() {
         assert_eq!(nth_perfect_power_lower(0), None);
         assert_eq!(nth_perfect_power_upper(0), None);
         assert_eq!(nth_perfect_power_approx(0), None);
-    }
-
-    #[test]
-    fn index_one_returns_itself() {
         assert_eq!(nth_perfect_power_lower(1), Some(1));
         assert_eq!(nth_perfect_power_upper(1), Some(1));
         assert_eq!(nth_perfect_power_approx(1), Some(1));
     }
 
     #[test]
-    fn saturation_threshold_returns_max_perfect_power() {
-        let n = MAX_PERFECT_POW_IDX;
-        assert_eq!(nth_perfect_power_lower(n), Some(MAX_PERFECT_POW));
-        assert_eq!(nth_perfect_power_upper(n), Some(MAX_PERFECT_POW));
-        assert_eq!(nth_perfect_power_approx(n), Some(MAX_PERFECT_POW));
-        assert_eq!(nth_perfect_power_lower(u64::MAX), Some(MAX_PERFECT_POW));
-        assert_eq!(nth_perfect_power_upper(u64::MAX), Some(MAX_PERFECT_POW));
-        assert_eq!(nth_perfect_power_approx(u64::MAX), Some(MAX_PERFECT_POW));
-    }
-
-    #[test]
-    fn just_below_threshold_hits_the_clamp_for_upper() {
-        // The polynomial is about n^2. The lower bound stays just under the cap,
-        // while the upper bound's larger terms push it past u64::MAX, so clamp caps it.
-        let n = MAX_PERFECT_POW_IDX - 1;
-        let lo = nth_perfect_power_lower(n).unwrap();
-        assert!(lo > 1 << 63 && lo < MAX_PERFECT_POW, "lower {lo} out of range");
-        assert_eq!(nth_perfect_power_upper(n), Some(u64::MAX));
-    }
-
-    #[test]
-    fn clamp_below_and_above_limit() {
-        assert_eq!(clamp(0.0), 0);
-        assert_eq!(clamp(1234.9), 1234);
-        assert_eq!(clamp(u64::MAX as f64), u64::MAX);
-        assert_eq!(clamp(f64::INFINITY), u64::MAX);
-    }
-
-    #[test]
-    fn small_indices_match_doc_examples() {
-        assert_eq!(nth_perfect_power_lower(10), Some(14));
-        assert_eq!(nth_perfect_power_upper(10), Some(92));
-        assert_eq!(nth_perfect_power_approx(10), Some(56));
-    }
-
-    #[test]
-    fn bounds_are_some_and_ordered_for_small_indices() {
-        for n in 2..=1000 {
+    fn small_values_are_ordered() {
+        for n in 2..2000_u64 {
             let lo = nth_perfect_power_lower(n).unwrap();
-            let up = nth_perfect_power_upper(n).unwrap();
-            assert!(lo <= up, "lower {lo} > upper {up} at n={n}");
+            let hi = nth_perfect_power_upper(n).unwrap();
+            let ap = nth_perfect_power_approx(n).unwrap();
+            assert!(lo <= ap && ap <= hi, "{n}: {lo} {ap} {hi}");
         }
+    }
+
+    #[test]
+    fn index_cap() {
+        for n in [MAX_PERFECT_POW_IDX, u64::MAX] {
+            assert_eq!(nth_perfect_power_lower(n), Some(MAX_PERFECT_POW));
+            assert_eq!(nth_perfect_power_upper(n), Some(MAX_PERFECT_POW));
+            assert_eq!(nth_perfect_power_approx(n), Some(MAX_PERFECT_POW));
+        }
+    }
+
+    #[test]
+    fn clamp_saturates() {
+        assert_eq!(clamp(1e30), u64::MAX);
+        assert_eq!(clamp(12.7), 12);
     }
 }

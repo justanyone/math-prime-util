@@ -1,9 +1,11 @@
 //! Compatibility with the committed MPU combinat oracle.
 mod common;
 
-use common::each;
+use common::{Case, each};
 use math_prime_util::{
-    bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling,
+    bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
+    harmfrac, integer_complexity, multifactorial, pn_primorial, powersum, primorial,
+    rising_factorial, stirling, subfactorial,
 };
 
 fn check_fraction(c: &common::Case, got: Option<(i128, u128)>) {
@@ -95,5 +97,93 @@ fn stirling_oracle() {
 fn bell_number_oracle() {
     each("combinat", "bell_number", |c| {
         check_unsigned(c, bell_number(c.arg(0)));
+    });
+}
+
+fn check_native(case: &Case, function: impl FnOnce(&[u64]) -> Option<u64>) {
+    let Ok(args) = case
+        .args
+        .iter()
+        .map(|arg| arg.parse())
+        .collect::<Result<Vec<u64>, _>>()
+    else {
+        // Skip negative factorial/subfactorial/multifactorial arguments and
+        // the multifactorial case whose n and k exceed u64.
+        return;
+    };
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| function(&args)));
+    if case.error {
+        assert!(result.is_err(), "expected panic: {case:?}");
+    } else {
+        // MPU's bigint answers beyond u64 map to the native API's None.
+        let expected = case
+            .result
+            .as_ref()
+            .and_then(|value| value.parse::<u64>().ok());
+        assert_eq!(result.unwrap(), expected, "{case:?}");
+    }
+}
+
+#[test]
+fn fubini_oracle() {
+    each("combinat", "fubini", |c| check_native(c, |a| fubini(a[0])));
+}
+
+#[test]
+fn factorial_oracle() {
+    each("combinat", "factorial", |c| {
+        check_native(c, |a| factorial(a[0]));
+    });
+}
+
+#[test]
+fn multifactorial_oracle() {
+    each("combinat", "multifactorial", |c| {
+        check_native(c, |a| multifactorial(a[0], a[1]));
+    });
+}
+
+#[test]
+fn subfactorial_oracle() {
+    each("combinat", "subfactorial", |c| {
+        check_native(c, |a| subfactorial(a[0]));
+    });
+}
+
+fn check_binary(name: &str, function: fn(u64, u64) -> Option<u64>) {
+    each("combinat", name, |case| {
+        // Skip negative n (signed factorial API), and bigint n or m inputs.
+        let (Ok(n), Ok(m)) = (case.args[0].parse::<u64>(), case.args[1].parse::<u64>()) else {
+            return;
+        };
+        assert!(!case.error, "unexpected oracle error: {case:?}");
+        // MPU promotes overflowing results to bigint; this native API returns None.
+        let expected = case
+            .result
+            .as_ref()
+            .and_then(|value| value.parse::<u64>().ok());
+        assert_eq!(function(n, m), expected, "{case:?}");
+    });
+}
+
+#[test]
+fn falling_factorial_oracle() {
+    check_binary("falling_factorial", falling_factorial);
+}
+
+#[test]
+fn rising_factorial_oracle() {
+    check_binary("rising_factorial", rising_factorial);
+}
+
+#[test]
+fn powersum_oracle() {
+    check_binary("powersum", powersum);
+}
+
+#[test]
+fn integer_complexity_oracle() {
+    each("combinat", "integer_complexity", |case| {
+        case.check(integer_complexity(case.arg(0)));
     });
 }

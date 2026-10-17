@@ -5,8 +5,9 @@ mod common;
 // 18450931744652885087, 36803912137803496523, and 36832540935240707603.
 use common::each;
 use math_prime_util::{
-    fermat_factor, holf_factor, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael,
-    lehman_factor, squfof_factor,
+    cheb_factor, fermat_factor, holf_factor, is_carmichael, is_cyclic, is_perfect_number,
+    is_quasi_carmichael, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor,
+    prime_bigomega, prime_omega, prime_signature, squfof_factor,
 };
 
 fn check(name: &str, method: impl Fn(u64, Option<u64>) -> Vec<u64>) {
@@ -84,6 +85,102 @@ fn is_perfect_number_oracle() {
     each("factor", "is_perfect_number", |c| {
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(Some(u8::from(is_perfect_number(n))));
+        }
+    });
+}
+
+fn check_bounded(name: &str, method: impl Fn(u64, Option<u64>, Option<u64>) -> Vec<u64>) {
+    common::each("factor", name, |c| {
+        // Signed and wider-than-u64 cases cannot be passed to this API.
+        // pbrent_factor(91, "10foo") is a Perl parsing error; Rust bounds are u64.
+        if c.error {
+            assert_eq!(c.func, "pbrent_factor");
+            assert_eq!(c.args, ["91", "10foo"]);
+            return;
+        }
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let a = c.args.get(1).map(|s| s.parse().unwrap());
+        let b = c.args.get(2).map(|s| s.parse().unwrap());
+        let factors = method(n, a, b);
+        let result = (!factors.is_empty()).then(|| {
+            factors
+                .iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(" ")
+        });
+        c.check(result);
+    });
+}
+
+#[test]
+fn prho_factor_oracle() {
+    check_bounded("prho_factor", |n, a, _| prho_factor(n, a));
+}
+#[test]
+fn pbrent_factor_oracle() {
+    check_bounded("pbrent_factor", pbrent_factor);
+}
+#[test]
+fn pminus1_factor_oracle() {
+    check_bounded("pminus1_factor", pminus1_factor);
+}
+#[test]
+fn pplus1_factor_oracle() {
+    check_bounded("pplus1_factor", |n, a, _| pplus1_factor(n, a));
+}
+
+fn list<T: ToString>(values: &[T]) -> Option<String> {
+    (!values.is_empty()).then(|| {
+        values
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join(" ")
+    })
+}
+
+#[test]
+fn cheb_factor_oracle() {
+    each("factor", "cheb_factor", |c| {
+        // Negative and wider-than-u64 arguments have no native Rust API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let bound = c.args.get(1).map_or(0, |s| s.parse().unwrap());
+        let init_x = c.args.get(2).map_or(0, |s| s.parse().unwrap());
+        c.check(list(&cheb_factor(n, bound, init_x)));
+    });
+}
+
+#[test]
+fn prime_bigomega_oracle() {
+    each("factor", "prime_bigomega", |c| {
+        // Negative and wider-than-u64 arguments have no native Rust API.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            c.check(Some(prime_bigomega(n)));
+        }
+    });
+}
+
+#[test]
+fn prime_omega_oracle() {
+    each("factor", "prime_omega", |c| {
+        // Negative and wider-than-u64 arguments have no native Rust API.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            c.check(Some(prime_omega(n)));
+        }
+    });
+}
+
+#[test]
+fn prime_signature_oracle() {
+    each("factor", "prime_signature", |c| {
+        // Negative and wider-than-u64 arguments have no native Rust API.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            c.check(list(&prime_signature(n)));
         }
     });
 }

@@ -9,3 +9,5 @@ Base gate has reached slow count oracle tests without a reported failure; candid
 Still waiting for the base gate's count oracle cases; no additional source searches or code edits are needed. The review documents four open acceptance failures.
 - 2026-10-17T07:26:49Z launcher: no commit for 61 s; 272 s elapsed. Files changed so far: docs/reviews/rev-mpu-ramanujan-f03-a1-1.md, docs/worker-notes/rv1-mpu-ramanujan-f03-a1-t0222.md.
 Base nth-prime oracle passed; base prime-count oracle is still running. No candidate tests have been executed because the checkout is the base.
+About five minutes remain in the review budget. Review is complete; only the unrelated base gate is pending in its long prime-count oracle case.
+Finalized docs/reviews/rev-mpu-ramanujan-f03-a1-1.md with Verdict: FAIL and four Open findings. Focused base tests passed; base gate remains pending in prime_count_oracle, with no green result claimed. Only review and required notes were changed.

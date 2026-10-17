@@ -6,3 +6,5 @@ Verdict: FAIL
 4. STATUS.md:166 — Open. Both is_ramanujan_prime (line 166) and nth_ramanujan_prime_upper (line 252) remain unchecked in the candidate despite being the functions delivered by this task. Finish validation and tick only the completed functions as required.
 
 The stopped run is not complete against its acceptance criteria. There are no earlier findings to verify. The supplied diff was examined for repeated effects, scan termination, input rejection, public examples, and portability. Code was not modified. This checkout is the base, so local script results cannot establish candidate correctness.
+
+Validation: tools/test.sh tests/compat_families.rs passed all 10 base tests. tools/gate.sh passed base formatting, clippy, and MSRV, but remained in the slow base prime-count oracle test when the review was finalized; no green gate result is claimed. Candidate tests were not run against this base checkout.

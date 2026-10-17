@@ -4,7 +4,14 @@ use std::collections::HashMap;
 
 use crate::{primes, rootint, sqrtint};
 
+mod prime_count_approx;
+mod prime_count_lower;
+mod prime_count_upper;
 mod tables;
+
+pub use prime_count_approx::prime_count_approx;
+pub use prime_count_lower::prime_count_lower;
+pub use prime_count_upper::prime_count_upper;
 
 struct Counter {
     primes: Vec<u64>,

@@ -30,7 +30,7 @@ next number starts from `main`. `main` carries releases only. The rotation is `t
 Each line is ticked, with its date, by the milestone row of the build board when every requirement of that milestone is done.
 The phases are described in `PLAN.md` section 6.
 
-- [ ] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration)
+- [x] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration) (done 2026-10-17)
 - [ ] Milestone 2: factoring and number theory ported and benchmarked against Perl
 - [ ] Release 0.1.0 published on crates.io
 - [ ] Milestone 3: prime counting, nth prime and prime sums ported

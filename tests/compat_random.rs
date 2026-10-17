@@ -1,17 +1,20 @@
 //! Native random-prime checks against MPU 0.75.
 mod common;
 use math_prime_util::{
-    csrand, is_prime, random_maurer_prime_with_cert, random_semiprime, random_shawe_taylor_prime,
+    csrand, is_prime, random_maurer_prime_with_cert, random_nbit_prime, random_ndigit_prime,
+    random_prime, random_safe_prime, random_semiprime, random_shawe_taylor_prime,
     random_shawe_taylor_prime_with_cert,
 };
 
-fn seed(hex: &str) {
-    let bytes: Vec<_> = hex
-        .as_bytes()
+fn unhex(s: &str) -> Vec<u8> {
+    s.as_bytes()
         .chunks_exact(2)
-        .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
-        .collect();
-    csrand(&bytes);
+        .map(|c| u8::from_str_radix(std::str::from_utf8(c).unwrap(), 16).unwrap())
+        .collect()
+}
+
+fn seed(hex: &str) {
+    csrand(&unhex(hex));
 }
 
 #[test]

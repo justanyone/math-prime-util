@@ -1,6 +1,6 @@
 //! Algebraic laws and state isolation for native random primes.
 use math_prime_util::{
-    csrand, irand64, is_prime, powmod, random_maurer_prime_with_cert, random_nbit_prime,
+    csrand, irand64, is_prime, powmod, random_maurer_prime_with_cert, random_nbit_prime, srand,
     random_ndigit_prime, random_prime, random_safe_prime, random_semiprime,
     random_shawe_taylor_prime, random_shawe_taylor_prime_with_cert,
 };

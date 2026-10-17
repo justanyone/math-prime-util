@@ -27,7 +27,11 @@ impl Iterator for FactoredIn {
         let lo = self.range.next()?;
         let end = *self.range.end();
         let hi = lo.saturating_add(256 * 1024 - 1).min(end);
-        self.range = if hi == u64::MAX { 1..=0 } else { hi + 1..=end };
+        self.range = if hi == u64::MAX {
+            RangeInclusive::new(1, 0)
+        } else {
+            hi + 1..=end
+        };
         self.segment = factor_segment(lo, hi).into_iter();
         self.segment.next()
     }
@@ -42,7 +46,7 @@ impl Iterator for FactoredIn {
 #[must_use]
 pub fn factored_in(range: RangeInclusive<u64>) -> FactoredIn {
     let range = if range.is_empty() {
-        1..=0
+        RangeInclusive::new(1, 0)
     } else {
         (*range.start()).max(1)..=*range.end()
     };

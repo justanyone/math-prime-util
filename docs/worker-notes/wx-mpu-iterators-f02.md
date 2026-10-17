@@ -11,3 +11,4 @@ The gate is running offline. Added the unchanged 64-bit almost-prime maximum tab
 About five minutes remain. Waiting for offline build results, then resolving gate diagnostics and checking fixture dispatch.
 The gate is waiting on Cargo's build lock while focused tests compile. Corrected the k=63 boundary expectation: both 2^63 and 3*2^62 have 63 prime factors.
 Build jobs have not produced final diagnostics yet. The oracle fixture tests now exercise the independent squarefree integer sieve; all requested API examples remain runnable.
+Compatibility dispatch now calls all four closure APIs directly. Builds remain blocked or running without final output; checking the gate again before declaring validation status.

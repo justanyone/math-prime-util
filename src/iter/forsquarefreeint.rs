@@ -41,7 +41,11 @@ impl Iterator for SquarefreeIntegersIn {
             } else {
                 end
             };
-            self.range = if hi == u64::MAX { 1..=0 } else { hi + 1..=end };
+            self.range = if hi == u64::MAX {
+                RangeInclusive::new(1, 0)
+            } else {
+                hi + 1..=end
+            };
             self.segment = squarefree_segment(lo, hi).into_iter();
         }
     }
@@ -57,7 +61,7 @@ impl Iterator for SquarefreeIntegersIn {
 #[must_use]
 pub fn squarefree_integers_in(range: RangeInclusive<u64>) -> SquarefreeIntegersIn {
     let range = if range.is_empty() {
-        1..=0
+        RangeInclusive::new(1, 0)
     } else {
         (*range.start()).max(1)..=*range.end()
     };

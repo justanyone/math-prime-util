@@ -35,7 +35,7 @@ pub fn almost_primes_in(k: u32, range: RangeInclusive<u64>) -> AlmostPrimesIn {
     if range.is_empty() || k == 0 || k >= 64 {
         return AlmostPrimesIn {
             k: 0,
-            range: 1..=0,
+            range: RangeInclusive::new(1, 0),
             shift: 0,
         };
     }

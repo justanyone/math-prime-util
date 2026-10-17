@@ -8,3 +8,4 @@ All five compatibility tests and four property/concurrency tests passed offline.
 Focused tests passed. Fixed clippy findings and saturated the BLS cubic bound to avoid u128 overflow. Added n-1 theorem and parser regression tests; gate rerun follows.
 Corrected the BLS5 test expectation for 101: its implicit factor 2 suffices. Fixed test and benchmark lint findings. All required code is present; final gate is next. Coverage percentage has not been measured.
 Final gate passed formatting, clippy, and the MSRV build. The full offline test suite is running; compatibility count tests are the current step.
+- 2026-10-17T08:55:27Z launcher: no commit for 60 s; 303 s elapsed. Files changed so far: benches/primality.rs, docs/worker-notes/wx-mpu-aks-proving.md, src/proving/aks.rs, src/proving/certificate.rs, src/proving/mod.rs, tests/compat_primality.rs, tests/prop_primality.rs.

@@ -94,3 +94,27 @@ fn frobenius_repeat_and_concurrent_calls() {
         handle.join().unwrap();
     }
 }
+
+proptest! {
+    #[test]
+    fn primes_are_catalan_pseudoprimes(n in 2_u64..100_000) {
+        if is_prime(n) != 0 {
+            prop_assert!(is_catalan_pseudoprime(n));
+        }
+    }
+    #[test]
+    fn chen_and_delicate_are_prime(n in 0_u64..100_000) {
+        if is_chen_prime(n) {
+            prop_assert!(is_prime(n) != 0);
+        }
+        if is_delicate_prime(n, 10) == Some(true) {
+            prop_assert!(is_prime(n) != 0);
+        }
+    }
+}
+
+#[test]
+#[should_panic(expected = "restriction must be between 0 and 3")]
+fn perrin_bad_restriction() {
+    let _ = is_perrin_pseudoprime(271_441, 4);
+}

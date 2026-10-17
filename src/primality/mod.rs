@@ -3,7 +3,9 @@ use crate::int::{gcd, is_square, mont::Mont};
 use crate::lucas::lucas_sequence;
 use crate::modular::{addmod_u, mulmod_u, powmod_u};
 
+mod extras;
 mod perrin;
+pub use extras::*;
 pub use perrin::*;
 
 fn jacobi(mut a: u64, mut n: u64) -> i8 {

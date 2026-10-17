@@ -20,3 +20,5 @@ Minute update: gate and wrapper test run continue without reported errors; the l
 Still waiting on full-suite prime_count; no code changes since the lint fix. This run uses only offline checks and leaves the reference untouched.
 Gate count compatibility tests completed; gate advanced to later property tests without failures. Waiting for docs and the final green marker.
 Gate finished successfully with == gate: green (fmt, all-target pedantic Clippy, MSRV 1.85, all tests, docs). All 242 doc tests passed. Remaining task gap: no MPU 0.75 implementation exists for the requested C citations or oracle semantics.
+Final wrapper run still active after a green gate; no source changes remain. The reference fidelity gap is documented in module docs and these notes.
+Final: tools/test.sh also completed successfully; focused unit/property/doc tests and the full gate passed offline. Six functions, laws, examples, benchmark source, exports, and generated ticks are written. A faithful MPU algorithm port and C function citations remain blocked because the supplied release only proposes these names in TODO.

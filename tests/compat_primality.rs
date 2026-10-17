@@ -249,3 +249,58 @@ fn is_prime_oracle() {
         }
     });
 }
+
+#[test]
+fn is_frobenius_pseudoprime_oracle() {
+    common::each("primality", "is_frobenius_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let parameters = if c.args.len() == 3 {
+            let (Ok(p), Ok(q)) = (c.args[1].parse::<i64>(), c.args[2].parse::<i64>()) else {
+                return;
+            };
+            // MPU uses its bigint fallback outside the native C P,Q bound.
+            if p.unsigned_abs() > 3_037_000_497 || q.unsigned_abs() > 3_037_000_497 {
+                return;
+            }
+            Some((p, q))
+        } else {
+            None
+        };
+        let result = std::panic::catch_unwind(|| {
+            parameters.map_or_else(
+                || is_frobenius_pseudoprime(n),
+                |(p, q)| is_frobenius_pseudoprime_pq(n, p, q),
+            )
+        });
+        if c.error {
+            assert!(result.is_err(), "{c:?}");
+        } else {
+            c.check(Some(u8::from(result.unwrap())));
+        }
+    });
+}
+
+#[test]
+fn is_frobenius_khashin_pseudoprime_oracle() {
+    common::each("primality", "is_frobenius_khashin_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        c.check(Some(u8::from(is_frobenius_khashin_pseudoprime(n))));
+    });
+}
+
+#[test]
+fn is_frobenius_underwood_pseudoprime_oracle() {
+    common::each("primality", "is_frobenius_underwood_pseudoprime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        c.check(Some(u8::from(is_frobenius_underwood_pseudoprime(n))));
+    });
+}

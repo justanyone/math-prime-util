@@ -244,9 +244,9 @@ mod tests {
 
     #[test]
     fn chebyshev_known_values() {
-        assert_eq!(chebyshev_theta(1), 0.0);
-        assert_eq!(chebyshev_psi(1), 0.0);
-        assert_eq!(chebyshev_psi(0), 0.0);
+        assert_eq!(chebyshev_theta(1).to_bits(), 0.0_f64.to_bits());
+        assert_eq!(chebyshev_psi(1).to_bits(), 0.0_f64.to_bits());
+        assert_eq!(chebyshev_psi(0).to_bits(), 0.0_f64.to_bits());
         assert!((chebyshev_theta(10) - 210.0_f64.ln()).abs() < 1e-12);
     }
 

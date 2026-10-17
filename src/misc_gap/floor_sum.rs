@@ -17,8 +17,7 @@ pub fn floor_sum(n: u64, m: u64, a: u64, b: u64) -> Option<u64> {
     if n == 0 {
         return Some(0);
     }
-    let (mut n, mut m, mut a, mut b) =
-        (u128::from(n), u128::from(m), u128::from(a), u128::from(b));
+    let (mut n, mut m, mut a, mut b) = (u128::from(n), u128::from(m), u128::from(a), u128::from(b));
     let limit = u128::from(u64::MAX);
     let mut sum = 0;
     loop {

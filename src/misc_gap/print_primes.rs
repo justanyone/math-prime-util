@@ -83,11 +83,13 @@ mod tests {
     #[test]
     fn separate_writers_in_threads() {
         let handles: Vec<_> = (0..4)
-            .map(|_| std::thread::spawn(|| {
-                let mut out = Vec::new();
-                print_primes(2, 7, &mut out).unwrap();
-                out
-            }))
+            .map(|_| {
+                std::thread::spawn(|| {
+                    let mut out = Vec::new();
+                    print_primes(2, 7, &mut out).unwrap();
+                    out
+                })
+            })
             .collect();
         for handle in handles {
             assert_eq!(handle.join().unwrap(), b"2\n3\n5\n7\n");

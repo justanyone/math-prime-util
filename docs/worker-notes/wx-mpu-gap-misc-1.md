@@ -4,3 +4,7 @@ Add oracle, unit, property, and benchmark coverage without dependencies or fixtu
 Run focused offline tests, then the required gate; use the repository status tool.
 
 The reference has no Higgs symbol; port the four available functions and document the missing algorithm.
+
+Four functions and their tests are written. Next run focused offline tests and formatting.
+
+Focused compilation found that is_prime returns u8; fixed the property predicate. The status tool ticked only the four implemented functions.

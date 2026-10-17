@@ -67,9 +67,9 @@ pub use int::*;
 pub use iter::*;
 #[allow(unused_imports)] // until the module has public items
 pub use lucas::*;
+pub use misc_gap::*;
 #[allow(unused_imports)] // until the module has public items
 pub use modular::*;
-pub use misc_gap::*;
 #[allow(unused_imports)] // until the module has public items
 pub use primality::*;
 #[allow(unused_imports)] // until the module has public items

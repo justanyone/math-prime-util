@@ -15,3 +15,4 @@ All implementation and test edits are complete. Offline verification is still co
 The first compile found fixture-test functions shadowing the four imported APIs. Qualified calls with math_prime_util to fix it. Property tests and benchmark targets compiled successfully; rerun focused tests and the gate next.
 Focused verification passed: all 19 compatibility tests and all 20 iterator property/state tests. Criterion targets compiled. Gate formatting and clippy passed; the Rust 1.85 offline build is running.
 The focused tests pass and git diff --check is clean. Waiting for the required MSRV/full-suite/documentation gate; no source changes remain pending.
+The Rust 1.85 build passed offline. The gate is now compiling the full all-features test suite; formatting, pedantic clippy, fixture checks, and iterator properties have passed.

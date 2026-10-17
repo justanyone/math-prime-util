@@ -1,6 +1,8 @@
-<<<<<<< HEAD
-//! Algebraic laws for bounded factor methods. Factors need not be prime.
-use math_prime_util::{fermat_factor, holf_factor, lehman_factor, squfof_factor};
+//! Algebraic laws for bounded factor methods and the factor predicates.
+use math_prime_util::{
+    fermat_factor, gcd, holf_factor, is_carmichael, is_cyclic, is_perfect_number,
+    is_quasi_carmichael, lehman_factor, squfof_factor,
+};
 use proptest::prelude::*;
 
 type Method = fn(u64, Option<u64>) -> Vec<u64>;
@@ -71,10 +73,7 @@ fn concurrent_repeated_calls_have_no_shared_state() {
             }
         });
     });
-=======
-//! Independent algebraic checks for the factor predicates.
-use math_prime_util::{gcd, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
-use proptest::prelude::*;
+}
 
 fn factors(mut n: u64) -> Vec<u64> {
     let mut result = Vec::new();
@@ -181,5 +180,4 @@ fn repeated_and_concurrent_calls_agree() {
         second.join().unwrap();
     });
     check();
->>>>>>> origin/dev-001
 }

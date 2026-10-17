@@ -2,3 +2,4 @@
 
 - Goal: resolve the four conflicted files (benches/factor.rs, src/factor/mod.rs, tests/compat_factor.rs, tests/prop_factor.rs) keeping both sides' intent.
 - Method: read each conflict hunk, keep HEAD's factor functions and dev-001's additions, drop duplicates, then run focused tests with mw-test.
+- Resolved all four conflict files (union of both sides' functions, tests and imports). Next: run mw-test on the four files.

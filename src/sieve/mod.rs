@@ -34,7 +34,7 @@ fn cache() -> &'static Mutex<PrimeCache> {
 }
 
 fn lock_cache() -> std::sync::MutexGuard<'static, PrimeCache> {
-    cache().lock().unwrap_or_else(|e| e.into_inner())
+    cache().lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// Fill the shared prime cache at least through `n`.
@@ -92,7 +92,7 @@ pub fn prime_memfree() {
     };
     let padded = pad_limit(INITIAL_CACHE_SIZE);
     let sieve = build_sieve(padded);
-    let mut guard = lock.lock().unwrap_or_else(|e| e.into_inner());
+    let mut guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
     guard.sieve = sieve;
     guard.limit = padded;
 }
@@ -162,7 +162,9 @@ impl Iterator for PrimesIn {
         if self.lo > self.hi || self.hi < 2 {
             return None;
         }
-        let p = if !self.started {
+        let p = if self.started {
+            next_prime(self.cursor)?
+        } else {
             self.started = true;
             if self.lo <= 2 {
                 2
@@ -171,8 +173,6 @@ impl Iterator for PrimesIn {
             } else {
                 next_prime(self.lo)?
             }
-        } else {
-            next_prime(self.cursor)?
         };
         if p > self.hi {
             return None;
@@ -184,16 +184,13 @@ impl Iterator for PrimesIn {
 
 fn primes_from_cache(lo: u64, hi: u64) -> Option<Vec<u64>> {
     let lock = CACHE.get()?;
-    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
+    let guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
     if guard.limit == 0 || hi >= guard.limit {
         return None;
     }
     let mut out = Vec::new();
     let mut n = lo.saturating_sub(1);
-    loop {
-        let Some(p) = next_in_sieve(&guard.sieve, n, guard.limit) else {
-            break;
-        };
+    while let Some(p) = next_in_sieve(&guard.sieve, n, guard.limit) {
         if p > hi {
             break;
         }
@@ -292,7 +289,7 @@ pub fn prev_prime(n: u64) -> Option<u64> {
     if n <= 2 {
         return None;
     }
-    if let Some(Some(p)) = cache_prev(n) {
+    if let PrevHit::Found(Some(p)) = cache_prev(n) {
         return Some(p);
     }
     wheel_prev(n)
@@ -300,21 +297,30 @@ pub fn prev_prime(n: u64) -> Option<u64> {
 
 fn cache_next(n: u64) -> Option<u64> {
     let lock = CACHE.get()?;
-    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
+    let guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
     if guard.limit == 0 || n >= guard.limit {
         return None;
     }
     next_in_sieve(&guard.sieve, n, guard.limit)
 }
 
-/// `None` means the cache does not cover `n`. `Some(None)` means no prime.
-fn cache_prev(n: u64) -> Option<Option<u64>> {
-    let lock = CACHE.get()?;
-    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
+/// Cache coverage for [`prev_prime`].
+enum PrevHit {
+    /// `n` is outside the cached sieve.
+    Outside,
+    /// The sieve answered. `None` means it found no prime.
+    Found(Option<u64>),
+}
+
+fn cache_prev(n: u64) -> PrevHit {
+    let Some(lock) = CACHE.get() else {
+        return PrevHit::Outside;
+    };
+    let guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
     if guard.limit == 0 || n >= guard.limit {
-        return None;
+        return PrevHit::Outside;
     }
-    Some(prev_in_sieve(&guard.sieve, n))
+    PrevHit::Found(prev_in_sieve(&guard.sieve, n))
 }
 
 /// Offsets `i` in `0..width` where `start + i` has no prime factor `<= depth`
@@ -472,13 +478,12 @@ pub fn sieve_prime_cluster(lo: u64, hi: u64, offsets: &[u64]) -> Vec<u64> {
 fn validate_cluster(offsets: &[u64]) {
     let mut prev: Option<u64> = None;
     for &c in offsets {
-        if c % 2 == 1 {
-            panic!("sieve_prime_cluster: values must be even");
-        }
+        assert!(c % 2 == 0, "sieve_prime_cluster: values must be even");
         if let Some(p) = prev {
-            if c <= p {
-                panic!("sieve_prime_cluster: values must be increasing");
-            }
+            assert!(
+                c > p,
+                "sieve_prime_cluster: values must be increasing"
+            );
         }
         prev = Some(c);
     }
@@ -555,7 +560,7 @@ fn sum_leq(n: u64) -> u128 {
     let memo = sum_memo();
     if let Some(hit) = memo
         .lock()
-        .unwrap_or_else(|e| e.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
         .get(&n)
         .copied()
     {
@@ -563,7 +568,7 @@ fn sum_leq(n: u64) -> u128 {
     }
     let value = sum_leq_lucy(n);
     memo.lock()
-        .unwrap_or_else(|e| e.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
         .insert(n, value);
     value
 }

@@ -81,11 +81,11 @@ pub(crate) fn build_sieve(limit: u64) -> Vec<u8> {
     }
     let root = crate::int::sqrtint(limit - 1);
     for d in 0..nbytes {
-        for b in 0..8 {
+        for (b, &res) in WHEEL_RES.iter().enumerate() {
             if s[d] & (1 << b) != 0 {
                 continue;
             }
-            let p = d as u64 * 30 + u64::from(WHEEL_RES[b]);
+            let p = d as u64 * 30 + u64::from(res);
             if p < 7 {
                 continue;
             }

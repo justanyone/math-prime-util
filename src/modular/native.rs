@@ -428,7 +428,7 @@ fn log_rho(a: u64, g: u64, p: u64, n: u64, maxrounds: u64) -> Option<u64> {
         _ => (mulmod_u(u, g, p), v, addmod_u(w, 1, n)),
     };
     for restart in 0..=4 {
-        let mut slow = (powmod_u(g, restart, p), 0, restart);
+        let mut slow = (powmod_u(g, restart, p), 0, restart % n);
         let mut fast = cycle(slow);
         let (mut power, mut lam, mut round) = (1, 1, 1);
         while slow.0 != fast.0 && round < maxrounds.min(n) {
@@ -487,7 +487,7 @@ fn log_solve(a: u64, g: u64, p: u64, n: u64) -> Option<u64> {
     if n <= 10_000 || powmod_u(a, n, p) != 1 {
         return None;
     }
-    let result = if (sqrtint(n) + 1) / 2 > 1_000_000 {
+    let result = if sqrtint(n).div_ceil(2) > 1_000_000 {
         log_rho(a, g, p, n, 2_000_000_000)
     } else {
         bsgs(a, g, p, n)
@@ -671,4 +671,47 @@ pub fn pisano_period(n: u64) -> u128 {
         r += k;
     }
     r
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bsgs_and_rho_paths() {
+        let (g, p, n) = (25, 1_000_000_007, 500_000_003);
+        let a = powmod_u(g, 1_234_567, p);
+        assert_eq!(bsgs(a, g, p, n), Some(1_234_567));
+        assert_eq!(log_solve(a, g, p, n), Some(1_234_567));
+        for k in [1, 2, 3, 17, 123, 508] {
+            let a = powmod_u(4, k, 1019);
+            let x = log_rho(a, 4, 1019, 509, 509).unwrap();
+            assert_eq!(powmod_u(4, x, 1019), a);
+        }
+        assert_eq!(bsgs(3, 4, 17, 8), None);
+        assert_eq!(log_rho(3, 4, 17, 8, 8), None);
+    }
+
+    #[test]
+    fn prime_power_paths() {
+        for (p, e) in [(2, 8), (3, 5), (5, 4)] {
+            for n in [0, 1, 2, 10, 27, 100, 257, 1000] {
+                for k in 0..=n.min(40) {
+                    assert_eq!(
+                        binomial_granville(n, k, p, e),
+                        binomial_prime_power(n, k, p, e)
+                    );
+                }
+            }
+        }
+        assert_eq!(factor_exp(1), vec![]);
+        assert_eq!(
+            factor_exp(1_000_003 * 1_000_033),
+            vec![(1_000_003, 1), (1_000_033, 1)]
+        );
+        assert_eq!(
+            factorialmod(1001, 10007),
+            Some((2..=1001).fold(1, |r, i| mulmod_u(r, i, 10007)))
+        );
+    }
 }

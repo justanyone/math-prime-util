@@ -10,3 +10,5 @@ Focused tests and the gate are compiling offline; gate currently waits on the sh
 All 11 focused tests pass. Clippy found two unnecessary conversion expects; replacing them with bounded native casts, then rerunning gate.
 Focused oracle and property checks pass; restored C small-word product and digit-power fast paths. Benchmark formatting now follows the existing Criterion pattern.
 Clippy and Rust 1.85 offline build now pass. The gate is running the complete test and documentation checks.
+Full-suite unit, compatibility, and property checks have passed so far; waiting for runnable documentation examples and the final gate marker.
+Finished: all four functions, runnable docs, oracle/property/boundary/concurrency tests, and benchmarks are written. Focused tests, tools/test.sh, and tools/gate.sh passed offline; gate printed == gate: green. Signed and oversized fixture arguments are documented skips. No commits or pushes performed.

@@ -313,6 +313,7 @@ proptest! {
 
     #[test]
     fn valuation_adds_over_products(a in 1_u64..2_000, b in 1_u64..2_000, k in 2_u64..40) {
+        prop_assume!(is_prime(k) != 0);
         let prod = a * b;
         let va = valuation(a, k).unwrap();
         let vb = valuation(b, k).unwrap();
@@ -367,8 +368,8 @@ fn ramanujan_sum_edges_and_repeat() {
     assert_eq!(ramanujan_sum(1, 1), 1);
     assert_eq!(ramanujan_sum(12, 36), 4);
     assert_eq!(ramanujan_sum(12, 36), ramanujan_sum(12, 36));
-    // gcd(k, n) > 1 and moebius(g) == 0.
-    assert_eq!(ramanujan_sum(12, 2), 0);
+    // g = 12 has a square factor, so the sum is zero.
+    assert_eq!(ramanujan_sum(12, 1), 0);
     let p = next_prime(1_u64 << 63).unwrap();
     assert_ne!(is_prime(p), 0);
     assert_eq!(

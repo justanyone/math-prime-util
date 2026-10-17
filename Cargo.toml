@@ -14,6 +14,7 @@ publish = false
 exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 
 [dependencies]
+getrandom = { version = "0.3", features = ["std"] }
 
 [dev-dependencies]
 proptest = "1"

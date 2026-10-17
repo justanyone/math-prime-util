@@ -10,5 +10,8 @@ use crate::{prime_count, primes_in, sqrtint};
 /// assert_eq!(semiprime_count(100), 34);
 /// ```
 pub fn semiprime_count(n: u64) -> u64 {
-    primes_in(2..=sqrtint(n)).enumerate().map(|(i, p)| prime_count(n / p) - i as u64).sum()
+    primes_in(2..=sqrtint(n))
+        .enumerate()
+        .map(|(i, p)| prime_count(n / p) - i as u64)
+        .sum()
 }

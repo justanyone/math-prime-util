@@ -1,43 +1,42 @@
-//! Algebraic laws for lucky-number ranks and membership.
-use math_prime_util::*;
+//! Algebraic laws for twin estimates and semiprimes.
+use math_prime_util::{
+    is_prime, nth_twin_prime_approx, semi_primes, semiprime_count, semiprime_count_approx,
+};
 use proptest::prelude::*;
 
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
-    fn lucky_rank_inverse(k in 1u64..5000) {
-        let n = nth_lucky(k).unwrap();
-        prop_assert!(is_lucky(n));
-        prop_assert_eq!(lucky_count(n), k);
-        prop_assert_eq!(lucky_count(n - 1), k - 1);
-        prop_assert!(nth_lucky_lower(k).unwrap() <= n);
-        prop_assert!(n <= nth_lucky_upper(k).unwrap());
+    fn semiprime_list_count(lo in 0u64..2000, width in 0u64..200) {
+        let hi = lo + width;
+        let values = semi_primes(lo, hi);
+        let before = lo.checked_sub(1).map_or(0, semiprime_count);
+        prop_assert_eq!(values.len() as u64, semiprime_count(hi)-before);
+        prop_assert!(values.windows(2).all(|w| w[0] < w[1]));
+        for n in values {
+            prop_assert!((2..=math_prime_util::sqrtint(n)).any(|p| n%p == 0 && is_prime(p) != 0 && is_prime(n/p) != 0));
+        }
     }
     #[test]
-    fn lucky_sieve_membership(n in 0u64..10000) {
-        let values = lucky_numbers(0, n);
-        prop_assert_eq!(values.len() as u64, lucky_count(n));
-        prop_assert_eq!(values.last() == Some(&n), is_lucky(n));
-        prop_assert!(values.windows(2).all(|w| w[0] < w[1]));
-        prop_assert!(lucky_count_lower(n) <= lucky_count(n));
-        prop_assert!(lucky_count(n) <= lucky_count_upper(n));
+    fn small_approx_is_exact(n in 0u64..=623) {
+        prop_assert_eq!(semiprime_count_approx(n), semiprime_count(n));
+    }
+    #[test]
+    fn twin_estimate_grows(n in 6u64..100000) {
+        prop_assert!(nth_twin_prime_approx(n).unwrap() <= nth_twin_prime_approx(n+1).unwrap());
     }
 }
 
 #[test]
-fn independent_and_concurrent_calls() {
-    let expected = lucky_numbers(0, 300_000);
-    let threads: Vec<_> = (0..4)
-        .map(|_| std::thread::spawn(|| lucky_numbers(0, 300_000)))
+fn empty_ranges_and_repeat_calls() {
+    assert!(semi_primes(15, 4).is_empty());
+    assert!(semi_primes(0, 3).is_empty());
+    assert!(semi_primes(u64::MAX, u64::MAX).is_empty());
+    let expected = semi_primes(0, 2000);
+    let workers: Vec<_> = (0..4)
+        .map(|_| std::thread::spawn(|| semi_primes(0, 2000)))
         .collect();
-    for thread in threads {
-        assert_eq!(thread.join().unwrap(), expected);
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), expected);
     }
-    assert_eq!(lucky_numbers(10, 1), []);
-    assert_eq!(lucky_numbers(0, 0), []);
-    assert_eq!(nth_lucky(0), None);
-    assert_eq!(nth_lucky_approx(0), None);
-    assert_eq!(nth_lucky_lower(0), None);
-    assert_eq!(nth_lucky_upper(0), None);
-    assert!(!is_lucky(u64::MAX));
 }

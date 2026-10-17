@@ -43,5 +43,9 @@ pub fn semi_primes(lo: u64, hi: u64) -> Vec<u64> {
             n += u128::from(p);
         }
     }
-    marks.into_iter().zip(lo..=hi).filter_map(|(count, n)| (count == 1).then_some(n)).collect()
+    marks
+        .into_iter()
+        .zip(lo..=hi)
+        .filter_map(|(count, n)| (count == 1).then_some(n))
+        .collect()
 }

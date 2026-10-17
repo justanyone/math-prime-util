@@ -1,16 +1,22 @@
-#![allow(missing_docs)]
-//! Benchmarks for the lucky-number sieve, rank, and membership paths.
+//! Benchmarks for twin estimates and semiprime operations.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{is_lucky, lucky_count, lucky_numbers, nth_lucky};
-fn bench_families(c: &mut Criterion) {
-    c.bench_function("lucky_numbers", |b| {
-        b.iter(|| lucky_numbers(0, black_box(1_000_000)));
+use math_prime_util::{
+    nth_twin_prime_approx, semi_primes, semiprime_count, semiprime_count_approx,
+};
+
+fn families(c: &mut Criterion) {
+    c.bench_function("nth_twin_prime_approx", |b| {
+        b.iter(|| nth_twin_prime_approx(black_box(100_000)))
     });
-    c.bench_function("lucky_count", |b| {
-        b.iter(|| lucky_count(black_box(1_000_000)));
+    c.bench_function("semi_primes", |b| {
+        b.iter(|| semi_primes(black_box(1_000_000), black_box(1_001_000)))
     });
-    c.bench_function("nth_lucky", |b| b.iter(|| nth_lucky(black_box(100_000))));
-    c.bench_function("is_lucky", |b| b.iter(|| is_lucky(black_box(971_011))));
+    c.bench_function("semiprime_count", |b| {
+        b.iter(|| semiprime_count(black_box(1_000_000)))
+    });
+    c.bench_function("semiprime_count_approx", |b| {
+        b.iter(|| semiprime_count_approx(black_box(1_000_000)))
+    });
 }
-criterion_group!(benches, bench_families);
+criterion_group!(benches, families);
 criterion_main!(benches);

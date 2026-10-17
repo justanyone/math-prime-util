@@ -1,6 +1,10 @@
-#![allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-use super::almost_prime_count_upper::{max_count,max_nth,FIRST_3};
-use crate::{nth_prime,prime_count_upper};
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+use super::almost_prime_count_upper::{FIRST_3, max_count, max_nth};
+use crate::{nth_prime, prime_count_upper};
 // MPU inverse_interpolate.c: _linear_interpolate and _inverse_interpolate.
 fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
     if n == rlo {
@@ -14,16 +18,28 @@ fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
     lo + movement.clamp(1, span - 1)
 }
 pub(super) fn inverse(mut lo: u64, mut hi: u64, n: u64, f: impl Fn(u64) -> u64) -> u64 {
-    if hi==0 {
-        let mut rlo=f(lo);
-        if rlo==n {return lo;}
+    if hi == 0 {
+        let mut rlo = f(lo);
+        if rlo == n {
+            return lo;
+        }
         loop {
-            let factor=(n as f64/rlo as f64-0.004).clamp(1.004,8.0);
-            let mid=if u64::MAX as f64/lo as f64<=factor {u64::MAX} else {(factor*lo as f64+1.0) as u64};
-            let rmid=f(mid);
-            if rmid>=n {hi=mid;break;}
-            lo=mid;rlo=rmid;
-            if lo==u64::MAX {return 0;}
+            let factor = (n as f64 / rlo as f64 - 0.004).clamp(1.004, 8.0);
+            let mid = if u64::MAX as f64 / lo as f64 <= factor {
+                u64::MAX
+            } else {
+                (factor * lo as f64 + 1.0) as u64
+            };
+            let rmid = f(mid);
+            if rmid >= n {
+                hi = mid;
+                break;
+            }
+            lo = mid;
+            rlo = rmid;
+            if lo == u64::MAX {
+                return 0;
+            }
         }
     }
     let mut mid = lo + (hi - lo) / 2;
@@ -127,30 +143,69 @@ pub(super) fn inverse(mut lo: u64, mut hi: u64, n: u64, f: impl Fn(u64) -> u64) 
     hi
 }
 
-
 // MPU almost_primes.c: reduce_nth_factor and _fast_small_nth_almost_prime.
-pub(super) fn reduction(k:u32,n:u64)->u32 {
- if k<=1 || k>=64 {return 0;}
- let mut r=0;
- if k>49 {if n>=FIRST_3[49] {return 0;} r=k-49+1;}
- while n<FIRST_3[(k-r) as usize] {r+=1;}
- r
+pub(super) fn reduction(k: u32, n: u64) -> u32 {
+    if k <= 1 || k >= 64 {
+        return 0;
+    }
+    let mut r = 0;
+    if k > 49 {
+        if n >= FIRST_3[49] {
+            return 0;
+        }
+        r = k - 49 + 1;
+    }
+    while n < FIRST_3[(k - r) as usize] {
+        r += 1;
+    }
+    r
 }
-pub(super) fn small(k:u32,n:u64)->u64 {
- if k==2 {[0,4,6,9,10,14,15,21][n as usize]} else {[0,8,12,18,20,27,28,30][n as usize]<<(k-3)}
+pub(super) fn small(k: u32, n: u64) -> u64 {
+    if k == 2 {
+        [0, 4, 6, 9, 10, 14, 15, 21][n as usize]
+    } else {
+        [0, 8, 12, 18, 20, 27, 28, 30][n as usize] << (k - 3)
+    }
 }
 // MPU prime_counts.c: nth_prime_lower and simple_nth_limits.
-pub(super) fn prime_lower(n:u64)->u64 {
- if n<306 {return nth_prime(n).unwrap_or(0);}
- if n>=max_count(1) {return if n==max_count(1) {max_nth(1)} else {0};}
- let x=n as f64;let l=x.ln();let ll=l.ln();
- if n<2000000 {
- let a=if n<228 {0.6483} else if n<948 {0.8032} else if n<2195 {0.8800} else if n<39017 {0.9019} else {0.9484};
- let mut lo=(x*(l+ll-1.0+(ll-2.10)/l)) as u64;let mut hi=(x*(l+ll-a)) as u64;
- while lo<hi {let mid=lo+(hi-lo)/2;if prime_count_upper(mid)<n {lo=mid+1;} else {hi=mid;}} return lo;
- }
- let b=if n<56000000 {11.200} else {11.50800000002};
- (x*(l+ll-1.0+(ll-2.0)/l-(ll*ll-6.0*ll+b)/(2.0*l*l))).ceil().min(max_nth(1) as f64) as u64
+pub(super) fn prime_lower(n: u64) -> u64 {
+    if n < 306 {
+        return nth_prime(n).unwrap_or(0);
+    }
+    if n >= max_count(1) {
+        return if n == max_count(1) { max_nth(1) } else { 0 };
+    }
+    let x = n as f64;
+    let l = x.ln();
+    let ll = l.ln();
+    if n < 2000000 {
+        let a = if n < 228 {
+            0.6483
+        } else if n < 948 {
+            0.8032
+        } else if n < 2195 {
+            0.8800
+        } else if n < 39017 {
+            0.9019
+        } else {
+            0.9484
+        };
+        let mut lo = (x * (l + ll - 1.0 + (ll - 2.10) / l)) as u64;
+        let mut hi = (x * (l + ll - a)) as u64;
+        while lo < hi {
+            let mid = lo + (hi - lo) / 2;
+            if prime_count_upper(mid) < n {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+    let b = if n < 56000000 { 11.200 } else { 11.50800000002 };
+    (x * (l + ll - 1.0 + (ll - 2.0) / l - (ll * ll - 6.0 * ll + b) / (2.0 * l * l)))
+        .ceil()
+        .min(max_nth(1) as f64) as u64
 }
 /// Return a lower bound for the `n`th integer with `k` prime factors.
 ///
@@ -161,10 +216,28 @@ pub(super) fn prime_lower(n:u64)->u64 {
 /// assert_eq!(math_prime_util::nth_almost_prime_lower(3, 4), Some(20));
 /// ```
 #[must_use]
-pub fn nth_almost_prime_lower(k:u32,n:u64)->Option<u64> {
- if n==0 {return None;} if k==0 {return (n==1).then_some(1);} if k==1 {return Some(prime_lower(n));}
- let max=max_count(k);if n>=max {return (n==max && max>0).then(||max_nth(k));}
- if n<8 {return Some(small(k,n));}
- let r=reduction(k,n);if r>0 {return nth_almost_prime_lower(k-r,n).map(|v|v<<r);}
- Some(inverse(3_u64<<k,0,n,|x|super::almost_prime_count_upper(k,x)))
+pub fn nth_almost_prime_lower(k: u32, n: u64) -> Option<u64> {
+    if n == 0 {
+        return None;
+    }
+    if k == 0 {
+        return (n == 1).then_some(1);
+    }
+    if k == 1 {
+        return Some(prime_lower(n));
+    }
+    let max = max_count(k);
+    if n >= max {
+        return (n == max && max > 0).then(|| max_nth(k));
+    }
+    if n < 8 {
+        return Some(small(k, n));
+    }
+    let r = reduction(k, n);
+    if r > 0 {
+        return nth_almost_prime_lower(k - r, n).map(|v| v << r);
+    }
+    Some(inverse(3_u64 << k, 0, n, |x| {
+        super::almost_prime_count_upper(k, x)
+    }))
 }

@@ -17,6 +17,28 @@ use math_prime_util::{
     ramanujan_primes,
 };
 fn bench_families(c: &mut Criterion) {
+    c.bench_function("almost_prime_count_upper", |b| {
+        b.iter(|| math_prime_util::almost_prime_count_upper(5, black_box(1_000_000)));
+    });
+    for (name, f) in [
+        (
+            "nth_almost_prime",
+            math_prime_util::nth_almost_prime as fn(u32, u64) -> Option<u64>,
+        ),
+        (
+            "nth_almost_prime_lower",
+            math_prime_util::nth_almost_prime_lower,
+        ),
+        (
+            "nth_almost_prime_approx",
+            math_prime_util::nth_almost_prime_approx,
+        ),
+    ] {
+        c.bench_function(name, |b| {
+            b.iter(|| f(3, black_box(1000)));
+        });
+    }
+
     c.bench_function("prime_powers", |b| {
         b.iter(|| prime_powers(0, black_box(100_000)));
     });

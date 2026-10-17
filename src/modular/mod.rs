@@ -267,3 +267,6 @@ mod tests {
         }
     }
 }
+
+mod native;
+pub use native::{binomialmod, factorialmod, pisano_period, znlog};

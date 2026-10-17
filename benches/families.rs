@@ -5,12 +5,13 @@ use math_prime_util::{
     goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_prime_power,
     is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair, next_chen_prime,
     next_prime_power, nth_lucky, nth_ramanujan_prime, nth_ramanujan_prime_approx,
-    nth_ramanujan_prime_lower, nth_twin_prime, nth_twin_prime_approx, powerfree_count,
-    powerful_count, powerful_numbers, prev_prime_power, prime_power_count,
-    prime_power_count_approx, prime_power_count_lower, prime_power_count_upper, prime_powers,
-    ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
-    twin_prime_count, twin_prime_count_approx, twin_primes,
+    nth_ramanujan_prime_lower, nth_semiprime, nth_semiprime_approx, nth_twin_prime,
+    nth_twin_prime_approx, powerfree_count, powerful_count, powerful_numbers, prev_prime_power,
+    prime_power_count, prime_power_count_approx, prime_power_count_lower, prime_power_count_upper,
+    prime_powers, ramanujan_prime_count_upper, semi_primes, semiprime_count,
+    semiprime_count_approx, sumpowerful, twin_prime_count, twin_prime_count_approx, twin_primes,
 };
+#[allow(clippy::too_many_lines)] // One bench registration per function.
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_power_count", |b| {
         b.iter(|| prime_power_count(black_box(1_000_000)));
@@ -111,6 +112,12 @@ fn bench_families(c: &mut Criterion) {
     });
     c.bench_function("semiprime_count_approx", |b| {
         b.iter(|| semiprime_count_approx(black_box(1_000_000)));
+    });
+    c.bench_function("nth_semiprime", |b| {
+        b.iter(|| nth_semiprime(black_box(100_000)));
+    });
+    c.bench_function("nth_semiprime_approx", |b| {
+        b.iter(|| nth_semiprime_approx(black_box(100)));
     });
 }
 fn bench_goldbach_misc(c: &mut Criterion) {

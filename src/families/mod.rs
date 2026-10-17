@@ -83,3 +83,8 @@ mod semiprime_count;
 pub use semiprime_count::semiprime_count;
 mod semiprime_count_approx;
 pub use semiprime_count_approx::semiprime_count_approx;
+
+mod nth_semiprime;
+pub use nth_semiprime::*;
+mod nth_semiprime_approx;
+pub use nth_semiprime_approx::*;

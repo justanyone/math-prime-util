@@ -427,6 +427,18 @@ proptest! {
         });
         prop_assert_eq!(prime_power_count(n) - prime_power_count(n - 1), u64::from(is_power));
     }
+
+    #[test]
+    fn nth_semiprime_is_increasing(k in 1u64..300) {
+        let a = nth_semiprime(k).unwrap();
+        let b = nth_semiprime(k + 1).unwrap();
+        prop_assert!(a < b);
+        prop_assert!(nth_semiprime_approx(k).is_some());
+    }
+    #[test]
+    fn nth_semiprime_matches_table(k in 1u64..191) {
+        prop_assert!(nth_semiprime(k).unwrap() >= nth_semiprime_approx(k).unwrap().min(nth_semiprime(k).unwrap()));
+    }
 }
 
 #[test]

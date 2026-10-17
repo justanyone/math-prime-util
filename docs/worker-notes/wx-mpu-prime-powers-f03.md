@@ -18,3 +18,4 @@ Full-suite execution is still pending in existing prime-count tests; implementat
 - 2026-10-17T06:57:18Z launcher: no commit for 60 s; 577 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f03.md, src/families/mod.rs, src/families/nth_prime_power.rs, src/families/nth_prime_power_approx.rs, src/families/nth_prime_power_lower.rs, src/families/nth_prime_power_upper.rs, tests/compat_families.rs, tests/prop_families.rs.
 About five minutes remain. The gate and whole-suite command are still running in existing compat_count tests; no test failure has been reported.
 The existing nth_prime_oracle has passed. Remaining gate work is prime_count/chebyshev and subsequent full-suite steps; all target tests passed.
+All four public documentation examples pass. Full-suite/gate execution remains pending in existing compat_count tests near the session deadline.

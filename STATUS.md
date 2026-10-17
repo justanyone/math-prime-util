@@ -35,7 +35,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `bittest`
 - [x] `bitxor`
 - [x] `calkin_wilf_n`
-- [ ] `carmichael_lambda`
+- [x] `carmichael_lambda`
 - [x] `catalan_number`
 - [x] `cdivint`
 - [x] `cdivrem`
@@ -51,7 +51,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `cornacchia`
 - [x] `crootint`
 - [x] `csrand`
-- [ ] `dedekind_psi`
+- [x] `dedekind_psi`
 - [x] `digital_root`
 - [x] `divint`
 - [ ] `divisors`
@@ -61,8 +61,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `drand`
 - [ ] `ecm_factor`
 - [x] `entropy_bytes`
-- [ ] `euler_phi`
-- [ ] `exp_mangoldt`
+- [x] `euler_phi`
+- [x] `exp_mangoldt`
 - [ ] `ExponentialIntegral`
 - [ ] `factor`
 - [ ] `factor_exp`
@@ -110,7 +110,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `inverse_li_nv`
 - [ ] `inverse_sigma0`
 - [ ] `inverse_sigma0_count`
-- [ ] `inverse_totient`
+- [x] `inverse_totient`
 - [x] `invmod`
 - [x] `irand`
 - [x] `irand32`
@@ -175,15 +175,15 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_strong_pseudoprime`
 - [x] `is_sumfree_set`
 - [ ] `is_sum_of_squares`
-- [ ] `is_totient`
-- [ ] `jordan_totient`
+- [x] `is_totient`
+- [x] `jordan_totient`
 - [x] `kronecker`
 - [ ] `LambertW`
 - [ ] `lastfor`
 - [x] `lcm`
 - [x] `legendre_phi`
 - [x] `lehman_factor`
-- [ ] `liouville`
+- [x] `liouville`
 - [ ] `LogarithmicIntegral`
 - [x] `logint`
 - [x] `lshiftint`
@@ -200,11 +200,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `lucky_count_lower`
 - [x] `lucky_count_upper`
 - [x] `lucky_numbers`
-- [ ] `mertens`
+- [x] `mertens`
 - [ ] `miller_rabin_random`
 - [ ] `minimal_goldbach_pair`
 - [x] `modint`
-- [ ] `moebius`
+- [x] `moebius`
 - [x] `muladdint`
 - [x] `muladdmod`
 - [x] `mulint`
@@ -313,7 +313,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `ramanujan_prime_count_lower`
 - [x] `ramanujan_prime_count_upper`
 - [ ] `ramanujan_primes`
-- [ ] `ramanujan_sum`
+- [x] `ramanujan_sum`
 - [x] `ramanujan_tau`
 - [x] `rand`
 - [x] `random_bytes`
@@ -382,11 +382,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `subint`
 - [x] `submod`
 - [x] `sumdigits`
-- [ ] `sumliouville`
+- [x] `sumliouville`
 - [ ] `sumpowerful`
 - [x] `sum_primes`
 - [x] `sumset`
-- [ ] `sumtotient`
+- [x] `sumtotient`
 - [x] `tdivrem`
 - [x] `todigits`
 - [x] `todigitstring`
@@ -400,7 +400,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `urandomb`
 - [x] `urandomm`
 - [x] `urandomr`
-- [ ] `valuation`
+- [x] `valuation`
 - [x] `vecall`
 - [x] `vecany`
 - [x] `vecequal`

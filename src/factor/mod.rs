@@ -7,3 +7,12 @@ mod pminus1_factor;
 pub use pminus1_factor::pminus1_factor;
 mod pplus1_factor;
 pub use pplus1_factor::pplus1_factor;
+
+mod is_carmichael;
+mod is_cyclic;
+mod is_perfect_number;
+mod is_quasi_carmichael;
+pub use is_carmichael::is_carmichael;
+pub use is_cyclic::is_cyclic;
+pub use is_perfect_number::is_perfect_number;
+pub use is_quasi_carmichael::is_quasi_carmichael;

@@ -1,13 +1,14 @@
 #![allow(missing_docs)]
-//! Benchmarks for the lucky-number, prime-power and twin prime functions.
+//! Benchmarks for the lucky-number, prime-power, twin prime and semiprime functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    is_lucky, is_prime_power, lucky_count, lucky_numbers, next_prime_power, nth_lucky,
-    nth_ramanujan_prime, nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_twin_prime,
+    goldbach_pair_count, goldbach_pairs, is_lucky, is_prime_power, lucky_count, lucky_numbers,
+    minimal_goldbach_pair, next_chen_prime, next_prime_power, nth_lucky, nth_ramanujan_prime,
+    nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_twin_prime, nth_twin_prime_approx,
     powerfree_count, powerful_count, powerful_numbers, prev_prime_power, prime_power_count,
     prime_power_count_approx, prime_power_count_lower, prime_power_count_upper, prime_powers,
-    ramanujan_prime_count_upper, sumpowerful, twin_prime_count, twin_prime_count_approx,
-    twin_primes,
+    ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
+    twin_prime_count, twin_prime_count_approx, twin_primes,
 };
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_power_count", |b| {
@@ -98,6 +99,32 @@ fn bench_families(c: &mut Criterion) {
     c.bench_function("powerfree_count", |b| {
         b.iter(|| powerfree_count(black_box(1_000_000_000), 2));
     });
+    c.bench_function("nth_twin_prime_approx", |b| {
+        b.iter(|| nth_twin_prime_approx(black_box(100_000)));
+    });
+    c.bench_function("semi_primes", |b| {
+        b.iter(|| semi_primes(black_box(1_000_000), black_box(1_001_000)));
+    });
+    c.bench_function("semiprime_count", |b| {
+        b.iter(|| semiprime_count(black_box(1_000_000)));
+    });
+    c.bench_function("semiprime_count_approx", |b| {
+        b.iter(|| semiprime_count_approx(black_box(1_000_000)));
+    });
 }
-criterion_group!(benches, bench_families);
+fn bench_goldbach_misc(c: &mut Criterion) {
+    c.bench_function("minimal_goldbach_pair", |b| {
+        b.iter(|| minimal_goldbach_pair(black_box(60_119_912)));
+    });
+    c.bench_function("goldbach_pair_count", |b| {
+        b.iter(|| goldbach_pair_count(black_box(1_000_000)));
+    });
+    c.bench_function("goldbach_pairs", |b| {
+        b.iter(|| goldbach_pairs(black_box(100_000)));
+    });
+    c.bench_function("next_chen_prime", |b| {
+        b.iter(|| next_chen_prime(black_box(10_000_000_000_000_000)));
+    });
+}
+criterion_group!(benches, bench_families, bench_goldbach_misc);
 criterion_main!(benches);

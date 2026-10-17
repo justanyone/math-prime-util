@@ -20,3 +20,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The iter benchmark compiles offline. Iterator doc examples and the single final whole-suite run have started; focused tests are already green, and the gate's unrelated lint blocker is recorded above.
 - 2026-10-17T18:55:18Z launcher: no commit for 62 s; 670 s elapsed. Files changed so far: benches/iter.rs, docs/worker-notes/wx-mpu-iterators-f01.md, src/iter/forcomposites.rs, src/iter/foroddcomposites.rs, src/iter/forprimes.rs, src/iter/forsemiprimes.rs, src/iter/mod.rs, tests/compat_iter.rs, tests/prop_iter.rs.
 All 33 iterator doc examples passed offline, and the benchmark compiles. The final whole-suite run is still pending; the gate cannot reach MSRV, suite, or docs because its existing float-comparison lint errors stop clippy.
+All 33 iterator doc examples passed offline, and the benchmark compiles. The final whole-suite run is still pending; the gate cannot reach MSRV, suite, or docs because its existing float-comparison lint errors stop clippy.
+Final: the four APIs, separate module files, runnable examples, compat closure checks, regression/property tests, and benchmarks are complete. Passed 19 compat tests, 18 property tests, 33 iterator doctests, and the benchmark build. The gat <<cut 176 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 151 bytes)

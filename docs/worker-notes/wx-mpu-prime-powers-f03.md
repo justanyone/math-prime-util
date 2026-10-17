@@ -6,3 +6,4 @@ Read the C interpolation and identified missing prime-count estimate helpers; po
 Implemented all four entry points and private count estimates/interpolation; added oracle, rank, bounds, repeat-call, concurrency, and boundary checks.
 Fixed primality return-type mismatch; focused fixture tests and the first gate run are in progress offline.
 All 292 target fixture cases and both prime-power property tests pass. Corrected generated table literal style; rerunning the offline gate.
+Fixture and property checks are green; added formula-transition and interpolation regressions and matched prime-power membership to MPU maximal perfect-power roots.

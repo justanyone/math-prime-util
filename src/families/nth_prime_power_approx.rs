@@ -336,3 +336,60 @@ fn inverse(mut lo: u64, mut hi: u64, n: u64, f: impl Fn(u64) -> u64) -> u64 {
 }
 
 const SMALL_LEN: u64 = 306;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bounds_across_formula_transitions() {
+        let mut points = vec![
+            33_000,
+            69_720,
+            70_120,
+            88_800,
+            176_000,
+            299_270,
+            300_070,
+            303_000,
+            1_100_000,
+            4_500_000,
+            10_200_000,
+            36_900_000,
+            38_100_000,
+            821_800_000,
+            1_100_000_000,
+            4_000_000_000,
+            10_010_000_000,
+            101_260_000_000,
+            u64::MAX,
+        ];
+        points.extend(UPPER.iter().map(|&(n, _)| n));
+        for n in points {
+            for x in [n - 1, n, n + u64::from(n != u64::MAX)] {
+                assert!(count_bound(x, false) <= count_bound(x, true), "{x}");
+            }
+        }
+        for n in [
+            306, 15_359, 15_360, 1_999_999, 2_000_000, 56_000_000, MAX_INDEX,
+        ] {
+            assert!(prime_bound(n, false) <= prime_bound(n, true), "{n}");
+        }
+        assert_eq!(prime_bound(MAX_INDEX + 1, false), 0);
+        assert_eq!(prime_bound(MAX_INDEX + 1, true), 0);
+    }
+
+    #[test]
+    fn interpolation_handles_plateaus_and_jumps() {
+        for n in 1..1000 {
+            let x = inverse(0, 4000, n, |x| x / 3);
+            assert_eq!(x, n * 3);
+            let x = inverse(0, 1000, n, |x| x * x);
+            assert!(x * x <= n && (x + 1) * (x + 1) > n);
+        }
+        assert_eq!(inverse(3, 4, 3, |x| x), 3);
+        assert_eq!(inverse(3, 10, 3, |x| x), 3);
+        assert_eq!(count(0, 0), 0);
+        assert_eq!(count(1, 0), 0);
+    }
+}

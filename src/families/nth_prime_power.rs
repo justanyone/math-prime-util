@@ -1,5 +1,5 @@
 use super::nth_prime_power_approx::{MAX_INDEX, MAX_PRIME, count, nth_prime_power_approx};
-use crate::{is_prime, rootint};
+use crate::{is_power_exp, is_prime, rootint};
 
 // MPU prime_powers.c: prime_power; test the prime root of a perfect power.
 fn is_power(n: u64) -> bool {
@@ -9,10 +9,8 @@ fn is_power(n: u64) -> bool {
     if is_prime(n) != 0 {
         return true;
     }
-    (2..=n.ilog2()).any(|k| {
-        let r = rootint(n, k);
-        r.checked_pow(k) == Some(n) && is_prime(r) != 0
-    })
+    let exponent = is_power_exp(n);
+    exponent > 1 && is_prime(rootint(n, exponent)) != 0
 }
 
 /// Return the `n`th prime power. Index one is 2.

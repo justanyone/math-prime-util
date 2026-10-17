@@ -169,10 +169,29 @@ pub fn factorialmod(n: u64, m: u64) -> Option<u64> {
             }
         }
     } else {
-        // _facmod's prime valuation product, using the crate's segmented sieve.
+        let sqn = sqrtint(d);
+        let nsqn = d / sqn;
+        let (mut j, mut lo, mut hi, mut product) = (sqn, 0, 0, 1);
         for p in crate::primes_in(2..=d) {
-            r = mulmod_u(r, powmod_u(p, valuation(d, p), m), m);
+            if p <= nsqn {
+                r = mulmod_u(r, powmod_u(p, valuation(d, p), m), m);
+            } else {
+                while p > hi {
+                    r = mulmod_u(r, powmod_u(product, j, m), m);
+                    product = 1;
+                    j -= 1;
+                    lo = d / (j + 1) + 1;
+                    hi = d / j;
+                }
+                if p >= lo {
+                    product = mulmod_u(product, p, m);
+                }
+            }
+            if r == 0 {
+                break;
+            }
         }
+        r = mulmod_u(r, product, m);
     }
     if d != n && r != 0 {
         if d % 2 == 0 {
@@ -269,7 +288,7 @@ fn binomial_lucas(mut n: u64, mut k: u64, p: u64) -> u64 {
 // reference/mpu/factmod.c: _binomial_lucas_mod_prime_power (Granville).
 fn binomial_granville(n: u64, k: u64, p: u64, mut q: u32) -> u64 {
     let m = p.pow(q);
-    let (mut nn, mut kk, mut rr) = (n, k, n - k);
+    let (mut nn, mut kk) = (n, k);
     let mut carries = Vec::new();
     let mut carry = 0;
     while nn > 0 {
@@ -277,7 +296,6 @@ fn binomial_granville(n: u64, k: u64, p: u64, mut q: u32) -> u64 {
         carries.push(carry);
         nn /= p;
         kk /= p;
-        rr /= p;
     }
     for i in (1..carries.len()).rev() {
         carries[i - 1] += carries[i];
@@ -294,7 +312,8 @@ fn binomial_granville(n: u64, k: u64, p: u64, mut q: u32) -> u64 {
             1
         };
     r = mulmod_u(r, powmod_u(p, carries[0], m), m);
-    (nn, kk, rr) = (n, k, n - k);
+    (nn, kk) = (n, k);
+    let mut rr = n - k;
     while nn > 0 {
         let num = unit_factorial(nn % m1, p, m);
         let den = mulmod_u(
@@ -354,7 +373,7 @@ pub fn binomialmod(n: u64, k: u64, m: u64) -> Option<u64> {
 fn bsgs(a: u64, g: u64, p: u64, n: u64) -> Option<u64> {
     use std::collections::hash_map::Entry;
     let maxm = sqrtint(n);
-    let m = ((maxm + 1) / 2).min(40_000_000).max(1);
+    let m = maxm.div_ceil(2).clamp(1, 40_000_000);
     let mut table = std::collections::HashMap::new();
     let aa = mulmod_u(a, a, p);
     let gm = powmod_u(g, m, p);
@@ -385,7 +404,11 @@ fn bsgs(a: u64, g: u64, p: u64, n: u64) -> Option<u64> {
         }
         t = mulmod_u(t, gm, p);
     }
-    for i in m + 1..=n.div_ceil(m) {
+    let mut bound = n.div_ceil(m);
+    if m < maxm && bound > 8 * m {
+        bound = 8 * m;
+    }
+    for i in m + 1..=bound {
         if let Some(&j) = table.get(&t) {
             let x = super::submod(mulmod_u(i, m, n), j, n).unwrap();
             if powmod_u(g, x, p) == a {
@@ -397,9 +420,59 @@ fn bsgs(a: u64, g: u64, p: u64, n: u64) -> Option<u64> {
     None
 }
 
+// reference/mpu/znlog.c: dlp_prho, non-Montgomery path.
+fn log_rho(a: u64, g: u64, p: u64, n: u64, maxrounds: u64) -> Option<u64> {
+    let cycle = |(u, v, w): (u64, u64, u64)| match u % 3 {
+        0 => (mulmod_u(u, u, p), addmod_u(v, v, n), addmod_u(w, w, n)),
+        1 => (mulmod_u(u, a, p), addmod_u(v, 1, n), w),
+        _ => (mulmod_u(u, g, p), v, addmod_u(w, 1, n)),
+    };
+    for restart in 0..=4 {
+        let mut slow = (powmod_u(g, restart, p), 0, restart);
+        let mut fast = cycle(slow);
+        let (mut power, mut lam, mut round) = (1, 1, 1);
+        while slow.0 != fast.0 && round < maxrounds.min(n) {
+            if power == lam {
+                slow = fast;
+                power *= 2;
+                lam = 0;
+            }
+            fast = cycle(fast);
+            lam += 1;
+            round += 1;
+        }
+        if slow.0 == fast.0 {
+            let r1 = super::submod(slow.1, fast.1, n).unwrap();
+            if r1 == 0 {
+                continue;
+            }
+            let r2 = super::submod(fast.2, slow.2, n).unwrap();
+            let common = gcd(r1, n);
+            if r2 % common != 0 {
+                return None;
+            }
+            let modulus = n / common;
+            let x = mulmod_u(r2 / common, invmod(r1 / common, modulus)?, modulus);
+            for j in 0..common {
+                let k = x + j * modulus;
+                if powmod_u(g, k, p) == a {
+                    return Some(k);
+                }
+            }
+            return None;
+        }
+    }
+    None
+}
+
 fn log_solve(a: u64, g: u64, p: u64, n: u64) -> Option<u64> {
     if a == 1 {
         return Some(0);
+    }
+    if n <= 10_000 {
+        if let Some(k) = log_rho(a, g, p, n, sqrtint(n) * 4) {
+            return Some(k);
+        }
     }
     let mut t = g;
     for k in 1..=n.min(10_000) {
@@ -414,7 +487,25 @@ fn log_solve(a: u64, g: u64, p: u64, n: u64) -> Option<u64> {
     if n <= 10_000 || powmod_u(a, n, p) != 1 {
         return None;
     }
-    bsgs(a, g, p, n)
+    let result = if (sqrtint(n) + 1) / 2 > 1_000_000 {
+        log_rho(a, g, p, n, 2_000_000_000)
+    } else {
+        bsgs(a, g, p, n)
+    };
+    if result.is_some() {
+        return result;
+    }
+    let mut t = g;
+    for k in 1..p {
+        if t == a {
+            return Some(k);
+        }
+        t = mulmod_u(t, g, p);
+        if t == g {
+            break;
+        }
+    }
+    None
 }
 
 // reference/mpu/znlog.c: znlog_prime_power and znlog_ph.

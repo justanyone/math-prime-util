@@ -42,7 +42,7 @@ fn zero_moduli_and_repeat_calls() {
     for _ in 0..2 {
         assert_eq!(znlog(0, 2, 8), Some(3));
         assert_eq!(znlog(12, 98, 100), Some(19));
-        assert_eq!(binomialmod(500_000, 200_000, 1024), Some(0));
+        assert_eq!(binomialmod(500_000, 200_000, 1024), Some(640));
     }
 }
 

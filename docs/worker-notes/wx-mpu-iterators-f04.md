@@ -7,3 +7,4 @@ Verified XS permutation/derangement transitions, product snapshots, and PP multi
 Added independent multiset/product laws, derangement recurrence, clone/exhaustion, nested callbacks, unwind recovery, and concurrent traversal checks. Input validation remains enforced by typed Rust arguments; no Perl validation inputs can  <<cut 17 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -7 bytes)
+The iterator fixture and property commands are compiling offline. Added Criterion workloads for derangements, multiset permutations, and products; the permutation workload already existed. No dependencies or fixture changes were needed.

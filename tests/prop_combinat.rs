@@ -31,6 +31,22 @@ proptest! {
     }
 
     #[test]
+    fn frobenius_last_gap(a in 2u64..20, b in 2u64..20, c in 2u64..20) {
+        if gcd(gcd(a,b),c) == 1 {
+            let mut reachable = [false; 400];
+            reachable[0] = true;
+            for i in 1..reachable.len() {
+                reachable[i] = [a,b,c].into_iter().any(|v| {
+                    let v = usize::try_from(v).unwrap();
+                    i >= v && reachable[i-v]
+                });
+            }
+            let last = reachable.iter().rposition(|&r| !r).unwrap();
+            prop_assert_eq!(frobenius_number(&[a,b,c]), Some(i128::try_from(last).unwrap()));
+        }
+    }
+
+    #[test]
     fn congruent_square_scaling(n in 0u64..500, s in 1u64..20) {
         prop_assert_eq!(is_congruent_number(n*s*s),is_congruent_number(n));
     }
@@ -39,6 +55,9 @@ proptest! {
 #[test]
 fn boundaries_and_repeat_calls() {
     assert_eq!(consecutive_integer_lcm(0), Some(1));
+    assert_eq!(frobenius_number(&[]), None);
+    assert_eq!(frobenius_number(&[7]), None);
+    assert_eq!(frobenius_number(&[1]), Some(-1));
     assert_eq!(consecutive_integer_lcm(u64::MAX), None);
     assert_eq!(frobenius_number(&[u64::MAX, u64::MAX - 1]), None);
     assert_eq!(frobenius_number(&[4, 8, 7_000_000_000_000_000_001]), None);

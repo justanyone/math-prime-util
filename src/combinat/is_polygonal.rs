@@ -29,9 +29,22 @@ pub fn is_polygonal(n: u64, k: u64) -> bool {
         .checked_mul(u128::from(n))
         .and_then(|d| d.checked_add(offset * offset))
     else {
-        // The discriminant can exceed u128 when k is large. In this
-        // range the second polygonal number is k and the third exceeds u64.
-        return u128::from(n) == k;
+        // MPU dispatches an overflowing discriminant to bigint arithmetic.
+        // Compare the same quadratic in factored form without a bigint.
+        let mut low = 2u128;
+        let mut high = u128::from(crate::sqrtint(n)) * 2 + 1;
+        while low <= high {
+            let r = low + (high - low) / 2;
+            let value = r
+                .checked_mul((k - 2) * (r - 1) + 2)
+                .map_or(u128::MAX, |v| v / 2);
+            match value.cmp(&u128::from(n)) {
+                core::cmp::Ordering::Equal => return true,
+                core::cmp::Ordering::Less => low = r + 1,
+                core::cmp::Ordering::Greater => high = r - 1,
+            }
+        }
+        return false;
     };
     let root = sqrt_u128(d);
     if root * root != d {
@@ -69,5 +82,8 @@ mod tests {
         assert!(is_polygonal(u64::MAX, u64::MAX));
         assert!(!is_polygonal(u64::MAX - 1, u64::MAX));
         assert!(is_polygonal(u64::MAX - 1, u64::MAX - 1));
+        let k = u64::MAX / 3;
+        assert!(is_polygonal(3 * k - 3, k));
+        assert!(!is_polygonal(3 * k - 2, k));
     }
 }

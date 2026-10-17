@@ -6,3 +6,4 @@ Moved the existing four ports into their own files; checking native MPU bounds a
 Reused factor.c divisor_list port; matched XS partition bound setup and early exit. Added state, bounds, callback restart, and algebraic regression tests.
 Focused offline tests are compiling; added benchmarks for compositions and divisors and formatted the touched Rust files.
 Composition state now has its own public iterator type; updated the existing fixture dispatcher for the distinct types. Gate is waiting for the focused build lock.
+Reviewed the moved code against XS RuleAsc and combination stepping. Existing iter fixtures and generator already cover this family, so neither was changed.

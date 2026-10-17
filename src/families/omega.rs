@@ -87,6 +87,36 @@ fn sieve(k: u32, lo: u64, hi: u64) -> Vec<u64> {
     out
 }
 
+// omega_primes.c: _omega_prime_gen_rec and _omega_prime_gen_last.
+fn generate(k: u32, lo: u64, hi: u64, m: u64, start: u64, out: &mut Vec<u64>) {
+    if k == 1 {
+        let minpow = lo.div_ceil(m).max(1);
+        for e in 1..=63 {
+            let pmax = rootint(hi / m, e);
+            if pmax < start {
+                break;
+            }
+            let pmin = start.max(rootint(minpow - 1, e) + 1);
+            for p in primes(pmin, pmax) {
+                if let Some(v) = p.checked_pow(e).and_then(|v| m.checked_mul(v)) {
+                    out.push(v);
+                }
+            }
+        }
+    } else {
+        for p in primes(start, rootint(hi / m, k)) {
+            let mut v = m * p;
+            loop {
+                generate(k - 1, lo, hi, v, p + 1, out);
+                if v > hi / p {
+                    break;
+                }
+                v *= p;
+            }
+        }
+    }
+}
+
 /// List integers in the closed range with `k` distinct prime factors.
 /// Port of MPU `omega_primes.c`, `range_omega_prime_sieve`.
 /// ```
@@ -106,7 +136,17 @@ pub fn omega_primes(k: u32, lo: u64, hi: u64) -> Vec<u64> {
     let Some(min) = primorial(k) else {
         return Vec::new();
     };
-    sieve(k, lo.max(min), hi)
+    let lo = lo.max(min);
+    if lo == min
+        && (hi.saturating_sub(lo) > 100_000_000 || (k >= 10 && hi.saturating_sub(lo) > 5_000_000))
+    {
+        let mut out = Vec::new();
+        generate(k, lo, hi, 1, 2, &mut out);
+        out.sort_unstable();
+        out
+    } else {
+        sieve(k, lo, hi)
+    }
 }
 
 /// Return the `n`th integer with `k` distinct prime factors.

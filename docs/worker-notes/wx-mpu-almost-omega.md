@@ -24,3 +24,7 @@ Compensated large-input prime estimates now preserve low integer bits. This keep
 Omega count compatibility passes. Large-input prime estimates still differ by integer units; reference real.c is needed to match its truncation, not only mathematical accuracy.
 
 Large-input count lower/upper now pass after matching the C Li return-type rounding. RiemannR matches too; correcting the final mixed float/integer expression for k >= 4.
+
+Found large prefix fixtures that require the C omega recursive-construction branch. Added that branch; narrow arbitrary ranges keep the bounded factor sieve.
+
+Final compatibility and gate runs are active. Clippy, MSRV, and whole-suite execution are being checked offline; earlier stale long prefix runs were stopped after the recursive branch fix.

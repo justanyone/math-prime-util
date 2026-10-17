@@ -22,15 +22,17 @@ fn check(name: &str, f: impl Fn(&common::Case) -> f64 + std::panic::RefUnwindSaf
 }
 #[test]
 fn exponential_integral_oracle() {
-    check("ExponentialIntegral", |c| exponential_integral(c.arg(0)));
+    check("ExponentialIntegral", |c| ExponentialIntegral(c.arg(0)));
 }
 #[test]
 fn logarithmic_integral_oracle() {
-    check("LogarithmicIntegral", |c| logarithmic_integral(c.arg(0)));
+    // Negative arguments are ERROR rows. `check` expects a panic for those rows.
+    check("LogarithmicIntegral", |c| LogarithmicIntegral(c.arg(0)));
 }
 #[test]
 fn riemann_zeta_oracle() {
-    check("RiemannZeta", |c| riemann_zeta(c.arg(0)));
+    // Negative arguments are ERROR rows. `check` expects a panic for those rows.
+    check("RiemannZeta", |c| RiemannZeta(c.arg(0)));
 }
 #[test]
 fn riemann_r_oracle() {

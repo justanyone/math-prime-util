@@ -63,7 +63,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `entropy_bytes`
 - [x] `euler_phi`
 - [x] `exp_mangoldt`
-- [ ] `ExponentialIntegral`
+- [x] `ExponentialIntegral`
 - [x] `factor`
 - [x] `factor_exp`
 - [x] `factorial`
@@ -184,7 +184,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `legendre_phi`
 - [x] `lehman_factor`
 - [x] `liouville`
-- [ ] `LogarithmicIntegral`
+- [x] `LogarithmicIntegral`
 - [x] `logint`
 - [x] `lshiftint`
 - [x] `lucas_number`
@@ -337,7 +337,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `remove_factors_exp`
 - [x] `reverse_digits`
 - [x] `RiemannR`
-- [ ] `RiemannZeta`
+- [x] `RiemannZeta`
 - [x] `rising_factorial`
 - [x] `rootint`
 - [ ] `rootmod`

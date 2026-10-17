@@ -18,3 +18,4 @@ Focused checks are complete; the full-suite command has not returned yet. No fur
 Final diff whitespace check passed. All task implementation and focused tests are on disk; full-suite result is pending and the normal gate remains blocked outside task scope.
 Full-suite run is still pending; targeted tests, benchmark compile, formatting, and diff whitespace checks pass. Gate MSRV/docs stages cannot run because pre-existing clippy errors stop the script.
 Near the final five-minute window: implementation is finished; full-suite output is pending. Preserve the faithful C split and report the named oracle partition difference and out-of-scope gate errors.
+- 2026-10-17T08:05:17Z launcher: no commit for 60 s; 575 s elapsed. Files changed so far: benches/factor.rs, docs/worker-notes/wx-mpu-ecm.md, src/factor/ecm.rs, src/factor/mod.rs, tests/compat_factor.rs, tests/prop_factor.rs.

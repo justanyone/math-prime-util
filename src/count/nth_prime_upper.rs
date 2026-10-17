@@ -1,5 +1,4 @@
 use super::nth_prime;
-use crate::real::riemann_r;
 
 /// Largest prime that fits in 64 bits, MPU `constants.h` `MPU_MAX_PRIME`.
 pub(super) const MAX_PRIME: u64 = 18_446_744_073_709_551_557;

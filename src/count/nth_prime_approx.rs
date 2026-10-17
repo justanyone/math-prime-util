@@ -49,7 +49,7 @@ fn inverse_r(lx: f64) -> f64 {
         }
         t
     };
-    let mut old_term = 0.0;
+    let mut old_term = 0.0_f64;
     for i in 0..100 {
         let dn = riemann_r(t) - lx;
         let term = dn * t.ln() / (1.0 + dn / (2.0 * t));

@@ -9,3 +9,4 @@ About five minutes remain. Ported the private Pollard rho helper to the referenc
 Gate reached the full tests: 13 of 14 arithmetic oracle tests pass. A signed Dedekind psi case lacked its intended skip; fixed the test adapter and rerunning.
 All arithmetic oracle and property tests now pass. The gate passed fmt, Clippy, and MSRV and is running the remaining repository tests. No tools, fixture, crate-root, or status files were changed.
 Arithmetic benchmarks compile through tools/test.sh benches/arith.rs. The full gate is still in the existing compat_count tests; arithmetic verification has completed.
+Final arithmetic implementation and tests are on disk; diff whitespace checks pass. Awaiting the full gate result; no network, dependencies, or git writes were used.

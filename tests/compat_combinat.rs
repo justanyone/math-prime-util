@@ -14,8 +14,8 @@ fn check_unsigned(c: &common::Case, got: Option<u64>) {
 #[test]
 fn binomial_oracle() {
     each("combinat", "binomial", |c| {
-        // Signed binomial arguments are outside this unsigned API.
-        if c.args.iter().any(|a| a.starts_with('-')) {
+        // Signed and bigint binomial arguments are outside this u64 API.
+        if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             return;
         }
         check_unsigned(c, binomial(c.arg(0), c.arg(1)));

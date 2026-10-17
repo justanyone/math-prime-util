@@ -12,13 +12,13 @@ use super::urandomm;
 /// assert_eq!(math_prime_util::random_semiprime(65), None);
 /// ```
 pub fn random_semiprime(bits: u32) -> Option<u64> {
+    const SMALL: [u64; 14] = [
+        35, 35, 49, 65, 77, 91, 143, 143, 169, 299, 319, 341, 377, 403,
+    ];
     assert!(bits >= 4, "random_semiprime, bits must be >= 4");
     if bits > 64 {
         return None;
     }
-    const SMALL: [u64; 14] = [
-        35, 35, 49, 65, 77, 91, 143, 143, 169, 299, 319, 341, 377, 403,
-    ];
     match bits {
         4 => return Some(9),
         5 => return Some(21),

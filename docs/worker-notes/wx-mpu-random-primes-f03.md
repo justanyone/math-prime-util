@@ -9,3 +9,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Focused offline tests passed: four compatibility tests and three property/state tests, including all native semiprime fixture rows. Added benchmarks for all four functions. Running the required gate now; STATUS and fixtures remain untouched <<cut 34 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)
+First gate stopped at clippy: SHA constants needed digit separators and the semiprime table needed placement before statements. Fixed both and restarted the gate. Focused tests remain green.

@@ -35,12 +35,12 @@ proptest! {
 fn edges_and_repeated_calls() {
     for _ in 0..2 {
         assert_eq!(prime_signature(0), vec![1]);
-        assert!(prime_signature(1).is_empty());
+        assert_eq!(prime_signature(1), Vec::<u32>::new());
         assert_eq!(prime_omega(0), 1);
         assert_eq!(prime_bigomega(1), 0);
         assert_eq!(prime_signature(1_u64 << 63), vec![63]);
         assert_eq!(cheb_factor(0, 0, 0), vec![0]);
-        assert!(cheb_factor(1, 0, 0).is_empty());
+        assert_eq!(cheb_factor(1, 0, 0), Vec::<u64>::new());
         assert_eq!(cheb_factor(143, 1, u64::MAX), vec![143]);
         assert_eq!(cheb_factor(143, u64::MAX, 1), vec![143]);
         assert_eq!(cheb_factor(143, 0, 143), vec![143]);

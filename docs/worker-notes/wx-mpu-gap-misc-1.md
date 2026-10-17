@@ -23,3 +23,6 @@ Gate passed fmt, pedantic Clippy, and MSRV. The existing compatibility suite is 
 The full runs are still in the existing count oracle tests; focused misc-gap tests already passed. No new code changes are needed.
 
 Chebyshev and nth-prime oracle tests passed. Waiting for prime-count verification before the gate can finish.
+
+Final: focused tests and the full offline suite passed; tools/gate.sh printed == gate: green.
+NOTES: is_higgs_prime is absent from reference/mpu (including Util.pm, PP.pm, and XS.xs), so no faithful port or C citation is possible. Four functions are implemented and ticked; the task remains partial only for Higgs.

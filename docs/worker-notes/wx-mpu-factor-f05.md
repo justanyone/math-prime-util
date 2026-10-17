@@ -8,3 +8,4 @@ Focused compile found Option-returning modular helpers; corrected handling for t
 Oracle includes bigint arguments beyond u64 (including k=10^30); documented native-API skips. All representable omega fixtures passed.
 Native oracle and all five property tests pass; added direct tests for rho failure, backtracking support, and exact trial fallback. Fixing copied-table lint.
 Gate passed production-code clippy; adjusted two test assertions for the installed toolchain’s newer assert_is_empty lint. Running the final gate.
+Finished: native oracle, algebraic, boundary, concurrent, and private factoring tests pass; tools/gate.sh printed == gate: green offline. Cross-platform CI and coverage measurement remain for the launcher; no tools, fixtures, status, dependencies, or git metadata were changed.

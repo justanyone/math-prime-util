@@ -52,6 +52,9 @@ fn convergents_edges() {
     assert_eq!(convergents(&[u64::MAX, 1]), None);
     // Only the denominator update overflows.
     assert_eq!(convergents(&[0, u64::MAX, 1]), None);
+    // Only one of the two products would overflow.
+    assert_eq!(convergents(&[u64::MAX, 2]), None);
+    assert_eq!(convergents(&[0, u64::MAX, 2]), None);
     // The largest terms that still fit.
     assert_eq!(
         convergents(&[0, u64::MAX]),

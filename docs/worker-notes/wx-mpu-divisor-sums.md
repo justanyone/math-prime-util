@@ -16,3 +16,6 @@ Both full-suite runs remain in the pre-existing count compatibility tests. No ar
 The gate's nth-prime compatibility test has passed; prime-count is still running. All requested source, tests, examples, and benchmarks are written; no further implementation change is pending.
 About five minutes remain. All fifteen arithmetic doc examples pass (16 matching doctests total); the two full-suite runs remain in the existing prime-count compatibility test, so a green gate is not yet confirmed.
 - 2026-10-17T07:33:40Z launcher: no commit for 61 s; 636 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-divisor-sums.md, src/arith/mod.rs, tests/compat_arith.rs, tests/prop_arith.rs.
+tools/gate.sh printed == gate: green: fmt, pedantic clippy, MSRV, repository tests, all 216 doctests, and docs passed. The separate required tools/test.sh full-suite run is still finishing; coverage could not be measured without cargo-llvm- <<cut 4 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -19 bytes)

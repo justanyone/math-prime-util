@@ -296,10 +296,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_iterator_object`
 - [x] `prime_memfree`
 - [x] `prime_omega`
-- [ ] `prime_power_count`
-- [ ] `prime_power_count_approx`
-- [ ] `prime_power_count_lower`
-- [ ] `prime_power_count_upper`
+- [x] `prime_power_count`
+- [x] `prime_power_count_approx`
+- [x] `prime_power_count_lower`
+- [x] `prime_power_count_upper`
 - [x] `prime_powers`
 - [x] `prime_precalc`
 - [x] `primes`

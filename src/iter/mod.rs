@@ -246,6 +246,7 @@ pub fn combinations_of(n: usize, k: Option<usize>) -> CombinationsOf {
     }
 }
 
+<<<<<<< HEAD
 /// Lexical permutation state from `XS.xs`, `_comb_iterate`.
 #[derive(Debug, Clone)]
 pub struct PermutationsOf<T> {
@@ -446,6 +447,32 @@ pub fn set_product<T: Clone>(sets: &[Vec<T>]) -> SetProduct<T> {
         indices: vec![0; sets.len()],
         done: sets.is_empty() || sets.iter().any(Vec::is_empty),
     }
+=======
+/// Visit each value. See `XS.xs`, `forcomposites`.
+/// ```
+/// use std::ops::ControlFlow;
+/// let result = math_prime_util::forcomposites(0..=20, |_| ControlFlow::Break(()));
+/// assert!(result.is_break());
+/// ```
+pub fn forcomposites<B>(
+    range: RangeInclusive<u64>,
+    f: impl FnMut(u64) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(composites_in(range), f)
+}
+
+/// Visit each value. See `XS.xs`, `foroddcomposites`.
+/// ```
+/// use std::ops::ControlFlow;
+/// let result = math_prime_util::foroddcomposites(0..=20, |_| ControlFlow::Break(()));
+/// assert!(result.is_break());
+/// ```
+pub fn foroddcomposites<B>(
+    range: RangeInclusive<u64>,
+    f: impl FnMut(u64) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(odd_composites_in(range), f)
+>>>>>>> origin/dev-001
 }
 
 /// Visit each sum. See `XS.xs`, `forpart`.
@@ -476,22 +503,6 @@ pub fn forcomp<B>(
     run(compositions_of(n, options), f)
 }
 
-/// Visit each arrangement. See `XS.xs`, `forperm`.
-/// ```
-/// assert!(math_prime_util::forperm(3, |_| math_prime_util::lastfor()).is_break());
-/// ```
-pub fn forperm<B>(n: usize, f: impl FnMut(Vec<usize>) -> ControlFlow<B>) -> ControlFlow<B> {
-    run(permutations_of(n), f)
-}
-
-/// Visit each arrangement. See `XS.xs`, `forderange`.
-/// ```
-/// assert!(math_prime_util::forderange(3, |_| math_prime_util::lastfor()).is_break());
-/// ```
-pub fn forderange<B>(n: usize, f: impl FnMut(Vec<usize>) -> ControlFlow<B>) -> ControlFlow<B> {
-    run(derangements_of(n), f)
-}
-
 /// Visit combinations. See `XS.xs`, `forcomb`.
 /// ```
 /// assert!(math_prime_util::forcomb(3, Some(2), |_| math_prime_util::lastfor()).is_break());
@@ -503,27 +514,6 @@ pub fn forcomb<B>(
 ) -> ControlFlow<B> {
     run(combinations_of(n, k), f)
 }
-/// Visit distinct multiset permutations. See `lib/Math/Prime/Util/PP.pm`, `formultiperm`.
-/// ```
-/// assert!(math_prime_util::formultiperm(&[1,1,2], |_| math_prime_util::lastfor()).is_break());
-/// ```
-pub fn formultiperm<T: Ord + Clone, B>(
-    values: &[T],
-    f: impl FnMut(Vec<T>) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(multipermutations_of(values), f)
-}
-/// Visit a Cartesian product. See `XS.xs`, `forsetproduct`.
-/// ```
-/// assert!(math_prime_util::forsetproduct(&[vec![1,2]], |_| math_prime_util::lastfor()).is_break());
-/// ```
-pub fn forsetproduct<T: Clone, B>(
-    sets: &[Vec<T>],
-    f: impl FnMut(Vec<T>) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(set_product(sets), f)
-}
-
 /// Factor `n` by trial division. Returns `(prime, exponent)` pairs in ascending order.
 /// `0` and `1` have no factors. Trial division is the first stage of the factoring that
 /// `XS.xs`, `forfactored`, calls for each value.
@@ -761,3 +751,15 @@ pub fn forsquarefreeint<B>(
 pub fn fordivisors<B>(n: u64, f: impl FnMut(u64) -> ControlFlow<B>) -> ControlFlow<B> {
     run(divisors_of(n), f)
 }
+
+mod forperm;
+pub use forperm::{PermutationsOf, forperm, permutations_of};
+
+mod formultiperm;
+pub use formultiperm::{MultipermutationsOf, formultiperm, multipermutations_of};
+
+mod forderange;
+pub use forderange::{DerangementsOf, derangements_of, forderange};
+
+mod forsetproduct;
+pub use forsetproduct::{SetProduct, forsetproduct, set_product};

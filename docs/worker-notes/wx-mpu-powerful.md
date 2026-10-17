@@ -11,3 +11,4 @@ Added the C nth-powerful rank limits, small-rank table, and fitted search bounds
 All 11 compatibility tests and all 3 property/boundary tests pass offline. Gate reached test/benchmark lint checks; fixed semicolon and empty-assert style findings. No external state or shared mutable cache is used.
 Final gate is running after focused tests passed. Benchmark source is added without changing Cargo.toml. Tools, fixtures, crate root, and STATUS.md remain untouched as required.
 The gate has passed fmt, clippy, and the offline Rust 1.85 build and is running the full test suite. Native fixture skips cover inputs/results outside the unsigned APIs; no Perl or network was required.
+The full suite remains active after the count compatibility tests; waiting for the gate rather than launching a second whole-suite run.

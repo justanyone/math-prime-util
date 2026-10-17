@@ -14,14 +14,14 @@ proptest! {
         prop_assert!((logarithmic_integral(t)-x).abs() <= 1e-12*x.max(1.0));
     }
     #[test]
-    fn harmonic_recurrence(n in 1_u32..100000) {
+    fn harmonic_recurrence(n in 1_u32..100_000) {
         let d = harmreal(u64::from(n))-harmreal(u64::from(n-1));
         prop_assert!((d-1.0/f64::from(n)).abs() < 1e-14);
     }
     #[test]
     fn odd_bernoulli(n in 1_u32..1000) { prop_assert_eq!(bernreal(2*n+1), 0.0); }
     #[test]
-    fn integer_inverse_bracket(n in 1_u32..1000000) {
+    fn integer_inverse_bracket(n in 1_u32..1_000_000) {
         let r = inverse_li(u64::from(n));
         prop_assert!(logarithmic_integral(r as f64) >= f64::from(n));
         prop_assert!(logarithmic_integral((r-1) as f64) < f64::from(n));
@@ -45,14 +45,14 @@ fn invalid_inputs_panic() {
 }
 #[test]
 fn repeated_and_concurrent_calls() {
-    let expected = (pi(100), bernreal(100), harmreal(10000), riemann_r(1e30));
+    let expected = (pi(100), bernreal(100), harmreal(10_000), riemann_r(1e30));
     std::thread::scope(|s| {
         for _ in 0..4 {
             let expected = &expected;
             s.spawn(move || {
                 for _ in 0..5 {
                     assert_eq!(
-                        &(pi(100), bernreal(100), harmreal(10000), riemann_r(1e30)),
+                        &(pi(100), bernreal(100), harmreal(10_000), riemann_r(1e30)),
                         expected
                     );
                 }

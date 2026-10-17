@@ -8,4 +8,4 @@ Verdict: FAIL
 
 No earlier findings were supplied. The supplied diff was reviewed for guards, repeated effects, arithmetic bounds, and termination. The small-count guards protect the zero trailing-zero paths, and wide modular sums have room for their carry; those checks do not resolve the open acceptance failures above.
 
-Validation: focused tests and the required gate were attempted on the base checkout only; their results cannot certify candidate code. No code was modified.
+Validation: tools/test.sh --lib is_gaussian_prime completed with zero matching tests on the base checkout. tools/gate.sh passed fmt, clippy and the MSRV build, but remained in prime_count_oracle without printing == gate: green at review completion. The single tools/test.sh full-suite run was also pending. These base-only runs cannot certify candidate code. No code was modified.

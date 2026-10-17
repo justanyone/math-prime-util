@@ -61,7 +61,7 @@ pub(super) fn factor_into(n: u64, factors: &mut Vec<u64>) {
 // reference/mpu/factor.c, pbrent_factor (non-Montgomery path).
 fn brent(n: u64) -> u64 {
     let inner = if n <= 4_000_000_000 { 32 } else { 160 };
-    for a in 1.. {
+    for a in 1u64.. {
         let step = |x: u64| {
             u64::try_from((u128::from(x) * u128::from(x) + u128::from(a)) % u128::from(n)).unwrap()
         };

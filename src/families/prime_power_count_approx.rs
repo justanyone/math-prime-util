@@ -124,7 +124,7 @@ impl Wide {
     )]
     pub(super) fn integer(self, nearest: bool) -> u64 {
         let base = self.0 as u64;
-        let residual = self.1 + if nearest { 0.5 } else { 0.0 };
+        let residual = self.0.fract() + self.1 + if nearest { 0.5 } else { 0.0 };
         if residual >= 0.0 {
             base + residual.floor() as u64
         } else {
@@ -169,4 +169,18 @@ pub(super) fn li(n: u64) -> Wide {
         }
     }
     sum
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Wide;
+
+    #[test]
+    fn integer_rounding_retains_both_components() {
+        assert_eq!(Wide(100.75, 0.0).integer(true), 101);
+        assert_eq!(Wide(100.75, -0.5).integer(false), 100);
+        assert_eq!(Wide(100.0, -0.25).integer(false), 99);
+        assert_eq!(Wide(100.0, 0.25).integer(true), 100);
+        assert_eq!(Wide(100.0, 0.5).integer(true), 101);
+    }
 }

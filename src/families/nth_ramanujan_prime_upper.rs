@@ -50,7 +50,11 @@ pub fn nth_ramanujan_prime_upper(n: u64) -> Option<u64> {
         };
         return Some(nth_prime_upper(trunc_u64(r)));
     }
-    Some(nth_prime_upper(trunc_u64(ramanujan_axler(n, 0.0, axler_d(n)))))
+    Some(nth_prime_upper(trunc_u64(ramanujan_axler(
+        n,
+        0.0,
+        axler_d(n),
+    ))))
 }
 
 /// `prime_counts.c` `ramanujan_axler`. The `C` code narrows the result to `double`.
@@ -237,7 +241,8 @@ fn prime_count_lower(n: u64) -> u64 {
     } else {
         846.66
     };
-    let lower = fn_ / (fl1 - 1.0 - 1.0 / fl1 - 2.975_666 / fl2 - 13.024_334 / (fl1 * fl2) + a / (fl2 * fl2));
+    let lower = fn_
+        / (fl1 - 1.0 - 1.0 / fl1 - 2.975_666 / fl2 - 13.024_334 / (fl1 * fl2) + a / (fl2 * fl2));
     ceil_u64(lower)
 }
 
@@ -351,8 +356,10 @@ mod tests {
 
     #[test]
     fn limits_swap_uses_the_max_prime() {
-        let (lo, hi) = simple_nth_limits(10.0, 0.1, -5.0);
-        assert!(hi == MPU_MAX_PRIME || hi >= lo);
+        // A large `loglogn` makes the low estimate pass the high estimate.
+        let (lo, hi) = simple_nth_limits(10.0, 0.5, 20.0);
+        assert!(lo > 196, "lo={lo}");
+        assert_eq!(hi, MPU_MAX_PRIME);
     }
 
     #[test]

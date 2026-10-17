@@ -12,3 +12,4 @@ Waiting for the initial offline dependency build. Replaced quotient rounding wit
 Exact-count and range oracle tests pass. Approx/lower each fail on k=1,n=u64::MAX because existing prime_count_approx/lower use f64 instead of C long double. Gate found one literal-format lint, now fixed; unsigned oracle cases remain unskip <<cut 4 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -19 bytes)
+About five minutes remain. The remaining known mismatch is inherited long-double precision in the existing prime count dependencies. Keep the failing unsigned oracle checks visible; do not hard-code fixture values or edit sibling modules.

@@ -727,7 +727,10 @@ fn almost_high_ranges_and_fit_boundaries() {
         assert!(almost_prime_count_approx(3, n) >= lower);
     }
     for k in 0..64 {
-        assert!(almost_prime_count_lower(k, u64::MAX) <= almost_prime_count_approx(k, u64::MAX));
+        let n = 1_u64 << k;
+        assert_eq!(almost_prime_count(k, n), 1);
+        assert_eq!(almost_prime_count_lower(k, n), 1);
+        assert_eq!(almost_prime_count_approx(k, n), 1);
     }
     assert_eq!(almost_prime_count(1, u64::MAX), 425_656_284_035_217_743);
     assert_eq!(almost_prime_count(2, u64::MAX), 1_701_748_900_850_019_777);

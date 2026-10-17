@@ -8,3 +8,4 @@ Implemented semiprime marking, exact prime-count sum, and reference approximatio
 All four functions, fixture tests, property tests, concurrency/repeat-call checks, and benchmarks are written. Focused offline tests are running.
 Validation is waiting on the Cargo build-directory lock; no fixture generator or network was used.
 The first gate reached clippy. Fixed reference-table literal lint allowances and documented the range-size panic; waiting for focused results.
+Focused offline validation passed: all 4 compatibility tests and all 4 property/regression tests. The gate is rerunning after clippy fixes.

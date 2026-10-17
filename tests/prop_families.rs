@@ -22,7 +22,7 @@ proptest! {
         prop_assert_eq!(semiprime_count_approx(n), semiprime_count(n));
     }
     #[test]
-    fn twin_estimate_grows(n in 6u64..100000) {
+    fn twin_estimate_grows(n in 6u64..100_000) {
         prop_assert!(nth_twin_prime_approx(n).unwrap() <= nth_twin_prime_approx(n+1).unwrap());
     }
 }

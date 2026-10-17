@@ -8,7 +8,7 @@ use math_prime_util::{
 #[test]
 fn nth_twin_prime_approx_oracle() {
     each("families", "nth_twin_prime_approx", |c| {
-        c.check(nth_twin_prime_approx(c.arg(0)))
+        c.check(nth_twin_prime_approx(c.arg(0)));
     });
 }
 
@@ -48,6 +48,6 @@ fn semiprime_count_oracle() {
 #[test]
 fn semiprime_count_approx_oracle() {
     each("families", "semiprime_count_approx", |c| {
-        c.check(Some(semiprime_count_approx(c.arg(0))))
+        c.check(Some(semiprime_count_approx(c.arg(0))));
     });
 }

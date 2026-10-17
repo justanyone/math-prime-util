@@ -210,6 +210,31 @@ proptest! {
             prop_assert_eq!(base.checked_pow(exponent), Some(n));
         }
     }
+
+    #[test]
+    fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
+        prop_assert_eq!(sopfr(a * b), sopfr(a) + sopfr(b));
+        if gcd(a, b) == 1 {
+            prop_assert_eq!(sopf(a * b), sopf(a) + sopf(b));
+        }
+        prop_assert_eq!(sopf(a * a), sopf(a));
+    }
+
+    #[test]
+    fn chinese_general_congruences(a in any::<u64>(), m in 1_u64..500, n in 1_u64..500) {
+        let pairs = [(a, m), (a, n)];
+        let result = chinese(&pairs).unwrap();
+        prop_assert_eq!(result % m, a % m);
+        prop_assert_eq!(result % n, a % n);
+        prop_assert!(result < m / gcd(m, n) * n);
+        prop_assert_eq!(chinese(&[(a, n), (a, m)]), Some(result));
+        prop_assert_eq!(chinese(&[(a, m), (a, n), (a, m)]), Some(result));
+    }
+
+    #[test]
+    fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
+        prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
+    }
 }
 
 #[test]
@@ -249,6 +274,81 @@ fn liouville_concurrent_repeated_calls() {
                     assert_eq!(sumliouville(0), 0);
                     assert_eq!(liouville(1), 1);
                     assert_eq!(exp_mangoldt(121), 11);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+#[test]
+fn divisor_sums_native_edges() {
+    for (n, repeated, distinct) in [
+        (0, 0, 0),
+        (1, 0, 0),
+        (2, 2, 2),
+        (3, 3, 3),
+        (4, 4, 2),
+        (5, 5, 5),
+        (64, 12, 2),
+    ] {
+        assert_eq!(sopfr(n), repeated);
+        assert_eq!(sopf(n), distinct);
+    }
+    assert_eq!(sopfr(1 << 63), 126);
+    assert_eq!(sopf(1 << 63), 2);
+    assert_eq!(
+        sopfr(18_446_744_073_709_551_557),
+        18_446_744_073_709_551_557
+    );
+    assert_eq!(sopf(18_446_744_073_709_551_557), 18_446_744_073_709_551_557);
+}
+
+#[test]
+fn chinese_native_fallbacks_and_validation() {
+    assert_eq!(chinese(&[]), Some(0));
+    assert_eq!(chinese(&[(8, 1)]), Some(0));
+    assert_eq!(chinese(&[(0, 0)]), None);
+    assert_eq!(chinese(&[(0, 2), (1, 2)]), None);
+    // Wide, coprime moduli use util.c::_simple_chinese.
+    let m = (1_u64 << 62) + 1;
+    assert_eq!(chinese(&[(17, m), (17, 2)]), Some(17));
+    assert_eq!(chinese(&[(19, u64::MAX)]), Some(19));
+    assert_eq!(chinese(&[(0, u64::MAX), (0, 2)]), None);
+    // The C fallback refuses noncoprime moduli even when a solution exists.
+    assert_eq!(chinese(&[(1, 1_u64 << 63), (1, 2)]), None);
+    assert_eq!(chinese(&[(1, u64::MAX), (0, 1)]), None);
+}
+
+#[test]
+fn kronecker_signed_boundaries_and_concurrent_calls() {
+    for (a, b, expected) in [
+        (0, 0, 0),
+        (1, 0, 1),
+        (-1, 0, 1),
+        (2, 0, 0),
+        (i64::MIN, -1, -1),
+        (i64::MIN, 1, 1),
+        (i64::MIN, i64::MIN, 0),
+        (1, i64::MIN, 1),
+        (-1, i64::MIN, -1),
+        (3, 2, -1),
+        (-3, 2, -1),
+    ] {
+        assert_eq!(kronecker(a, b), expected);
+    }
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(sopfr(360), 17);
+                    assert_eq!(sopf(360), 10);
+                    let inputs = [(5, 12), (17, 18), (5, 12)];
+                    assert_eq!(chinese(&inputs), Some(17));
+                    assert_eq!(inputs, [(5, 12), (17, 18), (5, 12)]);
+                    assert_eq!(kronecker(-7, 19), -1);
                 }
             })
         })

@@ -75,3 +75,82 @@ fn prime_power_repeated_and_concurrent_calls() {
         assert_eq!(f(4096), expected);
     }
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(32))]
+    #[test]
+    fn almost_rank_and_range(k in 1u32..8, rank in 1u64..60) {
+        let n = nth_almost_prime(k, rank).unwrap();
+        prop_assert_eq!(almost_prime_count(k,n),rank);
+        prop_assert_eq!(almost_prime_count(k,n-1),rank-1);
+        prop_assert_eq!(almost_primes(k,n,n), vec![n]);
+        prop_assert!(nth_almost_prime_lower(k,rank).unwrap() <= n);
+        prop_assert!(nth_almost_prime_upper(k,rank).unwrap() >= n);
+        prop_assert!(almost_prime_count_lower(k,n) <= rank);
+        prop_assert!(almost_prime_count_upper(k,n) >= rank);
+    }
+    #[test]
+    fn omega_rank_and_range(k in 1u32..5, rank in 1u64..60) {
+        let n = nth_omega_prime(k,rank).unwrap();
+        prop_assert_eq!(omega_prime_count(k,n),rank);
+        prop_assert_eq!(omega_prime_count(k,n-1),rank-1);
+        prop_assert_eq!(omega_primes(k,0,n).len() as u64,rank);
+    }
+    #[test]
+    fn factor_multiplicities(k in 0u32..7, hi in 0u64..2000) {
+        let a=almost_primes(k,0,hi);
+        let w=omega_primes(k,0,hi);
+        prop_assert_eq!(a.len() as u64,almost_prime_count(k,hi));
+        prop_assert_eq!(w.len() as u64,omega_prime_count(k,hi));
+        prop_assert!(a.windows(2).all(|v| v[0]<v[1]));
+        prop_assert!(w.windows(2).all(|v| v[0]<v[1]));
+        if k==1 { prop_assert!(a.iter().all(|v| w.contains(v))); }
+    }
+}
+
+#[test]
+fn almost_omega_boundaries_and_concurrency() {
+    for k in [0, 1, 2, 63, 64, u32::MAX] {
+        assert!(almost_primes(k, 10, 1).is_empty());
+        assert!(omega_primes(k, 10, 1).is_empty());
+        assert!(almost_primes(k, 0, 0).is_empty());
+        assert!(omega_primes(k, 0, 0).is_empty());
+        assert_eq!(nth_almost_prime(k, 0), None);
+        assert_eq!(nth_almost_prime_lower(k, 0), None);
+        assert_eq!(nth_almost_prime_upper(k, 0), None);
+        assert_eq!(nth_almost_prime_approx(k, 0), None);
+        assert_eq!(nth_omega_prime(k, 0), None);
+        assert_eq!(almost_prime_count(k, 0), 0);
+        assert_eq!(omega_prime_count(k, 0), 0);
+    }
+    assert_eq!(nth_almost_prime(0, 2), None);
+    assert_eq!(nth_omega_prime(0, 2), None);
+    assert_eq!(nth_omega_prime(16, 1), None);
+    assert_eq!(almost_prime_count(64, u64::MAX), 0);
+    assert_eq!(almost_prime_count_approx(64, u64::MAX), 0);
+    assert_eq!(almost_prime_count_lower(64, u64::MAX), 0);
+    assert_eq!(almost_prime_count_upper(64, u64::MAX), 0);
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    almost_primes(3, 0, 2000),
+                    omega_primes(3, 0, 2000),
+                    nth_almost_prime(3, 100),
+                    nth_omega_prime(3, 100),
+                )
+            })
+        })
+        .collect();
+    let expected = (
+        almost_primes(3, 0, 2000),
+        omega_primes(3, 0, 2000),
+        nth_almost_prime(3, 100),
+        nth_omega_prime(3, 100),
+    );
+    for thread in threads {
+        assert_eq!(thread.join().unwrap(), expected);
+    }
+    assert_eq!(almost_primes(3, 0, 2000), expected.0);
+    assert_eq!(omega_primes(3, 0, 2000), expected.1);
+}

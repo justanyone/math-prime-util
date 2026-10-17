@@ -8,3 +8,5 @@ Focused fixture/property tests are running offline. Added hot-function benchmark
 Found pre-existing family test files in the diff; restored their contents and isolated the new tests in a nested module.
 Reviewing native overflow and test integration while the first offline build runs; all added APIs have runnable examples.
 Fixed overflow when locating the first sieve multiple near u64::MAX. The gate is queued behind the focused build lock.
+First compile found two C U suffixes in FIRST_THREE; removed them and rerun the task-specific tests.
+Removed C suffixes and formatted copied numeric tables with Rust separators. Waiting for focused tests and the second gate run.

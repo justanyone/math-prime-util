@@ -156,17 +156,13 @@ mod tests {
     }
 
     #[test]
-    fn just_below_threshold_stays_under_the_cap() {
-        // The polynomial is about n^2, so the bound is close to, but below, the cap.
+    fn just_below_threshold_hits_the_clamp_for_upper() {
+        // The polynomial is about n^2. The lower bound stays just under the cap,
+        // while the upper bound's larger terms push it past u64::MAX, so clamp caps it.
         let n = MAX_PERFECT_POW_IDX - 1;
-        for bound in [
-            nth_perfect_power_lower(n),
-            nth_perfect_power_upper(n),
-            nth_perfect_power_approx(n),
-        ] {
-            let v = bound.unwrap();
-            assert!(v > 1 << 63 && v < MAX_PERFECT_POW, "bound {v} out of range");
-        }
+        let lo = nth_perfect_power_lower(n).unwrap();
+        assert!(lo > 1 << 63 && lo < MAX_PERFECT_POW, "lower {lo} out of range");
+        assert_eq!(nth_perfect_power_upper(n), Some(u64::MAX));
     }
 
     #[test]

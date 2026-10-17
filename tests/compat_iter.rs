@@ -151,10 +151,9 @@ fn check(name: &str) {
                 match name {
                     "forsemiprimes" => joined(semiprimes_in(range), " "),
                     "foralmostprimes" => joined(almost_primes_in(k, range), " "),
-                    "forfactored" => joined(
-                        factored_in(range).map(|(n, f)| format_factored(n, &f)),
-                        " ",
-                    ),
+                    "forfactored" => {
+                        joined(factored_in(range).map(|(n, f)| format_factored(n, &f)), " ")
+                    }
                     "forsquarefree" => joined(
                         squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
                         " ",

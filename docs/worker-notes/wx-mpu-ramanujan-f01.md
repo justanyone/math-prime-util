@@ -21,3 +21,4 @@ All known pedantic lint findings in the new code have been fixed. Final gate and
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 14 bytes)
 Final gate has passed formatting, Clippy with warnings denied, and the Rust 1.85 build. It has reached the tests. This slice must remain PARTIAL until the two maximum-input oracle discrepancies are fixed and the gate reports green.
+The full suite and gate are still in the existing compat_count tests, before the Ramanujan fixture tests. Focused tests already identify the two remaining failures. No benchmark timing or coverage percentage was measured.

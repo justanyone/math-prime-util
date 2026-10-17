@@ -4,6 +4,18 @@ use common::each;
 use math_prime_util::*;
 
 #[test]
+fn nth_semiprime_oracle() {
+    each("families", "nth_semiprime", |c| {
+        c.check(nth_semiprime(c.arg(0)).map(|v| v.to_string()));
+    });
+}
+#[test]
+fn nth_semiprime_approx_oracle() {
+    each("families", "nth_semiprime_approx", |c| {
+        c.check(nth_semiprime_approx(c.arg(0)).map(|v| v.to_string()));
+    });
+}
+#[test]
 fn lucky_numbers_oracle() {
     each("families", "lucky_numbers", |c| {
         let (lo, hi) = if c.args.len() == 1 {

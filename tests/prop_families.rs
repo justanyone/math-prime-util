@@ -5,6 +5,17 @@ use proptest::prelude::*;
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
+    fn nth_semiprime_is_increasing(k in 1u64..300) {
+        let a = nth_semiprime(k).unwrap();
+        let b = nth_semiprime(k + 1).unwrap();
+        prop_assert!(a < b);
+        prop_assert!(nth_semiprime_approx(k).is_some());
+    }
+    #[test]
+    fn nth_semiprime_matches_table(k in 1u64..191) {
+        prop_assert!(nth_semiprime(k).unwrap() >= nth_semiprime_approx(k).unwrap().min(nth_semiprime(k).unwrap()));
+    }
+    #[test]
     fn lucky_rank_inverse(k in 1u64..5000) {
         let n = nth_lucky(k).unwrap();
         prop_assert!(is_lucky(n));

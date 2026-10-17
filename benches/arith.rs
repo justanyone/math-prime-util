@@ -6,6 +6,18 @@ use math_prime_util::{
     inverse_sigma0_count, mertens, moebius, ramanujan_tau, sumtotient, znorder, znprimroot,
 };
 fn bench_arith(c: &mut Criterion) {
+    c.bench_function("arith/sopfr", |b| {
+        b.iter(|| math_prime_util::sopfr(black_box(360_360)));
+    });
+    c.bench_function("arith/sopf", |b| {
+        b.iter(|| math_prime_util::sopf(black_box(360_360)));
+    });
+    c.bench_function("arith/kronecker", |b| {
+        b.iter(|| math_prime_util::kronecker(black_box(-7), black_box(1_000_000_007)));
+    });
+    c.bench_function("arith/chinese", |b| {
+        b.iter(|| math_prime_util::chinese(black_box(&[(2, 3), (3, 5), (2, 7)])));
+    });
     c.bench_function("euler_phi", |b| {
         b.iter(|| euler_phi(black_box(1_000_000_007)));
     });

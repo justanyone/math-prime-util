@@ -6,3 +6,4 @@ Recorded FAIL review: incomplete C ports, skipped oracle coverage, absent upper 
 Review file is written. Focused base tests are still running; gate passed fmt and is waiting for the test build lock. Candidate failures are established by the digest independently of these checks.
 Focused test command exited 0 with no matching base tests. Base gate passed fmt and clippy, then started MSRV; candidate acceptance remains FAIL.
 Base gate has reached the full test suite after passing MSRV; waiting for its final result. Review findings and requested artifact are complete.
+Still waiting for the base full-suite gate; no additional searching or code changes. The review remains complete with five open findings.

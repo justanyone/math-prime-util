@@ -1,2 +1,3 @@
 - Plan: port MPU verify_prime (aks.c/PrimalityProving.pm) into src/proving/, add compat/prop tests, run gate.
 - 2026-10-17T18:47:55Z launcher: no commit for 61 s; 92 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-aks-proving-f02.md.
+- 2026-10-17T18:48:56Z launcher: no commit for 60 s; 153 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-aks-proving-f02.md.

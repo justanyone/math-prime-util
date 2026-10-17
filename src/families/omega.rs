@@ -54,7 +54,7 @@ pub fn omega_prime_count(k: u32, n: u64) -> u64 {
 }
 
 // omega_primes.c: sieve_omega_primes, bounded factor-sieve windows.
-fn sieve(k: u32, lo: u64, hi: u64) -> Vec<u64> {
+pub(super) fn factor_sieve(k: u32, lo: u64, hi: u64, repeated: bool) -> Vec<u64> {
     let mut out = Vec::new();
     let mut low = lo.max(2);
     while low <= hi {
@@ -70,6 +70,9 @@ fn sieve(k: u32, lo: u64, hi: u64) -> Vec<u64> {
                 counts[i] += 1;
                 while rem[i] % p == 0 {
                     rem[i] /= p;
+                    if repeated && rem[i] % p == 0 {
+                        counts[i] += 1;
+                    }
                 }
             }
         }
@@ -87,8 +90,25 @@ fn sieve(k: u32, lo: u64, hi: u64) -> Vec<u64> {
     out
 }
 
+// Stop a branch when even its first distinct prime product is too large.
+fn fits(k: u32, start: u64, limit: u64) -> bool {
+    let mut product = 1u64;
+    let mut p = crate::next_prime(start - 1).unwrap_or(u64::MAX);
+    for _ in 0..k {
+        if product > limit / p {
+            return false;
+        }
+        product *= p;
+        p = crate::next_prime(p).unwrap_or(u64::MAX);
+    }
+    true
+}
+
 // omega_primes.c: _omega_prime_gen_rec and _omega_prime_gen_last.
 fn generate(k: u32, lo: u64, hi: u64, m: u64, start: u64, out: &mut Vec<u64>) {
+    if !fits(k, start, hi / m) {
+        return;
+    }
     if k == 1 {
         let minpow = lo.div_ceil(m).max(1);
         for e in 1..=63 {
@@ -105,6 +125,9 @@ fn generate(k: u32, lo: u64, hi: u64, m: u64, start: u64, out: &mut Vec<u64>) {
         }
     } else {
         for p in primes(start, rootint(hi / m, k)) {
+            if !fits(k, p, hi / m) {
+                break;
+            }
             let mut v = m * p;
             loop {
                 generate(k - 1, lo, hi, v, p + 1, out);
@@ -145,7 +168,7 @@ pub fn omega_primes(k: u32, lo: u64, hi: u64) -> Vec<u64> {
         out.sort_unstable();
         out
     } else {
-        sieve(k, lo, hi)
+        factor_sieve(k, lo, hi, false)
     }
 }
 

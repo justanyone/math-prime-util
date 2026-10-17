@@ -250,6 +250,9 @@ pub fn almost_primes(k: u32, lo: u64, hi: u64) -> Vec<u64> {
     if k >= 64 || hi >> k == 0 {
         return Vec::new();
     }
+    if lo > hi / 10 && hi - lo < 1_000_000 {
+        return super::omega::factor_sieve(k, lo, hi, true);
+    }
     let mut out = Vec::new();
     generate(k, lo, hi, 1, 2, &mut out);
     out.sort_unstable();

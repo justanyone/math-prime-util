@@ -30,3 +30,7 @@ Found large prefix fixtures that require the C omega recursive-construction bran
 Final compatibility and gate runs are active. Clippy, MSRV, and whole-suite execution are being checked offline; earlier stale long prefix runs were stopped after the recursive branch fix.
 
 Added native omega rank overflow checks from the C maximum-count table. Reused the existing prime nth-bound helper for k=1 instead of substituting exact ranks.
+
+Large omega prefixes need a minimum distinct-prime-product check to prune impossible recursive branches. Added the check and reran the prefix oracle test.
+
+Added bounded repeated-factor sieving for narrow almost-prime ranges, matching the reference range algorithm and avoiding prefix construction below lo.

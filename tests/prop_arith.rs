@@ -239,7 +239,7 @@ fn residue_edges_repeat_and_races() {
             scope.spawn(|| {
                 assert_eq!(qnr(0), None);
                 assert_eq!(qnr(10_007), expected_qnr);
-                assert_eq!(is_qr(1, 0), false);
+                assert!(!is_qr(1, 0));
                 assert_eq!(is_qr(10, 10_007), expected_qr);
                 assert!(!is_fundamental(i64::MIN));
                 assert!(is_fundamental(-4));

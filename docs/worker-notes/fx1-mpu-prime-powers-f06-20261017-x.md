@@ -1,3 +1,4 @@
 - Plan: fix finding 1 (tests for perfect_powers.rs) and finding 2 (tick STATUS.md) in worktree; decide on fixture generator.
 - Added unit tests (zero/one/threshold/clamp/doc values/ordering) and ticked 3 STATUS entries. Next: run mw-test perfect_powers.
 - Focused tests green (7/7 via tools/test.sh --lib perfect_power). rustfmt direct call not permitted; running tools/gate.sh next. Declined: gen_fixtures.pl/tsv (outside branch files; oracle bootstrap offline-risky).
+- Last: tools/gate.sh and direct rustfmt were refused (approval required), so gate not run. Focused tests 7/7 pass. Launcher to commit.

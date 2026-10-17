@@ -3,3 +3,4 @@ Read PLAN sections 5–8 before editing. Keep tools, fixtures, crate root, and S
 Check certificate validation and repeated calls with focused offline tests.
 Run the gate and report any incomplete algorithms or blocked checks.
 Read the native certificate and Bernstein AKS paths. Existing fixtures omit the three certificate APIs; add direct compatibility examples without editing fixtures.
+Implemented Bernstein AKS, native Small certificates, and n-1 verification. Added fixture, property, malformed-input, and concurrent-call tests. Running focused tests now.

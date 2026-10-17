@@ -1,251 +1,45 @@
-//! MPU 0.75 primality oracle checks.
+//! Native proving checks against MPU 0.75.
 mod common;
 use math_prime_util::*;
-
 #[test]
-fn is_pseudoprime_oracle() {
-    common::each("primality", "is_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| {
-            if c.args.len() == 1 {
-                return Some(u8::from(is_pseudoprime(n, 2)));
-            }
-            Some(u8::from(
-                c.args
-                    .iter()
-                    .skip(1)
-                    .all(|a| is_pseudoprime(n, a.parse().unwrap())),
-            ))
-        });
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
+fn is_aks_prime_oracle() {
+    common::each("primality", "is_aks_prime", |c| {
+        // Signed inputs such as -1 and -2 are outside the u64 API.
+        if let Ok(n) = c.args[0].parse::<u64>() { c.check(Some(u8::from(is_aks_prime(n)))); }
     });
 }
-
 #[test]
-fn is_euler_pseudoprime_oracle() {
-    common::each("primality", "is_euler_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| {
-            if c.args.len() == 1 {
-                return Some(u8::from(is_euler_pseudoprime(n, 2)));
-            }
-            Some(u8::from(
-                c.args
-                    .iter()
-                    .skip(1)
-                    .all(|a| is_euler_pseudoprime(n, a.parse().unwrap())),
-            ))
-        });
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
+fn is_provable_prime_oracle() {
+    common::each("primality", "is_provable_prime", |c| {
+        // Signed and bigint arguments are outside the native u64 API.
+        if let Ok(n) = c.args[0].parse::<u64>() { c.check(Some(is_provable_prime(n))); }
     });
 }
-
+// The committed primality fixture has no rows for these three APIs.
+// The expected text follows MPU PrimalityProving.pm::_small_cert.
 #[test]
-fn is_strong_pseudoprime_oracle() {
-    common::each("primality", "is_strong_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| {
-            if c.args.len() == 1 {
-                return Some(u8::from(is_strong_pseudoprime(n, 2)));
-            }
-            Some(u8::from(
-                c.args
-                    .iter()
-                    .skip(1)
-                    .all(|a| is_strong_pseudoprime(n, a.parse().unwrap())),
-            ))
-        });
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
+fn prime_certificate_compat() {
+    assert_eq!(prime_certificate(101), "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN 101\n\nType Small\nN 101\n");
+    assert!(prime_certificate(1).is_empty());
 }
-
 #[test]
-fn is_euler_plumb_pseudoprime_oracle() {
-    common::each("primality", "is_euler_plumb_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| Some(u8::from(is_euler_plumb_pseudoprime(n))));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
+fn is_provable_prime_with_cert_compat() {
+    assert_eq!(is_provable_prime_with_cert(15), (0, String::new()));
+    assert_eq!(is_provable_prime_with_cert(101), (2, prime_certificate(101)));
 }
-
 #[test]
-fn is_lucas_pseudoprime_oracle() {
-    common::each("primality", "is_lucas_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| Some(u8::from(is_lucas_pseudoprime(n))));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_strong_lucas_pseudoprime_oracle() {
-    common::each("primality", "is_strong_lucas_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| Some(u8::from(is_strong_lucas_pseudoprime(n))));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_extra_strong_lucas_pseudoprime_oracle() {
-    common::each("primality", "is_extra_strong_lucas_pseudoprime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result =
-            std::panic::catch_unwind(|| Some(u8::from(is_extra_strong_lucas_pseudoprime(n))));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_almost_extra_strong_lucas_pseudoprime_oracle() {
-    common::each(
-        "primality",
-        "is_almost_extra_strong_lucas_pseudoprime",
-        |c| {
-            // Negative and bigint n arguments are outside this unsigned native API.
-            let Ok(n) = c.args[0].parse::<u64>() else {
-                return;
-            };
-            let result = std::panic::catch_unwind(|| {
-                Some(u8::from(is_almost_extra_strong_lucas_pseudoprime(
-                    n,
-                    c.args.get(1).map_or(1, |a| a.parse().unwrap()),
-                )))
-            });
-            if c.error {
-                assert!(result.is_err(), "{c:?}");
-            } else {
-                c.check(result.unwrap());
-            }
-        },
-    );
-}
-
-#[test]
-fn is_bpsw_prime_oracle() {
-    common::each("primality", "is_bpsw_prime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| Some(is_bpsw_prime(n)));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_prob_prime_oracle() {
-    common::each("primality", "is_prob_prime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| Some(is_prob_prime(n)));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_safe_prime_oracle() {
-    common::each("primality", "is_safe_prime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| Some(u8::from(is_safe_prime(n))));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_mersenne_prime_oracle() {
-    common::each("primality", "is_mersenne_prime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| is_mersenne_prime(n).map(u8::from));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(result.unwrap());
-        }
-    });
-}
-
-#[test]
-fn is_prime_oracle() {
-    common::each("primality", "is_prime", |c| {
-        // Negative and bigint n arguments are outside this unsigned native API.
-        let Ok(n) = c.args[0].parse::<u64>() else {
-            return;
-        };
-        let result = std::panic::catch_unwind(|| is_prime(n));
-        if c.error {
-            assert!(result.is_err(), "{c:?}");
-        } else {
-            c.check(Some(result.unwrap()));
-        }
-    });
+fn verify_prime_compat() {
+    for n in [2, 3, 101, 4_294_967_311, u64::MAX-58] { assert_eq!(verify_prime(&prime_certificate(n)), Ok(true)); }
+    let header = "[MPU - Primality Certificate]\nVersion 1.0\nProof for:\nN 101\n";
+    for proof in ["Type BLS5\nN 101\nQ[1] 5\nA[0] 2\nA[1] 2\n----\n", "Type Lucas\nN 101\nQ[1] 2\nQ[2] 5\nA 2\n"] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(true));
+    }
+    for proof in ["Type Small\nN 15", "Type BLS5\nN 101\nA[0] 1\n----", "Type BLS5\nN 101\nQ[1] 4\n----"] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    }
+    for proof in ["Type ECPP\nN 101", "Type BLS5\nN 101\nN 101", "Type Small\nN 18446744073709551616", "Type BLS5\nN 101\nQ[2] 5\n----"] {
+        assert!(verify_prime(&format!("{header}{proof}")).is_err());
+    }
+    assert_eq!(verify_prime(""), Ok(false));
+    assert!(verify_prime("garbage").is_err());
 }

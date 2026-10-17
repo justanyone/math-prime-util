@@ -41,7 +41,7 @@ fn powerful_numbers_oracle() {
             (c.arg(0), c.arg(1))
         };
         let k = if c.args.len() > 2 {
-            c.arg::<u64>(2).min(u64::from(u32::MAX)) as u32
+            u32::try_from(c.arg::<u64>(2)).unwrap_or(u32::MAX)
         } else {
             2
         };

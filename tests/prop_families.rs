@@ -36,8 +36,8 @@ fn boundaries_and_repeat_calls() {
     assert!(!is_powerful(2, 64));
     assert_eq!(powerful_count(0, 100), 0);
     assert_eq!(powerful_count(10, 100), 1);
-    assert!(powerful_numbers(10, 1, 2).is_empty());
-    assert!(powerful_numbers(2, 100, 64).is_empty());
+    assert_eq!(powerful_numbers(10, 1, 2), Vec::<u64>::new());
+    assert_eq!(powerful_numbers(2, 100, 64), Vec::<u64>::new());
     assert_eq!(powerful_numbers(0, 100, 64), vec![1]);
     assert_eq!(sumpowerful(10, 0), 55);
     assert_eq!(nth_powerful(0, 2), None);

@@ -181,6 +181,23 @@ pub fn sumpowerful(n: u64, k: u32) -> u128 {
     sum_rec(n, k, &flags, 1, 2 * k - 1)
 }
 
+const MIN_K: [u32; 21] = [
+    0, 0, 1, 2, 4, 6, 7, 9, 11, 12, 14, 16, 18, 19, 21, 23, 24, 26, 28, 30, 31,
+];
+const MAX_POW: [u64; 11] = [
+    0,
+    u64::MAX,
+    9_330_124_695,
+    11_938_035,
+    526_402,
+    85_014,
+    25_017,
+    10_251,
+    5_137,
+    2_903,
+    1_796,
+];
+
 /// Return the `n`th `k`-powerful integer, or `None` on overflow or zero rank.
 /// Port of `powerful.c` / `nth_powerful`; invert `powerful_count`.
 /// A zero `k` includes all positive integers, as in MPU's public API.
@@ -189,22 +206,6 @@ pub fn sumpowerful(n: u64, k: u32) -> u128 {
 /// ```
 #[allow(clippy::cast_precision_loss, clippy::cast_sign_loss)] // C density estimates only set search bounds.
 pub fn nth_powerful(n: u64, k: u32) -> Option<u64> {
-    const MIN_K: [u32; 21] = [
-        0, 0, 1, 2, 4, 6, 7, 9, 11, 12, 14, 16, 18, 19, 21, 23, 24, 26, 28, 30, 31,
-    ];
-    const MAX_POW: [u64; 11] = [
-        0,
-        u64::MAX,
-        9_330_124_695,
-        11_938_035,
-        526_402,
-        85_014,
-        25_017,
-        10_251,
-        5_137,
-        2_903,
-        1_796,
-    ];
     if n == 0 {
         return None;
     }

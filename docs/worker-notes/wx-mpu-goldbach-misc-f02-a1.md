@@ -5,6 +5,8 @@ Port `is_gaussian_prime` and `is_sum_of_squares` from MPU 0.75 (`goldbach.c` / `
 Dependencies are on origin/dev-001. Read current code, copy the C method, cite the C function, keep the diff inside the named paths.
 
 Next: read PLAN.md §§5–8, the int/modular pattern, the C functions, and the families fixture rows.
+
+Read PLAN §§5–8, families module (lucky only), XS.xs `is_gaussian_prime` / `is_sum_of_squares`, util.c two- and three-square checks, fixture shapes. Signed rows are skipped (u64 API). Norm above 2^64 uses Miller-Rabin and returns 1 or 0. Writing the two source files, compat, property tests, and benches.
 - 2026-10-17T06:58:09Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-goldbach-misc-f02-a1.md.
 - 2026-10-17T06:59:09Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-goldbach-misc-f02-a1.md.
 - 2026-10-17T07:00:09Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-goldbach-misc-f02-a1.md.

@@ -11,6 +11,8 @@ Read PLAN 5–8 and the live functions in `src/arith/mod.rs`. XS returns 0 for a
 Next: move each function into its own file, keep the C method, and add property, validation, and concurrency tests.
 
 Moved `ramanujan_sum` and `valuation` into their own files and added property tests. Next: run `tools/test.sh` on the arith tests.
+
+Compat and property tests passed after two law fixes: composite bases are not additive, and `ramanujan_sum(12, 1)` is the zero case. Next: the gate script. About five minutes remain.
 - 2026-10-17T19:01:45Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-totients-f04-a1.md.
 - 2026-10-17T19:02:46Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-totients-f04-a1.md.
 - 2026-10-17T19:03:46Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-totients-f04-a1.md.

@@ -195,6 +195,7 @@ fn bench_perfect_powers(c: &mut Criterion) {
 }
 criterion_group!(
     benches,
+    bench_almost,
     bench_families,
     bench_ramanujan,
     bench_goldbach_misc,

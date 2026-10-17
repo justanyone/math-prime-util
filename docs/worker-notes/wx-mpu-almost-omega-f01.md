@@ -17,3 +17,9 @@ List/count, partition, and concurrent-call properties pass. Removed an invalid u
 Fixed all reported clippy issues in added tests and benchmarks. Moved the new benchmark block into its own function to preserve the existing benchmark function length limit. Full offline suite was launched once.
 The two k=1 maximum-input precision mismatches remain outside this row's editable module scope. All unsigned oracle assertions stay exact. Awaiting final gate and full-suite logs before recording the final status.
 Minimum-value tests exposed a real overflow: reduction can reach k=0 before approximation shifts. Added the degenerate result before shifting. Registered the almost-prime benchmarks separately to meet clippy's function length limit.
+All four focused algebraic/edge/concurrency property tests now pass, including the reduction-to-zero regression. Final gate and full-suite checks are still running. Exact count and range fixture checks passed earlier; two inherited precisio <<cut 20 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -4 bytes)
+Full offline suite reached compat_families: 54 passed and the two known k=1 maximum-input precision cases failed. Fixed the benchmark macro registration after clippy caught the unused benchmark helper. Rerunning gate for final lint/MSRV evi <<cut 6 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -17 bytes)

@@ -341,3 +341,7 @@ mod random_nbit_prime;
 pub use random_nbit_prime::random_nbit_prime;
 mod random_safe_prime;
 pub use random_safe_prime::random_safe_prime;
+mod vecsample;
+pub use vecsample::vecsample;
+mod miller_rabin_random;
+pub use miller_rabin_random::miller_rabin_random;

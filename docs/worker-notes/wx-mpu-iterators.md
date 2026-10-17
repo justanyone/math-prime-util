@@ -5,3 +5,4 @@ Run focused offline tests and the repository gate; record any remaining gaps.
 Dependency review: sieve primitives exist; factor range support is absent. Port combinatorial state machines and test native fixture cases first.
 Implemented independent closure control flow, native prime/composite ranges, RuleAsc partitions/compositions, combinations, permutations, and product state.
 Focused tests started. A truncated long generated match line caused a syntax error; repairing the test source before rerunning.
+Native fixtures exposed output truncation in some oracle rows and a partition-option edge. Added compact mismatch diagnostics to avoid printing large fixture values.

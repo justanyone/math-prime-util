@@ -61,3 +61,22 @@ proptest! {
         prop_assert!(roots.windows(2).all(|w| w[0] < w[1]));
     }
 }
+
+#[test]
+fn word_boundaries() {
+    for n in [1_u64 << 63, u64::MAX, 18_446_744_073_709_551_557] {
+        for a in [1, 4, 9] {
+            let roots = allsqrtmod(a, n);
+            assert!(!roots.is_empty());
+            for r in roots {
+                assert_eq!(math_prime_util::mulmod(r, r, n), Some(a));
+            }
+            assert_eq!(powmod(sqrtmod(a, n).unwrap(), 2, n), Some(a));
+        }
+    }
+    let n = 1_u64 << 63;
+    assert_eq!(allrootmod(27, 3, n), vec![3]);
+    assert_eq!(rootmod(27, 3, n), Some(3));
+    assert_eq!(allrootmod(2, u64::MAX, 3), vec![2]);
+    assert!(std::panic::catch_unwind(|| allrootmod(0, 3, n)).is_err());
+}

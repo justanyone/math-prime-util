@@ -666,9 +666,7 @@ impl Iterator for FactoredIn {
     type Item = (u64, Vec<(u64, u32)>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.range
-            .find(|&n| n > 0)
-            .map(|n| (n, factor_pairs(n)))
+        self.range.find(|&n| n > 0).map(|n| (n, factor_pairs(n)))
     }
 }
 
@@ -698,10 +696,7 @@ impl Iterator for SquarefreeIn {
                 return None;
             }
             let factors = factor_pairs(n);
-            factors
-                .iter()
-                .all(|&(_, e)| e == 1)
-                .then_some((n, factors))
+            factors.iter().all(|&(_, e)| e == 1).then_some((n, factors))
         })
     }
 }

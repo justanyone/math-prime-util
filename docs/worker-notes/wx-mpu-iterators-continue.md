@@ -2,3 +2,4 @@
 - 03:42 read iter/mod.rs and compat_iter.rs; no pub factor fn found yet; checking src/factor
 - 03:43 appended factor_pairs, almost/factored/squarefree/divisors iterators and for* fns to src/iter/mod.rs; next: fixture dispatch in compat_iter.rs, then tools/test.sh compat_iter
 - 03:43 added compat dispatch arms + oracle list; running compat_iter
+- 03:44 gate, cargo fmt and clippy need approval (denied); fixed chain formatting by hand; final compat run next. Not done: prop_iter laws for new fns, gate.

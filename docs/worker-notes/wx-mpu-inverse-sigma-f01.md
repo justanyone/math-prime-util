@@ -1,3 +1,4 @@
 - Plan: port inverse_sigma0 (C: inverse_sigma0.c) into src/arith/, fixtures from arith.tsv if present, tests + gate.
 - Found existing src/arith/inverse_sigma0.rs, compat/prop tests; running focused tests.
 - 2026-10-17T18:45:04Z launcher: no commit for 61 s; 92 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-inverse-sigma-f01.md.
+- 2026-10-17T18:46:05Z launcher: no commit for 60 s; 153 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-inverse-sigma-f01.md.

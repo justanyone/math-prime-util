@@ -6,3 +6,4 @@ Focused tests exposed native-range and Perl fallback mismatches. Next: fix bound
 Added Farey arrays, indexed rank search, properties and hot-function benchmarks. Running compatibility and property tests next.
 Compatibility now passes most functions. Finished the C direct totient sum; checking remaining native overflow and wrapper validation cases.
 All compatibility and property tests pass; clippy and MSRV passed. Gate found one stale rank example (strict rank is 5, not 6); corrected it and rerunning the gate.
+Final validation: native compatibility, algebraic properties, examples, benchmarks, clippy and MSRV checked offline. No network, fixture, tooling, STATUS or git metadata changes.

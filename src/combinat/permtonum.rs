@@ -21,18 +21,18 @@ pub fn permtonum(perm: &[u64]) -> Option<u64> {
     }
     let mut seen = vec![false; n];
     for &value in perm {
-        let Some(index) = usize::try_from(value).ok().filter(|&index| index < n) else {
-            panic!("permtonum: invalid permutation array");
-        };
-        if seen[index] {
-            panic!("permtonum: invalid permutation array");
-        }
+        let index = usize::try_from(value).unwrap_or(n);
+        assert!(
+            index < n && !seen[index],
+            "permtonum: invalid permutation array"
+        );
         seen[index] = true;
     }
     // `factorial(n - 1)` in util.c. On a 64-bit word it is 0 for n - 1 > 20.
     let mut fact = 1_u64;
     for factor in 2..n {
-        fact = fact.checked_mul(u64::try_from(factor).expect("length fits in u64"))?;
+        let factor = u64::try_from(factor).ok()?;
+        fact = fact.checked_mul(factor)?;
     }
     let mut rank = 0_u64;
     for left in 0..n - 1 {
@@ -45,7 +45,7 @@ pub fn permtonum(perm: &[u64]) -> Option<u64> {
         // util.c: if (k > (UV_MAX - num) / f) return 0.
         let term = smaller.checked_mul(fact)?;
         rank = rank.checked_add(term)?;
-        let divisor = u64::try_from(n - left - 1).expect("divisor fits in u64");
+        let divisor = u64::try_from(n - left - 1).ok()?;
         fact /= divisor;
     }
     Some(rank)

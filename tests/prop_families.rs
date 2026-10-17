@@ -633,7 +633,7 @@ fn powerfree_c_shortcuts_and_full_factorization() {
         assert!(!is_powerfree(cube, 3));
         assert!(is_powerfree(cube, 4));
     }
-    assert!(is_powerfree(4912, 3));
+    assert!(is_powerfree(4910, 3));
     assert!(is_powerfree(4915, 3));
     assert!(!is_powerfree(17_u64.pow(4), 4));
     assert!(is_powerfree(1_u64 << 62, 63));

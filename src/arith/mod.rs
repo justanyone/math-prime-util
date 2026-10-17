@@ -524,7 +524,7 @@ pub fn qnr(n: u64) -> Option<u64> {
         {
             return Some(a);
         }
-        a = next_prime(a);
+        a = next_prime(a)?;
     }
     None
 }

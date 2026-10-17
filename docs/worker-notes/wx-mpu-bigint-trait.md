@@ -20,3 +20,5 @@ With about five minutes left, the gate is still in the unrelated forsquarefreein
 Final: 11 new focused tests and all 6 Int doctests passed; fmt, clippy, and MSRV passed. Stopped the full gate while the existing forsquarefreeint test was still running, so no green marker or coverage result is claimed. Remaining work: opt <<cut 134 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 109 bytes)
+Correction: the gate process is not visible to the cleanup command; its tool session still reports running. Full-gate validation is incomplete, and no successful stop is claimed.
+Final cleanup: Ctrl-C through the gate tool session succeeded (exit 130). The gate is stopped; the validated native work and the remaining bigint/gate limitations above are the final handoff.

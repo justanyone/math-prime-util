@@ -6,3 +6,4 @@ Reference read: binomial uses gcd cancellation; Stirling uses binomial sums; Bel
 Implementation and fixture/property tests are written. Running focused offline tests now; no tools or fixtures were changed.
 Focused tests are compiling offline. Formatting completed; the launcher is snapshotting the new files while checks run.
 Focused checks found bigint binomial inputs to skip and Stirling cancellation beyond i128 despite a small final answer. The first gate found benchmark lint issues; fixing those and the Stirling fallback next.
+Added the first-kind direct recurrence used by MPU PP.pm after C overflow, plus its second-kind near-diagonal shortcut. Focused fixtures now rerunning after the cancellation fix.

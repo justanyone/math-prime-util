@@ -12,3 +12,4 @@ The generated checklist is current and git diff --check passes. Waiting for the 
 Gate remains active in the existing counting compatibility tests; no failure has been reported.
 - 2026-10-17T09:42:31Z launcher: no commit for 61 s; 242 s elapsed. Files changed so far: STATUS.md, benches/bits_ops1.rs, docs/worker-notes/wx-mpu-gap-bitops-1.md, src/bits/bitand.rs, src/bits/bitandnot.rs, src/bits/bitnot.rs, src/bits/bitor.rs, src/bits/bitxor.rs, src/bits/mod.rs, src/lib.rs, tests/prop_bits_ops1.rs.
 Existing nth_prime compatibility test passed; waiting for prime_count and the rest of the offline gate.
+Gate still runs the existing prime_count compatibility test without a reported failure; no code changes needed.

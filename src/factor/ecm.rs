@@ -173,6 +173,9 @@ fn stage2(q: Point, a24: u64, c: Mont, b1: u64, b2: u64) -> u64 {
 
 /// Port of `factor.c:tinyecm64` with its fixed Suyama sigma sequence.
 fn find_factor(n: u64, b1: u64, b2: u64, curves: u64) -> u64 {
+    if curves == 0 {
+        return 0;
+    }
     let c = Mont::new(n);
     let stage1_primes = primes(2, b1);
     'curve: for &sigma in SIGMAS
@@ -362,6 +365,10 @@ mod tests {
             91
         );
         assert_eq!(ecm_factor(101, None, None, None), vec![101]);
+        assert_eq!(
+            ecm_factor(91, Some(u64::MAX), Some(u64::MAX), Some(0)),
+            vec![91]
+        );
         for b1 in [0, 2, 10, 50, 100] {
             let factors = ecm_factor(8051, Some(b1), Some(b1 * 20), Some(400));
             assert_eq!(factors.iter().product::<u64>(), 8051);

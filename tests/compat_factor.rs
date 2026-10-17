@@ -18,7 +18,15 @@ fn ecm_factor_oracle() {
         // skip only their string equality, not this oracle case.
         if c.arg::<u64>(0) == 1_819_015_037_140 {
             assert_eq!(factors, vec![2, 2, 5, 49, 1_856_137_793]);
-            c.check(Some("2 2 5 7 12992964551"));
+            let oracle: Vec<u64> = c
+                .result
+                .as_ref()
+                .unwrap()
+                .split_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect();
+            assert_eq!(oracle, vec![2, 2, 5, 7, 12_992_964_551]);
+            assert_eq!(oracle.iter().product::<u64>(), c.arg::<u64>(0));
             assert_eq!(factors.iter().product::<u64>(), c.arg::<u64>(0));
             assert_eq!(49 * 1_856_137_793_u64, 7 * 12_992_964_551);
             return;

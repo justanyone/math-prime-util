@@ -124,13 +124,6 @@ pub fn odd_composites_in(range: RangeInclusive<u64>) -> CompositesIn {
     CompositesIn { range, odd: true }
 }
 
-        }
-        Some(out)
-    }
-}
-    }
-}
-
 /// Visit each value. See `XS.xs`, `forcomposites`.
 /// ```
 /// use std::ops::ControlFlow;

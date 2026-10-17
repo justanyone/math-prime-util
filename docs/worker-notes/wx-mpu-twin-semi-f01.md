@@ -3,3 +3,6 @@ Keep each function in its own families file and use existing prime helpers.
 Use the committed families fixtures without changing tools or fixture data.
 Run focused offline tests, then the required gate. Leave git and STATUS.md unchanged.
 Read the C wheel scan, count tables, approximation corrections, and all four fixture input ranges. Implement a bounded segmented wheel scan to share between listing, counting, and selection.
+Added four separate function files, compatibility tests, algebraic properties, boundary/thread checks, and criterion benchmarks. Run focused tests next; the large approximation fixture may expose f64 precision differences from C long double <<cut 1 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -22 bytes)

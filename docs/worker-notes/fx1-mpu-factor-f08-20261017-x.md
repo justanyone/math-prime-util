@@ -1,1 +1,3 @@
 - start: reading review note; plan: fix each Open finding with a failing-then-passing test
+- rough_count: fixed count to 10, cited C legendre_phi.c, added x<=p and zero-bound early exit + tests
+- squarefree_kernel: overflow-safe loop bound + native-width test; factorint port declined (not in crate)

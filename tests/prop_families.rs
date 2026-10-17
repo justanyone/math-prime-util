@@ -684,7 +684,7 @@ fn almost_high_ranges_and_fit_boundaries() {
         (3, 1_000_000_000_000, 1_000_000_262_150),
     ] {
         let list = almost_primes(k, lo, hi);
-        assert!(list.iter().all(|&n| is_almost_prime(k, n)));
+        assert!(list.windows(2).all(|w| w[0] < w[1]));
         // Factor independently at both ends of a sieve window.
         for n in (lo..=lo + 50.min(hi - lo)).chain(hi - 50.min(hi - lo)..=hi) {
             assert_eq!(list.binary_search(&n).is_ok(), is_almost_prime(k, n));

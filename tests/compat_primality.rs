@@ -257,6 +257,11 @@ fn is_frobenius_pseudoprime_oracle() {
         let Ok(n) = c.args[0].parse::<u64>() else {
             return;
         };
+        // A lone P argument is a Perl arity error; Rust requires both P and Q.
+        if c.args.len() == 2 {
+            assert!(c.error);
+            return;
+        }
         let parameters = if c.args.len() == 3 {
             let (Ok(p), Ok(q)) = (c.args[1].parse::<i64>(), c.args[2].parse::<i64>()) else {
                 return;

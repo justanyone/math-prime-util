@@ -5,3 +5,5 @@ Run focused offline tests and the repository gate; record any blockers here.
 The four exports now have separate files. Restored C quick rejection and count fast paths; retained shared sibling helpers.
 Added independent factor-exponent, prefix, range-threshold, native-edge, and parallel repeat-call tests; added membership benchmark.
 Focused tests are running offline. Oracle inspection confirms k=0 uses the public k=1 sum convention; unsigned APIs skip only signed and oversized arguments.
+The gate reached clippy and is waiting for the focused build lock. Added exact signed-case skip comments and documented the public zero-exponent sum behavior.
+All requested code and regression tests are written. Waiting for offline validation; no fixture, tooling, dependency, or STATUS changes are needed.

@@ -182,7 +182,7 @@ mod tests {
         let divisor = super::rho(n, 1).expect("semiprime splits within budget");
         assert_eq!(n % divisor, 0);
         assert!(divisor != 1 && divisor != n);
-        assert!(super::pollard(n) != n);
+        assert_ne!(super::pollard(n), n);
     }
 
     #[test]

@@ -2,11 +2,11 @@
 //! Benchmarks for the lucky-number, prime-power and twin prime functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    is_lucky, is_prime_power, lucky_count, lucky_numbers, next_prime_power, nth_lucky,
-    nth_ramanujan_prime, nth_ramanujan_prime_approx, nth_ramanujan_prime_lower, nth_twin_prime,
-    powerfree_count, powerful_count, powerful_numbers, prev_prime_power, prime_powers,
-    ramanujan_prime_count_upper, sumpowerful, twin_prime_count, twin_prime_count_approx,
-    twin_primes,
+    is_gaussian_prime, is_lucky, is_prime_power, is_sum_of_squares, lucky_count, lucky_numbers,
+    next_prime_power, nth_lucky, nth_ramanujan_prime, nth_ramanujan_prime_approx,
+    nth_ramanujan_prime_lower, nth_twin_prime, powerfree_count, powerful_count, powerful_numbers,
+    prev_prime_power, prime_powers, ramanujan_prime_count_upper, sumpowerful, twin_prime_count,
+    twin_prime_count_approx, twin_primes,
 };
 fn bench_families(c: &mut Criterion) {
     c.bench_function("prime_powers", |b| {
@@ -86,5 +86,13 @@ fn bench_families(c: &mut Criterion) {
         b.iter(|| powerfree_count(black_box(1_000_000_000), 2));
     });
 }
-criterion_group!(benches, bench_families);
+fn bench_squares(c: &mut Criterion) {
+    c.bench_function("is_gaussian_prime", |b| {
+        b.iter(|| is_gaussian_prime(black_box(519_880), black_box(2_265_929)));
+    });
+    c.bench_function("is_sum_of_squares", |b| {
+        b.iter(|| is_sum_of_squares(black_box(18_446_744_073_709_551_557), 2));
+    });
+}
+criterion_group!(benches, bench_families, bench_squares);
 criterion_main!(benches);

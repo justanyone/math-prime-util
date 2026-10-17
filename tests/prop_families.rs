@@ -276,3 +276,36 @@ fn boundaries_and_repeat_calls() {
         thread.join().unwrap();
     }
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(128))]
+    #[test]
+    fn sum_of_two_squares_matches_search(n in 0_u64..3000) {
+        let found = (0..=n.isqrt()).any(|a| is_square(n - a * a));
+        prop_assert_eq!(is_sum_of_squares(n, 2), found);
+    }
+    #[test]
+    fn sum_of_squares_monotone_in_k(n in 0_u64..100_000) {
+        prop_assert!(is_sum_of_squares(n, 4));
+        prop_assert_eq!(is_sum_of_squares(n, 1), is_square(n));
+        if is_sum_of_squares(n, 2) {
+            prop_assert!(is_sum_of_squares(n, 3));
+        }
+        // Legendre: n is a sum of three squares unless n = 4^a (8b + 7).
+        let tz = n.trailing_zeros();
+        let legendre = n == 0 || tz % 2 == 1 || (n >> tz) % 8 != 7;
+        prop_assert_eq!(is_sum_of_squares(n, 3), legendre);
+    }
+    #[test]
+    fn gaussian_norm_law(a in 1_u64..2000, b in 1_u64..2000) {
+        // For a, b both nonzero, a + bi is prime exactly when a^2 + b^2 is prime.
+        prop_assert_eq!(is_gaussian_prime(a, b) == 2, is_prime(a * a + b * b) == 2);
+        prop_assert_eq!(is_gaussian_prime(a, b), is_gaussian_prime(b, a));
+    }
+    #[test]
+    fn gaussian_axis_law(p in 0_u64..100_000) {
+        let expected = u8::from(p % 4 == 3 && is_prime(p) != 0) * 2;
+        prop_assert_eq!(is_gaussian_prime(p, 0), expected);
+        prop_assert_eq!(is_gaussian_prime(0, p), expected);
+    }
+}

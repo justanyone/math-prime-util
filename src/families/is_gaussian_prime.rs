@@ -59,10 +59,10 @@ fn norm(a: u64, b: u64) -> Wide {
 }
 
 fn prime_status(n: Wide) -> u8 {
-    if n.hi == 0
-        && let Ok(small) = u64::try_from(n.lo)
-    {
-        return is_prime(small);
+    if n.hi == 0 {
+        if let Ok(small) = u64::try_from(n.lo) {
+            return is_prime(small);
+        }
     }
     u8::from(passes_sprp(n))
 }

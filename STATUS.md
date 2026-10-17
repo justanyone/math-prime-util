@@ -115,7 +115,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `irand`
 - [x] `irand32`
 - [x] `irand64`
-- [ ] `is_aks_prime`
+- [x] `is_aks_prime`
 - [x] `is_almost_extra_strong_lucas_pseudoprime`
 - [x] `is_almost_prime`
 - [x] `is_bpsw_prime`
@@ -158,8 +158,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_prime_power`
 - [x] `is_primitive_root`
 - [x] `is_prob_prime`
-- [ ] `is_provable_prime`
-- [ ] `is_provable_prime_with_cert`
+- [x] `is_provable_prime`
+- [x] `is_provable_prime_with_cert`
 - [x] `is_pseudoprime`
 - [x] `is_qr`
 - [x] `is_quasi_carmichael`
@@ -286,7 +286,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prev_prime_power`
 - [x] `prho_factor`
 - [x] `prime_bigomega`
-- [ ] `prime_certificate`
+- [x] `prime_certificate`
 - [x] `prime_count`
 - [x] `prime_count_approx`
 - [x] `prime_count_lower`
@@ -428,7 +428,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `vecsum`
 - [x] `vecuniq`
 - [x] `vecwindow`
-- [ ] `verify_prime`
+- [x] `verify_prime`
 - [x] `znlog`
 - [x] `znorder`
 - [x] `znprimroot`

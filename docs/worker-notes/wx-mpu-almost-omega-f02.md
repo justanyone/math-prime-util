@@ -7,3 +7,4 @@ Dependency review: count bounds and inverse interpolation need private ports; se
 Implemented bounds tables, reductions, count inversion, and the four public functions. Next add fixture and property coverage.
 Added native oracle checks, property tests, concurrency checks, and benchmarks. Focused tests are compiling offline.
 Focused tests and gate are waiting on the Cargo build lock. Next inspect failures once compilation finishes.
+Corrected the prime approximation branch to use MPU real.c Halley inverse R. Exact nth search still lacks the C approximation-assisted optimization.

@@ -71,10 +71,79 @@ pub fn nth_almost_prime(k: u32, n: u64) -> Option<u64> {
     if r > 0 {
         return nth_almost_prime(k - r, n).map(|v| v << r);
     }
+    if k == 3 || k == 4 {
+        return Some(interpolate_approx(k, n));
+    }
     let lo = super::nth_almost_prime_lower(k, n)?;
     let mut hi = inverse(lo, 0, n, |x| exact_count(k, x));
     while !crate::is_almost_prime(k, hi) {
         hi -= 1;
     }
     Some(hi)
+}
+
+// MPU inverse_interpolate.c: interpolate_with_approx, tolerance 20000.
+fn interpolate_approx(k: u32, n: u64) -> u64 {
+    let nth = |v| super::nth_almost_prime_approx(k, v).unwrap_or(0);
+    let original = nth(n);
+    let mut guess = original;
+    let mut count = 0;
+    let mut min = 0;
+    let mut max = u64::MAX;
+    let mut iterations = 0;
+    for _ in 2..20 {
+        iterations += 1;
+        count = exact_count(k, guess);
+        if n.abs_diff(count) < 20000 {
+            break;
+        }
+        let estimate = nth(count);
+        if count <= n && guess > min {
+            min = guess;
+        }
+        if count >= n && guess < max {
+            max = guess;
+        }
+        guess = if original >= estimate {
+            guess.saturating_add(original - estimate)
+        } else {
+            guess.saturating_sub(estimate - original)
+        };
+        if guess <= min || guess >= max {
+            let span = max - min;
+            guess = if span <= 1 {
+                if guess <= min { max } else { min }
+            } else if 19999 >= span {
+                min + span / 2
+            } else if guess <= min {
+                min + 19999
+            } else {
+                max - 19999
+            };
+        }
+    }
+    if iterations == 18 {
+        count = exact_count(k, guess);
+    }
+    if count < n {
+        while count < n {
+            guess += 1;
+            while !crate::is_almost_prime(k, guess) {
+                guess += 1;
+            }
+            count += 1;
+        }
+    } else {
+        while !crate::is_almost_prime(k, guess) {
+            guess -= 1;
+        }
+        while count > n {
+            guess -= 1;
+            while !crate::is_almost_prime(k, guess) {
+                guess -= 1;
+            }
+            count -= 1;
+        }
+    }
+    guess
 }

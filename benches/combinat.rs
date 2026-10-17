@@ -3,8 +3,8 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
     bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
-    harmfrac, integer_complexity, multifactorial, pn_primorial, powersum, primorial,
-    rising_factorial, stirling, subfactorial,
+    harmfrac, integer_complexity, multifactorial, partitions, partitionsq, permtonum, pn_primorial,
+    powersum, primorial, rising_factorial, stirling, subfactorial,
 };
 
 fn combinat(c: &mut Criterion) {
@@ -46,6 +46,12 @@ fn combinat(c: &mut Criterion) {
     c.bench_function("integer_complexity_cached", |b| {
         b.iter(|| integer_complexity(black_box(100_000)));
     });
+    c.bench_function("partitions_200", |b| b.iter(|| partitions(black_box(200))));
+    c.bench_function("partitionsq_400", |b| {
+        b.iter(|| partitionsq(black_box(400)));
+    });
+    let perm: Vec<u64> = (0..20).rev().collect();
+    c.bench_function("permtonum_20", |b| b.iter(|| permtonum(black_box(&perm))));
 }
 
 criterion_group!(benches, combinat);

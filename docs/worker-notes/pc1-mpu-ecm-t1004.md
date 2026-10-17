@@ -9,3 +9,4 @@ oracle test, match Perl/XS output, then tools/gate.sh.
 - 2026-10-17T15:08:12Z launcher: no commit for 60 s; 216 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md.
 15:09:10 running tools/test.sh ecm_factor to see current parity
 - 2026-10-17T15:10:17Z launcher: no commit for 62 s; 340 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md.
+15:11:21 probing which B1/curve count yields factor 7 of 90950751857

@@ -11,3 +11,4 @@ The first gate stopped on a test literal without digit separators. Fixed that cl
 Final validation phase, with about five minutes reserved for the gate. The regression, fixture tests, algebraic laws, and concurrency tests have passed; the final helper and overflow tests are compiling with the gate.
 Formatting, clippy with warnings denied, and the MSRV 1.85 build passed. The helper boundary test passed. The gate's full suite and the required final tools/test.sh run are in progress offline.
 - 2026-10-17T18:44:57Z launcher: no commit for 60 s; 306 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-divisor-sums-f01.md, src/arith/abundance.rs, src/arith/aliquot_sum.rs, src/arith/divisor_sum.rs, src/arith/mod.rs, src/arith/ramanujan_tau.rs, tests/prop_arith.rs.
+The final full-suite runs are still active. Compilation completed and oracle tests are passing so far; no further code changes are planned unless validation finds a failure.

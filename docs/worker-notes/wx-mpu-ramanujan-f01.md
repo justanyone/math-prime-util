@@ -10,3 +10,6 @@ Exact-count oracle cases pass. Generation exposed a first-index offset, now corr
 The public APIs, compatibility tests, property tests, and Criterion source are written. No dependency, fixture, tools, STATUS, or git metadata was changed. Lint fixes and focused reruns are in progress; the large-input numerical mismatch re <<cut 11 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -13 bytes)
+All four property tests pass, including repeated and concurrent calls. Generation and exact-count fixture tests pass; lower and approximate counts each fail only at u64::MAX. A shared /tmp log name collided with another worker; the gate now <<cut 26 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 2 bytes)

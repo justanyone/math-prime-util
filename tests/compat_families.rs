@@ -50,13 +50,13 @@ fn ramanujan_prime_count_oracle() {
 #[test]
 fn ramanujan_prime_count_approx_oracle() {
     each("families", "ramanujan_prime_count_approx", |c| {
-        c.check(Some(ramanujan_prime_count_approx(c.arg(0))))
+        c.check(Some(ramanujan_prime_count_approx(c.arg(0))));
     });
 }
 
 #[test]
 fn ramanujan_prime_count_lower_oracle() {
     each("families", "ramanujan_prime_count_lower", |c| {
-        c.check(Some(ramanujan_prime_count_lower(c.arg(0))))
+        c.check(Some(ramanujan_prime_count_lower(c.arg(0))));
     });
 }

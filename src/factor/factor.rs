@@ -2,8 +2,11 @@ use crate::{gcd, is_prime, rootint, sqrtint};
 
 /// Return prime factors with multiplicity, in ascending order.
 ///
-/// Port of MPU 0.75 `factor.c::factor`, `_small_trial_factor`, and
-/// `_power_factor`. The split helpers use `holf32` and `pbrent_factor`.
+/// Port of MPU 0.75 `factor.c::factor`, `_small_trial_factor`,
+/// `_power_factor`, and `factor_one`. The splitter follows that
+/// function's Montgomery order: `holf32`, Brent, SQUFOF through 62 bits,
+/// p-1, rho, then Chebyshev. `tinyecm64` is the `HAS_ECM64` arm and SIQS
+/// has no source in MPU 0.75, so those stages are not called.
 /// One returns an empty list. Zero returns `[0]`.
 /// Inputs above 64 bits use [`factor_u128`](crate::factor_u128).
 ///
@@ -67,21 +70,91 @@ fn holf(n: u64) -> Option<u64> {
     None
 }
 
+/// One nontrivial factor from a method that returns a factor list.
+fn one_factor(n: u64, factors: Vec<u64>) -> Option<u64> {
+    let f = *factors.first()?;
+    (f > 1 && f < n && n % f == 0).then_some(f)
+}
+
+/// `holf32` only for values that fit in 32 bits (`factor_one`).
+fn holf_stage(n: u64) -> Option<u64> {
+    if u32::try_from(n).is_err() {
+        return None;
+    }
+    holf(n)
+}
+
+/// SQUFOF while `n` has at most 62 bits. The ECM build stops at 48 bits
+/// and runs `tinyecm64` instead; without that function the `#else` arm
+/// in `factor_one` keeps SQUFOF through 62 bits.
+fn squfof_stage(n: u64) -> Option<u64> {
+    if 64 - n.leading_zeros() > 62 {
+        return None;
+    }
+    one_factor(n, super::squfof_factor(n, Some(200_000)))
+}
+
+/// Portable `factor_one` chain. `start` skips earlier stages so tests can
+/// reach each arm. Production calls this with `start == 0`.
+fn dispatcher(n: u64, start: u8) -> Option<u64> {
+    if start == 0 {
+        if let Some(f) = holf_stage(n) {
+            return Some(f);
+        }
+    }
+    let bits = 64 - n.leading_zeros();
+    let extra = if bits <= 45 {
+        0
+    } else {
+        u64::from(bits - 45)
+    };
+    // USE_MONTMATH round schedule in factor_one.
+    let rounds = 8_000 + 9_000 * extra;
+    if start <= 1 {
+        if let Some(f) = one_factor(n, super::pbrent_factor(n, Some(rounds), Some(1))) {
+            return Some(f);
+        }
+    }
+    if start <= 2 {
+        if let Some(f) = one_factor(n, super::pbrent_factor(n, Some(rounds.saturating_mul(2)), Some(3)))
+        {
+            return Some(f);
+        }
+    }
+    if start <= 3 {
+        if let Some(f) = squfof_stage(n) {
+            return Some(f);
+        }
+    }
+    if start <= 4 {
+        if let Some(f) = one_factor(n, super::pminus1_factor(n, Some(8_000), Some(120_000))) {
+            return Some(f);
+        }
+    }
+    if start <= 5 {
+        if let Some(f) = one_factor(n, super::pbrent_factor(n, Some(500_000), Some(5))) {
+            return Some(f);
+        }
+    }
+    if start <= 6 {
+        if let Some(f) = one_factor(n, super::prho_factor(n, Some(180_000))) {
+            return Some(f);
+        }
+    }
+    if start <= 7 {
+        if let Some(f) = one_factor(n, super::cheb_factor(n, 1_000_000, 0)) {
+            return Some(f);
+        }
+    }
+    None
+}
+
 fn split(n: u64) -> u64 {
-    if u32::try_from(n).is_ok() {
-        if let Some(f) = holf(n) {
-            return f;
-        }
+    if let Some(f) = dispatcher(n, 0) {
+        return f;
     }
-    let bits = u64::from(u64::BITS - n.leading_zeros());
-    let rounds = 100 + 100 * bits.saturating_sub(45);
-    for (rounds, a) in [(rounds, 1), (2 * rounds, 3), (500_000, 5)] {
-        if let Some(f) = brent(n, rounds, a) {
-            return f;
-        }
-    }
-    // Other method families are separate port rows. Continue Brent with
-    // distinct polynomials until this remaining composite splits.
+    // factor_one croaks when every stage misses. Keep searching with the
+    // non-Montgomery Brent polynomial so a composite still splits.
     let mut a = 7;
     loop {
         if let Some(f) = brent(n, 500_000, a) {
@@ -160,7 +233,7 @@ fn square_add(x: u64, a: u64, n: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use super::{brent, holf, split};
+    use super::{brent, dispatcher, holf, holf_stage, one_factor, split, squfof_stage};
 
     #[test]
     fn split_paths_and_round_limits() {
@@ -171,7 +244,7 @@ mod tests {
         assert_eq!(holf(1), None);
         for n in [403, 1_000_036_000_099, 18_446_743_979_220_271_189] {
             let f = split(n);
-            assert!(f > 1 && f < n);
+            assert!(f > 1 && f < n, "{n}");
             assert_eq!(n % f, 0);
         }
         for a in 1..=10 {
@@ -180,5 +253,26 @@ mod tests {
                 assert_eq!(1_000_036_000_099 % f, 0);
             }
         }
+    }
+
+    #[test]
+    fn dispatcher_reaches_each_stage() {
+        assert_eq!(one_factor(15, vec![]), None);
+        assert_eq!(one_factor(15, vec![15]), None);
+        assert_eq!(one_factor(15, vec![3, 5]), Some(3));
+        assert_eq!(holf_stage(1 << 40), None);
+        assert_eq!(holf_stage(101), None);
+        let f = holf_stage(403).unwrap();
+        assert_eq!(403 % f, 0);
+        assert_eq!(squfof_stage(u64::MAX), None);
+        let f = squfof_stage(91).unwrap();
+        assert_eq!(91 % f, 0);
+        for start in 0..8 {
+            let f = dispatcher(403, start).unwrap();
+            assert!(f > 1 && f < 403 && 403 % f == 0, "start {start} gave {f}");
+        }
+        // Above 45 bits the Montgomery schedule adds rounds; 2^50 is even.
+        assert_eq!(dispatcher(1 << 50, 1), Some(2));
+        assert_eq!(dispatcher(1, 8), None);
     }
 }

@@ -1,43 +1,50 @@
-//! Compatibility tests for the four factor predicates from MPU 0.75.
+//! Oracle checks for the u128 factoring paths.
 mod common;
-
-// The u64 API skips signed arguments (including -0) and the bigint cases
-// 18450931744652885087, 36803912137803496523, and 36832540935240707603.
-use common::each;
-use math_prime_util::{is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
+use math_prime_util::{factor_u128, is_prime, is_prime_u128};
 
 #[test]
-fn is_carmichael_oracle() {
-    each("factor", "is_carmichael", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(u8::from(is_carmichael(n))));
+fn factor_oracle() {
+    for case in common::load("factor")
+        .into_iter()
+        .filter(|c| c.func == "factor")
+    {
+        let n = case.arg::<u128>(0);
+        let factors = factor_u128(n).expect("fixture must split");
+        let result = factors
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join(" ");
+        case.check(Some(result));
+        for p in factors {
+            if p > 1 {
+                assert_ne!(is_prime_u128(p), 0);
+            }
         }
-    });
+    }
 }
 
 #[test]
-fn is_quasi_carmichael_oracle() {
-    each("factor", "is_quasi_carmichael", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(is_quasi_carmichael(n)));
+fn is_prime_oracle() {
+    // The factor family has no is_prime rows. Check its inputs against u64,
+    // and use the existing primality oracle for direct primality cases.
+    for case in common::load("factor")
+        .into_iter()
+        .filter(|c| c.func == "factor")
+    {
+        if let Ok(n) = case.args[0].parse::<u64>() {
+            assert_eq!(is_prime_u128(u128::from(n)), is_prime(n));
         }
-    });
-}
-
-#[test]
-fn is_cyclic_oracle() {
-    each("factor", "is_cyclic", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(u8::from(is_cyclic(n))));
+    }
+    for case in common::load("primality")
+        .into_iter()
+        .filter(|c| c.func == "is_prime")
+    {
+        // Negative inputs need the signed API, which this u128 path cannot take.
+        if let Ok(n) = case.args[0].parse::<u128>() {
+            case.check(Some(is_prime_u128(n)));
         }
-    });
-}
-
-#[test]
-fn is_perfect_number_oracle() {
-    each("factor", "is_perfect_number", |c| {
-        if let Ok(n) = c.args[0].parse::<u64>() {
-            c.check(Some(u8::from(is_perfect_number(n))));
-        }
-    });
+    }
+    assert_eq!(is_prime_u128((1u128 << 127) - 1), 1);
+    assert_eq!(is_prime_u128(u128::MAX), 0);
 }

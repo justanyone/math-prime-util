@@ -25,6 +25,23 @@ fn tuples<T: Display>(values: impl Iterator<Item = Vec<T>>, sep: &str) -> String
         .collect::<Vec<_>>()
         .join(" ")
 }
+/// Parse `hi` or `lo hi` as an inclusive range. Bigint bounds return `None` (skipped).
+fn parse_range(args: &[String]) -> Option<std::ops::RangeInclusive<u64>> {
+    match args {
+        [hi] => Some(0..=hi.parse().ok()?),
+        [lo, hi] => Some(lo.parse().ok()?..=hi.parse().ok()?),
+        _ => None,
+    }
+}
+/// Format `n:p*p*q` as the MPU fixture does, with each prime repeated by its exponent.
+fn format_factored(n: u64, factors: &[(u64, u32)]) -> String {
+    let primes: Vec<String> = factors
+        .iter()
+        .flat_map(|&(p, e)| std::iter::repeat_n(p, e as usize))
+        .map(|p| p.to_string())
+        .collect();
+    format!("{n}:{}", primes.join("*"))
+}
 #[allow(clippy::too_many_lines)] // Keep the fixture dispatcher together.
 fn check(name: &str) {
     for c in common::load("iter").into_iter().filter(|c| c.func == name) {
@@ -117,6 +134,40 @@ fn check(name: &str) {
                     " ",
                 )
             }
+            "forsemiprimes" | "foralmostprimes" | "forfactored" | "forsquarefree"
+            | "forsquarefreeint" => {
+                // `foralmostprimes` takes k first. Bigint bounds are skipped.
+                let (k, rest) = if name == "foralmostprimes" {
+                    let Ok(k) = c.args[0].parse::<u32>() else {
+                        continue;
+                    };
+                    (k, &c.args[1..])
+                } else {
+                    (0, &c.args[..])
+                };
+                let Some(range) = parse_range(rest) else {
+                    continue;
+                };
+                match name {
+                    "forsemiprimes" => joined(semiprimes_in(range), " "),
+                    "foralmostprimes" => joined(almost_primes_in(k, range), " "),
+                    "forfactored" => joined(
+                        factored_in(range).map(|(n, f)| format_factored(n, &f)),
+                        " ",
+                    ),
+                    "forsquarefree" => joined(
+                        squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
+                        " ",
+                    ),
+                    _ => joined(squarefree_in(range).map(|(n, _)| n), " "),
+                }
+            }
+            "fordivisors" => {
+                let Ok(n) = c.args[0].parse::<u64>() else {
+                    continue;
+                };
+                joined(divisors_of(n), " ")
+            }
             _ => unreachable!(),
         };
         let expected = c.result.as_deref().unwrap();
@@ -152,7 +203,13 @@ oracle!(
     forderange,
     formultiperm,
     forsetproduct,
-    prime_iterator
+    prime_iterator,
+    forsemiprimes,
+    foralmostprimes,
+    forfactored,
+    forsquarefree,
+    forsquarefreeint,
+    fordivisors
 );
 #[test]
 fn prime_iterator_object() {

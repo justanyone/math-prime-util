@@ -16,7 +16,7 @@ use crate::{next_prime, prev_prime, prime_count, primes, primes_in, sqrtint};
 /// assert_eq!(semiprime_count(100), 34);
 /// ```
 pub fn semiprime_count(n: u64) -> u64 {
-    let root = sqrtint(n);
+    let root = prev_prime(sqrtint(n) + 1).unwrap_or(0);
     let xlim = if n > 1_000_000 {
         (n as f64).powf(0.70) as u64
     } else {

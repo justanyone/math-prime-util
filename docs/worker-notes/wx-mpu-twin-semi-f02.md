@@ -18,3 +18,5 @@ Families unit tests passed, including the new interpolation and saturation check
 The full-suite wrapper has not returned yet. The focused and families unit runs are green; waiting for the one authorized whole-suite run without starting another.
 - 2026-10-17T06:55:43Z launcher: no commit for 61 s; 455 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-twin-semi-f02.md, src/families/mod.rs, src/families/nth_twin_prime_approx.rs, src/families/semi_primes.rs, src/families/semiprime_count.rs, src/families/semiprime_count_approx.rs, tests/compat_families.rs, tests/prop_families.rs.
 Still waiting for the full-suite wrapper. No additional source changes or fixture edits are needed after focused validation.
+Full-suite execution remains pending after several minutes; gate cannot reach MSRV or docs because existing count-module test lints stop clippy.
+About five minutes remain. Shared the exact C small-semiprime table between listing and approximation; matched the C last-prime square-root bound for the count cache. Rerunning focused tests and gate.

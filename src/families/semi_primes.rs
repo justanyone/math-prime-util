@@ -19,6 +19,14 @@ pub fn semi_primes(lo: u64, hi: u64) -> Vec<u64> {
     if lo > hi {
         return Vec::new();
     }
+    if hi <= 623 {
+        return super::semiprime_count_approx::SMALL
+            .iter()
+            .copied()
+            .map(u64::from)
+            .filter(|&n| n >= lo && n <= hi)
+            .collect();
+    }
     let mut marks = vec![0_u8; usize::try_from(hi - lo + 1).expect("range fits usize")];
     // Resolve primes before marking. Resolve a product as soon as its second
     // factor is prime. This avoids walking to sqrt(hi) for narrow high ranges.

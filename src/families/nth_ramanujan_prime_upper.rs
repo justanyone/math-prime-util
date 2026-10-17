@@ -48,13 +48,15 @@ pub fn nth_ramanujan_prime_upper(n: u64) -> Option<u64> {
         } else {
             ramanujan_axler(n, 0.1212, 0.7973)
         };
-        return Some(nth_prime_upper(trunc_u64(r)));
+        return checked_bound(trunc_u64(r));
     }
-    Some(nth_prime_upper(trunc_u64(ramanujan_axler(
-        n,
-        0.0,
-        axler_d(n),
-    ))))
+    checked_bound(trunc_u64(ramanujan_axler(n, 0.0, axler_d(n))))
+}
+
+/// `nth_prime_upper` for an Axler index. `None` when the index is past
+/// `MPU_MAX_PRIME_IDX`: `nth_prime_upper` returns 0 there, and 0 bounds no prime.
+fn checked_bound(idx: u64) -> Option<u64> {
+    (idx <= MPU_MAX_PRIME_IDX).then(|| nth_prime_upper(idx))
 }
 
 /// `prime_counts.c` `ramanujan_axler`. The `C` code narrows the result to `double`.
@@ -340,6 +342,15 @@ mod tests {
         assert_eq!(nth_prime_upper(MPU_MAX_PRIME_IDX + 1), 0);
         let wide = nth_prime_upper(400_000_000_000_000_000);
         assert!(wide == MPU_MAX_PRIME || wide > 0);
+    }
+
+    #[test]
+    fn past_max_index_has_no_bound() {
+        // Public boundary: a 0 sentinel from `nth_prime_upper` must become `None`, not `Some(0)`.
+        assert_eq!(nth_ramanujan_prime_upper(u64::MAX), None);
+        assert_eq!(nth_ramanujan_prime_upper(u64::MAX / 2), None);
+        assert_eq!(checked_bound(MPU_MAX_PRIME_IDX), Some(MPU_MAX_PRIME));
+        assert_eq!(checked_bound(MPU_MAX_PRIME_IDX + 1), None);
     }
 
     #[test]

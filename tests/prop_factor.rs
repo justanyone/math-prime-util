@@ -1,6 +1,8 @@
-<<<<<<< HEAD
-//! Independent factor counts and algebraic laws for factor predicates.
-use math_prime_util::{is_almost_prime, is_omega_prime, is_semiprime, is_square_free};
+//! Independent factor counts and algebraic laws for the factor predicates.
+use math_prime_util::{
+    gcd, is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number,
+    is_quasi_carmichael, is_semiprime, is_square_free,
+};
 use proptest::prelude::*;
 
 fn counts(mut n: u64) -> (u64, u32, bool) {
@@ -22,10 +24,7 @@ fn counts(mut n: u64) -> (u64, u32, bool) {
         distinct += 1;
     }
     (total, distinct, square_free)
-=======
-//! Independent algebraic checks for the factor predicates.
-use math_prime_util::{gcd, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
-use proptest::prelude::*;
+}
 
 fn factors(mut n: u64) -> Vec<u64> {
     let mut result = Vec::new();
@@ -41,12 +40,10 @@ fn factors(mut n: u64) -> Vec<u64> {
         result.push(n);
     }
     result
->>>>>>> origin/dev-001
 }
 
 proptest! {
     #[test]
-<<<<<<< HEAD
     fn predicates_match_independent_counts(n in 1u64..1_000_000, k in 0u32..25) {
         let (total, distinct, square_free) = counts(n);
         prop_assert_eq!(is_almost_prime(u64::from(k), n), total == u64::from(k));
@@ -68,44 +65,8 @@ proptest! {
     fn squares_are_not_square_free(n in 2u64..=u64::from(u32::MAX)) {
         prop_assert!(!is_square_free(n * n));
     }
-}
 
-#[test]
-fn boundaries_and_large_counts() {
-    for n in 0..=4096 {
-        let (total, distinct, square_free) = counts(n);
-        assert_eq!(is_square_free(n), square_free, "n={n}");
-        assert_eq!(is_semiprime(n), n != 0 && total == 2, "n={n}");
-        for k in 0..=15 {
-            assert_eq!(
-                is_almost_prime(u64::from(k), n),
-                n != 0 && total == u64::from(k)
-            );
-            assert_eq!(is_omega_prime(k, n), n != 0 && distinct == k);
-        }
-    }
-    assert!(is_almost_prime(63, 1 << 63));
-    assert!(!is_almost_prime(64, u64::MAX));
-    assert!(!is_almost_prime(u64::MAX, u64::MAX));
-    assert!(!is_omega_prime(u32::MAX, u64::MAX));
-    assert!(is_omega_prime(1, 13_u64.pow(16)));
-    assert!(!is_omega_prime(1, 13 * 17));
-}
-
-#[test]
-fn repeated_and_concurrent_calls() {
-    let inputs = [0, 1, 4, 30, 49, 1_000_003 * 1_000_033, u64::MAX];
-    let expected: Vec<_> = inputs.map(|n| (is_square_free(n), is_semiprime(n))).into();
-    std::thread::scope(|scope| {
-        for _ in 0..4 {
-            scope.spawn(|| {
-                for (n, expected) in inputs.into_iter().zip(&expected) {
-                    assert_eq!((is_square_free(n), is_semiprime(n)), *expected);
-                }
-            });
-        }
-    });
-=======
+    #[test]
     fn cyclic_iff_coprime_totient(n in 1_u64..100_000) {
         let fs = factors(n);
         let mut phi = n;
@@ -145,6 +106,43 @@ fn repeated_and_concurrent_calls() {
         };
         prop_assert_eq!(is_quasi_carmichael(n), expected);
     }
+}
+
+#[test]
+fn boundaries_and_large_counts() {
+    for n in 0..=4096 {
+        let (total, distinct, square_free) = counts(n);
+        assert_eq!(is_square_free(n), square_free, "n={n}");
+        assert_eq!(is_semiprime(n), n != 0 && total == 2, "n={n}");
+        for k in 0..=15 {
+            assert_eq!(
+                is_almost_prime(u64::from(k), n),
+                n != 0 && total == u64::from(k)
+            );
+            assert_eq!(is_omega_prime(k, n), n != 0 && distinct == k);
+        }
+    }
+    assert!(is_almost_prime(63, 1 << 63));
+    assert!(!is_almost_prime(64, u64::MAX));
+    assert!(!is_almost_prime(u64::MAX, u64::MAX));
+    assert!(!is_omega_prime(u32::MAX, u64::MAX));
+    assert!(is_omega_prime(1, 13_u64.pow(16)));
+    assert!(!is_omega_prime(1, 13 * 17));
+}
+
+#[test]
+fn repeated_and_concurrent_calls() {
+    let inputs = [0, 1, 4, 30, 49, 1_000_003 * 1_000_033, u64::MAX];
+    let expected: Vec<_> = inputs.map(|n| (is_square_free(n), is_semiprime(n))).into();
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for (n, expected) in inputs.into_iter().zip(&expected) {
+                    assert_eq!((is_square_free(n), is_semiprime(n)), *expected);
+                }
+            });
+        }
+    });
 }
 
 #[test]
@@ -193,5 +191,4 @@ fn repeated_and_concurrent_calls_agree() {
         second.join().unwrap();
     });
     check();
->>>>>>> origin/dev-001
 }

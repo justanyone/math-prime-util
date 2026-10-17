@@ -10,3 +10,4 @@ The focused run still owns Cargo's build lock. The gate is queued behind it; ret
 Gate found one clippy manual_div_ceil warning in the C triangular-number expression. Replaced it with the equivalent standard method; rerun the gate.
 Focused tests passed: compat_arith 31/31 and prop_arith 19/19. The corrected gate is running; all four selected oracle functions pass without changing fixtures.
 The next gate pass found two benchmark-only semicolon warnings. Added the semicolons; library checks and focused tests are clean. Restarting the gate and final offline suite.
+Formatting and all-target Clippy now pass. Full offline tests are building; the gate will run the Rust 1.85 build, suite, and docs after the Cargo lock is released.

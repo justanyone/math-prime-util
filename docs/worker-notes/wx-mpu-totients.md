@@ -14,3 +14,5 @@ Final arithmetic implementation and tests are on disk; diff whitespace checks pa
 - 2026-10-17T07:40:37Z launcher: no commit for 61 s; 424 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients.md, src/arith/mod.rs, tests/compat_arith.rs, tests/prop_arith.rs.
 The existing nth-prime oracle completed successfully. The gate remains in prime_count_oracle; the arithmetic cases, Clippy, MSRV, and benchmark compilation passed.
 - 2026-10-17T07:42:07Z launcher: no commit for 60 s; 515 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients.md, src/arith/mod.rs, tests/compat_arith.rs, tests/prop_arith.rs.
+Stopping at the session limit. All 14 arithmetic oracle tests and seven property/regression tests pass; benchmarks compile. The gate passed fmt, Clippy, and MSRV but has not finished the existing prime-count oracle, so green and coverage are not yet verified.
+Final update: tools/gate.sh completed and printed == gate: green, including the full offline suite, all doctests, and documentation. Coverage percentage and performance measurements remain unmeasured locally.

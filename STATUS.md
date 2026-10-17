@@ -420,7 +420,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `vecreduce`
 - [x] `vecrsort`
 - [x] `vecrsorti`
-- [ ] `vecsample`
+- [x] `vecsample`
 - [x] `vecsingleton`
 - [x] `vecslide`
 - [x] `vecsort`

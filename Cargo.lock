@@ -265,6 +265,7 @@ name = "math-prime-util"
 version = "0.0.0"
 dependencies = [
  "criterion",
+ "getrandom 0.3.4",
  "proptest",
 ]
 

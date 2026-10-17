@@ -4,7 +4,7 @@
 //! threads. The first draw on a thread reads OS entropy. Reseed after a fork.
 
 use std::cell::RefCell;
-use std::io::{self, Read};
+use std::io;
 
 struct Stream {
     state: [u32; 16],
@@ -260,10 +260,11 @@ pub fn random_bytes(len: usize) -> Vec<u8> {
 }
 
 /// Reads OS entropy. MPU `entropy.c`: `get_entropy_bytes` (device path).
-/// This uses `/dev/urandom`, then `/dev/random`. It does not use timer entropy.
+/// This asks the operating system through the `getrandom` crate (`getrandom(2)`,
+/// `/dev/urandom`, `BCryptGenRandom` and so on). It does not use timer entropy.
 /// # Errors
-/// Returns an I/O error if neither device can supply the requested bytes.
-/// Platforms without these devices return an error. No seed state is changed.
+/// Returns an I/O error if the operating system cannot supply the requested bytes.
+/// No seed state is changed.
 /// # Panics
 /// Panics if `len` exceeds MPU's limit of 2,147,483,646 bytes.
 /// ```
@@ -274,12 +275,9 @@ pub fn random_bytes(len: usize) -> Vec<u8> {
 pub fn entropy_bytes(len: usize) -> io::Result<Vec<u8>> {
     assert!(len <= 2_147_483_646, "byte count exceeds MPU limit");
     let mut bytes = vec![0; len];
-    if len == 0 {
-        return Ok(bytes);
+    if len > 0 {
+        getrandom::fill(&mut bytes).map_err(io::Error::from)?;
     }
-    std::fs::File::open("/dev/urandom")
-        .or_else(|_| std::fs::File::open("/dev/random"))?
-        .read_exact(&mut bytes)?;
     Ok(bytes)
 }
 

@@ -541,3 +541,39 @@ fn nth_semiprime_approx_oracle() {
         c.check(nth_semiprime_approx(c.arg(0)).map(|v| v.to_string()));
     });
 }
+
+#[test]
+fn nth_perfect_power_approx_oracle() {
+    each("families", "nth_perfect_power_approx", |c| {
+        let n: u64 = c.arg(0);
+        if n > 4_297_615_581 {
+            // Past this index MPU promotes the result to bigint; the native API saturates.
+            return;
+        }
+        c.check(nth_perfect_power_approx(n));
+    });
+}
+
+#[test]
+fn nth_perfect_power_lower_oracle() {
+    each("families", "nth_perfect_power_lower", |c| {
+        let n: u64 = c.arg(0);
+        if n > 4_297_615_581 {
+            // Past this index MPU promotes the result to bigint; the native API saturates.
+            return;
+        }
+        c.check(nth_perfect_power_lower(n));
+    });
+}
+
+#[test]
+fn nth_perfect_power_upper_oracle() {
+    each("families", "nth_perfect_power_upper", |c| {
+        let n: u64 = c.arg(0);
+        if n > 4_297_615_581 {
+            // Past this index MPU promotes the result to bigint; the native API saturates.
+            return;
+        }
+        c.check(nth_perfect_power_upper(n));
+    });
+}

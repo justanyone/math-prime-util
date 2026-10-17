@@ -420,3 +420,21 @@ proptest! {
         prop_assert!(nth_semiprime(k).unwrap() >= nth_semiprime_approx(k).unwrap().min(nth_semiprime(k).unwrap()));
     }
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn nth_perfect_power_bounds_ordered(n in 1_u64..100_000) {
+        let lo = nth_perfect_power_lower(n).unwrap();
+        let up = nth_perfect_power_upper(n).unwrap();
+        let ap = nth_perfect_power_approx(n).unwrap();
+        prop_assert!(lo <= up);
+        prop_assert!(lo <= ap + 1 && ap <= up + 1);
+    }
+
+    #[test]
+    fn nth_perfect_power_bounds_monotone(n in 1_u64..100_000) {
+        prop_assert!(nth_perfect_power_lower(n).unwrap() <= nth_perfect_power_lower(n + 1).unwrap());
+        prop_assert!(nth_perfect_power_upper(n).unwrap() <= nth_perfect_power_upper(n + 1).unwrap());
+    }
+}

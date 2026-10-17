@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 //! Compatibility with the committed MPU arithmetic oracle.
+//! Arithmetic compatibility with the committed MPU oracle.
 mod common;
 use common::each;
 use math_prime_util::*;
@@ -22,10 +22,9 @@ fn euler_phi_oracle() {
         } else {
             let (lo, hi) = (c.arg(0), c.arg(1));
             c.check((lo <= hi).then(|| joined(&euler_phi_range(lo, hi))));
-=======
-//! Arithmetic compatibility with the committed MPU oracle.
-mod common;
-use common::each;
+        }
+    });
+}
 
 macro_rules! unary_option {
     ($($f:ident),*) => {$ (
@@ -124,12 +123,10 @@ fn chinese() {
     each("arith", "chinese", |c| {
         if let Some(p) = pairs(c) {
             c.check(math_prime_util::chinese(&p));
->>>>>>> origin/dev-001
-        }
+>        }
     });
 }
 #[test]
-<<<<<<< HEAD
 fn jordan_totient_oracle() {
     each("arith", "jordan_totient", |c| {
         c.check(jordan_totient(c.arg(0), c.arg(1)));
@@ -245,7 +242,8 @@ fn valuation_oracle() {
         }
     }
 }
-=======
+
+#[test]
 fn chinese2() {
     each("arith", "chinese2", |c| {
         if let Some(p) = pairs(c) {
@@ -253,4 +251,3 @@ fn chinese2() {
         }
     });
 }
->>>>>>> origin/dev-001

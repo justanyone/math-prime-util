@@ -13,3 +13,4 @@ Compat and property tests passed. A prime-sampling proptest rejected too often; 
 - 2026-10-17T19:01:36Z launcher: no commit for 60 s; 242 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.
 - 2026-10-17T19:03:07Z launcher: no commit for 60 s; 334 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.
 - 2026-10-17T19:04:08Z launcher: no commit for 60 s; 394 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md.
+- 2026-10-17T19:09:21Z launcher: no commit for 60 s; 707 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-divisor-sums-f04-a1.md, src/arith/is_fundamental.rs, src/arith/is_qr.rs, src/arith/mod.rs, src/arith/qnr.rs, tests/prop_arith.rs.

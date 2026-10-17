@@ -3,9 +3,10 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
     bell_number, bernfrac, binomial, catalan_number, consecutive_integer_lcm, factorial,
-    falling_factorial, frobenius_number, fubini, harmfrac, integer_complexity, is_congruent_number,
-    is_polygonal, multifactorial, partitions, partitionsq, permtonum, pn_primorial, powersum,
-    primorial, rising_factorial, stirling, subfactorial,
+    falling_factorial, frobenius_number, fubini, harmfrac, hclassno, integer_complexity,
+    is_congruent_number, is_happy, is_pillai, is_polygonal, multifactorial, numtoperm, partitions,
+    partitionsq, permtonum, pn_primorial, powersum, primorial, rising_factorial, stirling,
+    subfactorial,
 };
 
 fn combinat(c: &mut Criterion) {
@@ -64,6 +65,14 @@ fn combinat(c: &mut Criterion) {
     });
     c.bench_function("is_polygonal", |b| {
         b.iter(|| is_polygonal(black_box(15), black_box(3)));
+    });
+    c.bench_function("is_pillai", |b| b.iter(|| is_pillai(black_box(1009))));
+    c.bench_function("is_happy", |b| {
+        b.iter(|| is_happy(black_box(u64::MAX), 10, 2));
+    });
+    c.bench_function("hclassno", |b| b.iter(|| hclassno(black_box(1_000_003))));
+    c.bench_function("numtoperm", |b| {
+        b.iter(|| numtoperm(24, black_box(987_654_321)));
     });
 }
 

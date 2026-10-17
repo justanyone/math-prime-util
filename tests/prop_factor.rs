@@ -1,10 +1,10 @@
 //! Algebraic laws for the factor family. Factors from the bounded methods need not be prime.
 use math_prime_util::{
-    cheb_factor, divisors, ecm_factor, factor, factor_exp, fermat_factor, gcd, holf_factor,
-    is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime,
-    is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
-    pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
-    rough_count, squarefree_kernel, squfof_factor, trial_factor,
+    cheb_factor, divisors, ecm_factor, factor, factor_exp, factor_u128, fermat_factor, gcd,
+    holf_factor, is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number,
+    is_prime, is_prime_u128, is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor,
+    pbrent_factor, pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega,
+    prime_signature, rough_count, squarefree_kernel, squfof_factor, trial_factor,
 };
 use proptest::prelude::*;
 
@@ -477,6 +477,37 @@ fn boundaries_and_repeated_calls() {
                 scope.spawn(move || assert_eq!(&factor(n), expected));
             }
         });
+    }
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(24))]
+
+    #[test]
+    fn u128_paths_agree_with_u64(n in any::<u64>()) {
+        let wide: Vec<u64> = factor_u128(u128::from(n)).unwrap()
+            .into_iter().map(|p| u64::try_from(p).unwrap()).collect();
+        prop_assert_eq!(wide, factor(n));
+        prop_assert_eq!(is_prime_u128(u128::from(n)), is_prime(n));
+    }
+
+    #[test]
+    fn u128_factors_multiply_back(a in 2u64..(1 << 40), b in 2u64..(1 << 40), c in 1u64..1000) {
+        let n = u128::from(a) * u128::from(b) * u128::from(c);
+        let factors = factor_u128(n).unwrap();
+        prop_assert!(factors.windows(2).all(|w| w[0] <= w[1]));
+        prop_assert_eq!(factors.iter().product::<u128>(), n);
+        prop_assert!(factors.iter().all(|&p| is_prime_u128(p) != 0));
+    }
+
+    #[test]
+    fn u128_primality_matches_factoring(n in any::<u128>()) {
+        // A probable prime must not factor; a composite must.
+        let prime = is_prime_u128(n) != 0;
+        if n >> 100 == 0 || prime {
+            let factors = factor_u128(n).unwrap();
+            prop_assert_eq!(prime, factors.len() == 1 && n > 1);
+        }
     }
 }
 

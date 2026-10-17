@@ -6,5 +6,7 @@
 /// assert_eq!(math_prime_util::prime_omega(360), 3);
 /// ```
 pub fn prime_omega(n: u64) -> u32 {
-    super::prime_bigomega::exponents(n).len().try_into().expect("at most 64 factors")
+    super::prime_bigomega::exponents(n)
+        .iter()
+        .fold(0, |count, _| count + 1)
 }

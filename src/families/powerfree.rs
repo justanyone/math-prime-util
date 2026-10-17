@@ -3,7 +3,7 @@
 use super::powerful::factor_exponents;
 use crate::rootint;
 
-fn mobius(limit: u64) -> Vec<i8> {
+pub(super) fn mobius(limit: u64) -> Vec<i8> {
     let size = usize::try_from(limit).expect("sieve size fits usize");
     let mut mu = vec![1_i8; size + 1];
     let mut composite = vec![false; size + 1];
@@ -24,7 +24,7 @@ fn mobius(limit: u64) -> Vec<i8> {
     mu
 }
 
-fn squarefree_count(n: u64) -> u64 {
+pub(super) fn squarefree_count(n: u64) -> u64 {
     if n < 4 {
         return n;
     }
@@ -62,50 +62,6 @@ fn squarefree_count(n: u64) -> u64 {
     }
     u64::try_from(sum + mx_sum - i128::from(big_i - 1) * i128::from(mertens[d as usize]))
         .expect("count fits u64")
-}
-
-/// Test if no prime exponent reaches `k`.
-/// Port of `powerfree.c` / `is_powerfree`.
-/// ```
-/// assert!(math_prime_util::is_powerfree(12, 3));
-/// ```
-pub fn is_powerfree(n: u64, k: u32) -> bool {
-    if k < 2 || n <= 1 {
-        return n == 1;
-    }
-    if k >= 64 {
-        return true;
-    }
-    if n.trailing_zeros() >= k {
-        return false;
-    }
-    factor_exponents(n).iter().all(|&(_, e)| e < k)
-}
-
-/// Count positive `k`-powerfree integers up to `n`.
-/// Port of `powerfree.c` / `powerfree_count` and `squarefree_count`.
-/// ```
-/// assert_eq!(math_prime_util::powerfree_count(10, 2), 7);
-/// ```
-#[allow(clippy::cast_sign_loss)] // The Mobius identity is a count in 0..=n.
-pub fn powerfree_count(n: u64, k: u32) -> u64 {
-    if k < 2 {
-        return u64::from(n >= 1);
-    }
-    if n < 4 || k >= 64 {
-        return n;
-    }
-    if k == 2 {
-        return squarefree_count(n);
-    }
-    let mu = mobius(rootint(n, k));
-    let mut count = i128::from(n);
-    for (i, &m) in mu.iter().enumerate().skip(2) {
-        if m != 0 {
-            count += i128::from(m) * i128::from(n / (i as u64).pow(k));
-        }
-    }
-    count as u64
 }
 
 fn triangular(n: u64) -> u128 {
@@ -183,83 +139,3 @@ pub fn powerfree_part_sum(n: u64, k: u32) -> u128 {
     sum - subtract
 }
 
-/// Return the `n`th `k`-powerfree integer, or `None` on overflow or zero rank.
-/// Port of `powerfree.c` / `nth_powerfree`.
-/// ```
-/// assert_eq!(math_prime_util::nth_powerfree(7, 2), Some(10));
-/// ```
-#[allow(
-    clippy::cast_precision_loss,
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
-)]
-pub fn nth_powerfree(n: u64, k: u32) -> Option<u64> {
-    if n == 0 || k < 2 {
-        return None;
-    }
-    if k >= 64 || n < 4 {
-        return Some(n);
-    }
-    let max = match k {
-        2 => 11_214_275_663_373_200_251,
-        3 => 15_345_982_395_028_449_439,
-        4 => 17_043_655_258_566_511_333,
-        _ => powerfree_count(u64::MAX, k),
-    };
-    if n > max {
-        return None;
-    }
-    // The density is zeta(k). Sum the rapidly convergent series for k > 2.
-    let zeta = if k == 2 {
-        std::f64::consts::PI.powi(2) / 6.0
-    } else {
-        (1..=10000)
-            .map(|i| f64::from(i).powf(-f64::from(k)))
-            .sum::<f64>()
-    };
-    let mut q = (n as f64 * zeta + 0.5) as u64;
-    let threshold = match k {
-        2 => 200,
-        3 => 60,
-        4 => 2,
-        _ => 1,
-    };
-    for _ in 0..10 {
-        let count = powerfree_count(q, k);
-        let diff = count.abs_diff(n);
-        if diff <= threshold {
-            break;
-        }
-        let delta = (diff as f64 * zeta) as u64;
-        q = if count > n {
-            q.saturating_sub(delta).max(1)
-        } else {
-            q.saturating_add(delta)
-        };
-    }
-    // Recount after the last density correction.
-    let mut count = powerfree_count(q, k);
-    while !is_powerfree(q, k) {
-        q -= 1;
-    }
-    while count != n {
-        if count < n {
-            loop {
-                q = q.checked_add(1)?;
-                if is_powerfree(q, k) {
-                    break;
-                }
-            }
-            count += 1;
-        } else {
-            loop {
-                q -= 1;
-                if is_powerfree(q, k) {
-                    break;
-                }
-            }
-            count -= 1;
-        }
-    }
-    Some(q)
-}

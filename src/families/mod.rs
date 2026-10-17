@@ -58,10 +58,8 @@ pub use nth_twin_prime::nth_twin_prime;
 
 mod powerfree;
 mod powerful;
-pub use powerfree::{
-    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
-};
-pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};
+pub use powerfree::{powerfree_part, powerfree_part_sum, powerfree_sum};
+pub use powerful::{is_powerful, powerful_count, powerful_numbers, sumpowerful};
 
 mod nth_twin_prime_approx;
 pub use nth_twin_prime_approx::nth_twin_prime_approx;
@@ -97,3 +95,15 @@ mod prev_perfect_power;
 pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
+
+mod nth_powerful;
+pub use nth_powerful::nth_powerful;
+
+mod is_powerfree;
+pub use is_powerfree::is_powerfree;
+
+mod powerfree_count;
+pub use powerfree_count::powerfree_count;
+
+mod nth_powerfree;
+pub use nth_powerfree::nth_powerfree;

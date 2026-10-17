@@ -11,7 +11,9 @@ use math_prime_util::{
     ramanujan_prime_count_upper, semi_primes, semiprime_count, semiprime_count_approx, sumpowerful,
     twin_prime_count, twin_prime_count_approx, twin_primes,
 };
-use math_prime_util::{is_ramanujan_prime, nth_ramanujan_prime_upper};
+use math_prime_util::{
+    is_powerfree, is_ramanujan_prime, nth_powerfree, nth_powerful, nth_ramanujan_prime_upper,
+};
 use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
@@ -89,6 +91,15 @@ fn bench_families(c: &mut Criterion) {
     });
     c.bench_function("sumpowerful", |b| {
         b.iter(|| sumpowerful(black_box(1_000_000_000), 2));
+    });
+    c.bench_function("is_powerfree", |b| {
+        b.iter(|| is_powerfree(black_box(1_000_000_007), 3));
+    });
+    c.bench_function("nth_powerful", |b| {
+        b.iter(|| nth_powerful(black_box(10_000), 2));
+    });
+    c.bench_function("nth_powerfree", |b| {
+        b.iter(|| nth_powerfree(black_box(100_000), 3));
     });
     c.bench_function("powerfree_count", |b| {
         b.iter(|| powerfree_count(black_box(1_000_000_000), 2));

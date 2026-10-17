@@ -1,1 +1,461 @@
-//! iter: see PLAN.md section 5. Filled by the port rows; the crate root re-exports `pub use iter::*`.
+//! Stateful loops from MPU 0.75 `XS.xs` and `lib/Math/Prime/Util/PP.pm`.
+
+use std::ops::{ControlFlow, RangeInclusive};
+
+pub use crate::sieve::{PrimesIn, primes_in};
+
+fn run<I: Iterator, B>(mut iter: I, f: impl FnMut(I::Item) -> ControlFlow<B>) -> ControlFlow<B> {
+    iter.try_for_each(f)
+}
+
+/// Stop the current closure loop. See `XS.xs`, `lastfor`.
+/// ```
+/// use math_prime_util::{forprimes, lastfor};
+/// assert!(forprimes(2..=10, |_| lastfor()).is_break());
+/// ```
+pub fn lastfor() -> ControlFlow<()> {
+    ControlFlow::Break(())
+}
+
+/// Visit primes in an inclusive range. See `XS.xs`, `forprimes`.
+/// ```
+/// use math_prime_util::forprimes;
+/// use std::ops::ControlFlow;
+/// let mut sum = 0;
+/// let _: ControlFlow<()> = forprimes(0..=7, |p| { sum += p; ControlFlow::Continue(()) });
+/// assert_eq!(sum, 17);
+/// ```
+pub fn forprimes<B>(
+    range: RangeInclusive<u64>,
+    f: impl FnMut(u64) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(primes_in(range), f)
+}
+
+/// Create an iterator at the first prime at least `start`.
+/// See `lib/Math/Prime/Util.pm`, `prime_iterator`. The native range ends at `u64::MAX`.
+/// ```
+/// assert_eq!(math_prime_util::prime_iterator(10).next(), Some(11));
+/// ```
+pub fn prime_iterator(start: u64) -> PrimesIn {
+    primes_in(start..=u64::MAX)
+}
+
+/// Create an owned prime iterator. See `lib/Math/Prime/Util.pm`, `prime_iterator_object`.
+/// ```
+/// assert_eq!(math_prime_util::prime_iterator_object(3).take(3).collect::<Vec<_>>(), [3,5,7]);
+/// ```
+pub fn prime_iterator_object(start: u64) -> PrimesIn {
+    prime_iterator(start)
+}
+
+/// Composite range state. See `XS.xs`, `foroddcomposites`.
+#[derive(Debug, Clone)]
+pub struct CompositesIn {
+    range: RangeInclusive<u64>,
+    odd: bool,
+}
+impl Iterator for CompositesIn {
+    type Item = u64;
+    fn next(&mut self) -> Option<u64> {
+        self.range
+            .find(|&n| n >= 4 && (!self.odd || n % 2 == 1) && crate::is_prime(n) == 0)
+    }
+}
+
+/// Iterate over composites. See `XS.xs`, `forcomposites`.
+/// ```
+/// assert_eq!(math_prime_util::composites_in(0..=9).collect::<Vec<_>>(), [4,6,8,9]);
+/// ```
+pub fn composites_in(range: RangeInclusive<u64>) -> CompositesIn {
+    CompositesIn { range, odd: false }
+}
+/// Iterate over odd composites. See `XS.xs`, `foroddcomposites`.
+/// ```
+/// assert_eq!(math_prime_util::odd_composites_in(0..=15).collect::<Vec<_>>(), [9,15]);
+/// ```
+pub fn odd_composites_in(range: RangeInclusive<u64>) -> CompositesIn {
+    CompositesIn { range, odd: true }
+}
+
+/// Bounds for parts and lengths. See `XS.xs`, `forpart`.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct PartitionOptions {
+    /// Minimum part, clamped to one.
+    pub amin: Option<u64>,
+    /// Maximum part.
+    pub amax: Option<u64>,
+    /// Exact number of parts. Length bounds take precedence.
+    pub n: Option<u64>,
+    /// Minimum number of parts.
+    pub nmin: Option<u64>,
+    /// Maximum number of parts.
+    pub nmax: Option<u64>,
+    /// Require prime parts if true, nonprime parts if false.
+    pub prime: Option<bool>,
+}
+
+/// RuleAsc state from `XS.xs`, `forpart` and `forcomp`.
+#[derive(Debug, Clone)]
+pub struct PartitionsOf {
+    a: Vec<u64>,
+    k: usize,
+    n: u64,
+    options: PartitionOptions,
+    composition: bool,
+    empty: bool,
+    done: bool,
+}
+impl Iterator for PartitionsOf {
+    type Item = Vec<u64>;
+    fn next(&mut self) -> Option<Self::Item> {
+        let amin = self.options.amin.unwrap_or(1).max(1);
+        let amax = self.options.amax.unwrap_or(self.n).min(self.n);
+        let nmin = self.options.nmin.or(self.options.n).unwrap_or(1).max(1);
+        let nmax = self
+            .options
+            .nmax
+            .or(self.options.n)
+            .unwrap_or(self.n)
+            .min(self.n);
+        if self.empty {
+            self.empty = false;
+            return Some(Vec::new());
+        }
+        while !self.done && self.k != 0 {
+            let mut x = self.a[self.k - 1] + 1;
+            let mut y = self.a[self.k] - 1;
+            self.k -= 1;
+            let r = if self.composition { 1 } else { x };
+            while r <= y {
+                self.a[self.k] = x;
+                self.k += 1;
+                x = r;
+                y -= x;
+            }
+            self.a[self.k] = x + y;
+            while self.k as u64 + 1 > nmax && self.k > 0 {
+                self.a[self.k - 1] += self.a[self.k];
+                self.k -= 1;
+            }
+            if self.a[0] > amax {
+                self.done = true;
+                return None;
+            }
+            let out = &self.a[..=self.k];
+            if (out.len() as u64) < nmin || (out.len() as u64) > nmax {
+                continue;
+            }
+            if out.iter().any(|&v| {
+                v < amin
+                    || v > amax
+                    || self
+                        .options
+                        .prime
+                        .is_some_and(|p| (crate::is_prime(v) != 0) != p)
+            }) {
+                continue;
+            }
+            return Some(out.to_vec());
+        }
+        None
+    }
+}
+fn parts(n: u64, options: PartitionOptions, composition: bool) -> PartitionsOf {
+    assert!(n <= u64::MAX - 2, "partition argument overflow");
+    let size = usize::try_from(n).expect("partition size must fit usize");
+    let amin = options.amin.unwrap_or(1).max(1);
+    let done = n == 0 || amin > n || options.amax == Some(0) || options.nmax == Some(0);
+    let mut a = if done { vec![0, 0] } else { vec![0; size + 1] };
+    if !done {
+        a[0] = amin - 1;
+        a[1] = n - amin + 1;
+    }
+    PartitionsOf {
+        a,
+        k: 1,
+        n,
+        options,
+        composition,
+        empty: n == 0 && options.nmin.or(options.n).unwrap_or(1) <= 1,
+        done,
+    }
+}
+
+/// Iterate over ascending partitions. See `XS.xs`, `forpart`, RuleAsc.
+/// # Panics
+/// Panics if `n > u64::MAX - 2` or the state cannot fit in memory.
+/// ```
+/// use math_prime_util::{partitions_of, PartitionOptions};
+/// assert_eq!(partitions_of(3, PartitionOptions::default()).collect::<Vec<_>>(), [vec![1,1,1],vec![1,2],vec![3]]);
+/// ```
+pub fn partitions_of(n: u64, options: PartitionOptions) -> PartitionsOf {
+    parts(n, options, false)
+}
+/// Iterate over ordered compositions. See `XS.xs`, `forcomp`, RuleAsc.
+/// # Panics
+/// Panics if `n > u64::MAX - 2` or the state cannot fit in memory.
+/// ```
+/// assert_eq!(math_prime_util::compositions_of(3, Default::default()).count(), 4);
+/// ```
+pub fn compositions_of(n: u64, options: PartitionOptions) -> PartitionsOf {
+    parts(n, options, true)
+}
+
+/// Combination state from `XS.xs`, `_comb_init` and `_comb_iterate`.
+#[derive(Debug, Clone)]
+pub struct CombinationsOf {
+    n: usize,
+    k: usize,
+    end: usize,
+    current: Option<Vec<usize>>,
+}
+impl Iterator for CombinationsOf {
+    type Item = Vec<usize>;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.k > self.end || self.k > self.n {
+            return None;
+        }
+        let out = self.current.take().unwrap_or_else(|| (0..self.k).collect());
+        let mut next = out.clone();
+        if let Some(i) = (0..self.k).rev().find(|&i| next[i] < self.n - self.k + i) {
+            next[i] += 1;
+            for j in i + 1..self.k {
+                next[j] = next[j - 1] + 1;
+            }
+            self.current = Some(next);
+        } else {
+            self.k += 1;
+        }
+        Some(out)
+    }
+}
+/// Iterate over combinations of indices. `None` visits all lengths.
+/// See `XS.xs`, `forcomb` and `_comb_iterate`.
+/// ```
+/// assert_eq!(math_prime_util::combinations_of(3, Some(2)).collect::<Vec<_>>(), [vec![0,1],vec![0,2],vec![1,2]]);
+/// ```
+pub fn combinations_of(n: usize, k: Option<usize>) -> CombinationsOf {
+    CombinationsOf {
+        n,
+        k: k.unwrap_or(0),
+        end: k.unwrap_or(n),
+        current: None,
+    }
+}
+
+/// Lexical permutation state from `XS.xs`, `_comb_iterate`.
+#[derive(Debug, Clone)]
+pub struct PermutationsOf<T> {
+    current: Option<Vec<T>>,
+}
+fn advance<T: Ord>(a: &mut [T]) -> bool {
+    let Some(i) = (1..a.len()).rev().find(|&i| a[i - 1] < a[i]) else {
+        return false;
+    };
+    let j = (i..a.len())
+        .rev()
+        .find(|&j| a[i - 1] < a[j])
+        .expect("greater suffix element");
+    a.swap(i - 1, j);
+    a[i..].reverse();
+    true
+}
+impl<T: Ord + Clone> Iterator for PermutationsOf<T> {
+    type Item = Vec<T>;
+    fn next(&mut self) -> Option<Self::Item> {
+        let out = self.current.take()?;
+        let mut next = out.clone();
+        if advance(&mut next) {
+            self.current = Some(next);
+        }
+        Some(out)
+    }
+}
+/// Iterate over permutations of indices. See `XS.xs`, `forperm`.
+/// ```
+/// assert_eq!(math_prime_util::permutations_of(3).count(), 6);
+/// ```
+pub fn permutations_of(n: usize) -> PermutationsOf<usize> {
+    PermutationsOf {
+        current: Some((0..n).collect()),
+    }
+}
+/// Iterate over distinct multiset permutations in lexical order.
+/// See `lib/Math/Prime/Util/PP.pm`, `formultiperm` and `_multiset_permutations`.
+/// ```
+/// assert_eq!(math_prime_util::multipermutations_of(&[1,1,2]).count(), 3);
+/// ```
+pub fn multipermutations_of<T: Ord + Clone>(values: &[T]) -> PermutationsOf<T> {
+    let mut current = values.to_vec();
+    current.sort();
+    PermutationsOf {
+        current: Some(current),
+    }
+}
+/// Derangement state. See `XS.xs`, `forderange`.
+#[derive(Debug, Clone)]
+pub struct DerangementsOf {
+    inner: PermutationsOf<usize>,
+}
+impl Iterator for DerangementsOf {
+    type Item = Vec<usize>;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner
+            .find(|p| p.iter().enumerate().all(|(i, &v)| i != v))
+    }
+}
+/// Iterate over permutations with no fixed points. See `XS.xs`, `forderange`.
+/// ```
+/// assert_eq!(math_prime_util::derangements_of(4).count(), 9);
+/// ```
+pub fn derangements_of(n: usize) -> DerangementsOf {
+    DerangementsOf {
+        inner: permutations_of(n),
+    }
+}
+
+/// Cartesian product state from `XS.xs`, `forsetproduct`.
+#[derive(Debug, Clone)]
+pub struct SetProduct<T> {
+    sets: Vec<Vec<T>>,
+    indices: Vec<usize>,
+    done: bool,
+}
+impl<T: Clone> Iterator for SetProduct<T> {
+    type Item = Vec<T>;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.done {
+            return None;
+        }
+        let out = self
+            .sets
+            .iter()
+            .zip(&self.indices)
+            .map(|(s, &i)| s[i].clone())
+            .collect();
+        self.done = true;
+        for i in (0..self.indices.len()).rev() {
+            self.indices[i] += 1;
+            if self.indices[i] < self.sets[i].len() {
+                self.done = false;
+                break;
+            }
+            self.indices[i] = 0;
+        }
+        Some(out)
+    }
+}
+/// Iterate over a snapshot of the sets. See `XS.xs`, `forsetproduct`.
+/// ```
+/// assert_eq!(math_prime_util::set_product(&[vec![1,2],vec![3]]).collect::<Vec<_>>(), [vec![1,3],vec![2,3]]);
+/// ```
+pub fn set_product<T: Clone>(sets: &[Vec<T>]) -> SetProduct<T> {
+    SetProduct {
+        sets: sets.to_vec(),
+        indices: vec![0; sets.len()],
+        done: sets.is_empty() || sets.iter().any(Vec::is_empty),
+    }
+}
+
+/// Visit each value. See `XS.xs`, `forcomposites`.
+/// ```
+/// use std::ops::ControlFlow;
+/// let result = math_prime_util::forcomposites(0..=20, |_| ControlFlow::Break(()));
+/// assert!(result.is_break());
+/// ```
+pub fn forcomposites<B>(
+    range: RangeInclusive<u64>,
+    f: impl FnMut(u64) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(composites_in(range), f)
+}
+
+/// Visit each value. See `XS.xs`, `foroddcomposites`.
+/// ```
+/// use std::ops::ControlFlow;
+/// let result = math_prime_util::foroddcomposites(0..=20, |_| ControlFlow::Break(()));
+/// assert!(result.is_break());
+/// ```
+pub fn foroddcomposites<B>(
+    range: RangeInclusive<u64>,
+    f: impl FnMut(u64) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(odd_composites_in(range), f)
+}
+
+/// Visit each sum. See `XS.xs`, `forpart`.
+/// # Panics
+/// Panics for a size that cannot be represented or allocated.
+/// ```
+/// assert!(math_prime_util::forpart(3, Default::default(), |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn forpart<B>(
+    n: u64,
+    options: PartitionOptions,
+    f: impl FnMut(Vec<u64>) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(partitions_of(n, options), f)
+}
+
+/// Visit each sum. See `XS.xs`, `forcomp`.
+/// # Panics
+/// Panics for a size that cannot be represented or allocated.
+/// ```
+/// assert!(math_prime_util::forcomp(3, Default::default(), |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn forcomp<B>(
+    n: u64,
+    options: PartitionOptions,
+    f: impl FnMut(Vec<u64>) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(compositions_of(n, options), f)
+}
+
+/// Visit each arrangement. See `XS.xs`, `forperm`.
+/// ```
+/// assert!(math_prime_util::forperm(3, |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn forperm<B>(n: usize, f: impl FnMut(Vec<usize>) -> ControlFlow<B>) -> ControlFlow<B> {
+    run(permutations_of(n), f)
+}
+
+/// Visit each arrangement. See `XS.xs`, `forderange`.
+/// ```
+/// assert!(math_prime_util::forderange(3, |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn forderange<B>(n: usize, f: impl FnMut(Vec<usize>) -> ControlFlow<B>) -> ControlFlow<B> {
+    run(derangements_of(n), f)
+}
+
+/// Visit combinations. See `XS.xs`, `forcomb`.
+/// ```
+/// assert!(math_prime_util::forcomb(3, Some(2), |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn forcomb<B>(
+    n: usize,
+    k: Option<usize>,
+    f: impl FnMut(Vec<usize>) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(combinations_of(n, k), f)
+}
+/// Visit distinct multiset permutations. See `lib/Math/Prime/Util/PP.pm`, `formultiperm`.
+/// ```
+/// assert!(math_prime_util::formultiperm(&[1,1,2], |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn formultiperm<T: Ord + Clone, B>(
+    values: &[T],
+    f: impl FnMut(Vec<T>) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(multipermutations_of(values), f)
+}
+/// Visit a Cartesian product. See `XS.xs`, `forsetproduct`.
+/// ```
+/// assert!(math_prime_util::forsetproduct(&[vec![1,2]], |_| math_prime_util::lastfor()).is_break());
+/// ```
+pub fn forsetproduct<T: Clone, B>(
+    sets: &[Vec<T>],
+    f: impl FnMut(Vec<T>) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    run(set_product(sets), f)
+}

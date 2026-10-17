@@ -4,7 +4,7 @@
 use std::sync::OnceLock;
 
 /// Greatest common divisor of two `u128` values.
-fn gcd_u128(mut x: u128, mut y: u128) -> u128 {
+pub(crate) fn gcd_u128(mut x: u128, mut y: u128) -> u128 {
     while y != 0 {
         let r = x % y;
         x = y;

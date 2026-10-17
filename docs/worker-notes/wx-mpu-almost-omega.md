@@ -48,3 +48,7 @@ All 26 family doctests passed offline. No dependencies, fixture changes, tooling
 Final status so far: 26 oracle tests, 10 property tests, and 26 family doctests passed. Full gate has no reported failure but three existing count compatibility tests remain active. Coverage was not measured separately.
 
 The reference origin/dev ref is not present in this checkout. Focused tests remain green; the gate is still in existing count fixtures (chebyshev has now passed).
+
+Final review recovered the existing lucky and prime-power benchmark groups from repository history and retained them alongside the new benchmark group.
+
+Benchmark compilation passed after preserving the existing groups. Final source and focused tests are complete; full gate completion and coverage confirmation remain unverified within this session.

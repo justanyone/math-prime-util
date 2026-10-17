@@ -10,3 +10,5 @@ Corrected primality status comparisons. Focused tests and the offline gate are r
 All 57 oracle cases ran. One has a different valid composite-factor partition: reference port gives 49*1856137793, fixture gives 7*12992964551. Test records both partitions explicitly; strict string parity remains a known difference.
 Gate passes ECM lint checks but stops on existing clippy::float_cmp errors at src/count/mod.rs:240–242, outside task scope. Running helper tests and the full offline suite next.
 Added a zero-curve early return so even maximum bounds do not allocate prime tables; added its regression test. Strict oracle partition equality and the unrelated gate warnings remain open.
+Helper tests pass (3/3); compatibility test and four property/state tests pass. Full offline suite is running. No network, dependency, fixture, tooling, or STATUS changes were made.
+Final gate attempt still stops in pre-existing count-module float comparisons; no changes made outside the ECM task paths. Waiting for the single full-suite run.

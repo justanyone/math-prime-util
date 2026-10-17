@@ -12,3 +12,4 @@ Existing chebyshev, nth_prime, and prime_count oracle tests each exceeded 60 sec
 - 2026-10-17T06:53:18Z launcher: no commit for 60 s; 334 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f04.md, src/families/is_perfect_power.rs, src/families/mod.rs, src/families/next_perfect_power.rs, src/families/perfect_power_count.rs, src/families/prev_perfect_power.rs, tests/compat_families.rs, tests/prop_families.rs.
 Chebyshev oracle checks completed successfully. The gate still waits on the existing nth_prime and prime_count oracle checks; implementation, docs, benchmarks, and focused tests are complete.
 The gate remains in the existing prime-counting oracle tests with no reported failures. No source changes since the successful focused run; keeping the worktree ready for launcher snapshots.
+The nth_prime oracle test has now passed. The gate remains on prime_count in that test group; waiting for the required final gate result.

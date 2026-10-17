@@ -1,0 +1,2 @@
+- plan: add qnr, is_qr, is_fundamental in src/arith/ as own files; compat+prop tests; fixtures via gen_fixtures if needed
+- found qnr/is_qr/is_fundamental already in src/arith/mod.rs with tests; running compat_arith + prop_arith to verify

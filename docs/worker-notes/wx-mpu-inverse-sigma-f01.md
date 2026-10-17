@@ -1,0 +1,2 @@
+- Plan: port inverse_sigma0 (C: inverse_sigma0.c) into src/arith/, fixtures from arith.tsv if present, tests + gate.
+- Found existing src/arith/inverse_sigma0.rs, compat/prop tests; running focused tests.

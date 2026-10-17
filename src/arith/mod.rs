@@ -1,6 +1,15 @@
 //! Totients and multiplicative arithmetic from MPU 0.75.
 //! Divisor sums, discriminants, and arithmetic in residue rings.
 
+mod sopfr;
+pub use sopfr::sopfr;
+mod sopf;
+pub use sopf::sopf;
+mod kronecker;
+pub use kronecker::kronecker;
+mod chinese;
+pub use chinese::chinese;
+
 use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
 use std::collections::HashMap;
 
@@ -934,90 +943,6 @@ pub fn abundance(n: u64) -> Option<i64> {
     Some(i64::from_ne_bytes(sum.wrapping_sub(n).to_ne_bytes()))
 }
 
-/// Return the sum of prime factors with repetition.
-///
-/// Port of MPU 0.75 `factor.c::sopfr`.
-///
-/// ```
-/// assert_eq!(math_prime_util::sopfr(12), 7);
-/// ```
-pub fn sopfr(n: u64) -> u64 {
-    prime_factors(n).iter().sum()
-}
-
-/// Return the sum of distinct prime factors.
-///
-/// Port of MPU 0.75 `factor.c::sopf`.
-///
-/// ```
-/// assert_eq!(math_prime_util::sopf(12), 5);
-/// ```
-pub fn sopf(n: u64) -> u64 {
-    factor_powers(n).iter().map(|&(p, _)| p).sum()
-}
-
-fn kronecker_unsigned(a: u64, mut b: u64) -> i32 {
-    if b == 0 {
-        return i32::from(a == 1);
-    }
-    let mut s = 1;
-    let r = b.trailing_zeros();
-    if r > 0 {
-        if a % 2 == 0 {
-            return 0;
-        }
-        if r % 2 == 1 && matches!(a % 8, 3 | 5) {
-            s = -s;
-        }
-        b >>= r;
-    }
-    kronecker_odd(a, b, s)
-}
-fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
-    while a != 0 {
-        let r = a.trailing_zeros();
-        if r % 2 == 1 && matches!(b % 8, 3 | 5) {
-            s = -s;
-        }
-        a >>= r;
-        if a & b & 2 != 0 {
-            s = -s;
-        }
-        (a, b) = (b % a, a);
-    }
-    if b == 1 { s } else { 0 }
-}
-
-/// Return the signed Kronecker symbol (a/b).
-///
-/// Port of MPU 0.75 `util.c::kronecker_ss, kronecker_su, kronecker_uu_sign`.
-///
-/// ```
-/// assert_eq!(math_prime_util::kronecker(-1, 3), -1);
-/// ```
-pub fn kronecker(a: i64, b: i64) -> i32 {
-    let mut s = if a < 0 && b < 0 { -1 } else { 1 };
-    let mut b = b.unsigned_abs();
-    if a >= 0 {
-        return s * kronecker_unsigned(a.unsigned_abs(), b);
-    }
-    if b == 0 {
-        return i32::from(a == -1);
-    }
-    let r = b.trailing_zeros();
-    if r > 0 {
-        if a % 2 == 0 {
-            return 0;
-        }
-        if r % 2 == 1 && matches!(a.rem_euclid(8), 3 | 5) {
-            s = -s;
-        }
-        b >>= r;
-    }
-    let rem = a.unsigned_abs() % b;
-    kronecker_odd(if rem == 0 { 0 } else { b - rem }, b, s)
-}
-
 /// Test whether n is a fundamental discriminant.
 ///
 /// Port of MPU 0.75 `util.c::is_fundamental`.
@@ -1034,18 +959,6 @@ pub fn is_fundamental(n: i64) -> bool {
     } else {
         r % 4 == 1 && square_free(m)
     }
-}
-
-/// Solve simultaneous congruences. Each pair is (residue, modulus).
-/// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
-///
-/// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
-///
-/// ```
-/// assert_eq!(math_prime_util::chinese(&[(2, 3), (3, 5)]), Some(8));
-/// ```
-pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
-    chinese2(congruences).map(|(r, _)| r)
 }
 
 /// Return the least solution and the combined modulus.

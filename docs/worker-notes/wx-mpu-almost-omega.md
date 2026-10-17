@@ -16,3 +16,5 @@ The first gate reached clippy and flagged C coefficient formatting and bounded n
 About five minutes remain in the session budget. Focused almost-prime tests and property tests are running; the second gate checks the lint fixes.
 
 Property suite passed: 9 tests, including existing family properties. Fixed benchmark semicolon lints; native oracle comparison is still running.
+
+Exact almost-prime counts pass the oracle. Three count estimates fail at u64::MAX because existing f64 prime estimates differ from MPU long-double outputs. Investigating nth compatibility separately.

@@ -111,10 +111,10 @@ proptest! {
 #[test]
 fn almost_omega_boundaries_and_concurrency() {
     for k in [0, 1, 2, 63, 64, u32::MAX] {
-        assert!(almost_primes(k, 10, 1).is_empty());
-        assert!(omega_primes(k, 10, 1).is_empty());
-        assert!(almost_primes(k, 0, 0).is_empty());
-        assert!(omega_primes(k, 0, 0).is_empty());
+        assert_eq!(almost_primes(k, 10, 1), []);
+        assert_eq!(omega_primes(k, 10, 1), []);
+        assert_eq!(almost_primes(k, 0, 0), []);
+        assert_eq!(omega_primes(k, 0, 0), []);
         assert_eq!(nth_almost_prime(k, 0), None);
         assert_eq!(nth_almost_prime_lower(k, 0), None);
         assert_eq!(nth_almost_prime_upper(k, 0), None);

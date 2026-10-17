@@ -44,6 +44,13 @@ fn lambert_w_oracle() {
 fn inverse_li_oracle() {
     // inverse_li cases whose argument or result exceeds u64 use the Perl bigint
     // fallback. The native C inverse_li API cannot represent those cases.
+    // Skipped: inverse_li(1000000000000000000); outside the native unsigned u64 API.
+    // Skipped: inverse_li(10000000000000000000); outside the native unsigned u64 API.
+    // Skipped: inverse_li(18446744073709551615); outside the native unsigned u64 API.
+    // Skipped: inverse_li(18446744073709551616); outside the native unsigned u64 API.
+    // Skipped: inverse_li(100000000000000000000); outside the native unsigned u64 API.
+    // Skipped: inverse_li(1000000000000000000000); outside the native unsigned u64 API.
+    // Skipped: inverse_li(-1); outside the native unsigned u64 API.
     common::each("real", "inverse_li", |c| {
         let Some(x) = c.args[0].parse::<u64>().ok() else {
             return;

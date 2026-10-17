@@ -669,10 +669,10 @@ mod almost_omega_f03 {
         assert_eq!(nth_omega_prime(16, 1), None);
         assert_eq!(nth_omega_prime(15, 299_179), None);
         assert_eq!(omega_prime_count(16, u64::MAX), 0);
-        assert!(omega_primes(16, 1, u64::MAX).is_empty());
-        assert!(omega_primes(0, 2, 100).is_empty());
-        assert!(omega_primes(3, 1, 29).is_empty());
-        assert!(omega_primes(2, 100, 1).is_empty());
+        assert_eq!(omega_primes(16, 1, u64::MAX), Vec::<u64>::new());
+        assert_eq!(omega_primes(0, 2, 100), Vec::<u64>::new());
+        assert_eq!(omega_primes(3, 1, 29), Vec::<u64>::new());
+        assert_eq!(omega_primes(2, 100, 1), Vec::<u64>::new());
     }
 
     #[test]

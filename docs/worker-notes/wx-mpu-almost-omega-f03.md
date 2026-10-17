@@ -16,3 +16,6 @@ The git shim truncated retrieved originals even inside Python. Recovered complet
 Complete baseline test files restored; focused integration tests and gate are running again. Remaining work is validation and any resulting fixes.
 Diff review confirms the existing family tests are retained and only assigned code, benchmark entries, tests, and worker notes changed.
 Three scalar fixture tests passed. Empty omega lists are stored as undef by the fixture loader; adjusted the compat adapter. Fixed benchmark semicolons and the empty-string lint.
+All four fixture tests and all six task property/regression tests pass. Split the added benchmarks into their own group function to keep clippy clean.
+Gate found four new assert_is_empty style lints in the added edge tests. Replaced them with value-reporting equality assertions.
+Required whole-suite tools/test.sh launched once; the gate is rerunning after all focused tests passed.

@@ -18,7 +18,7 @@ fn cases(name: &str, f: impl Fn(common::Case)) {
     assert!(count > 0);
 }
 fn roots(c: &common::Case, values: &[u64]) {
-    if c.arg::<u64>(c.args.len() - 1) == 0 {
+    if c.arg::<u64>(c.args.len() - 1) == 0 || values.is_empty() {
         c.check::<String>(None);
     } else {
         c.check(Some(

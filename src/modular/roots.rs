@@ -118,12 +118,12 @@ fn sqrt_power(a: u64, p: u64, e: u32) -> Option<u64> {
         return Some(0);
     }
     let n = p.pow(e);
-    let a = a % n;
     if e == 1 {
+        let a = a % p;
         let r = sqrt_prime(a, p);
         return (mulmod_u(r, r, p) == a).then_some(r.min(p - r));
     }
-    if a == 0 {
+    if a % n == 0 {
         return Some(0);
     }
     if a % (p * p) == 0 {
@@ -135,7 +135,7 @@ fn sqrt_power(a: u64, p: u64, e: u32) -> Option<u64> {
     let ered = if p > 2 || e < 5 {
         e.div_ceil(2)
     } else {
-        (e + 3) / 2
+        e.div_ceil(2) + 1
     };
     let s = sqrt_power(a, p, ered)?;
     let np = if p == 2 {
@@ -149,7 +149,7 @@ fn sqrt_power(a: u64, p: u64, e: u32) -> Option<u64> {
         n,
     );
     let r = r.min(n - r);
-    (mulmod_u(r, r, n) == a).then_some(r)
+    (mulmod_u(r, r, n) == a % n).then_some(r)
 }
 
 fn crt(r: u64, n: u64, s: u64, m: u64) -> u64 {
@@ -184,7 +184,7 @@ pub fn sqrtmod(a: u64, n: u64) -> Option<u64> {
         modulus *= m;
     }
     let r = r.min(n - r);
-    (mulmod_u(r, r, n) == a).then_some(r)
+    (mulmod_u(r, r, n) == a % n).then_some(r)
 }
 
 const MAX_ROOTS: usize = 600_000_000;

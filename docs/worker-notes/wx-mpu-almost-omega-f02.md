@@ -16,3 +16,4 @@ About five minutes remain. Both Cargo target directories still have pending buil
 Formatting passes. Gate and focused tests remain pending behind Cargo compilation; native count recursion currently omits the C prime-count cache optimization.
 Independent compilation found u32/u64 mismatches at is_almost_prime calls; fixed with lossless conversions and restarted focused tests.
 Clippy reached the new code and rejected ungrouped numeric literals. Added separators without changing values; focused fixture tests are still pending.
+- 2026-10-17T18:53:11Z launcher: no commit for 60 s; 579 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-almost-omega-f02.md, src/families/almost_prime_count_upper.rs, src/families/mod.rs, src/families/nth_almost_prime.rs, src/families/nth_almost_prime_approx.rs, src/families/nth_almost_prime_lower.rs, tests/compat_families.rs, tests/prop_families.rs.

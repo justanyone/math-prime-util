@@ -9,3 +9,4 @@ Native fixtures exposed output truncation in some oracle rows and a partition-op
 Focused offline tests pass: 13 compatibility tests and 7 property/state tests. Gate is running; factor-based loops and full PrimeIterator object methods remain outside the implemented subset.
 Gate lint failures were limited to documentation formatting, explicit default types, portable test conversions, and generated benchmark documentation; these are fixed.
 Replaced permutation filtering with the C derangement initializer and skip transitions. Multiset traversal now uses the reference count/prefix recursion as an explicit stack.
+Prime iterators now use the reference 10k-prime batch-size estimate and an owned buffer. Native exhaustion uses Option and cannot wrap.

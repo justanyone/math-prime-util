@@ -858,3 +858,84 @@ fn sort_signed(a: &mut [i64]) {
         a.copy_from_slice(&buffer);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{heapsort, quicksort, sort_signed};
+
+    /// Deterministic pseudo-random values (an LCG), so the tests need no RNG crate.
+    fn pseudo(n: usize, modulus: u64) -> Vec<i64> {
+        let mut x = 0x2545_F491_4F6C_DD1D_u64;
+        (0..n)
+            .map(|_| {
+                x = x
+                    .wrapping_mul(6_364_136_223_846_793_005)
+                    .wrapping_add(1_442_695_040_888_963_407);
+                i64::try_from((x >> 33) % modulus).unwrap() - i64::try_from(modulus / 2).unwrap()
+            })
+            .collect()
+    }
+
+    fn sorted(v: &[i64]) -> Vec<i64> {
+        let mut s = v.to_vec();
+        s.sort_unstable();
+        s
+    }
+
+    #[test]
+    fn heapsort_sorts_every_size() {
+        for n in [0, 1, 2, 3, 4, 7, 100, 1000] {
+            let mut v = pseudo(n, 10_000);
+            let want = sorted(&v);
+            heapsort(&mut v);
+            assert_eq!(v, want, "n={n}");
+        }
+    }
+
+    #[test]
+    fn heapsort_handles_duplicates_and_runs() {
+        let mut v = vec![5_i64; 500];
+        v.extend(pseudo(500, 3));
+        let want = sorted(&v);
+        heapsort(&mut v);
+        assert_eq!(v, want);
+    }
+
+    #[test]
+    fn quicksort_falls_back_to_heapsort_when_splits_stay_bad() {
+        // A depth budget of 1 forces the heapsort fallback on the first lopsided split.
+        for modulus in [2_u64, 3, 10_000] {
+            let mut v = pseudo(3000, modulus);
+            let want = sorted(&v);
+            quicksort(&mut v, 1);
+            assert_eq!(v, want, "modulus={modulus}");
+        }
+        let mut v: Vec<i64> = (0..3000).collect();
+        quicksort(&mut v, 1);
+        assert_eq!(v, (0..3000).collect::<Vec<i64>>());
+    }
+
+    #[test]
+    fn sort_signed_ascending_descending_and_narrow() {
+        let mut up: Vec<i64> = (-500..500).collect();
+        sort_signed(&mut up);
+        assert_eq!(up, (-500..500).collect::<Vec<i64>>());
+
+        let mut down: Vec<i64> = (-500..500).rev().collect();
+        sort_signed(&mut down);
+        assert_eq!(down, (-500..500).collect::<Vec<i64>>());
+
+        for modulus in [2_u64, 200, 70_000, 1 << 40] {
+            let mut v = pseudo(2000, modulus);
+            let want = sorted(&v);
+            sort_signed(&mut v);
+            assert_eq!(v, want, "modulus={modulus}");
+        }
+        let mut wide = pseudo(1000, 1000);
+        wide[3] = i64::MIN;
+        wide[900] = i64::MAX;
+        let want = sorted(&wide);
+        sort_signed(&mut wide);
+        assert_eq!(wide, want);
+    }
+}

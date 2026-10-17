@@ -480,3 +480,14 @@ fn exact_functions_against_textbook_sieve() {
         assert_eq!(nth_lucky(k as u64 + 1), Some(v));
     }
 }
+
+#[test]
+fn small_sieve_every_size_and_block_boundaries() {
+    // The block-copy sieve below 240000 is sensitive to the list length.
+    for n in 0..2500u64 {
+        assert_eq!(lucky_numbers(0, n), naive_lucky(n), "numbers {n}");
+    }
+    for n in (2500..30_000u64).step_by(31).chain([239_999, 240_000]) {
+        assert_eq!(lucky_numbers(0, n), naive_lucky(n), "numbers {n}");
+    }
+}

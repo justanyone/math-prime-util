@@ -25,6 +25,7 @@ fn tuples<T: Display>(values: impl Iterator<Item = Vec<T>>, sep: &str) -> String
         .collect::<Vec<_>>()
         .join(" ")
 }
+#[allow(clippy::too_many_lines)] // Keep the fixture dispatcher together.
 fn check(name: &str) {
     for c in common::load("iter").into_iter().filter(|c| c.func == name) {
         // Skip Perl validation cases: undef, negative, fractional, and string inputs
@@ -162,7 +163,7 @@ fn prime_iterator_object() {
 #[test]
 fn lastfor() {
     let mut count = 0;
-    let result = math_prime_util::forpart(7, Default::default(), |p| {
+    let result = math_prime_util::forpart(7, PartitionOptions::default(), |p| {
         count += 1;
         if p.len() == 4 {
             math_prime_util::lastfor()

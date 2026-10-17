@@ -1,6 +1,6 @@
 //! Algebraic laws and native overflow boundaries.
 use math_prime_util::{
-    bernfrac, harmfrac, partitions, partitionsq, permtonum, pn_primorial, primorial,
+    bernfrac, harmfrac, partitions, partitionsq, permtonum, pn_primorial, primorial, PermutationError,
 };
 use proptest::prelude::*;
 
@@ -88,9 +88,9 @@ fn permutation_ranks_are_complete() {
         for factor in 1..=length {
             factorial *= factor;
         }
-        assert_eq!(permtonum(&reverse), Some(factorial - 1));
+        assert_eq!(permtonum(&reverse), Ok(Some(factorial - 1)));
         let identity: Vec<u64> = (0..length).collect();
-        assert_eq!(permtonum(&identity), Some(0));
+        assert_eq!(permtonum(&identity), Ok(Some(0)));
     }
 }
 
@@ -104,15 +104,15 @@ fn native_overflow_and_invalid_permutation() {
     assert_eq!(partitionsq(u64::MAX), None);
     // `21!` does not fit in `u64`. The reverse of `0..21` overflows the rank.
     let reverse_21: Vec<u64> = (0..21).rev().collect();
-    assert_eq!(permtonum(&reverse_21), None);
+    assert_eq!(permtonum(&reverse_21), Ok(None));
     // `factorial(21)` is 0 in util.c, so length 22 returns `None` even for the identity.
     let identity_22: Vec<u64> = (0..22).collect();
-    assert_eq!(permtonum(&identity_22), None);
+    assert_eq!(permtonum(&identity_22), Ok(None));
     let identity_21: Vec<u64> = (0..21).collect();
-    assert_eq!(permtonum(&identity_21), Some(0));
-    assert!(std::panic::catch_unwind(|| permtonum(&[1, 1])).is_err());
-    assert!(std::panic::catch_unwind(|| permtonum(&[0, 2])).is_err());
-    assert!(std::panic::catch_unwind(|| permtonum(&[3, 0, 1])).is_err());
+    assert_eq!(permtonum(&identity_21), Ok(Some(0)));
+    assert_eq!(permtonum(&[1, 1]), Err(PermutationError::Invalid));
+    assert_eq!(permtonum(&[0, 2]), Err(PermutationError::Invalid));
+    assert_eq!(permtonum(&[3, 0, 1]), Err(PermutationError::Invalid));
 }
 
 #[test]
@@ -159,7 +159,7 @@ fn count_distinct_partitions(n: u64) -> u64 {
 
 fn collect_ranks(perm: &mut [u64], start: usize, ranks: &mut Vec<u64>) {
     if start == perm.len() {
-        ranks.push(permtonum(perm).unwrap());
+        ranks.push(permtonum(perm).unwrap().unwrap());
         return;
     }
     for index in start..perm.len() {

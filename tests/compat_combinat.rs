@@ -90,12 +90,10 @@ fn permtonum_oracle() {
             .map(|token| token.parse().unwrap())
             .collect();
         if case.error {
-            let caught =
-                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| permtonum(&perm)));
-            assert!(caught.is_err(), "fixture line {}", case.line);
+            assert!(permtonum(&perm).is_err(), "fixture line {}", case.line);
             continue;
         }
-        let got = permtonum(&perm);
+        let got = permtonum(&perm).expect("valid fixture permutation");
         match case.result.as_deref() {
             Some(text) if text.parse::<u64>().is_err() => {
                 assert_eq!(got, None, "fixture line {}", case.line);

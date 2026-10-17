@@ -12,6 +12,6 @@ pub use bernfrac::bernfrac;
 pub use harmfrac::harmfrac;
 pub use partitions::partitions;
 pub use partitionsq::partitionsq;
-pub use permtonum::permtonum;
+pub use permtonum::{permtonum, PermutationError};
 pub use pn_primorial::pn_primorial;
 pub use primorial::primorial;

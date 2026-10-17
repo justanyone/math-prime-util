@@ -1,7 +1,7 @@
 //! Totients and multiplicative arithmetic from MPU 0.75.
 //! Divisor sums, discriminants, and arithmetic in residue rings.
 
-use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
+use crate::{gcd, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
@@ -1048,188 +1048,6 @@ pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
     chinese2(congruences).map(|(r, _)| r)
 }
 
-/// Return the least solution and the combined modulus.
-/// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
-/// An empty input gives `(0, 0)`.
-///
-/// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
-///
-/// ```
-/// assert_eq!(math_prime_util::chinese2(&[(2, 3), (3, 5)]), Some((8, 15)));
-/// ```
-pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
-    if congruences.is_empty() {
-        return Some((0, 0));
-    }
-    let mut pairs = congruences.to_vec();
-    pairs.sort_unstable_by_key(|a| std::cmp::Reverse(a.1));
-    let (mut r, mut m) = pairs[0];
-    if m == 0 {
-        return None;
-    }
-    r %= m;
-    for &(a, n) in &pairs[1..] {
-        if n == 0 {
-            return None;
-        }
-        let g = gcd(m, n);
-        if r % g != a % g {
-            return None;
-        }
-        let ng = n / g;
-        let modulus = m.checked_mul(ng)?;
-        let delta = (i128::from(a) - i128::from(r)) / i128::from(g);
-        let delta = u64::try_from(delta.rem_euclid(i128::from(ng))).ok()?;
-        let t = crate::mulmod(delta, invmod(m / g, ng)?, ng)?;
-        r = u64::try_from((u128::from(r) + u128::from(m) * u128::from(t)) % u128::from(modulus))
-            .ok()?;
-        m = modulus;
-    }
-    Some((r, m))
-}
-
-fn lambda(n: u64) -> u64 {
-    let mut result = 1;
-    for (p, e) in factor_powers(n) {
-        let term = if p == 2 && e > 2 {
-            1 << (e - 2)
-        } else {
-            (p - 1) * p.pow(e - 1)
-        };
-        result = result / gcd(result, term) * term;
-    }
-    result
-}
-
-/// Return the multiplicative order of a modulo n.
-/// Return `None` if n is zero or a is not a unit modulo n.
-///
-/// Port of MPU 0.75 `util.c::znorder`.
-///
-/// ```
-/// assert_eq!(math_prime_util::znorder(2, 7), Some(3));
-/// ```
-pub fn znorder(a: u64, n: u64) -> Option<u64> {
-    if n == 0 {
-        return None;
-    }
-    if n == 1 {
-        return Some(1);
-    }
-    if gcd(a, n) != 1 {
-        return None;
-    }
-    let mut k = lambda(n);
-    for (p, e) in factor_powers(k) {
-        k /= p.pow(e);
-        let mut a1 = powmod(a, k, n)?;
-        while a1 != 1 {
-            k *= p;
-            a1 = powmod(a1, p, n)?;
-        }
-    }
-    Some(k)
-}
-
-/// Return the least primitive root modulo n.
-/// Return `None` if n is zero or no root exists.
-///
-/// Port of MPU 0.75 `util.c::znprimroot`.
-///
-/// ```
-/// assert_eq!(math_prime_util::znprimroot(7), Some(3));
-/// ```
-pub fn znprimroot(n: u64) -> Option<u64> {
-    if n == 0 {
-        return None;
-    }
-    if n <= 4 {
-        return Some(n - 1);
-    }
-    if n % 4 == 0 {
-        return None;
-    }
-    let even = n % 2 == 0;
-    let odd = if even { n / 2 } else { n };
-    let factors = factor_powers(odd);
-    if factors.len() != 1 {
-        return None;
-    }
-    let (p, e) = factors[0];
-    if p == 3 && even {
-        return Some(5);
-    }
-    let phi = p - 1;
-    let phif = factor_powers(phi);
-    for a in 2..p {
-        if (even && a % 2 == 0) || matches!(a, 4 | 8 | 9) {
-            continue;
-        }
-        if kronecker_unsigned(a, p) != -1 {
-            continue;
-        }
-        if phif
-            .iter()
-            .skip(1)
-            .any(|&(q, _)| powmod(a, phi / q, p) == Some(1))
-        {
-            continue;
-        }
-        if e == 1 || powmod(a, phi, p * p) != Some(1) {
-            return Some(a);
-        }
-    }
-    None
-}
-
-/// Test whether a is a primitive root modulo n.
-/// Return `None` if n is zero.
-///
-/// Port of MPU 0.75 `util.c::is_primitive_root`.
-///
-/// ```
-/// assert_eq!(math_prime_util::is_primitive_root(3, 7), Some(true));
-/// ```
-pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
-    if n == 0 {
-        return None;
-    }
-    if n == 1 {
-        return Some(true);
-    }
-    let a = a % n;
-    if a <= 1 {
-        return Some(a == 1 && n <= 2);
-    }
-    if n <= 4 {
-        return Some(a == n - 1);
-    }
-    if n % 4 == 0 || (n % 2 == 0 && a % 2 == 0) || is_square(a) || gcd(a, n) != 1 {
-        return Some(false);
-    }
-    let odd = if n % 2 == 0 { n / 2 } else { n };
-    let f = factor_powers(odd);
-    if f.len() != 1 {
-        return Some(false);
-    }
-    let (p, e) = f[0];
-    if e > 1 && powmod(a, p - 1, p * p) == Some(1) {
-        return Some(false);
-    }
-    if kronecker_unsigned(a, p) != -1 {
-        return Some(false);
-    }
-    let phi = p - 1;
-    if is_power(a, 3) && gcd(3, phi) != 1 {
-        return Some(false);
-    }
-    Some(
-        factor_powers(phi)
-            .iter()
-            .all(|&(q, _)| powmod(a, phi / q, p) != Some(1)),
-    )
-}
-
 /// Return the least quadratic nonresidue modulo n.
 /// Return `None` if n is zero or no nonresidue exists.
 ///
@@ -1318,3 +1136,15 @@ pub fn is_qr(a: u64, n: u64) -> bool {
 
 mod inverse_sigma0;
 pub use inverse_sigma0::*;
+
+mod chinese2;
+pub use chinese2::chinese2;
+
+mod znorder;
+pub use znorder::znorder;
+
+mod znprimroot;
+pub use znprimroot::znprimroot;
+
+mod is_primitive_root;
+pub use is_primitive_root::is_primitive_root;

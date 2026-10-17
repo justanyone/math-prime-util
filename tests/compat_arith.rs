@@ -278,3 +278,21 @@ fn inverse_sigma0_count_oracle() {
         c.check(math_prime_util::inverse_sigma0_count(k, lo, hi));
     });
 }
+
+#[test]
+fn chinese2() {
+    // MPU's chinese fixture gives the scalar projection of chinese2.
+    // Negative Chinese residues need a signed-residue API.
+    each("arith", "chinese", |c| {
+        if let Some(p) = pairs(c) {
+            let result = math_prime_util::chinese2(&p);
+            c.check(result.map(|(r, _)| r));
+            if let Some((r, m)) = result {
+                for (a, n) in p {
+                    assert_eq!(r % n, a % n);
+                    assert_eq!(m % n, 0);
+                }
+            }
+        }
+    });
+}

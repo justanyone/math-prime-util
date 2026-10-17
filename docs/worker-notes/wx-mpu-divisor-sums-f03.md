@@ -7,3 +7,4 @@ Existing implementations and fixtures are present. Split the four functions into
 Ported the signed-bound CRT fallback, bounded order reduction, and primitive-root small-factor checks. Added scalar-oracle CRT compatibility, exhaustive group checks, shared-modulus properties, overflow regressions, and concurrent repeated  <<cut 30 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 6 bytes)
+Focused tests and the offline gate are running. All task functions have C citations and runnable examples; no tools, fixtures, dependencies, crate root, or generated status changes were made.

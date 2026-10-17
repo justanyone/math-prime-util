@@ -52,3 +52,4 @@ The reference origin/dev ref is not present in this checkout. Focused tests rema
 Final review recovered the existing lucky and prime-power benchmark groups from repository history and retained them alongside the new benchmark group.
 
 Benchmark compilation passed after preserving the existing groups. Final source and focused tests are complete; full gate completion and coverage confirmation remain unverified within this session.
+- 2026-10-17T08:17:55Z launcher: about 60 s to the time limit of 14 minutes; 787 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-almost-omega.md, src/families/almost.rs, src/families/mod.rs, src/families/nth_prime_power_approx.rs, src/families/omega.rs, src/families/precision.rs, tests/compat_families.rs, tests/prop_families.rs.

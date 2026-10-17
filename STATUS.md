@@ -54,7 +54,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `dedekind_psi`
 - [x] `digital_root`
 - [x] `divint`
-- [ ] `divisors`
+- [x] `divisors`
 - [x] `divisor_sum`
 - [ ] `divmod`
 - [x] `divrem`
@@ -64,8 +64,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `euler_phi`
 - [x] `exp_mangoldt`
 - [ ] `ExponentialIntegral`
-- [ ] `factor`
-- [ ] `factor_exp`
+- [x] `factor`
+- [x] `factor_exp`
 - [x] `factorial`
 - [x] `factorialmod`
 - [x] `falling_factorial`
@@ -393,7 +393,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `toint`
 - [x] `toset`
 - [x] `tozeckendorf`
-- [ ] `trial_factor`
+- [x] `trial_factor`
 - [x] `twin_prime_count`
 - [x] `twin_prime_count_approx`
 - [x] `twin_primes`

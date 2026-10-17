@@ -49,8 +49,27 @@ pub fn randperm(n: u64, k: u64) -> Vec<u64> {
         return result;
     }
     let mut result = Vec::with_capacity(len);
-    if k <= 16
-        || (n >= 32768 && k <= 64)
+    if k <= 16 {
+        // reference/mpu/util.c: randperm_sparse_fy_small.
+        let mut keys = [0u64; 16];
+        let mut vals = [0u64; 16];
+        let mut used = 0;
+        for i in 0..k {
+            let r = i + urandomm(n - i);
+            let get = |key| (0..used).find(|&j| keys[j] == key).map_or(key, |j| vals[j]);
+            result.push(get(r));
+            let vi = get(i);
+            if r != i {
+                let slot = (0..used).find(|&j| keys[j] == r).unwrap_or_else(|| {
+                    let slot = used;
+                    used += 1;
+                    slot
+                });
+                keys[slot] = r;
+                vals[slot] = vi;
+            }
+        }
+    } else if (n >= 32768 && k <= 64)
         || (n >= 2_147_483_647 && k <= n / 4)
         || (n >= 100_000 && k <= n / 64)
     {
@@ -62,6 +81,13 @@ pub fn randperm(n: u64, k: u64) -> Vec<u64> {
             if r != i {
                 map.insert(r, vi);
             }
+        }
+    } else if n < 65536 {
+        let mut table: Vec<u16> = (0..u16::try_from(n).unwrap()).collect();
+        for i in 0..len {
+            let j = i + usize::try_from(urandomm(n - i as u64)).unwrap();
+            result.push(u64::from(table[j]));
+            table[j] = table[i];
         }
     } else {
         let mut table: Vec<_> = (0..n).collect();

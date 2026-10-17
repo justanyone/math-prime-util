@@ -129,6 +129,8 @@ mod tests {
             assert_eq!(f.iter().product::<u64>(), n);
             assert!(f.iter().all(|&p| is_prime(p) != 0));
         }
+        assert_eq!(brent(3, 1), None);
+        assert_eq!(brent((1 << 61) - 1, 1), None);
         assert_eq!(brent(101 * 103, 1).map(|d| (101 * 103) % d), Some(0));
     }
 

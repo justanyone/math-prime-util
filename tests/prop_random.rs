@@ -76,6 +76,7 @@ fn boundary_paths() {
         (100_000, 70),
         (u64::MAX, 17),
         (100, 40),
+        (70_000, 100),
     ] {
         let mut values = randperm(n, k);
         assert_eq!(values.len() as u64, k);

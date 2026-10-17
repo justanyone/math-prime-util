@@ -170,3 +170,11 @@ fn nonresidues_and_parallel_calls() {
         }
     });
 }
+
+#[test]
+fn jordan_totient_power_of_two_boundary() {
+    // Regression: 2^64 overflowed u64 before the subtraction; the result u64::MAX is representable.
+    assert_eq!(jordan_totient(64, 2), Some(u64::MAX));
+    assert_eq!(jordan_totient(63, 2), Some(u64::MAX >> 1));
+    assert_eq!(jordan_totient(128, 2), None);
+}

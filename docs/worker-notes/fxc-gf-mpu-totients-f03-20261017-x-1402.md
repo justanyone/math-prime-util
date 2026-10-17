@@ -1,0 +1,1 @@
+- Plan: resolve conflict markers in tests/prop_arith.rs keeping both sides; run focused tests via mw-test.

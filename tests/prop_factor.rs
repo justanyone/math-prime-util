@@ -1,8 +1,9 @@
 //! Algebraic laws for the factor family. Factors from the bounded methods need not be prime.
 use math_prime_util::{
-    cheb_factor, fermat_factor, gcd, holf_factor, is_carmichael, is_cyclic, is_perfect_number,
-    is_quasi_carmichael, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor,
-    prime_bigomega, prime_omega, prime_signature, squfof_factor,
+    cheb_factor, divisors, factor, factor_exp, fermat_factor, gcd, holf_factor, is_almost_prime,
+    is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime, is_quasi_carmichael,
+    is_semiprime, is_square_free, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor,
+    prho_factor, prime_bigomega, prime_omega, prime_signature, squfof_factor, trial_factor,
 };
 use proptest::prelude::*;
 
@@ -290,5 +291,153 @@ fn concurrent_omega_calls_are_independent() {
         .collect();
     for thread in threads {
         thread.join().unwrap();
+    }
+}
+
+fn counts(mut n: u64) -> (u64, u32, bool) {
+    let (mut total, mut distinct, mut square_free) = (0, 0, n != 0);
+    let mut p = 2;
+    while n > 1 && p <= n / p {
+        let mut e = 0;
+        while n % p == 0 {
+            n /= p;
+            e += 1;
+        }
+        total += e;
+        distinct += u32::from(e > 0);
+        square_free &= e < 2;
+        p += 1;
+    }
+    if n > 1 {
+        total += 1;
+        distinct += 1;
+    }
+    (total, distinct, square_free)
+}
+
+proptest! {
+    #[test]
+    fn predicates_match_independent_counts(n in 1u64..1_000_000, k in 0u32..25) {
+        let (total, distinct, square_free) = counts(n);
+        prop_assert_eq!(is_almost_prime(u64::from(k), n), total == u64::from(k));
+        prop_assert_eq!(is_omega_prime(k, n), distinct == k);
+        prop_assert_eq!(is_square_free(n), square_free);
+        prop_assert_eq!(is_semiprime(n), total == 2);
+        prop_assert!(is_almost_prime(total, n));
+        prop_assert!(is_omega_prime(distinct, n));
+    }
+
+    #[test]
+    fn multiplication_adds_multiplicity(a in 1u64..10000, b in 1u64..10000) {
+        let (ka, _, _) = counts(a);
+        let (kb, _, _) = counts(b);
+        prop_assert!(is_almost_prime(ka + kb, a * b));
+    }
+
+    #[test]
+    fn squares_are_not_square_free(n in 2u64..=u64::from(u32::MAX)) {
+        prop_assert!(!is_square_free(n * n));
+    }
+}
+
+#[test]
+fn boundaries_and_large_counts() {
+    for n in 0..=4096 {
+        let (total, distinct, square_free) = counts(n);
+        assert_eq!(is_square_free(n), square_free, "n={n}");
+        assert_eq!(is_semiprime(n), n != 0 && total == 2, "n={n}");
+        for k in 0..=15 {
+            assert_eq!(
+                is_almost_prime(u64::from(k), n),
+                n != 0 && total == u64::from(k)
+            );
+            assert_eq!(is_omega_prime(k, n), n != 0 && distinct == k);
+        }
+    }
+    assert!(is_almost_prime(63, 1 << 63));
+    assert!(!is_almost_prime(64, u64::MAX));
+    assert!(!is_almost_prime(u64::MAX, u64::MAX));
+    assert!(!is_omega_prime(u32::MAX, u64::MAX));
+    assert!(is_omega_prime(1, 13_u64.pow(16)));
+    assert!(!is_omega_prime(1, 13 * 17));
+}
+
+#[test]
+fn repeated_and_concurrent_calls() {
+    let inputs = [0, 1, 4, 30, 49, 1_000_003 * 1_000_033, u64::MAX];
+    let expected: Vec<_> = inputs.map(|n| (is_square_free(n), is_semiprime(n))).into();
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for (n, expected) in inputs.into_iter().zip(&expected) {
+                    assert_eq!((is_square_free(n), is_semiprime(n)), *expected);
+                }
+            });
+        }
+    });
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(256))]
+
+    #[test]
+    fn factor_product(n in any::<u64>()) {
+        let factors = factor(n);
+        prop_assert!(factors.windows(2).all(|w| w[0] <= w[1]));
+        prop_assert_eq!(factors.iter().map(|&p| u128::from(p)).product::<u128>(), u128::from(n));
+        if n > 1 {
+            prop_assert!(factors.iter().all(|&p| is_prime(p) != 0));
+        }
+        let expanded: Vec<_> = factor_exp(n).into_iter()
+            .flat_map(|(p, e)| (0..e).map(move |_| p)).collect();
+        prop_assert_eq!(expanded, factors);
+    }
+
+    #[test]
+    fn divisor_laws(n in 1u64..=1_000_000, max in 0u64..=1_000_000) {
+        let all = divisors(n, None);
+        prop_assert_eq!(all.first(), Some(&1));
+        prop_assert_eq!(all.last(), Some(&n));
+        prop_assert!(all.windows(2).all(|w| w[0] < w[1]));
+        prop_assert!(all.iter().all(|d| n % d == 0));
+        for (a, b) in all.iter().zip(all.iter().rev()) {
+            prop_assert_eq!(a * b, n);
+        }
+        let expected: Vec<_> = all.into_iter().filter(|&d| d <= max).collect();
+        prop_assert_eq!(divisors(n, Some(max)), expected);
+    }
+
+    #[test]
+    fn bounded_trial_product(n in any::<u64>(), limit in 1u64..=10_000) {
+        let factors = trial_factor(n, limit);
+        prop_assert_eq!(factors.iter().map(|&p| u128::from(p)).product::<u128>(), u128::from(n));
+        if factors.len() > 1 {
+            prop_assert!(factors[..factors.len()-1].iter().all(|&p| p <= limit && is_prime(p) != 0));
+        }
+    }
+}
+
+#[test]
+fn boundaries_and_repeated_calls() {
+    assert_eq!(factor(0), [0]);
+    assert_eq!(factor(1), Vec::<u64>::new());
+    assert_eq!(factor_exp(0), [(0, 1)]);
+    assert_eq!(factor_exp(1), Vec::<(u64, u32)>::new());
+    assert_eq!(divisors(0, None), Vec::<u64>::new());
+    assert_eq!(divisors(360, Some(0)), Vec::<u64>::new());
+    assert_eq!(divisors(360, Some(1)), [1]);
+    assert_eq!(divisors(1, None), [1]);
+    assert_eq!(trial_factor(49, 6), [49]);
+    assert_eq!(trial_factor(49, 7), [7, 7]);
+    assert_eq!(trial_factor(4, 1), [4]);
+    assert_eq!(trial_factor(2017 * 2017, 0), [2017, 2017]);
+    for n in [1, 0, 360, 4_294_967_291, u64::MAX, 360] {
+        let expected = factor(n);
+        std::thread::scope(|scope| {
+            for _ in 0..4 {
+                let expected = &expected;
+                scope.spawn(move || assert_eq!(&factor(n), expected));
+            }
+        });
     }
 }

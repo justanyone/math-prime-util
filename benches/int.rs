@@ -2,6 +2,7 @@
 //! Benchmarks for the integer and modular core. Compare with
 //! `perl tools/bench_vs_perl.pl int` on the same machine.
 
+#![allow(clippy::wildcard_imports)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::*;
 

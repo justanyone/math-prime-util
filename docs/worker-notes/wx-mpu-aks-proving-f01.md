@@ -5,3 +5,4 @@ Do not change fixtures, tools, crate dependencies, or generated status.
 Confirmed native XS proving aliases is_prime and _small_cert permits all u64 values; split the three proving APIs into individual modules.
 
 Reassessment: the AKS bounds and Lanczos table match IMPL_BERN41; focused oracle and property tests are compiling offline.
+Ported the C degree-limited multiplication and symmetric square paths, including bounded u128 accumulation; retained Bernstein constants and search bounds.

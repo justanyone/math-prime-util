@@ -61,16 +61,90 @@ fn primitive(n: u64, r: u64) -> bool {
     }
     remaining == 1 || powmod_u(n, (r - 1) / remaining, r) != 1
 }
-// aks.c::poly_mod_mul: cyclic convolution modulo X^r - 1 and n.
+// reference/mpu/aks.c::poly_mod_mul.
 fn multiply(x: &[u64], y: &[u64], n: u64) -> Vec<u64> {
+    let degree_x = x.iter().rposition(|&v| v != 0).unwrap_or(0);
+    let degree_y = y.iter().rposition(|&v| v != 0).unwrap_or(0);
     let mut out = vec![0; x.len()];
-    for (i, &a) in x.iter().enumerate() {
-        if a == 0 {
+    let terms = if n >= 1 << 32 {
+        0
+    } else {
+        u64::MAX / ((n - 1) * (n - 1))
+    };
+    if terms > degree_x as u64 || terms > degree_y as u64 {
+        for (k, result) in out.iter_mut().enumerate() {
+            let mut sum = 0;
+            let mut j = k;
+            for &a in &x[..=degree_x] {
+                if j <= degree_y {
+                    sum += a * y[j];
+                }
+                j = if j == 0 { x.len() - 1 } else { j - 1 };
+            }
+            *result = sum % n;
+        }
+    } else {
+        for (i, &a) in x[..=degree_x].iter().enumerate() {
+            if a == 0 {
+                continue;
+            }
+            for (j, &b) in y[..=degree_y].iter().enumerate() {
+                let k = (i + j) % x.len();
+                out[k] = if n < 1 << 32 {
+                    (out[k] + a * b) % n
+                } else {
+                    ((u128::from(out[k]) + u128::from(a) * u128::from(b)) % u128::from(n)) as u64
+                };
+            }
+        }
+    }
+    out
+}
+
+// reference/mpu/aks.c::poly_mod_sqr, including its native and 128-bit sums.
+fn square(x: &[u64], n: u64) -> Vec<u64> {
+    let degree = x.len() - 1;
+    let max_degree = x.iter().rposition(|&v| v != 0).unwrap_or(0);
+    let native = n <= crate::sqrtint(u64::MAX / (2 * x.len() as u64));
+    let mut out = vec![0; x.len()];
+    let bound = (1_u128 << 127) - 1;
+    for d in 0..=2 * degree {
+        let begin = d.saturating_sub(degree);
+        let end = (d / 2).min(max_degree);
+        if end < begin {
             continue;
         }
-        for (j, &b) in y.iter().enumerate() {
-            let k = (i + j) % x.len();
-            out[k] = ((u128::from(out[k]) + u128::from(a) * u128::from(b)) % u128::from(n)) as u64;
+        let k = d % x.len();
+        if native {
+            let mut sum = 0;
+            for i in begin..end {
+                sum += 2 * x[i] * x[d - i];
+            }
+            sum += if 2 * end == d {
+                x[end] * x[end]
+            } else {
+                2 * x[end] * x[d - end]
+            };
+            out[k] = (out[k] + sum) % n;
+        } else {
+            let mut sum = 0_u128;
+            for i in begin..=end {
+                let mut term = u128::from(x[i]) * u128::from(x[d - i]);
+                if 2 * i != d {
+                    if term > bound {
+                        term %= u128::from(n);
+                    }
+                    term <<= 1;
+                }
+                if term > bound {
+                    term %= u128::from(n);
+                }
+                sum += term;
+                if sum > bound {
+                    sum %= u128::from(n);
+                }
+            }
+            out[k] = ((u128::from(out[k]) + sum) % u128::from(n)) as u64;
         }
     }
     out
@@ -88,7 +162,7 @@ fn test_anr(a: u64, n: u64, r: usize) -> bool {
         }
         exponent >>= 1;
         if exponent != 0 {
-            polynomial = multiply(&polynomial, &polynomial, n);
+            polynomial = square(&polynomial, n);
         }
     }
     let k = (n % r as u64) as usize;
@@ -99,11 +173,11 @@ fn test_anr(a: u64, n: u64, r: usize) -> bool {
 
 /// Test primality with the Bernstein AKS algorithm.
 ///
-/// Port of `aks.c::is_aks_prime` with `IMPL_BERN41`, including its bounds.
+/// Port of `reference/mpu/aks.c::is_aks_prime` with `IMPL_BERN41`, including its bounds.
 /// This deterministic polynomial test can be slow for large primes.
 ///
 /// # Panics
-/// Panics if the search exhausts the native prime range.
+/// Panics if the search exhausts the native prime range or selects an invalid bound.
 ///
 /// ```
 /// assert!(math_prime_util::is_aks_prime(101));
@@ -139,6 +213,7 @@ pub fn is_aks_prime(n: u64) -> bool {
             low = mid + 1;
         }
     }
+    assert!(acceptable(n, r, high), "AKS: bad s selected");
     let s = high + 1;
     let limit = s * (s - 1);
     for divisor in 2..=limit.min(crate::sqrtint(n)) {
@@ -162,5 +237,39 @@ mod tests {
         assert!(test_anr(102, 101, 7));
         assert_eq!(multiply(&[0, 1], &[0, 1], 7), vec![1, 0]);
         assert_eq!(log_binomial(1, 2), -f64::MAX);
+    }
+}
+
+#[cfg(test)]
+mod convolution_tests {
+    use super::{multiply, square};
+
+    fn convolution(x: &[u64], y: &[u64], n: u64) -> Vec<u64> {
+        let mut out = vec![0; x.len()];
+        for (i, &a) in x.iter().enumerate() {
+            for (j, &b) in y.iter().enumerate() {
+                let k = (i + j) % x.len();
+                out[k] =
+                    ((u128::from(out[k]) + u128::from(a) * u128::from(b)) % u128::from(n)) as u64;
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn native_and_wide_polynomials() {
+        for n in [7, 1_000_000_007, 1 << 32, u64::MAX - 58, u64::MAX] {
+            for size in [3, 7, 24] {
+                let dense = vec![n - 1; size];
+                let mut sparse = vec![0; size];
+                sparse[1] = n - 2;
+                for x in [&dense, &sparse, &vec![0; size]] {
+                    assert_eq!(square(x, n), convolution(x, x, n));
+                    for y in [&dense, &sparse] {
+                        assert_eq!(multiply(x, y, n), convolution(x, y, n));
+                    }
+                }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ fn is_provable_prime_oracle() {
         }
     });
 }
-// The committed primality fixture has no rows for these three APIs.
+// The committed primality fixture has no rows for the certificate APIs.
 // The expected text follows MPU PrimalityProving.pm::_small_cert.
 #[test]
 fn prime_certificate_compat() {
@@ -27,11 +27,20 @@ fn prime_certificate_compat() {
         prime_certificate(101),
         "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN 101\n\nType Small\nN 101\n"
     );
-    assert_eq!(prime_certificate(1), "");
+    for n in [0, 1, 4, 561, 3_215_031_751, u64::MAX] {
+        assert_eq!(prime_certificate(n), "");
+    }
+    for n in [2, 3, 4_294_967_311, u64::MAX - 58] {
+        assert_eq!(prime_certificate(n), format!(
+            "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n"
+        ));
+    }
 }
 #[test]
 fn is_provable_prime_with_cert_compat() {
-    assert_eq!(is_provable_prime_with_cert(15), (0, String::new()));
+    for n in [0, 1, 15, 561, 3_215_031_751, u64::MAX] {
+        assert_eq!(is_provable_prime_with_cert(n), (0, String::new()));
+    }
     assert_eq!(
         is_provable_prime_with_cert(101),
         (2, prime_certificate(101))

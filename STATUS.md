@@ -153,7 +153,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_power`
 - [x] `is_powerfree`
 - [x] `is_powerful`
-- [ ] `is_practical`
+- [x] `is_practical`
 - [x] `is_prime`
 - [x] `is_prime_power`
 - [x] `is_primitive_root`
@@ -164,11 +164,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_qr`
 - [x] `is_quasi_carmichael`
 - [x] `is_ramanujan_prime`
-- [ ] `is_rough`
+- [x] `is_rough`
 - [x] `is_safe_prime`
 - [x] `is_semiprime`
 - [x] `is_sidon_set`
-- [ ] `is_smooth`
+- [x] `is_smooth`
 - [x] `is_square`
 - [x] `is_square_free`
 - [x] `is_strong_lucas_pseudoprime`
@@ -367,7 +367,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sieve_prime_cluster`
 - [x] `sieve_range`
 - [x] `signint`
-- [ ] `smooth_count`
+- [x] `smooth_count`
 - [x] `sopf`
 - [x] `sopfr`
 - [x] `sqrtint`

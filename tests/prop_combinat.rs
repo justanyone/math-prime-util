@@ -71,3 +71,15 @@ fn invalid_stirling_kind() {
         assert!(std::panic::catch_unwind(|| stirling(0, 0, kind)).is_err());
     }
 }
+
+#[test]
+fn stirling_cancellation_regressions() {
+    assert_eq!(stirling(18, 2, 1), Some(1_223_405_590_579_200));
+    assert_eq!(stirling(64, 62, 2), Some(1_947_792));
+    assert_eq!(stirling(65, 2, 2), Some(i128::from(u64::MAX)));
+    assert_eq!(stirling(66, 2, 2), None);
+    assert_eq!(stirling(100, 98, 1), Some(11_924_550));
+    assert_eq!(stirling(100, 98, 2), Some(11_924_550 - 161_700));
+    assert_eq!(stirling(1000, 2, 1), None);
+    assert_eq!(stirling(1000, 2, 2), None);
+}

@@ -6,9 +6,9 @@ use super::binomial;
 /// Port of `stirling1`, `stirling2`, and `stirling3` in MPU 0.75 `util.c`.
 /// The first-kind overflow fallback uses the direct recurrence from
 /// `lib/Math/Prime/Util/PP.pm`, `stirling`, as MPU does after C overflow.
+/// The second-kind fallback uses its corresponding positive recurrence.
 /// These use binomial sums and factorial products. Intermediates use
-/// 128 bits. Return `None` if the magnitude exceeds `u64` or an
-/// intermediate cannot be represented.
+/// 128 bits. Return `None` if the magnitude exceeds `u64`.
 ///
 /// # Panics
 ///
@@ -28,8 +28,8 @@ pub fn stirling(n: u64, m: u64, kind: u64) -> Option<i128> {
         return Some(0);
     }
     let value = match kind {
-        1 => first(n, m).or_else(|| first_direct(n, m))?,
-        2 => second(n, m)?,
+        1 => first(n, m).or_else(|| direct(n, m, 1))?,
+        2 => second(n, m).or_else(|| direct(n, m, 2))?,
         _ => {
             let a = u128::from(binomial(n, m)?);
             let b = u128::from(binomial(n - 1, m - 1)?);
@@ -89,24 +89,39 @@ fn first(n: u64, m: u64) -> Option<i128> {
     Some(sum)
 }
 
-// MPU's PP fallback computes unsigned first-kind numbers, then sets the sign.
-// Values above the result bound can be capped: this recurrence is positive.
-fn first_direct(n: u64, m: u64) -> Option<i128> {
-    if n > 64 {
+// MPU's positive first-kind PP recurrence, indexed by the deficit n - m.
+// The second-kind recurrence replaces the factor n - 1 with m.
+// Capping is exact for the native range because every term is positive.
+fn direct(n: u64, m: u64, kind: u64) -> Option<i128> {
+    let deficit = n - m;
+    // With m >= 2, S(m + d, m) >= S(d + 2, 2) = 2^(d+1) - 1.
+    // First-kind magnitudes are at least as large. The m == 1 cases
+    // have already been handled by the native formulas.
+    if deficit >= 64 {
         return None;
     }
-    let n = usize::try_from(n).ok()?;
-    let m = usize::try_from(m).ok()?;
+    let d = usize::try_from(deficit).ok()?;
     let limit = u128::from(u64::MAX) + 1;
-    let mut row = [0_u128; 65];
-    row[1] = 1;
-    for k in 2..=n {
-        for j in (1..=k).rev() {
-            row[j] = (u128::try_from(k - 1).ok()? * row[j] + row[j - 1]).min(limit);
+    let mut row = [0_u128; 64];
+    row[0] = 1;
+    for i in 2..=n {
+        let top = usize::try_from((i - 1).min(deficit)).ok()?;
+        for j in (1..=top).rev() {
+            let factor = if kind == 1 {
+                i - 1
+            } else {
+                i - u64::try_from(j).ok()?
+            };
+            row[j] = row[j]
+                .saturating_add(u128::from(factor).saturating_mul(row[j - 1]))
+                .min(limit);
+        }
+        if row[d] == limit {
+            return None;
         }
     }
-    let magnitude = i128::from(u64::try_from(row[m]).ok()?);
-    Some(if (n - m) % 2 == 1 {
+    let magnitude = i128::from(u64::try_from(row[d]).ok()?);
+    Some(if kind == 1 && deficit % 2 == 1 {
         -magnitude
     } else {
         magnitude

@@ -2,6 +2,15 @@
 
 use std::ops::{ControlFlow, RangeInclusive};
 
+mod forprimes;
+pub use forprimes::forprimes;
+mod forcomposites;
+pub use forcomposites::{CompositesIn, composites_in, forcomposites};
+mod foroddcomposites;
+pub use foroddcomposites::{foroddcomposites, odd_composites_in};
+mod forsemiprimes;
+pub use forsemiprimes::{SemiprimesIn, forsemiprimes, semiprimes_in};
+
 pub use crate::sieve::{PrimesIn, primes_in};
 
 fn run<I: Iterator, B>(mut iter: I, f: impl FnMut(I::Item) -> ControlFlow<B>) -> ControlFlow<B> {
@@ -15,21 +24,6 @@ fn run<I: Iterator, B>(mut iter: I, f: impl FnMut(I::Item) -> ControlFlow<B>) ->
 /// ```
 pub fn lastfor() -> ControlFlow<()> {
     ControlFlow::Break(())
-}
-
-/// Visit primes in an inclusive range. See `XS.xs`, `forprimes`.
-/// ```
-/// use math_prime_util::forprimes;
-/// use std::ops::ControlFlow;
-/// let mut sum = 0;
-/// let _: ControlFlow<()> = forprimes(0..=7, |p| { sum += p; ControlFlow::Continue(()) });
-/// assert_eq!(sum, 17);
-/// ```
-pub fn forprimes<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(primes_in(range), f)
 }
 
 /// Create an iterator at the first prime at least `start`.
@@ -84,35 +78,6 @@ impl Iterator for PrimeIterator {
         self.cursor = Some(next);
         Some(next)
     }
-}
-
-/// Composite range state. See `XS.xs`, `foroddcomposites`.
-#[derive(Debug, Clone)]
-pub struct CompositesIn {
-    range: RangeInclusive<u64>,
-    odd: bool,
-}
-impl Iterator for CompositesIn {
-    type Item = u64;
-    fn next(&mut self) -> Option<u64> {
-        self.range
-            .find(|&n| n >= 4 && (!self.odd || n % 2 == 1) && crate::is_prime(n) == 0)
-    }
-}
-
-/// Iterate over composites. See `XS.xs`, `forcomposites`.
-/// ```
-/// assert_eq!(math_prime_util::composites_in(0..=9).collect::<Vec<_>>(), [4,6,8,9]);
-/// ```
-pub fn composites_in(range: RangeInclusive<u64>) -> CompositesIn {
-    CompositesIn { range, odd: false }
-}
-/// Iterate over odd composites. See `XS.xs`, `foroddcomposites`.
-/// ```
-/// assert_eq!(math_prime_util::odd_composites_in(0..=15).collect::<Vec<_>>(), [9,15]);
-/// ```
-pub fn odd_composites_in(range: RangeInclusive<u64>) -> CompositesIn {
-    CompositesIn { range, odd: true }
 }
 
 /// Bounds for parts and lengths. See `XS.xs`, `forpart`.
@@ -483,32 +448,6 @@ pub fn set_product<T: Clone>(sets: &[Vec<T>]) -> SetProduct<T> {
     }
 }
 
-/// Visit each value. See `XS.xs`, `forcomposites`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let result = math_prime_util::forcomposites(0..=20, |_| ControlFlow::Break(()));
-/// assert!(result.is_break());
-/// ```
-pub fn forcomposites<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(composites_in(range), f)
-}
-
-/// Visit each value. See `XS.xs`, `foroddcomposites`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let result = math_prime_util::foroddcomposites(0..=20, |_| ControlFlow::Break(()));
-/// assert!(result.is_break());
-/// ```
-pub fn foroddcomposites<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(odd_composites_in(range), f)
-}
-
 /// Visit each sum. See `XS.xs`, `forpart`.
 /// # Panics
 /// Panics for a size that cannot be represented or allocated.
@@ -636,15 +575,6 @@ impl Iterator for AlmostPrimesIn {
     }
 }
 
-/// Iterate over the semiprimes in an inclusive range. See `XS.xs`, `forsemiprimes`.
-/// ```
-/// assert_eq!(math_prime_util::semiprimes_in(0..=12).collect::<Vec<_>>(), [4, 6, 9, 10]);
-/// ```
-#[must_use]
-pub fn semiprimes_in(range: RangeInclusive<u64>) -> AlmostPrimesIn {
-    AlmostPrimesIn { k: 2, range }
-}
-
 /// Iterate over the almost primes with `k` factors in an inclusive range.
 /// See `XS.xs`, `foralmostprimes`.
 /// ```
@@ -750,23 +680,6 @@ pub fn divisors_of(n: u64) -> DivisorsOf {
     DivisorsOf {
         divisors: divisors.into_iter(),
     }
-}
-
-/// Visit each semiprime in an inclusive range. See `XS.xs`, `forsemiprimes`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let mut count = 0;
-/// let _: ControlFlow<()> = math_prime_util::forsemiprimes(0..=100, |_| {
-///     count += 1;
-///     ControlFlow::Continue(())
-/// });
-/// assert_eq!(count, 34);
-/// ```
-pub fn forsemiprimes<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(semiprimes_in(range), f)
 }
 
 /// Visit each almost prime with `k` factors in an inclusive range. See `XS.xs`, `foralmostprimes`.

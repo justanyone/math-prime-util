@@ -6,3 +6,5 @@ Existing APIs and oracle tests are present; split the four functions and restore
 Split implementation is written. Added C Shell-sort gaps, extended Euclid, and coprime overflow fallback for chinese; focused oracle/property tests are running offline.
 The first compile found sibling residue functions also use the unsigned Kronecker helper. Kept those shared private helpers in mod.rs and imported them into the new signed wrapper.
 Added factor-sum additivity, Kronecker multiplicativity, CRT reconstruction and permutation laws, native overflow regressions, repeated calls, concurrent calls, and four benchmarks. Gate is waiting for the focused build lock.
+The regression now checks the C overflow fallback rejects wide noncoprime moduli that the prior chinese2 delegation accepted. Offline focused tests and gate are still running.
+Focused offline validation passed: 31 arithmetic compatibility tests and 23 arithmetic property/regression tests. Gate formatting and pedantic clippy passed; MSRV build is running.

@@ -1,5 +1,6 @@
-use super::prho_factor::{add, dispatch, multiply, split};
+use super::prho_factor::{add, dispatch, split};
 use crate::gcd;
+use crate::int::mont::Mont;
 
 /// Splits `n` with Pollard rho and Brent updates.
 ///
@@ -15,30 +16,37 @@ pub fn pbrent_factor(n: u64, rounds: Option<u64>, a: Option<u64>) -> Vec<u64> {
     dispatch(n, |n| brent(n, rounds.unwrap_or(4_000_000), a.unwrap_or(1)))
 }
 
+/// Pollard-Brent in Montgomery form. Port of `factor.c::pbrent_factor`
+/// under `USE_MONTMATH`: `Xi` and `a` stay in Montgomery form, and the
+/// 63-bit path evaluates `Xi * (Xi + a)`.
 fn brent(n: u64, mut rounds: u64, mut a: u64) -> Vec<u64> {
-    let inner = match n.ilog2() + 1 {
+    let ctx = Mont::new(n);
+    let bits = 64 - n.leading_zeros();
+    let inner: u64 = match bits {
         0..=31 => 32,
         32..=35 => 64,
         36..=40 => 160,
         41..=52 => 256,
         _ => 320,
     };
-    let (mut xi, mut r, mut fails) = (1_u64, 1_u64, 6);
-    a %= n;
+    let (mut xi, mut r, mut fails) = (ctx.one, 1_u64, 6_u32);
+    let mut a_m = ctx.to_mont(a % n);
     while rounds > 0 {
         let mut left = r.min(rounds);
         let xm = xi;
         let mut xs = xi;
-        let mut f = 1;
+        let mut f = 1_u64;
         while left > 0 {
-            let count = left.min(inner);
+            let mut count = left.min(inner);
             left -= count;
             rounds -= count;
             xs = xi;
-            let mut m = 1;
-            for _ in 0..count {
-                xi = step(xi, a, n);
-                m = multiply(m, xi.abs_diff(xm), n);
+            xi = mont_step(&ctx, xi, a_m);
+            let mut m = xi.abs_diff(xm);
+            while count > 1 {
+                count -= 1;
+                xi = mont_step(&ctx, xi, a_m);
+                m = ctx.mul(m, xi.abs_diff(xm));
             }
             f = gcd(m, n);
             if f != 1 {
@@ -52,7 +60,7 @@ fn brent(n: u64, mut rounds: u64, mut a: u64) -> Vec<u64> {
         if f == n {
             xi = xs;
             loop {
-                xi = step(xi, a, n);
+                xi = mont_step(&ctx, xi, a_m);
                 f = gcd(xi.abs_diff(xm), n);
                 if f != 1 || r == 0 {
                     break;
@@ -65,13 +73,33 @@ fn brent(n: u64, mut rounds: u64, mut a: u64) -> Vec<u64> {
                 break;
             }
             fails -= 1;
-            xi = 1;
+            xi = ctx.one;
+            a_m = add(a_m, ctx.to_mont(11), n);
             a = add(a, 11, n);
         } else {
             return split(n, f);
         }
     }
     vec![n]
+}
+
+/// One Brent iteration. `n < 2^63` or `a ≡ 1` uses `Xi*(Xi+a)`; the other
+/// 64-bit case uses `Xi^2 + a`, matching the two arms in `pbrent_factor`.
+fn mont_step(ctx: &Mont, xi: u64, a_m: u64) -> u64 {
+    if ctx.n < 1 << 63 || a_m == ctx.one {
+        let (wrapped, overflow) = xi.overflowing_add(a_m);
+        let mut sum = if overflow {
+            add(wrapped, ctx.one, ctx.n)
+        } else {
+            wrapped
+        };
+        if sum >= ctx.n {
+            sum -= ctx.n;
+        }
+        ctx.mul(xi, sum)
+    } else {
+        add(ctx.mul(xi, xi), a_m, ctx.n)
+    }
 }
 
 fn step(x: u64, a: u64, n: u64) -> u64 {

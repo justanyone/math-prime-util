@@ -12,3 +12,4 @@ All 11 compatibility tests and all 3 property/boundary tests pass offline. Gate 
 Final gate is running after focused tests passed. Benchmark source is added without changing Cargo.toml. Tools, fixtures, crate root, and STATUS.md remain untouched as required.
 The gate has passed fmt, clippy, and the offline Rust 1.85 build and is running the full test suite. Native fixture skips cover inputs/results outside the unsigned APIs; no Perl or network was required.
 The full suite remains active after the count compatibility tests; waiting for the gate rather than launching a second whole-suite run.
+The gate is still running the existing prime-count oracle tests. Nth-prime completed; no failures reported. Continue waiting for this single full-suite run.

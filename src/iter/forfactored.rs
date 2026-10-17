@@ -1,4 +1,6 @@
 use super::run;
+
+type FactoredValue = (u64, Vec<(u64, u32)>);
 use std::ops::{ControlFlow, RangeInclusive};
 
 /// Iterator over `(n, factors)` for each `n` in a range, where `factors` are the
@@ -7,7 +9,7 @@ use std::ops::{ControlFlow, RangeInclusive};
 #[derive(Debug, Clone)]
 pub struct FactoredIn {
     range: RangeInclusive<u64>,
-    segment: std::vec::IntoIter<(u64, Vec<(u64, u32)>)>,
+    segment: std::vec::IntoIter<FactoredValue>,
     sieve: bool,
 }
 
@@ -89,7 +91,7 @@ fn full_sieve(root: u64, span: u64) -> bool {
 }
 
 // MPU 0.75 factor.c::_vec_factor, with prime powers stored as exponent pairs.
-fn factor_segment(lo: u64, hi: u64) -> Vec<(u64, Vec<(u64, u32)>)> {
+fn factor_segment(lo: u64, hi: u64) -> Vec<FactoredValue> {
     let root = crate::sqrtint(hi);
     let limit = if full_sieve(root, hi - lo) {
         root

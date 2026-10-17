@@ -8,3 +8,4 @@ Focused oracle and algebraic tests passed. An added exhaustive binary-exponent r
 All four oracle tests and seven property/boundary tests now pass offline, including exponent 41 and concurrent/repeated calls. The full repository gate is running.
 The gate passed formatting, pedantic clippy, and the offline Rust 1.85 build. Its full test suite is progressing; no dependency or fixture changes were needed.
 The full gate is still running in the pre-existing compat_count tests. Focused perfect-power checks remain green; waiting for the required full-suite result.
+Existing chebyshev, nth_prime, and prime_count oracle tests each exceeded 60 seconds in the full gate. No failures have been reported; continuing to wait within the session budget.

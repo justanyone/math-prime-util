@@ -379,6 +379,7 @@ fn prime_approx(n: u64) -> u64 {
 }
 
 // almost_primes.c: _almost_prime_count_bounds, including the empirical tables.
+#[allow(clippy::too_many_lines)]
 fn bounds(k: u32, n: u64) -> (u64, u64) {
     if k >= 64 || n >> k == 0 {
         return (0, 0);
@@ -582,7 +583,7 @@ pub fn almost_prime_count_approx(k: u32, n: u64) -> u64 {
         let ll = x.ln().ln() + 0.26153;
         return ((0.5 * a * x * ll * ll / (x.ln() + s) + 0.5) as u64).clamp(lo, hi);
     }
-    lo + ((hi - lo) as f64 * if k > 11 { 0.20 } else { 0.76 }) as u64
+    (lo as f64 + (hi - lo) as f64 * if k > 11 { 0.20 } else { 0.76 }) as u64
 }
 
 // semi_primes.c: semiprime_count_approx, Crisan and Erban series.

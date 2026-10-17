@@ -39,7 +39,7 @@ fn logarithm(n: u64) -> Wide {
     let e = n.ilog2();
     let base = 1u64 << e;
     let m = Wide((n >> 32) as f64, 0.0)
-        .mul(Wide(4294967296.0, 0.0))
+        .mul(Wide(4_294_967_296.0, 0.0))
         .add(Wide((n & 0xffff_ffff) as f64, 0.0))
         .div(Wide(base as f64, 0.0));
     let z = m.add(Wide(-1.0, 0.0)).div(m.add(Wide(1.0, 0.0)));
@@ -85,9 +85,10 @@ pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
         sum = sum.add(term.div(Wide(f64::from(k), 0.0)));
     }
     if upper {
-        sum.integer(false)
+        Wide(sum.0, 0.0).integer(false)
     } else {
-        sum.add(Wide(-2.0 * (n as f64).sqrt() / (l.0 + l.1), 0.0))
+        Wide(sum.0, 0.0)
+            .add(Wide(-2.0 * (n as f64).sqrt() / (l.0 + l.1), 0.0))
             .integer(true)
     }
 }

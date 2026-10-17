@@ -22,3 +22,5 @@ Exact almost-prime counts pass the oracle. Three count estimates fail at u64::MA
 Compensated large-input prime estimates now preserve low integer bits. This keeps small-input behavior unchanged while testing the long-double dependency gap.
 
 Omega count compatibility passes. Large-input prime estimates still differ by integer units; reference real.c is needed to match its truncation, not only mathematical accuracy.
+
+Large-input count lower/upper now pass after matching the C Li return-type rounding. RiemannR matches too; correcting the final mixed float/integer expression for k >= 4.

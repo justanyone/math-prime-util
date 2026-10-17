@@ -59,4 +59,3 @@ pub fn kronecker(a: i64, b: i64) -> i32 {
     let rem = a.unsigned_abs() % b;
     kronecker_odd(if rem == 0 { 0 } else { b - rem }, b, s)
 }
-

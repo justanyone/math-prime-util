@@ -9,5 +9,8 @@ pub fn sopfr(n: u64) -> u64 {
     if n <= 5 {
         return n - u64::from(n == 1);
     }
-    super::factor_powers(n).iter().map(|&(p, e)| p * u64::from(e)).sum()
+    super::factor_powers(n)
+        .iter()
+        .map(|&(p, e)| p * u64::from(e))
+        .sum()
 }

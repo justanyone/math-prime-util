@@ -14,3 +14,4 @@ The isolated gate has also started and will validate formatting, clippy, MSRV, t
 Family-wide validation has not returned. Starting a powerful-only oracle filter in a separate target to isolate this task from sibling test runtime.
 Powerful-only oracle validation is running offline. The full gate remains pending; five-minute remaining checkpoint is approaching.
 About five minutes remain. Code, docs, benchmarks, oracle skip comments, and algebraic regressions are complete; formatting passed, while cargo validation is still pending behind builds.
+Validation remains pending with no compiler or test failure output. Continuing to wait for the focused test results.

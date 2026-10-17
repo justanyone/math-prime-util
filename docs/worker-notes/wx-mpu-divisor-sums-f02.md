@@ -10,3 +10,4 @@ The regression now checks the C overflow fallback rejects wide noncoprime moduli
 Focused offline validation passed: 31 arithmetic compatibility tests and 23 arithmetic property/regression tests. Gate formatting and pedantic clippy passed; MSRV build is running.
 Rust 1.85 build passed; full gate tests are compiling. The checkout has no origin/dev ref, so a base-ref diff review is unavailable; no network or git writes were attempted.
 The full offline suite is running its unit tests; formatting, clippy, MSRV, and arithmetic tests remain green. No fixtures, tooling, dependencies, or generated status changed.
+Finished: tools/gate.sh printed == gate: green, including formatting, pedantic clippy, Rust 1.85, the full offline test suite, 435 doctests, and documentation. Focused arithmetic tests passed 54 cases; no requested implementation remains.

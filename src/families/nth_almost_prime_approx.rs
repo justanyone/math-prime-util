@@ -96,9 +96,7 @@ pub fn nth_almost_prime_approx(k: u32, n: u64) -> Option<u64> {
         if n < 306 {
             return crate::nth_prime(n);
         }
-        return Some(inverse(2, 0, n, |x| {
-            (crate::riemann_r(x as f64) + 0.5) as u64
-        }));
+        return Some(inverse_r(n));
     }
     if k == 2 {
         return crate::nth_semiprime_approx(n);
@@ -112,4 +110,36 @@ pub fn nth_almost_prime_approx(k: u32, n: u64) -> Option<u64> {
     }
     let lo = super::nth_almost_prime_lower(k, n)?;
     Some(inverse(lo, 0, n, |x| count_approx(k, x)))
+}
+
+// MPU real.c: ld_inverse_R and inverse_R.
+fn inverse_r(n: u64) -> u64 {
+    let x = n as f64;
+    let mut t = if x <= 3.5 {
+        x + 2.24 * (x - 1.0) / 2.0
+    } else {
+        x * x.ln()
+    };
+    if x > 3.5 {
+        if x < 50.0 {
+            t *= 1.2;
+        } else if x < 1000.0 {
+            t *= 1.15;
+        } else {
+            let dn = crate::logarithmic_integral(t) - x;
+            t -= dn * t.ln() / (1.0 + dn / (2.0 * t));
+        }
+    }
+    let mut old: f64 = 0.0;
+    for i in 0..100 {
+        let dn = crate::riemann_r(t) - x;
+        let term = dn * t.ln() / (1.0 + dn / (2.0 * t));
+        if i > 0 && term.abs() >= old.abs() {
+            t -= term / 4.0;
+            break;
+        }
+        old = term;
+        t -= term;
+    }
+    t.ceil() as u64
 }

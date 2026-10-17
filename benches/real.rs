@@ -1,5 +1,6 @@
 //! Benchmarks for the real special functions.
 #![allow(missing_docs)]
+#![allow(clippy::wildcard_imports)]
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::*;
 fn bench_real(c: &mut Criterion) {

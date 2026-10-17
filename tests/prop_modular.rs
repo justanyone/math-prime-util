@@ -25,8 +25,8 @@ proptest! {
 fn zero_modulus_and_repeated_calls() {
     assert_eq!(sqrtmod(1, 0), None);
     assert_eq!(rootmod(1, 3, 0), None);
-    assert!(allsqrtmod(1, 0).is_empty());
-    assert!(allrootmod(1, 3, 0).is_empty());
+    assert_eq!(allsqrtmod(1, 0), Vec::<u64>::new());
+    assert_eq!(allrootmod(1, 3, 0), Vec::<u64>::new());
     assert_eq!(divmod(1, 1, 0), None);
     assert_eq!(cornacchia(0, 0), Some((0, 0)));
     assert_eq!(cornacchia(0, 4), Some((2, 0)));

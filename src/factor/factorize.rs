@@ -10,7 +10,7 @@ use super::is_carmichael::prime_factors;
 /// ```
 /// assert_eq!(math_prime_util::factor(12), vec![2, 2, 3]);
 /// assert_eq!(math_prime_util::factor(0), vec![0]);
-/// assert!(math_prime_util::factor(1).is_empty());
+/// assert_eq!(math_prime_util::factor(1), Vec::<u64>::new());
 /// ```
 #[must_use]
 pub fn factor(n: u64) -> Vec<u64> {
@@ -27,7 +27,7 @@ pub fn factor(n: u64) -> Vec<u64> {
 /// ```
 /// assert_eq!(math_prime_util::factor_exp(12), vec![(2, 2), (3, 1)]);
 /// assert_eq!(math_prime_util::factor_exp(0), vec![(0, 1)]);
-/// assert!(math_prime_util::factor_exp(1).is_empty());
+/// assert_eq!(math_prime_util::factor_exp(1), Vec::<(u64, u32)>::new());
 /// ```
 #[must_use]
 pub fn factor_exp(n: u64) -> Vec<(u64, u32)> {
@@ -48,11 +48,11 @@ mod tests {
     #[test]
     fn edges_and_repeated_primes() {
         assert_eq!(factor(0), vec![0]);
-        assert!(factor(1).is_empty());
+        assert_eq!(factor(1), Vec::<u64>::new());
         assert_eq!(factor(32), vec![2, 2, 2, 2, 2]);
         assert_eq!(factor(1_000_003 * 1_000_033), vec![1_000_003, 1_000_033]);
         assert_eq!(factor_exp(0), vec![(0, 1)]);
-        assert!(factor_exp(1).is_empty());
+        assert_eq!(factor_exp(1), Vec::<(u64, u32)>::new());
         assert_eq!(factor_exp(12), vec![(2, 2), (3, 1)]);
         assert_eq!(factor_exp(47), vec![(47, 1)]);
         assert_eq!(

@@ -72,7 +72,9 @@ proptest! {
         let mut phi = n;
         let mut prev = 0;
         for p in fs {
-            if p != prev { phi = phi / p * (p - 1); }
+            if p != prev {
+                phi = phi / p * (p - 1);
+            }
             prev = p;
         }
         prop_assert_eq!(is_cyclic(n), gcd(n, phi) == 1);

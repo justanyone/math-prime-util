@@ -369,7 +369,8 @@ fn ramanujan_sum_edges_and_repeat() {
     assert_eq!(ramanujan_sum(12, 36), ramanujan_sum(12, 36));
     // gcd(k, n) > 1 and moebius(g) == 0.
     assert_eq!(ramanujan_sum(12, 2), 0);
-    let p = next_prime(1_u64 << 63);
+    let p = next_prime(1_u64 << 63).unwrap();
+    assert_ne!(is_prime(p), 0);
     assert_eq!(
         ramanujan_sum(p, p),
         i64::from_ne_bytes((p - 1).to_ne_bytes())

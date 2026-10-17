@@ -79,3 +79,67 @@ fn empty_break_and_snapshot() {
 fn invalid_partition_bound() {
     let _ = partitions_of(u64::MAX, PartitionOptions::default());
 }
+
+#[test]
+fn closure_streams_match_iterators() {
+    macro_rules! same {
+        ($function:path, ($($arg:expr),*), $iter:expr) => {{
+            let mut values = Vec::new();
+            let result: ControlFlow<()> = $function($($arg,)* |value| {
+                values.push(value);
+                ControlFlow::Continue(())
+            });
+            assert!(result.is_continue());
+            assert_eq!(values, $iter.collect::<Vec<_>>());
+        }};
+    }
+    let options = PartitionOptions::default();
+    same!(forpart, (8, options), partitions_of(8, options));
+    same!(forcomp, (8, options), compositions_of(8, options));
+    same!(forcomb, (6, None), combinations_of(6, None));
+    same!(forperm, (5), permutations_of(5));
+    same!(forderange, (5), derangements_of(5));
+    same!(
+        formultiperm,
+        (&[1, 1, 2, 3]),
+        multipermutations_of(&[1, 1, 2, 3])
+    );
+    let sets = [vec![1, 2], vec![3, 4]];
+    same!(forsetproduct, (&sets), set_product(&sets));
+    same!(forprimes, (0..=50), primes_in(0..=50));
+    same!(forcomposites, (0..=50), composites_in(0..=50));
+    same!(foroddcomposites, (0..=50), odd_composites_in(0..=50));
+}
+
+#[test]
+fn terminal_and_duplicate_state() {
+    let mut first = prime_iterator(10);
+    assert_eq!(first.next(), Some(11));
+    let mut second = first.clone();
+    assert_eq!(first.next(), Some(13));
+    assert_eq!(second.next(), Some(13));
+    let mut end = prime_iterator(u64::MAX);
+    assert_eq!(end.next(), None);
+    assert_eq!(end.next(), None);
+    for n in 0..8 {
+        let expected: Vec<_> = permutations_of(n)
+            .filter(|p| p.iter().enumerate().all(|(i, &v)| i != v))
+            .collect();
+        assert_eq!(derangements_of(n).collect::<Vec<_>>(), expected);
+        assert_eq!(combinations_of(n, None).count(), 1 << n);
+    }
+    let mut multiset = multipermutations_of(&[1, 1]);
+    assert_eq!(multiset.next(), Some(vec![1, 1]));
+    assert_eq!(multiset.next(), None);
+    assert_eq!(multiset.next(), None);
+    let options = PartitionOptions {
+        nmax: Some(0),
+        ..PartitionOptions::default()
+    };
+    assert_eq!(partitions_of(5, options).count(), 0);
+    let options = PartitionOptions {
+        amin: Some(10),
+        ..PartitionOptions::default()
+    };
+    assert_eq!(partitions_of(5, options).count(), 0);
+}

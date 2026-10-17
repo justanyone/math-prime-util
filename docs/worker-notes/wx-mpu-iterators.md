@@ -10,3 +10,5 @@ Focused offline tests pass: 13 compatibility tests and 7 property/state tests. G
 Gate lint failures were limited to documentation formatting, explicit default types, portable test conversions, and generated benchmark documentation; these are fixed.
 Replaced permutation filtering with the C derangement initializer and skip transitions. Multiset traversal now uses the reference count/prefix recursion as an explicit stack.
 Prime iterators now use the reference 10k-prime batch-size estimate and an owned buffer. Native exhaustion uses Option and cannot wrap.
+Added full-stream closure equivalence, clone independence, native top-bound exhaustion, and derangement cross-checks against all small permutations.
+The gate reached pre-existing count compatibility tests; nth_prime_oracle and prime_count_oracle exceed 60 seconds. Iterator-only validation continues independently.

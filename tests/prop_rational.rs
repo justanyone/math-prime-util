@@ -24,6 +24,20 @@ proptest! {
     }
 
     #[test]
+    fn best_approximation_is_bounded(p in -1000i32..1000, q in 1u32..1000, bound in 1u32..60) {
+        let x = f64::from(p) / f64::from(q);
+        let (a, b) = bestrational(x, u64::from(bound)).unwrap();
+        prop_assert!(b > 0 && b <= u64::from(bound));
+        let a = i32::try_from(a).unwrap();
+        let b = u32::try_from(b).unwrap();
+        let error = (f64::from(a) / f64::from(b) - x).abs();
+        for den in 1..=bound {
+            let num = (x * f64::from(den)).round();
+            prop_assert!(error <= (num / f64::from(den) - x).abs() + 1e-10);
+        }
+    }
+
+    #[test]
     fn farey_neighbors_and_ranks(n in 1u32..80) {
         let terms = farey(n);
         prop_assert_eq!(terms.len() as u64, farey_len(n));

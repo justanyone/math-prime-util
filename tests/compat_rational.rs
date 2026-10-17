@@ -2,10 +2,10 @@
 //! Fixture: `tests/fixtures/rational.tsv`.
 //!
 //! Native API skips: signed or bigint arguments in contfrac, convergents,
-//! from_contfrac, next_calkin_wilf, next_stern_brocot, calkin_wilf_n,
-//! stern_brocot_n, nth_calkin_wilf, nth_stern_brocot and nth_stern_diatomic.
+//! `from_contfrac`, `next_calkin_wilf`, `next_stern_brocot`, `calkin_wilf_n`,
+//! `stern_brocot_n`, `nth_calkin_wilf`, `nth_stern_brocot` and `nth_stern_diatomic`.
 //! Bigint results in tree successors, indices and continued fractions are
-//! skipped. next_farey with a reduced denominator above the order uses
+//! skipped. `next_farey` with a reduced denominator above the order uses
 //! Perl fallback semantics and is skipped. bestrational skips non-finite
 //! inputs, whose validation belongs to the Perl wrapper. Tree index overflow
 //! (including a Perl fallback error) and Stern-Brocot successors needing
@@ -110,8 +110,7 @@ fn convergents_oracle() {
 fn bestrational_oracle() {
     each_native("bestrational", |c| {
         let x: f64 = c.arg(0);
-        let got = bestrational(x, c.arg(1)).map(|(n, d)| format!("{n} {d}"));
-        got
+        bestrational(x, c.arg(1)).map(|(n, d)| format!("{n} {d}"))
     });
 }
 
@@ -167,7 +166,12 @@ fn nth_stern_diatomic_oracle() {
 fn next_farey_oracle() {
     each_native("next_farey", |c| {
         let (p, q) = frac(&c.args[1]);
-        next_farey(c.arg(0), p as u32, q as u32).map(|(a, b)| format!("{a} {b}"))
+        next_farey(
+            c.arg(0),
+            u32::try_from(p).unwrap(),
+            u32::try_from(q).unwrap(),
+        )
+        .map(|(a, b)| format!("{a} {b}"))
     });
 }
 
@@ -175,7 +179,11 @@ fn next_farey_oracle() {
 fn farey_rank_oracle() {
     each_native("farey_rank", |c| {
         let (p, q) = frac(&c.args[1]);
-        Some(farey_rank(c.arg(0), p as u32, q as u32))
+        Some(farey_rank(
+            c.arg(0),
+            u32::try_from(p).unwrap(),
+            u32::try_from(q).unwrap(),
+        ))
     });
 }
 

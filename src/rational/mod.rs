@@ -541,8 +541,8 @@ pub fn farey_rank(n: u32, p: u32, q: u32) -> u64 {
     }
     let n = n as usize;
     let mut count = vec![0u64; n + 1];
-    for i in 2..=n {
-        count[i] = (i as u64 * p - 1) / q;
+    for (i, value) in count.iter_mut().enumerate().skip(2) {
+        *value = (i as u64 * p - 1) / q;
     }
     let mut sum: u64 = 1;
     for i in 2..=n {
@@ -600,7 +600,7 @@ pub fn farey_len(n: u32) -> u64 {
     for i in (1..=root - usize::from(flag)).rev() {
         let m = n / i as u64;
         let r = crate::sqrtint(m) as usize;
-        let mut sum = (m + 1) / 2 * (m | 1) - (m - m / 2);
+        let mut sum = m.div_ceil(2) * (m | 1) - (m - m / 2);
         let mut k = 2;
         let mut j = k * i;
         while j <= root {

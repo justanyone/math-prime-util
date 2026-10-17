@@ -39,7 +39,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `catalan_number`
 - [x] `cdivint`
 - [x] `cdivrem`
-- [ ] `cheb_factor`
+- [x] `cheb_factor`
 - [x] `chebyshev_psi`
 - [x] `chebyshev_theta`
 - [x] `chinese`
@@ -285,7 +285,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prev_prime`
 - [ ] `prev_prime_power`
 - [x] `prho_factor`
-- [ ] `prime_bigomega`
+- [x] `prime_bigomega`
 - [ ] `prime_certificate`
 - [x] `prime_count`
 - [ ] `prime_count_approx`
@@ -295,7 +295,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `prime_iterator`
 - [ ] `prime_iterator_object`
 - [x] `prime_memfree`
-- [ ] `prime_omega`
+- [x] `prime_omega`
 - [ ] `prime_power_count`
 - [ ] `prime_power_count_approx`
 - [ ] `prime_power_count_lower`
@@ -304,7 +304,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_precalc`
 - [x] `primes`
 - [ ] `prime_set_config`
-- [ ] `prime_signature`
+- [x] `prime_signature`
 - [x] `primorial`
 - [ ] `print_primes`
 - [x] `qnr`

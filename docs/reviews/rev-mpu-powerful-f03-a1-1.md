@@ -7,3 +7,5 @@ Verdict: FAIL
 The stopped run is not complete against the acceptance criteria: the diff retains the above algorithm and resource gaps. No earlier findings were supplied. The three STATUS.md entries are already checked in the candidate, and existing family oracle tests are present; neither establishes that these gaps are fixed. No shared mutable state or duplicate side effects appear in the added repeat/thread paths.
 
 Validation: the checkout is the base, so local test and gate results apply only to the base and cannot certify candidate coverage or correctness. Candidate execution was not performed. Review used the supplied complete diff and targeted reads of the C reference and existing oracle tests.
+
+Local checks: `tools/test.sh powerfree` exited successfully on the base. `tools/gate.sh` failed at clippy on the base's four exact float comparisons in `src/count/mod.rs` and `src/proving/is_aks_prime.rs`; it did not print `== gate: green`. The supplied candidate diff adds the corresponding lint allowances, so this base failure is not an additional candidate finding.

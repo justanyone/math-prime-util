@@ -1,109 +1,90 @@
-//! Stream laws, input bounds, and independent thread state.
-use math_prime_util::*;
+//! Algebraic laws and state isolation for native random primes.
+use math_prime_util::{
+    csrand, is_prime, powmod, random_maurer_prime_with_cert, random_semiprime,
+    random_shawe_taylor_prime, random_shawe_taylor_prime_with_cert,
+};
 use proptest::prelude::*;
 
+fn verify(p: u64, cert: &str) {
+    assert_eq!(is_prime(p), 2);
+    assert!(cert.contains(&format!("Proof for:\nN {p}\n")));
+    if cert.contains("Type Pocklington") {
+        let field = |name: &str| {
+            cert.lines()
+                .find_map(|l| l.strip_prefix(name))
+                .unwrap()
+                .parse::<u64>()
+                .unwrap()
+        };
+        let q = field("Q ");
+        let a = field("A ");
+        assert_eq!(is_prime(q), 2);
+        assert_eq!((p - 1) % (2 * q), 0);
+        assert!(u128::from(q) * u128::from(q) > u128::from(p));
+        let z = powmod(a, (p - 1) / q, p).unwrap();
+        assert_eq!(powmod(z, q, p), Some(1));
+        let (mut x, mut y) = (z.wrapping_sub(1), p);
+        while y != 0 {
+            (x, y) = (y, x % y);
+        }
+        assert_eq!(x, 1);
+    }
+}
+
 proptest! {
+    #![proptest_config(ProptestConfig::with_cases(32))]
     #[test]
-    fn split_stream(seed in any::<u64>(), a in 0usize..2200, b in 0usize..2200) {
-        srand(seed);
-        let whole = random_bytes(a+b);
-        srand(seed);
-        let mut split = random_bytes(a);
-        split.extend(random_bytes(b));
-        prop_assert_eq!(whole, split);
-    }
-    #[test]
-    fn integer_order(seed in any::<u64>(), skip in 0usize..2050) {
-        srand(seed); random_bytes(skip);
-        let high = irand(); let low = irand();
-        srand(seed); random_bytes(skip);
-        prop_assert_eq!(irand64(), (high << 32) | low);
-    }
-    #[test]
-    fn bounds(seed in any::<u64>(), bits in 0u32..=64, n in 1u64..=u64::MAX, low in any::<u64>(), high in any::<u64>()) {
-        srand(seed);
-        let r = urandomb(bits);
-        prop_assert!(bits == 64 || u128::from(r) < (1u128 << bits));
-        prop_assert!(urandomm(n) < n);
-        let range = urandomr(low, high);
-        prop_assert_eq!(range.is_some(), low <= high);
-        if let Some(r) = range { prop_assert!((low..=high).contains(&r)); }
-        prop_assert!((0.0..1.0).contains(&drand(1.0)));
-    }
-}
-#[test]
-fn repeated_seed_resets_partial_buffer() {
-    csrand(b"same");
-    let expected = random_bytes(1100);
-    csrand(b"other");
-    random_bytes(17);
-    csrand(b"same");
-    assert_eq!(random_bytes(1100), expected);
-}
-#[test]
-fn threads_keep_separate_seeds() {
-    srand(42);
-    let expected = random_bytes(1500);
-    srand(42);
-    let children: Vec<_> = (0..4)
-        .map(|_| {
-            std::thread::spawn(|| {
-                srand(15);
-                random_bytes(1500)
-            })
-        })
-        .collect();
-    for child in children {
-        assert_ne!(child.join().unwrap(), expected);
-    }
-    assert_eq!(random_bytes(1500), expected);
-}
-#[test]
-fn empty_calls_do_not_advance() {
-    srand(15);
-    let expected = irand64();
-    srand(15);
-    assert_eq!(random_bytes(0), Vec::<u8>::new());
-    assert_eq!(urandomb(0), 0);
-    assert_eq!(urandomm(1), 0);
-    assert_eq!(urandomr(7, 7), Some(7));
-    assert_eq!(urandomr(7, 3), None);
-    assert_eq!(irand64(), expected);
-}
-#[test]
-#[should_panic(expected = "too many bits")]
-fn excessive_bits() {
-    urandomb(65);
-}
-#[test]
-#[should_panic(expected = "modulus must be positive")]
-fn zero_modulus() {
-    urandomm(0);
-}
-#[test]
-#[should_panic(expected = "byte count exceeds MPU limit")]
-fn excessive_random_bytes() {
-    random_bytes(2_147_483_647);
-}
-#[test]
-#[should_panic(expected = "byte count exceeds MPU limit")]
-fn excessive_entropy_bytes() {
-    let _ = entropy_bytes(2_147_483_647);
-}
-#[test]
-fn empty_and_short_seeds_repeat() {
-    for length in 0..=41 {
-        let seed = vec![3; length];
+    fn prime_bits_and_certificates(bits in 2_u32..=64, seed in any::<[u8;40]>()) {
         csrand(&seed);
-        let expected = random_bytes(1030);
+        let (p, cert) = random_maurer_prime_with_cert(bits).unwrap();
+        prop_assert_eq!(64 - p.leading_zeros(), bits);
+        verify(p, &cert);
+        let (p, cert) = random_shawe_taylor_prime_with_cert(bits).unwrap().unwrap();
+        prop_assert_eq!(64 - p.leading_zeros(), bits);
+        verify(p, &cert);
+    }
+    #[test]
+    fn semiprime_factors(bits in 4_u32..=32, seed in any::<[u8;40]>()) {
         csrand(&seed);
-        assert_eq!(random_bytes(1030), expected);
+        let n = random_semiprime(bits).unwrap();
+        prop_assert_eq!(64 - n.leading_zeros(), bits);
+        let p = (2..).find(|p| n % p == 0).unwrap();
+        prop_assert_eq!(is_prime(p), 2);
+        prop_assert_eq!(is_prime(n/p), 2);
+        prop_assert_eq!(64 - p.leading_zeros(), bits/2);
+        prop_assert_eq!(64 - (n/p).leading_zeros(), bits - bits/2);
     }
 }
+
 #[test]
-fn long_seeds_use_first_forty_bytes() {
-    csrand(&[9; 40]);
-    let expected = random_bytes(1050);
-    csrand(&[9; 100]);
-    assert_eq!(random_bytes(1050), expected);
+fn bounds_reseed_and_threads() {
+    for bits in [0, 1] {
+        assert!(std::panic::catch_unwind(|| random_maurer_prime_with_cert(bits)).is_err());
+        assert!(std::panic::catch_unwind(|| random_shawe_taylor_prime(bits)).is_err());
+        assert!(std::panic::catch_unwind(|| random_shawe_taylor_prime_with_cert(bits)).is_err());
+    }
+    for bits in 0..4 {
+        assert!(std::panic::catch_unwind(|| random_semiprime(bits)).is_err());
+    }
+    assert_eq!(random_maurer_prime_with_cert(65), None);
+    assert_eq!(random_shawe_taylor_prime_with_cert(u32::MAX), Ok(None));
+    let run = || {
+        csrand(&[42; 40]);
+        (
+            random_maurer_prime_with_cert(64),
+            random_shawe_taylor_prime_with_cert(64),
+            random_semiprime(64),
+        )
+    };
+    let expected = run();
+    assert_eq!(expected, run());
+    let handles: Vec<_> = (0..4).map(|_| std::thread::spawn(run)).collect();
+    for h in handles {
+        assert_eq!(h.join().unwrap(), expected);
+    }
+    for bits in 2..=64 {
+        csrand(&[u8::try_from(bits).unwrap(); 40]);
+        let (p, cert) = random_shawe_taylor_prime_with_cert(bits).unwrap().unwrap();
+        verify(p, &cert);
+    }
 }

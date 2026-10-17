@@ -7,8 +7,8 @@ pub(super) fn nbit_prime(bits: u32) -> u64 {
         3 => return if urandomb(1) == 0 { 7 } else { 5 },
         4 => return if urandomb(1) == 0 { 13 } else { 11 },
         5..=9 => {
-            let (start, count) = [(7, 5), (12, 7), (19, 13), (32, 23), (55, 43)]
-                [usize::try_from(bits - 5).unwrap()];
+            let (start, count) =
+                [(7, 5), (12, 7), (19, 13), (32, 23), (55, 43)][usize::try_from(bits - 5).unwrap()];
             let index = start + urandomm(count);
             let mut found = 0;
             for n in 2.. {
@@ -33,7 +33,9 @@ pub(super) fn nbit_prime(bits: u32) -> u64 {
 }
 
 pub(super) fn small_certificate(n: u64) -> String {
-    format!("[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n")
+    format!(
+        "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n"
+    )
 }
 
 /// Returns a native Maurer prime and its MPU certificate.

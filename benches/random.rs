@@ -4,6 +4,18 @@ use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{csrand, irand32, irand64, random_bytes, urandomm};
 fn bench_random(c: &mut Criterion) {
     csrand(&[42; 40]);
+    c.bench_function("random/maurer_cert32", |b| {
+        b.iter(|| math_prime_util::random_maurer_prime_with_cert(black_box(32)));
+    });
+    c.bench_function("random/shawe_taylor32", |b| {
+        b.iter(|| math_prime_util::random_shawe_taylor_prime(black_box(32)));
+    });
+    c.bench_function("random/shawe_taylor_cert64", |b| {
+        b.iter(|| math_prime_util::random_shawe_taylor_prime_with_cert(black_box(64)));
+    });
+    c.bench_function("random/semiprime64", |b| {
+        b.iter(|| math_prime_util::random_semiprime(black_box(64)));
+    });
     c.bench_function("random/irand32", |b| b.iter(irand32));
     c.bench_function("random/irand64", |b| b.iter(irand64));
     c.bench_function("random/urandomm", |b| {

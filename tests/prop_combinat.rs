@@ -1,5 +1,7 @@
 //! Algebraic laws and native boundary regressions for combinatorics.
-use math_prime_util::{bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling};
+use math_prime_util::{
+    bell_number, bernfrac, binomial, catalan_number, harmfrac, pn_primorial, primorial, stirling,
+};
 use proptest::prelude::*;
 
 proptest! {

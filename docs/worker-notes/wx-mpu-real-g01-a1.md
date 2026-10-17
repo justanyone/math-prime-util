@@ -9,6 +9,7 @@ Added ExponentialIntegral, LogarithmicIntegral, and RiemannZeta wrappers. Pointe
 Next: run tools/test.sh on compat_real and prop_real.
 compat_real 10 passed, prop_real 12 passed. STATUS ticks the three names (3 lines). Next: tools/gate.sh.
 First gate run passed fmt, clippy, and the MSRV build, then the tool timeout killed it during `cargo test`. Next: run the gate again so the cached build can finish tests and docs.
+Second gate run printed `== gate: green` (fmt, clippy, MSRV 1.85, full tests, docs). The three MPU names are ticked. Nothing left.
 - 2026-10-17T14:47:53Z launcher: no commit for 64 s; 126 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-real-g01-a1.md.
 - 2026-10-17T14:48:56Z launcher: no commit for 61 s; 189 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-real-g01-a1.md.
 - 2026-10-17T14:49:58Z launcher: no commit for 60 s; 251 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-real-g01-a1.md.

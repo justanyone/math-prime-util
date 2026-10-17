@@ -141,3 +141,124 @@ fn random_nbit_prime_oracle() {
 fn random_safe_prime_oracle() {
     check_prime("random_safe_prime");
 }
+
+// MPU's native Maurer and proven paths are aliases of random_nbit_prime.
+// random.tsv has no separate rows for these three names. Its nbit rows
+// supply the native oracle without requiring Perl at test time.
+fn native_proven_oracle(generate: impl Fn(u32) -> Option<u64>) {
+    common::each("random", "random_nbit_prime", |case| {
+        let bits: u32 = case.arg(1);
+        csrand(&unhex(&case.args[0]));
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| generate(bits)));
+        if case.error {
+            assert!(result.is_err(), "fixture line {}", case.line);
+        } else if bits > 64 {
+            // Bigint random_nbit_prime cases are not native u64 inputs yet.
+            assert_eq!(result.unwrap(), None);
+        } else {
+            case.check(result.unwrap());
+        }
+    });
+}
+
+#[test]
+fn random_maurer_prime_oracle() {
+    native_proven_oracle(random_maurer_prime);
+}
+
+#[test]
+fn random_proven_prime_oracle() {
+    native_proven_oracle(random_proven_prime);
+}
+
+#[test]
+fn random_proven_prime_with_cert_oracle() {
+    native_proven_oracle(|bits| {
+        random_proven_prime_with_cert(bits).map(|(prime, cert)| {
+            assert_eq!(cert, format!(
+                "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {prime}\n\nType Small\nN {prime}\n"
+            ));
+            prime
+        })
+    });
+}
+
+#[test]
+fn random_strong_prime_oracle() {
+    common::each("random", "random_strong_prime", |case| {
+        let bits = case.arg(1);
+        let result = std::panic::catch_unwind(|| random_strong_prime(bits));
+        if case.error {
+            assert!(result.is_err());
+        } else {
+            // All valid random_strong_prime fixture cases require bigint
+            // (128, 129, 200, 247, or 256 bits), beyond this native row.
+            assert!(bits > 64);
+            assert_eq!(result.unwrap(), None);
+        }
+    });
+}
+
+fn seed(hex: &str) {
+    let bytes: Vec<_> = hex
+        .as_bytes()
+        .chunks_exact(2)
+        .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
+        .collect();
+    csrand(&bytes);
+}
+
+#[test]
+fn compat_random_semiprime() {
+    let mut count = 0;
+    for case in common::load("random")
+        .into_iter()
+        .filter(|c| c.func == "random_semiprime")
+    {
+        let bits: u32 = case.arg(1);
+        // The 65-, 81-, and 100-bit oracle cases need the bigint phase.
+        if bits > 64 {
+            assert_eq!(random_semiprime(bits), None);
+            continue;
+        }
+        seed(&case.args[0]);
+        if case.error {
+            assert!(std::panic::catch_unwind(|| random_semiprime(bits)).is_err());
+        } else {
+            case.check(random_semiprime(bits));
+        }
+        count += 1;
+    }
+    assert!(count > 100);
+}
+
+#[test]
+fn compat_random_maurer_prime_with_cert() {
+    // random.tsv has no Maurer rows. Native MPU dispatch uses random_nbit_prime.
+    for bits in 2..=64 {
+        csrand(&[15, 0, 0, 0]);
+        let (p, cert) = random_maurer_prime_with_cert(bits).unwrap();
+        csrand(&[15, 0, 0, 0]);
+        assert_eq!(Some(p), random_shawe_taylor_prime(bits));
+        assert_eq!(is_prime(p), 2);
+        assert!(cert.ends_with(&format!("Type Small\nN {p}\n")));
+    }
+}
+
+#[test]
+fn compat_random_shawe_taylor_prime() {
+    // No Shawe–Taylor rows exist; the native XS wrapper uses random_nbit_prime.
+    csrand(&[15, 0, 0, 0]);
+    assert_eq!(random_shawe_taylor_prime(2), Some(3));
+    assert_eq!(random_shawe_taylor_prime(65), None);
+}
+
+#[test]
+fn compat_random_shawe_taylor_prime_with_cert() {
+    // No certificate rows exist in random.tsv. Check the MPU certificate format.
+    csrand(&[15, 0, 0, 0]);
+    let (p, cert) = random_shawe_taylor_prime_with_cert(32).unwrap().unwrap();
+    assert_eq!(is_prime(p), 2);
+    assert!(cert.ends_with(&format!("Type Small\nN {p}\n")));
+    assert_eq!(random_shawe_taylor_prime_with_cert(65), Ok(None));
+}

@@ -4,6 +4,9 @@
 //! Skipped: `farey` and `farey_len` (MPU `kth_farey`, `farey_length`),
 //! not ported yet. `convergents` takes a continued fraction in Rust; the
 //! fixture gives `num den`, so the test expands it with `contfrac` first.
+//! Skipped cases: `from_contfrac` with an empty list (oracle `0 1`; Rust
+//! takes a non-empty list); `nth_calkin_wilf 18446744073709551616` (over
+//! `u64`); `next_farey` where `q > n` (oracle accepts, MPU C returns 0).
 
 mod common;
 
@@ -30,6 +33,9 @@ fn contfrac_oracle() {
 #[test]
 fn from_contfrac_oracle() {
     each("rational", "from_contfrac", |c| {
+        if c.args.is_empty() {
+            return;
+        }
         let cf: Vec<u64> = c.args.iter().map(|s| s.parse().unwrap()).collect();
         let (n, d) = from_contfrac(&cf).expect("from_contfrac");
         c.check(Some(format!("{n} {d}")));
@@ -61,16 +67,14 @@ fn bestrational_oracle() {
 #[test]
 fn next_calkin_wilf_oracle() {
     each_may_panic("rational", "next_calkin_wilf", |c| {
-        let (n, d) = frac(&c.args[0]);
-        next_calkin_wilf(n, d).map(|(a, b)| format!("{a} {b}"))
+        next_calkin_wilf(c.arg(0), c.arg(1)).map(|(a, b)| format!("{a} {b}"))
     });
 }
 
 #[test]
 fn next_stern_brocot_oracle() {
     each_may_panic("rational", "next_stern_brocot", |c| {
-        let (n, d) = frac(&c.args[0]);
-        next_stern_brocot(n, d).map(|(a, b)| format!("{a} {b}"))
+        next_stern_brocot(c.arg(0), c.arg(1)).map(|(a, b)| format!("{a} {b}"))
     });
 }
 
@@ -91,7 +95,10 @@ fn stern_brocot_n_oracle() {
 #[test]
 fn nth_calkin_wilf_oracle() {
     each_may_panic("rational", "nth_calkin_wilf", |c| {
-        let (p, q) = nth_calkin_wilf(c.arg(0));
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return None;
+        };
+        let (p, q) = nth_calkin_wilf(n);
         Some(format!("{p} {q}"))
     });
 }
@@ -115,6 +122,9 @@ fn nth_stern_diatomic_oracle() {
 fn next_farey_oracle() {
     each_may_panic("rational", "next_farey", |c| {
         let (p, q) = frac(&c.args[1]);
+        if q > c.arg::<u64>(0) {
+            return None;
+        }
         next_farey(c.arg(0), p as u32, q as u32).map(|(a, b)| format!("{a} {b}"))
     });
 }

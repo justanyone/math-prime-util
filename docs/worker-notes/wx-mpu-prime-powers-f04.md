@@ -13,3 +13,4 @@ Existing chebyshev, nth_prime, and prime_count oracle tests each exceeded 60 sec
 Chebyshev oracle checks completed successfully. The gate still waits on the existing nth_prime and prime_count oracle checks; implementation, docs, benchmarks, and focused tests are complete.
 The gate remains in the existing prime-counting oracle tests with no reported failures. No source changes since the successful focused run; keeping the worktree ready for launcher snapshots.
 The nth_prime oracle test has now passed. The gate remains on prime_count in that test group; waiting for the required final gate result.
+No new failures or code changes. The existing prime_count oracle test is still running; gate completion remains the sole validation uncertainty.

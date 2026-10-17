@@ -9,3 +9,4 @@ The gate reached clippy and is waiting for the focused build lock. Added exact s
 All requested code and regression tests are written. Waiting for offline validation; no fixture, tooling, dependency, or STATUS changes are needed.
 - 2026-10-17T18:48:02Z launcher: no commit for 62 s; 246 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-powerful-f01.md, src/families/is_powerful.rs, src/families/mod.rs, src/families/powerful.rs, src/families/powerful_count.rs, src/families/powerful_numbers.rs, src/families/sumpowerful.rs, tests/compat_families.rs, tests/prop_families.rs.
 Offline validation is still blocked on the shared build directory lock. Trying an isolated target directory so validation can proceed independently.
+The isolated offline test build is running; shared-target validation remains queued. No code failures have been reported yet.

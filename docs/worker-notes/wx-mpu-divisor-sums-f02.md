@@ -9,3 +9,4 @@ Added factor-sum additivity, Kronecker multiplicativity, CRT reconstruction and 
 The regression now checks the C overflow fallback rejects wide noncoprime moduli that the prior chinese2 delegation accepted. Offline focused tests and gate are still running.
 Focused offline validation passed: 31 arithmetic compatibility tests and 23 arithmetic property/regression tests. Gate formatting and pedantic clippy passed; MSRV build is running.
 Rust 1.85 build passed; full gate tests are compiling. The checkout has no origin/dev ref, so a base-ref diff review is unavailable; no network or git writes were attempted.
+The full offline suite is running its unit tests; formatting, clippy, MSRV, and arithmetic tests remain green. No fixtures, tooling, dependencies, or generated status changed.

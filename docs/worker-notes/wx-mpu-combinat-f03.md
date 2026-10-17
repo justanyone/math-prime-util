@@ -12,3 +12,6 @@ Cache unit tests pass, including growth and concurrent reset/repeat calls. Fixed
 All four fixture tests and five property/boundary tests pass offline. Corrected the final checked-conversion lint; rerun the gate against this source.
 Final source passes the focused oracle and property checks. The required gate and the single whole-suite tools/test.sh run are in progress; no fixture, tooling, dependency, root export, or STATUS changes were made.
 Gate formatting, clippy, and MSRV build passed. The full suites reached existing sieve tests; waiting for those and the documentation steps to finish.
+Finished: focused fixtures/properties, cache unit tests, and the single full tools/test.sh run passed offline. tools/gate.sh printed == gate: green (fmt, clippy, MSRV, tests, doctests, docs). Platform-matrix and coverage measurement remain  <<cut 39 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)

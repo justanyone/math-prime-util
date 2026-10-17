@@ -10,3 +10,7 @@ All ten oracle tests and three property/concurrency tests pass offline. The firs
 Replaced the provisional inverse search with the C linear-interpolation, Ridder, and binary-search stages. Added internal cross-checks for the bit sieve and rank tree, estimator endpoints, and inverse-search gaps. About five minutes remain; <<cut 36 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 12 bytes)
+The final gate printed == gate: green: formatting, pedantic Clippy, MSRV 1.85, all tests, doctests, and docs passed offline. All requested fixture cases pass without skips. The cross-platform and 95% coverage checks remain for CI; this sess <<cut 43 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 19 bytes)
+Finished: tools/test.sh passed the whole suite and all 112 doctests; git diff --check passed. No dependencies, fixtures, tooling, crate-root, STATUS, or git metadata were edited. All task code and tests are written.

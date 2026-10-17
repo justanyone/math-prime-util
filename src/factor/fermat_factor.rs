@@ -41,7 +41,7 @@ pub(super) fn attempt(mut n: u64, method: impl FnOnce(u64) -> u64) -> Vec<u64> {
         while n % p == 0 { result.push(p); n /= p; }
     }
     if n > 1 {
-        let f = if is_prime(n) { n } else { method(n) };
+        let f = if is_prime(n) != 0 { n } else { method(n) };
         let f = gcd(n, f);
         if f > 1 && f < n {
             result.extend([f.min(n / f), f.max(n / f)]);

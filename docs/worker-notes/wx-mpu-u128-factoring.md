@@ -15,3 +15,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Final scope: factor_u128, is_prime_u128 and a u64 factor wrapper are implemented with runnable examples. The API reports an unsplit cofactor instead of claiming complete factorization. Remaining work is the C p-1/SQUFOF/ECM dispatcher, Mont <<cut 66 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 42 bytes)
+Final focused run: both compatibility tests and both property tests pass, including all 448 factor rows, u64 agreement, reconstruction and concurrent repeat calls. Unit arithmetic/splitter tests also pass. Final gate remains blocked by exis <<cut 109 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 84 bytes)
+Final gate also exposed Criterion-generated missing_docs in the new benchmark; applied the same benchmark-only allowance as benches/int.rs. Count-module lint failures remain outside scope.

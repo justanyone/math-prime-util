@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 //! Benchmarks for the u128 factor paths.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{factor_u128, is_prime_u128};

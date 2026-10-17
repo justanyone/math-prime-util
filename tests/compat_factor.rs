@@ -25,7 +25,7 @@ fn factor_oracle() {
             .map(ToString::to_string)
             .collect::<Vec<_>>()
             .join(" ");
-        case.check(Some(result));
+        case.check((!result.is_empty()).then_some(result));
         for p in factors {
             if p > 1 {
                 assert_ne!(is_prime_u128(p), 0);

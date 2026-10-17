@@ -113,7 +113,7 @@ fn lucas(n: u128) -> bool {
     let d = (n + 1) >> s;
     let mut u = 1;
     let mut v = p;
-    for bit in (0..127 - d.leading_zeros()).rev() {
+    for bit in (0..d.ilog2()).rev() {
         u = mul(u, v, n);
         v = sub(mul(v, v, n), 2, n);
         if d & (1u128 << bit) != 0 {
@@ -308,7 +308,7 @@ mod tests {
         assert!(miller_rabin(2047));
         assert!(!lucas(2047));
         assert!(!lucas(10009u128.pow(2)));
-        for n in [10007, 10009, 65537, 104729] {
+        for n in [10007, 10009, 65537, 104_729] {
             assert!(lucas(n));
         }
     }

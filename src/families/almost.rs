@@ -391,13 +391,13 @@ fn bounds(k: u32, n: u64) -> (u64, u64) {
         );
     }
     let x = n as f64;
-    if x < 3.0 * 2f64.powi(k as i32 - 1) {
+    if x < 3.0 * 2f64.powf(f64::from(k) - 1.0) {
         return (1, 1);
     }
-    if x < 9.0 * 2f64.powi(k as i32 - 2) {
+    if x < 9.0 * 2f64.powf(f64::from(k) - 2.0) {
         return (2, 2);
     }
-    if x < 10.0 * 2f64.powi(k as i32 - 2) {
+    if x < 10.0 * 2f64.powf(f64::from(k) - 2.0) {
         return (3, 3);
     }
     let max = MAX_COUNTS[k as usize];
@@ -526,13 +526,13 @@ pub fn almost_prime_count_approx(k: u32, n: u64) -> u64 {
         return n;
     }
     let x = n as f64;
-    if x < 3.0 * 2f64.powi(k as i32 - 1) {
+    if x < 3.0 * 2f64.powf(f64::from(k) - 1.0) {
         return 1;
     }
-    if x < 9.0 * 2f64.powi(k as i32 - 2) {
+    if x < 9.0 * 2f64.powf(f64::from(k) - 2.0) {
         return 2;
     }
-    if x < 10.0 * 2f64.powi(k as i32 - 2) {
+    if x < 10.0 * 2f64.powf(f64::from(k) - 2.0) {
         return 3;
     }
     if k == 3 && n < 102 {

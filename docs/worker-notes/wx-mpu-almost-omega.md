@@ -10,3 +10,9 @@ Implemented exact recursive counts, ordered almost-prime construction, omega fac
 All twelve public functions and fixture adapters are now written; focused offline compatibility tests are running. Bounds reuse existing prime-bound helpers.
 
 Added algebraic rank/count/range tests, repeated and concurrent calls, native boundary tests, and Criterion benchmarks. Compatibility and gate jobs are in progress.
+
+The first gate reached clippy and flagged C coefficient formatting and bounded numeric casts. Preserved C constants with narrow lint allowances and replaced wrapping casts.
+
+About five minutes remain in the session budget. Focused almost-prime tests and property tests are running; the second gate checks the lint fixes.
+
+Property suite passed: 9 tests, including existing family properties. Fixed benchmark semicolon lints; native oracle comparison is still running.

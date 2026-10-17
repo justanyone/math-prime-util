@@ -61,7 +61,10 @@ pub fn moebius_range(lo: u64, hi: u64) -> Vec<i8> {
     let mut mu = vec![0_u8; len];
     let (mut logp, mut nextlog) = (1_u8, 3_u64);
     let root = sqrtint(hi);
-    for p in crate::sieve::primes(2, root + u64::from(root * root != hi)) {
+    for p in crate::sieve::primes(
+        2,
+        root + u64::from(root * root != hi && root < u64::from(u32::MAX)),
+    ) {
         if p > nextlog {
             logp += 2;
             nextlog = (nextlog - 1) * 4 + 1;
@@ -93,4 +96,3 @@ pub fn moebius_range(lo: u64, hi: u64) -> Vec<i8> {
         })
         .collect()
 }
-

@@ -9,7 +9,9 @@ pub fn euler_phi(n: u64) -> u64 {
     if n == 0 {
         return 0;
     }
-    factors(n).into_iter().fold(1, |v, (p, e)| v * (p - 1) * p.pow(e - 1))
+    factors(n)
+        .into_iter()
+        .fold(1, |v, (p, e)| v * (p - 1) * p.pow(e - 1))
 }
 
 /// Return totients on an inclusive interval. Port of `totients.c::range_totient`.
@@ -100,8 +102,8 @@ fn sieve_chunk(lo: u64, hi: u64) -> Vec<u64> {
         if offset > hi - lo {
             continue;
         }
-        for i in (usize::try_from(offset).unwrap()..values.len())
-            .step_by(usize::try_from(p).unwrap())
+        for i in
+            (usize::try_from(offset).unwrap()..values.len()).step_by(usize::try_from(p).unwrap())
         {
             values[i] = values[i] / p * (p - 1);
             while rem[i] % p == 0 {
@@ -131,9 +133,12 @@ mod tests {
     fn reference_sieve_thresholds() {
         assert!(full_sieve(9_999_999, 0));
         for (root, width) in [
-            (10_000_000, 900), (35_000_000, 1700),
-            (100_000_000, 3400), (350_000_000, 5500),
-            (1_000_000_000, 17000), (3_500_000_000, 19000),
+            (10_000_000, 900),
+            (35_000_000, 1700),
+            (100_000_000, 3400),
+            (350_000_000, 5500),
+            (1_000_000_000, 17000),
+            (3_500_000_000, 19000),
         ] {
             assert!(!full_sieve(root, width));
             assert!(full_sieve(root, width + 1));

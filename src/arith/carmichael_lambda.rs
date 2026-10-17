@@ -15,10 +15,13 @@ pub fn carmichael_lambda(mut n: u64) -> u64 {
     }
     let twos = n.trailing_zeros();
     n >>= twos;
-    let initial = if twos == 0 { 1 } else { 1 << (twos - 1 - u32::from(twos > 2)) };
+    let initial = if twos == 0 {
+        1
+    } else {
+        1 << (twos - 1 - u32::from(twos > 2))
+    };
     factors(n).into_iter().fold(initial, |v, (p, e)| {
         let term = p.pow(e - 1) * (p - 1);
         v / gcd(v, term) * term
     })
 }
-

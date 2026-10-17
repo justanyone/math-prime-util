@@ -6,3 +6,5 @@ STATUS.md, tools, and fixture files will remain unchanged as required by the tas
 Existing definitions confirmed; moving the four implementations and checking C fast paths next.
 
 Moved the four functions. Restored C totient tables, sieve thresholds, chunks, and lambda fast paths.
+
+Added range, overflow, identity, and concurrency regressions; focused tests are running.

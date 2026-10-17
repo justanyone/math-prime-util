@@ -40,7 +40,7 @@ fn sieve(k: u64, lo: u64, hi: u64) -> Vec<u64> {
     let mut result = Vec::new();
     let mut start = lo;
     loop {
-        let end = start.saturating_add(262143).min(hi);
+        let end = start.saturating_add(262_143).min(hi);
         let mut products: Vec<u64> = (start..=end).map(|n| 1_u64 << n.trailing_zeros()).collect();
         let mut counts: Vec<u64> = (start..=end)
             .map(|n| u64::from(n.trailing_zeros()))

@@ -9,3 +9,6 @@ Added fit-boundary and high-window checks, including forced powers of two and wi
 The first offline build is still running; gate is queued on Cargo's build lock. Tests now cover C fit transitions, native maxima, small ranges, and two sieve windows.
 No test result yet: tools/test.sh emits only the final log tail, so build progress is hidden. No network, fixture changes, or changes to readonly paths were needed.
 Waiting for the initial offline dependency build. Replaced quotient rounding with Rust div_ceil and documented the inherited semiprime range panic.
+Exact-count and range oracle tests pass. Approx/lower each fail on k=1,n=u64::MAX because existing prime_count_approx/lower use f64 instead of C long double. Gate found one literal-format lint, now fixed; unsigned oracle cases remain unskip <<cut 4 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -19 bytes)

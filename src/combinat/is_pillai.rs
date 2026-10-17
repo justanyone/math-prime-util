@@ -16,8 +16,12 @@ pub fn is_pillai(n: u64) -> u64 {
         if fac == 0 {
             break;
         }
-        fac = u64::try_from(u128::from(fac) * u128::from(v) % u128::from(n))
-            .unwrap_or_else(|_| unreachable!("remainder fits u64"));
+        fac = if n < 1_u64 << 32 {
+            fac * v % n
+        } else {
+            u64::try_from(u128::from(fac) * u128::from(v) % u128::from(n))
+                .unwrap_or_else(|_| unreachable!("remainder fits u64"))
+        };
         if fac == n - 1 && n % v != 1 {
             return v;
         }

@@ -47,7 +47,12 @@ fn digit_power_sum(mut n: u64, base: u32, exponent: u32) -> u64 {
     let mut sum = 0;
     while n != 0 {
         let digit = n % base;
-        sum += digit.pow(exponent);
+        sum += match exponent {
+            0 => 1,
+            1 => digit,
+            2 => digit * digit,
+            _ => digit.pow(exponent),
+        };
         n /= base;
     }
     // At most 64 digits, each at most 35^10, so the sum fits u64.

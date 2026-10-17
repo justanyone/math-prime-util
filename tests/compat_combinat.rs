@@ -7,7 +7,7 @@ use math_prime_util::{hclassno, is_happy, is_pillai, numtoperm};
 #[test]
 fn is_pillai_oracle() {
     each("combinat", "is_pillai", |c| {
-        c.check(Some(is_pillai(c.arg(0))))
+        c.check(Some(is_pillai(c.arg(0))));
     });
 }
 

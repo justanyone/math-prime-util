@@ -5,3 +5,5 @@ Run focused offline tests, the status generator, and the gate; record blockers h
 Reference inspection: all six names occur only in reference/mpu/TODO, not Util.pm, PP.pm, or C. Implement a checked u64 API and record the missing oracle as a verification blocker.
 Implemented six separate modules. High set/flip bits return None; clear/test use zero extension; scan0 can return positions beyond 63. These bounds are explicit Rust choices because MPU has no implementation.
 Added 4,000-case property laws and Criterion benchmark source. Status generator changed exactly six ticks. Focused unit and property checks are running offline.
+Focused checks passed: six unit tests and four property tests (4,000 cases each). The generated checklist is current. Gate running; no reference implementation exists for C citations or MPU compatibility checks.
+Gate found benchmark semicolon style and Criterion macro missing-docs warnings. Fixed the benchmark in the existing repository style; rerun gate next.

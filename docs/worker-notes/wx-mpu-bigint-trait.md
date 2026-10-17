@@ -9,3 +9,4 @@ Focused tests and gate are running offline. The optional backend remains blocked
 Focused tests exposed sieve fixtures with native overflow and alternate primality-status conventions. Keep sieve replay limited to next_prime and compare its bounded native result; clippy also requires must_use on gcd.
 All 11 new focused tests passed. Preserved the pre-existing primality tests and benchmarks by adding the generic cases alongside them; rerunning the gate after the must_use fix.
 Gate found benchmark style warnings after registering the existing primality benchmark. Fixed explicit imports and statement semicolons; the focused generic tests remain green.
+Formatting, pedantic clippy, and the Rust 1.85 build pass. The gate is now running the full suite; no separate coverage run has been performed.

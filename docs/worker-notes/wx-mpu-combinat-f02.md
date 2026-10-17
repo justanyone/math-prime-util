@@ -9,3 +9,4 @@ Added oracle tests with explicit signed/bigint input skips, algebraic properties
 Focused tests are compiling offline. The implementation has no global cache or shared mutable state; concurrent repeated boundary calls check independence.
 Focused offline tests passed: four oracle tests and seven property/boundary/concurrency tests. Running the required gate next.
 The gate found four clippy semicolon formatting errors in test/benchmark closures. Added the required semicolons and rerun the gate.
+The gate passed all stages and printed == gate: green, including pedantic clippy, MSRV 1.85 build, tests, runnable examples, and docs. Running the final whole-suite tools/test.sh invocation.

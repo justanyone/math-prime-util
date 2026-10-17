@@ -14,11 +14,7 @@ use super::is_carmichael::prime_factors;
 /// ```
 #[must_use]
 pub fn factor(n: u64) -> Vec<u64> {
-    if n == 0 {
-        vec![0]
-    } else {
-        prime_factors(n)
-    }
+    if n == 0 { vec![0] } else { prime_factors(n) }
 }
 
 /// Return the prime-power factorization of `n` as `(prime, exponent)` pairs.

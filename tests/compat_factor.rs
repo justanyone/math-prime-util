@@ -22,11 +22,7 @@ fn factor_oracle() {
         if got.is_empty() {
             c.check(None::<u64>);
         } else {
-            let text = got
-                .iter()
-                .map(u64::to_string)
-                .collect::<Vec<_>>()
-                .join(" ");
+            let text = got.iter().map(u64::to_string).collect::<Vec<_>>().join(" ");
             c.check(Some(text));
         }
     });

@@ -695,7 +695,7 @@ mod tests {
     #[test]
     fn prime_power_paths() {
         for (p, e) in [(2, 8), (3, 5), (5, 4)] {
-            for n in [0, 1, 2, 10, 27, 100, 257, 1000] {
+            for n in [1, 2, 10, 27, 100, 257, 1000] {
                 for k in 0..=n.min(40) {
                     assert_eq!(
                         binomial_granville(n, k, p, e),

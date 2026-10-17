@@ -19,13 +19,13 @@ fn znlog_oracle() {
 #[test]
 fn factorialmod_oracle() {
     native_cases("factorialmod", |c| {
-        c.check(factorialmod(c.arg(0), c.arg(1)))
+        c.check(factorialmod(c.arg(0), c.arg(1)));
     });
 }
 #[test]
 fn binomialmod_oracle() {
     native_cases("binomialmod", |c| {
-        c.check(binomialmod(c.arg(0), c.arg(1), c.arg(2)))
+        c.check(binomialmod(c.arg(0), c.arg(1), c.arg(2)));
     });
 }
 #[test]

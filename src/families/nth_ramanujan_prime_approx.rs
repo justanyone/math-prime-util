@@ -154,7 +154,10 @@ pub fn nth_ramanujan_prime_approx(n: u64) -> Option<u64> {
     if n <= 23 {
         return Some(SMALL[(n - 1) as usize]);
     }
-    let lo = super::nth_ramanujan_prime_lower(n)? - 1;
+    let lo = super::nth_ramanujan_prime_lower(n)?.checked_sub(1)?;
     let hi = super::nth_ramanujan_prime::upper(n);
+    if hi == 0 {
+        return None;
+    }
     Some(inverse(lo, hi, n, count_approx))
 }

@@ -63,8 +63,12 @@ pub fn nth_ramanujan_prime(n: u64) -> Option<u64> {
     if n <= 23 {
         return Some(SMALL[usize::try_from(n - 1).expect("small index")]);
     }
-    let mut low = super::nth_ramanujan_prime_lower(n)? - 1;
-    let high = upper(n).checked_add(1)?;
+    let mut low = super::nth_ramanujan_prime_lower(n)?.checked_sub(1)?;
+    let bound = upper(n);
+    if bound == 0 {
+        return None;
+    }
+    let high = bound.checked_add(1)?;
     low = low.max(15);
     if low % 2 == 0 {
         low -= 1;

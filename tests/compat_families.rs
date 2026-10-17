@@ -6,24 +6,24 @@ use math_prime_util::*;
 #[test]
 fn nth_ramanujan_prime_oracle() {
     each("families", "nth_ramanujan_prime", |c| {
-        c.check(nth_ramanujan_prime(c.arg(0)))
+        c.check(nth_ramanujan_prime(c.arg(0)));
     });
 }
 #[test]
 fn nth_ramanujan_prime_lower_oracle() {
     each("families", "nth_ramanujan_prime_lower", |c| {
-        c.check(nth_ramanujan_prime_lower(c.arg(0)))
+        c.check(nth_ramanujan_prime_lower(c.arg(0)));
     });
 }
 #[test]
 fn nth_ramanujan_prime_approx_oracle() {
     each("families", "nth_ramanujan_prime_approx", |c| {
-        c.check(nth_ramanujan_prime_approx(c.arg(0)))
+        c.check(nth_ramanujan_prime_approx(c.arg(0)));
     });
 }
 #[test]
 fn ramanujan_prime_count_upper_oracle() {
     each("families", "ramanujan_prime_count_upper", |c| {
-        c.check(Some(ramanujan_prime_count_upper(c.arg(0))))
+        c.check(Some(ramanujan_prime_count_upper(c.arg(0))));
     });
 }

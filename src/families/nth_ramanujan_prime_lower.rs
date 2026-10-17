@@ -71,8 +71,10 @@ pub(super) fn count_upper(n: u64) -> u64 {
             0.021
         };
         logarithmic_integral(x) - a * l * x.sqrt() / (8.0 * std::f64::consts::PI)
-    } else {
+    } else if n > 10_000_000_000_000_000 {
         extended_li(n)
+    } else {
+        logarithmic_integral(x)
     };
     upper.floor() as u64
 }
@@ -94,7 +96,7 @@ pub(super) fn count_lower(n: u64) -> u64 {
             176_000..299_270 => 839.46,
             _ => 846.66,
         };
-        x / (l - 1.0 - 1.0 / l - 2.975_666 / l2 - 13.24_334 / (l * l2) + a / (l2 * l2))
+        x / (l - 1.0 - 1.0 / l - 2.975_666 / l2 - 13.024_334 / (l * l2) + a / (l2 * l2))
     } else if n < 4_000_000_000 {
         let a = match n {
             0..88_783 => 4.0,
@@ -148,7 +150,7 @@ pub(super) fn prime_bound(n: u64, upper: bool) -> u64 {
         let b = if n < 56_000_000 {
             11.200
         } else {
-            11.50_800_000_002
+            11.508_000_000_02
         };
         return (x * (l + ll - 1.0 + (ll - 2.0) / l - (ll * ll - 6.0 * ll + b) / (2.0 * l * l)))
             .ceil() as u64;
@@ -224,7 +226,8 @@ pub fn nth_ramanujan_prime_lower(n: u64) -> Option<u64> {
             },
         )
     };
-    Some(prime_bound(axler(n, c, d), false))
+    let bound = prime_bound(axler(n, c, d), false);
+    (bound != 0).then_some(bound)
 }
 
 #[cfg(test)]

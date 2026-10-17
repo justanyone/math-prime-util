@@ -8,3 +8,5 @@ All four functions and compat/property tests are written. Focused offline tests 
 Added threshold tests for the C parameter tables, prime-bound overflow sentinels, and count-bound regions.
 First focused build found a u8 primality predicate in the test; corrected it. Clippy numeric-table formatting and checked indices are corrected.
 All nth-function oracle cases pass. The max-u64 count case exposed f64 Li error; replacing that private path with compensated extended precision.
+The private extended-precision Ei series now matches MPU Li rounding at u64::MAX. Threshold unit tests pass. Fixed numeric formatting before the final gate.
+All four compat tests and both property tests pass, including max-u64 count rounding. Added unrepresentable-index checks; no fixture skips.

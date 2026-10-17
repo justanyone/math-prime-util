@@ -21,6 +21,9 @@ fn zero_and_repeat_calls() {
     assert_eq!(nth_ramanujan_prime_lower(0), None);
     assert_eq!(nth_ramanujan_prime_approx(0), None);
     assert_eq!(ramanujan_prime_count_upper(0), 0);
+    assert_eq!(nth_ramanujan_prime(u64::MAX), None);
+    assert_eq!(nth_ramanujan_prime_lower(u64::MAX), None);
+    assert_eq!(nth_ramanujan_prime_approx(u64::MAX), None);
     let handles: Vec<_> = (0..4)
         .map(|_| std::thread::spawn(|| nth_ramanujan_prime(100)))
         .collect();

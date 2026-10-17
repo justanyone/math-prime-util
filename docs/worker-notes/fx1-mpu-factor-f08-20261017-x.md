@@ -1,4 +1,0 @@
-- start: reading review note; plan: fix each Open finding with a failing-then-passing test
-- rough_count: fixed count to 10, cited C legendre_phi.c, added x<=p and zero-bound early exit + tests
-- squarefree_kernel: overflow-safe loop bound + native-width test; factorint port declined (not in crate)
-- final: rough_count (findings 1,2,4) and squarefree_kernel overflow (3) edited; lib tests pass; factorint port declined; rustfmt/cargo fmt check blocked by permission, not run; doc examples not verified

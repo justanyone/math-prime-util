@@ -31,7 +31,7 @@ Each line is ticked, with its date, by the milestone row of the build board when
 The phases are described in `PLAN.md` section 6.
 
 - [x] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration) (done 2026-10-17)
-- [ ] Milestone 2: factoring and number theory ported and benchmarked against Perl
+- [x] Milestone 2: factoring and number theory ported and benchmarked against Perl (done 2026-10-17)
 - [ ] Release 0.1.0 published on crates.io
 - [ ] Milestone 3: prime counting, nth prime and prime sums ported
 - [ ] Milestone 4: prime families ported

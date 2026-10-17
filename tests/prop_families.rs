@@ -19,7 +19,7 @@ proptest! {
     fn increments_are_prime_powers(n in 2_u64..10_000) {
         let is_power = (1..=n.ilog2()).any(|k| {
             let r = rootint(n, k);
-            r.checked_pow(k) == Some(n) && is_prime(r)
+            r.checked_pow(k) == Some(n) && is_prime(r) != 0
         });
         prop_assert_eq!(prime_power_count(n) - prime_power_count(n - 1), u64::from(is_power));
     }

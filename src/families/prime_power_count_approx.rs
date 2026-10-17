@@ -19,7 +19,11 @@ pub fn prime_power_count_approx(n: u64) -> u64 {
 }
 
 // MPU prime_counts.c, prime_count_approx. Keep its 1e-6 stopping tolerance.
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 fn count(n: u64) -> u64 {
     if n < 3_000_000 {
         return crate::prime_count(n);

@@ -19,7 +19,11 @@ pub fn prime_power_count_lower(n: u64) -> u64 {
 }
 
 // MPU prime_counts.c, prime_count_lower, including the empirical thresholds.
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 fn count(n: u64) -> u64 {
     if n < 33_000 {
         return crate::prime_count(n);
@@ -36,7 +40,7 @@ fn count(n: u64) -> u64 {
             176_000..299_270 => 839.46,
             _ => 846.66,
         };
-        x / (l - 1.0 - 1.0/l - 2.975_666/l2 - 13.024_334/(l*l2) + a/(l2*l2))
+        x / (l - 1.0 - 1.0 / l - 2.975_666 / l2 - 13.024_334 / (l * l2) + a / (l2 * l2))
     } else if n < 4_000_000_000 {
         let a = match n {
             0..88_783 => 4.0,
@@ -49,9 +53,9 @@ fn count(n: u64) -> u64 {
             36_900_000..38_100_000 => -29.0,
             _ => -84.0,
         };
-        crate::logarithmic_integral(x) - x.sqrt()/l * (1.94 + 2.50/l + a/l2)
+        crate::logarithmic_integral(x) - x.sqrt() / l * (1.94 + 2.50 / l + a / l2)
     } else {
-        crate::logarithmic_integral(x) - 2.0*x.sqrt()/l
+        crate::logarithmic_integral(x) - 2.0 * x.sqrt() / l
     };
     lower.ceil() as u64
 }

@@ -207,3 +207,36 @@ fn is_delicate_prime_oracle() {
         }
     });
 }
+
+#[test]
+fn verify_prime_native_bls15() {
+    // MPU PrimalityProving.pm::_verify_bls15, with the Fibonacci pair.
+    let header = "[MPU - Primality Certificate]\nVersion 1.0\nProof for:\nN 13\n";
+    let proof = "Type BLS15\nN 13\nQ 7\nLP 1\nLQ -1\n";
+    assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(true));
+    for proof in [
+        "Type BLS15\nN 13\nQ 2\nLP 1\nLQ -1",
+        "Type BLS15\nN 13\nQ 5\nLP 1\nLQ -1",
+        "Type BLS15\nN 13\nQ 7\nLP 2\nLQ 1",
+        "Type BLS15\nN 13\nQ 7\nLP 1\nLQ 1",
+    ] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    }
+    assert!(verify_prime(&format!("{header}Type BLS15\nN 13\nQ 7\nLP 1")).is_err());
+}
+
+#[test]
+fn verify_prime_field_validation() {
+    let header = "[MPU - Primality Certificate]\nProof for:\nn\t101\n";
+    assert_eq!(verify_prime(&format!("{header}Type Small\nn 101")), Ok(true));
+    let header = "[MPU - Primality Certificate]\nProof for:\nN 101\n";
+    // MPU requires Q indices to arrive in order, even when all values are valid.
+    for proof in [
+        "Type BLS5\nN 101\nQ[2] 5\nQ[1] 2\n----",
+        "Type Lucas\nN 101\nQ[2] 5\nQ[1] 2\nA 2",
+        "Type BLS5\nN 101\nA[1] 2\nQ[1] 5\n----",
+        "Type BLS5\nN 101\nQ[1] -5\n----",
+    ] {
+        assert!(verify_prime(&format!("{header}{proof}")).is_err(), "{proof}");
+    }
+}

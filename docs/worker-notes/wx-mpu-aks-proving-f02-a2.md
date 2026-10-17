@@ -3,3 +3,4 @@ I will reuse the merged arithmetic dependencies and keep changes in the proving 
 I will add regression tests for parsing, proof validation, and independent repeated calls.
 I will run focused offline tests and the required gate. The launcher owns commits.
 Compared the existing parser with MPU; found missing target/proof linkage and am checking native proof types before adding regressions.
+Added failing regressions for BLS15, signed parameters, case-insensitive fields, and out-of-order factor indices; focused tests are running.

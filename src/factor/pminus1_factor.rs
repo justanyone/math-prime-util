@@ -71,7 +71,9 @@ fn pminus1(n: u64, b1: u64, b2: u64) -> Vec<u64> {
         for (i, p) in primes_in(q + 1..=b2).enumerate() {
             let gap = p - q;
             q = p;
-            let index = usize::try_from(gap / 2).unwrap_or(usize::MAX).wrapping_sub(1);
+            let index = usize::try_from(gap / 2)
+                .unwrap_or(usize::MAX)
+                .wrapping_sub(1);
             let diff = if gap % 2 != 0 || index >= cache.len() {
                 power(bm, gap, n)
             } else {

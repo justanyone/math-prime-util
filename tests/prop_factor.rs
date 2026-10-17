@@ -3,9 +3,12 @@ use math_prime_util::{pbrent_factor, pminus1_factor, pplus1_factor, prho_factor}
 use proptest::prelude::*;
 
 fn methods(n: u64, bound: u64) -> [Vec<u64>; 4] {
-    [prho_factor(n, Some(bound)), pbrent_factor(n, Some(bound), None),
-     pminus1_factor(n, Some(bound), Some(bound.saturating_mul(10))),
-     pplus1_factor(n, Some(bound))]
+    [
+        prho_factor(n, Some(bound)),
+        pbrent_factor(n, Some(bound), None),
+        pminus1_factor(n, Some(bound), Some(bound.saturating_mul(10))),
+        pplus1_factor(n, Some(bound)),
+    ]
 }
 
 proptest! {
@@ -26,7 +29,10 @@ fn edge_inputs_and_zero_work() {
         let first = methods(n, 0);
         assert_eq!(first, methods(n, 0));
         for factors in first {
-            assert_eq!(factors.iter().map(|&f| u128::from(f)).product::<u128>(), u128::from(n));
+            assert_eq!(
+                factors.iter().map(|&f| u128::from(f)).product::<u128>(),
+                u128::from(n)
+            );
         }
     }
     assert_eq!(prho_factor(77, Some(0)), vec![77]);

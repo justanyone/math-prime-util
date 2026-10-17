@@ -1,4 +1,4 @@
-use super::prho_factor::{add, dispatch, multiply, split};
+use super::prho_factor::{dispatch, multiply, split};
 use crate::{gcd, primes_in, sqrtint};
 
 /// Splits `n` with Williams p+1 and two Lucas seeds.
@@ -64,6 +64,5 @@ fn pplus1(n: u64, bound: u64) -> Vec<u64> {
             }
         }
     }
-    // Keep all arithmetic local; there is no shared random or mutable state.
-    split(n, add(f, 0, n).max(f))
+    split(n, f)
 }

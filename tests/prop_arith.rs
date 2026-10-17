@@ -194,7 +194,6 @@ proptest! {
 
 proptest! {
     #[test]
-<<<<<<< HEAD
     fn totient_range_sieves(lo in 0_u64..10_000, width in 0_u64..300) {
         let hi = lo + width;
         prop_assert_eq!(euler_phi_range(lo, hi), (lo..=hi).map(euler_phi).collect::<Vec<_>>());
@@ -213,7 +212,9 @@ proptest! {
         if gcd(a, n) == 1 {
             prop_assert_eq!(powmod(a, carmichael_lambda(n), n), Some(1));
         }
-=======
+    }
+
+    #[test]
     fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
         prop_assert_eq!(sopfr(a * b), sopfr(a) + sopfr(b));
         if gcd(a, b) == 1 {
@@ -236,12 +237,10 @@ proptest! {
     #[test]
     fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
         prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn totient_native_boundaries() {
     assert_eq!(jordan_totient(64, 2), Some(u64::MAX));
     assert_eq!(jordan_totient(65, 2), None);
@@ -299,7 +298,16 @@ fn totient_calls_are_independent() {
                     );
                     assert_eq!(jordan_totient(3, 12), Some(1456));
                     assert_eq!(carmichael_lambda(360), 12);
-=======
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+#[test]
 fn divisor_sums_native_edges() {
     for (n, repeated, distinct) in [
         (0, 0, 0),
@@ -365,7 +373,6 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
                     assert_eq!(chinese(&inputs), Some(17));
                     assert_eq!(inputs, [(5, 12), (17, 18), (5, 12)]);
                     assert_eq!(kronecker(-7, 19), -1);
->>>>>>> origin/dev-001
                 }
             })
         })
@@ -374,12 +381,9 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
         thread.join().unwrap();
     }
 }
-<<<<<<< HEAD
 
 #[test]
 #[should_panic(expected = "invalid or oversized range")]
 fn oversized_totient_range() {
     euler_phi_range(0, u64::MAX);
 }
-=======
->>>>>>> origin/dev-001

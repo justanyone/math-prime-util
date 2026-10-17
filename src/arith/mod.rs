@@ -1,7 +1,6 @@
 //! Totients and multiplicative arithmetic from MPU 0.75.
 //! Divisor sums, discriminants, and arithmetic in residue rings.
 
-<<<<<<< HEAD
 mod euler_phi;
 pub use euler_phi::{euler_phi, euler_phi_range};
 mod jordan_totient;
@@ -10,7 +9,6 @@ mod carmichael_lambda;
 pub use carmichael_lambda::carmichael_lambda;
 mod moebius;
 pub use moebius::{moebius, moebius_range};
-=======
 mod sopfr;
 pub use sopfr::sopfr;
 mod sopf;
@@ -19,7 +17,6 @@ mod kronecker;
 pub use kronecker::kronecker;
 mod chinese;
 pub use chinese::chinese;
->>>>>>> origin/dev-001
 
 use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
 use std::collections::HashMap;

@@ -169,15 +169,31 @@ fn check(name: &str) {
                 };
                 match name {
                     "forsemiprimes" => joined(semiprimes_in(range), " "),
-                    "foralmostprimes" => joined(almost_primes_in(k, range), " "),
-                    "forfactored" => {
-                        joined(factored_in(range).map(|(n, f)| format_factored(n, &f)), " ")
+                    "foralmostprimes" | "forfactored" | "forsquarefree" | "forsquarefreeint" => {
+                        let mut values = Vec::new();
+                        let mut save = |v| {
+                            values.push(v);
+                            if values.len() == 2000 {
+                                std::ops::ControlFlow::Break(())
+                            } else {
+                                std::ops::ControlFlow::Continue(())
+                            }
+                        };
+                        let _ = match name {
+                            "foralmostprimes" => {
+                                math_prime_util::foralmostprimes(k, range, |n| save(n.to_string()))
+                            }
+                            "forfactored" => math_prime_util::forfactored(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            "forsquarefree" => math_prime_util::forsquarefree(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            _ => math_prime_util::forsquarefreeint(range, |n| save(n.to_string())),
+                        };
+                        values.join(" ")
                     }
-                    "forsquarefree" => joined(
-                        squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
-                        " ",
-                    ),
-                    _ => joined(squarefree_in(range).map(|(n, _)| n), " "),
+                    _ => unreachable!(),
                 }
             }
             "fordivisors" => {

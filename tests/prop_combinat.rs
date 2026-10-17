@@ -64,6 +64,9 @@ fn complexity_matches_exhaustive_recurrence() {
                 exact[n] = exact[n].min(exact[a] + exact[n / a]);
             }
         }
-        assert_eq!(integer_complexity(u64::try_from(n).unwrap()), exact[n]);
+        assert_eq!(
+            integer_complexity(u64::try_from(n).unwrap()),
+            Some(exact[n])
+        );
     }
 }

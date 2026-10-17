@@ -9,13 +9,16 @@ static CACHE: Mutex<Vec<u8>> = Mutex::new(Vec::new());
 ///
 /// # Panics
 ///
-/// Panics if `n` is `u64::MAX`, or the cache size exceeds the address space.
+/// Panics if `n` exceeds `i64::MAX`, or the cache size exceeds the address space.
 ///
 /// ```
 /// assert_eq!(math_prime_util::integer_complexity(12), Some(7));
 /// ```
 pub fn integer_complexity(n: u64) -> Option<u64> {
-    assert!(n != u64::MAX, "integer_complexity: input too large");
+    assert!(
+        i64::try_from(n).is_ok(),
+        "integer_complexity: input too large"
+    );
     let index = usize::try_from(n).expect("integer_complexity: input too large");
     // Recovering the guard also permits a reset after an allocation panic.
     let mut cache = CACHE

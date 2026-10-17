@@ -161,14 +161,16 @@ fn check(name: &str) {
                             }
                         };
                         let _ = match name {
-                            "foralmostprimes" => foralmostprimes(k, range, |n| save(n.to_string())),
-                            "forfactored" => {
-                                forfactored(range, |n, f| save(format_factored(n, &f)))
+                            "foralmostprimes" => {
+                                math_prime_util::foralmostprimes(k, range, |n| save(n.to_string()))
                             }
-                            "forsquarefree" => {
-                                forsquarefree(range, |n, f| save(format_factored(n, &f)))
-                            }
-                            _ => forsquarefreeint(range, |n| save(n.to_string())),
+                            "forfactored" => math_prime_util::forfactored(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            "forsquarefree" => math_prime_util::forsquarefree(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            _ => math_prime_util::forsquarefreeint(range, |n| save(n.to_string())),
                         };
                         values.join(" ")
                     }

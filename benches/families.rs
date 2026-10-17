@@ -18,6 +18,26 @@ fn bench_families(c: &mut Criterion) {
     c.bench_function("prev_prime_power", |b| {
         b.iter(|| prev_prime_power(black_box(1_000_000)));
     });
+    for (name, f) in [
+        (
+            "nth_prime_power",
+            math_prime_util::nth_prime_power as fn(u64) -> Option<u64>,
+        ),
+        (
+            "nth_prime_power_approx",
+            math_prime_util::nth_prime_power_approx,
+        ),
+        (
+            "nth_prime_power_lower",
+            math_prime_util::nth_prime_power_lower,
+        ),
+        (
+            "nth_prime_power_upper",
+            math_prime_util::nth_prime_power_upper,
+        ),
+    ] {
+        c.bench_function(name, |b| b.iter(|| f(black_box(100_000))));
+    }
     c.bench_function("lucky_numbers", |b| {
         b.iter(|| lucky_numbers(0, black_box(1_000_000)));
     });

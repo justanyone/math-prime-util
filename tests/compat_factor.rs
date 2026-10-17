@@ -5,11 +5,11 @@ mod common;
 // 18450931744652885087, 36803912137803496523, and 36832540935240707603.
 use common::{Case, each};
 use math_prime_util::{
-    cheb_factor, divisors, factor, factor_exp, fermat_factor, holf_factor, is_almost_prime,
-    is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_quasi_carmichael, is_semiprime,
-    is_square_free, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor,
-    prime_bigomega, prime_omega, prime_signature, rough_count, squarefree_kernel, squfof_factor,
-    trial_factor,
+    cheb_factor, divisors, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
+    is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_prime_u128,
+    is_quasi_carmichael, is_semiprime, is_square_free, lehman_factor, pbrent_factor,
+    pminus1_factor, pplus1_factor, prho_factor, prime_bigomega, prime_omega, prime_signature,
+    rough_count, squarefree_kernel, squfof_factor, trial_factor,
 };
 
 fn check(name: &str, method: impl Fn(u64, Option<u64>) -> Vec<u64>) {
@@ -296,11 +296,90 @@ fn trial_factor_oracle() {
     });
 }
 
+/// The 128-bit semiprimes of MPU `t/50-factoring.t` (subtest "128-bit factoring"):
+/// each stage of `factorintp128` (p-1, SQUFOF, small ECM) and a 128-bit p-1 case.
+/// The fixture family `factor` has no cases above 64 bits.
+const WIDE: [(u128, [u128; 2]); 5] = [
+    (36_803_912_137_803_496_523, [4_284_736_327, 8_589_539_549]),
+    (36_832_540_935_240_707_603, [4_293_801_221, 8_578_073_143]),
+    (
+        595_424_139_679_831_880_741,
+        [17_380_103_011, 34_258_953_431],
+    ),
+    (
+        594_225_194_063_012_351_347,
+        [17_560_455_931, 33_838_824_937],
+    ),
+    (
+        283_587_383_656_828_693_023_910_077_800_818_570_783,
+        [16_647_189_274_036_065_961, 17_035_151_038_928_128_903],
+    ),
+];
+
+#[test]
+fn factor_u128_oracle() {
+    for (n, expect) in WIDE {
+        assert_eq!(factor_u128(n), Ok(expect.to_vec()), "{n}");
+    }
+}
+
+#[test]
+fn is_prime_u128_oracle() {
+    for (n, expect) in WIDE {
+        assert_eq!(is_prime_u128(n), 0, "{n}");
+        for p in expect {
+            assert_ne!(is_prime_u128(p), 0, "{p}");
+        }
+    }
+}
+
+#[test]
+fn u128_paths_agree_with_u64_on_the_fixtures() {
+    each("factor", "factor", |c| {
+        if native(c) {
+            let n = c.arg(0);
+            let wide: Vec<u64> = factor_u128(u128::from(n))
+                .unwrap()
+                .into_iter()
+                .map(|p| u64::try_from(p).unwrap())
+                .collect();
+            assert_eq!(wide, factor(n), "factor({n})");
+            assert_eq!(
+                is_prime_u128(u128::from(n)),
+                math_prime_util::is_prime(n),
+                "{n}"
+            );
+        }
+    });
+}
+
 #[test]
 fn rough_count_oracle() {
     each("factor", "rough_count", |c| {
         c.check(Some(rough_count(c.arg(0), c.arg(1))));
     });
+}
+
+#[test]
+fn factor_u128_ecm_medium() {
+    // "ECM med" and "128-bit" cases of t/50-factoring.t (extra tests there).
+    let cases: [(u128, [u128; 2]); 3] = [
+        (
+            1_089_212_718_153_507_466_819_331,
+            [1_027_240_161_683, 1_060_329_179_857],
+        ),
+        (
+            633_285_935_952_110_634_787_381,
+            [690_039_519_251, 917_753_140_631],
+        ),
+        (
+            202_911_193_152_450_441_348_811_714_985_016_716_279,
+            [13_317_945_721_813_380_433, 15_235_922_821_047_653_063],
+        ),
+    ];
+    for (n, expect) in cases {
+        assert_eq!(factor_u128(n), Ok(expect.to_vec()), "{n}");
+    }
 }
 
 #[test]

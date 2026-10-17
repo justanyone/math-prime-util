@@ -16,3 +16,4 @@ Benchmark target compile check requested while the full offline suite continues;
 Benchmark target compiles successfully offline. Remaining acceptance limits: strict partition equality for the named fixture and a green unmodified repository gate.
 Focused checks are complete; the full-suite command has not returned yet. No further source changes are planned. Oracle partition and baseline lint blockers are documented.
 Final diff whitespace check passed. All task implementation and focused tests are on disk; full-suite result is pending and the normal gate remains blocked outside task scope.
+Full-suite run is still pending; targeted tests, benchmark compile, formatting, and diff whitespace checks pass. Gate MSRV/docs stages cannot run because pre-existing clippy errors stop the script.

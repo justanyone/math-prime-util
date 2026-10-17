@@ -1,6 +1,7 @@
 //! Independent laws for floor sums, prime output, and factor removal.
 use math_prime_util::{floor_sum, is_prime, print_primes, remove_factors, remove_factors_exp};
 use proptest::prelude::*;
+use std::io::Write;
 
 proptest! {
     #[test]
@@ -20,9 +21,11 @@ proptest! {
         let hi = lo + width;
         let mut out = Vec::new();
         print_primes(lo, hi, &mut out).unwrap();
-        let expected: String = (lo..=hi).filter(|&n| is_prime(n) != 0)
-            .map(|p| format!("{p}\n")).collect();
-        prop_assert_eq!(out, expected.as_bytes());
+        let mut expected = Vec::new();
+        for prime in (lo..=hi).filter(|&n| is_prime(n) != 0) {
+            writeln!(expected, "{prime}").unwrap();
+        }
+        prop_assert_eq!(out, expected);
     }
 
     #[test]

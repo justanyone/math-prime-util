@@ -42,7 +42,7 @@ mod tests {
         for (lo, hi) in [(0, 1), (9, 2), (14, 16)] {
             print_primes(lo, hi, &mut out).unwrap();
         }
-        assert!(out.is_empty());
+        assert_eq!(out, [] as [u8; 0]);
         for _ in 0..2 {
             print_primes(0, 7, &mut out).unwrap();
         }
@@ -53,12 +53,12 @@ mod tests {
     fn buffer_boundary() {
         let mut out = Vec::new();
         print_primes(0, 30_000, &mut out).unwrap();
-        let expected: String = crate::primes(0, 30_000)
-            .into_iter()
-            .map(|p| format!("{p}\n"))
-            .collect();
+        let mut expected = Vec::new();
+        for prime in crate::primes(0, 30_000) {
+            writeln!(expected, "{prime}").unwrap();
+        }
         assert!(out.len() > 8000);
-        assert_eq!(out, expected.as_bytes());
+        assert_eq!(out, expected);
     }
 
     struct Fails;

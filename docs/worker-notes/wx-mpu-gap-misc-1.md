@@ -8,3 +8,7 @@ The reference has no Higgs symbol; port the four available functions and documen
 Four functions and their tests are written. Next run focused offline tests and formatting.
 
 Focused compilation found that is_prime returns u8; fixed the property predicate. The status tool ticked only the four implemented functions.
+
+Oracle, four property tests, and six unit tests passed offline. The full gate is running; Higgs remains blocked by its absent reference.
+
+The gate found two pedantic test-style lints. Replaced string collection and empty assertions; rerun the gate next.

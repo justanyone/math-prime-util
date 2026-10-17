@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 //! Benchmarks for the misc gap helpers.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{floor_sum, print_primes, remove_factors, remove_factors_exp};

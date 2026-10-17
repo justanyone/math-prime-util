@@ -111,6 +111,7 @@ fn generate(
     seed: &mut [u8; 64],
     limit: u32,
 ) -> Result<(u64, u32, String), &'static str> {
+    let limit = limit.min(10001 + 16 * bits);
     let top = 1_u64 << (bits - 1);
     if bits <= 32 {
         for counter in 1..=limit {

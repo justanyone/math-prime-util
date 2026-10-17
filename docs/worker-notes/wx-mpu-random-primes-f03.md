@@ -6,3 +6,6 @@ Existing thread-local ChaCha state supplies deterministic draws. No SHA crate ex
 Implemented all four APIs, native tables, MPU certificates, and private SHA-256. XS maps plain native Shawe–Taylor to n-bit sampling; the certificate API uses recursive SHA. Added fixture, algebraic, reseed, thread, invalid-input, and SHA v <<cut 40 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 16 bytes)
+Focused offline tests passed: four compatibility tests and three property/state tests, including all native semiprime fixture rows. Added benchmarks for all four functions. Running the required gate now; STATUS and fixtures remain untouched <<cut 34 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)

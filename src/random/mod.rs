@@ -332,3 +332,20 @@ pub fn urandomr(low: u64, high: u64) -> Option<u64> {
         low + urandomm(width + 1)
     })
 }
+
+mod random_unrestricted_semiprime;
+pub use random_unrestricted_semiprime::random_unrestricted_semiprime;
+mod random_factored_integer;
+pub use random_factored_integer::random_factored_integer;
+mod randperm;
+pub use randperm::randperm;
+mod shuffle;
+pub use shuffle::shuffle;
+mod random_prime;
+pub use random_prime::random_prime;
+mod random_ndigit_prime;
+pub use random_ndigit_prime::random_ndigit_prime;
+mod random_nbit_prime;
+pub use random_nbit_prime::random_nbit_prime;
+mod random_safe_prime;
+pub use random_safe_prime::random_safe_prime;

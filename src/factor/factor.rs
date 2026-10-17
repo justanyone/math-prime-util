@@ -103,11 +103,7 @@ fn dispatcher(n: u64, start: u8) -> Option<u64> {
         }
     }
     let bits = 64 - n.leading_zeros();
-    let extra = if bits <= 45 {
-        0
-    } else {
-        u64::from(bits - 45)
-    };
+    let extra = if bits <= 45 { 0 } else { u64::from(bits - 45) };
     // USE_MONTMATH round schedule in factor_one.
     let rounds = 8_000 + 9_000 * extra;
     if start <= 1 {
@@ -116,8 +112,10 @@ fn dispatcher(n: u64, start: u8) -> Option<u64> {
         }
     }
     if start <= 2 {
-        if let Some(f) = one_factor(n, super::pbrent_factor(n, Some(rounds.saturating_mul(2)), Some(3)))
-        {
+        if let Some(f) = one_factor(
+            n,
+            super::pbrent_factor(n, Some(rounds.saturating_mul(2)), Some(3)),
+        ) {
             return Some(f);
         }
     }

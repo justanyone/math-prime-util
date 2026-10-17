@@ -135,7 +135,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_frobenius_pseudoprime`
 - [ ] `is_frobenius_underwood_pseudoprime`
 - [x] `is_fundamental`
-- [ ] `is_gaussian_prime`
+- [x] `is_gaussian_prime`
 - [ ] `is_happy`
 - [x] `is_harshad`
 - [ ] `is_higgs_prime`
@@ -174,7 +174,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_strong_lucas_pseudoprime`
 - [x] `is_strong_pseudoprime`
 - [x] `is_sumfree_set`
-- [ ] `is_sum_of_squares`
+- [x] `is_sum_of_squares`
 - [x] `is_totient`
 - [x] `jordan_totient`
 - [x] `kronecker`

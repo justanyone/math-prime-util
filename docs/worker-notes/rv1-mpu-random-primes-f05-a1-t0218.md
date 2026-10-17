@@ -5,3 +5,4 @@ Write a concrete PASS/FAIL review; execute allowed checks where useful, recogniz
 Confirmed candidate checklist entries remain unchecked and Miller–Rabin oracle test requires zero fixtures; wrote FAIL review. Next run focused tests and required gate on the base, reporting that limitation.
 Focused name filter matched zero tests; corrected to tools/test.sh tests/compat_random.rs, which passed all 17 base tests. Required gate is running; candidate remains unvalidated because checkout is the base.
 Gate passed formatting, lint, and build and reached base integration tests; awaiting its final result. No implementation changes were made; review remains FAIL for missing acceptance work.
+Review is complete and records FAIL with two Open findings. Base gate has reached count compatibility tests without a final green result; final report will distinguish this from candidate validation.

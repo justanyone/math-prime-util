@@ -9,3 +9,5 @@ Verdict: FAIL
 - tests/prop_random.rs:274 — Validation and stream tests cover deterministic fallback and early composite rejection, but do not replace oracle coverage for odd composites.
 
 No earlier findings were supplied. Review uses the supplied candidate diff and targeted reference reads; the checkout is the base, so local test results cannot establish candidate acceptance.
+
+Validation: `tools/test.sh tests/compat_random.rs` passed 17 tests on the base. `tools/gate.sh` reached integration tests after formatting, clippy, and MSRV build; no green result was available when the review was written. Neither check exercised candidate-only code.

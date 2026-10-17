@@ -68,7 +68,7 @@ impl Iterator for PartitionsOf {
             let out = &self.a[..=self.k];
             if (out.len() as u64) < nmin {
                 // XS.xs::forpart skips the remaining lexical range here.
-                if self.a[0] >= self.n - nmin + 1 && self.a[self.k] > 1 {
+                if self.a[0] > self.n - nmin && self.a[self.k] > 1 {
                     self.done = true;
                     return None;
                 }

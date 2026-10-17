@@ -9,3 +9,4 @@ Composition state now has its own public iterator type; updated the existing fix
 Reviewed the moved code against XS RuleAsc and combination stepping. Existing iter fixtures and generator already cover this family, so neither was changed.
 First focused build found the prime-neighbor API returns Option; mapped missing bounds to an empty range and corrected the port. Re-running offline checks.
 Offline dependency compilation and lock waits continue. No network, tool, fixture, or dependency changes were made.
+Gate found Clippy int_plus_one in the faithful C early-exit condition; used the equivalent strict comparison.

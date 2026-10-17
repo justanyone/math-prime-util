@@ -10,3 +10,4 @@ Fixture and property checks are green; added formula-transition and interpolatio
 Focused unit tests pass across bound formula transitions, interpolation plateaus/jumps, and native limits; the final gate is running.
 The gate passed formatting, strict Clippy, and the Rust 1.85 build; full-suite tests are still running offline. No blocked checks so far.
 - 2026-10-17T06:52:15Z launcher: no commit for 61 s; 274 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f03.md, src/families/mod.rs, src/families/nth_prime_power.rs, src/families/nth_prime_power_approx.rs, src/families/nth_prime_power_lower.rs, src/families/nth_prime_power_upper.rs, tests/compat_families.rs, tests/prop_families.rs.
+The full-suite runs remain in existing prime-count tests; all new focused tests passed, and no code changes are pending.

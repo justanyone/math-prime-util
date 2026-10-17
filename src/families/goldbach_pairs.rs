@@ -15,7 +15,8 @@ pub fn goldbach_pairs(n: u64) -> Vec<u64> {
     let mut pairs = Vec::new();
     visit_pairs(n, |p| pairs.push(p));
     // The double sieve visits the larger primes in ascending order.
-    pairs.sort_unstable();
+    let small = pairs.iter().take_while(|&&p| p < 11).count();
+    pairs[small..].reverse();
     pairs
 }
 
@@ -63,16 +64,17 @@ fn sieve_segment(lo: u64, hi: u64, base: &[u64]) -> Vec<bool> {
             break;
         }
         let offset = (p - lo % p) % p;
-        let Some(first) = lo.checked_add(offset) else {
+        if offset > hi - lo {
             continue;
-        };
+        }
+        let first = lo + offset;
         let mut multiple = first.max(p * p);
         while multiple <= hi {
             sieve[usize::try_from(multiple - lo).expect("segment index fits usize")] = false;
-            let Some(next) = multiple.checked_add(p) else {
+            if hi - multiple < p {
                 break;
-            };
-            multiple = next;
+            }
+            multiple += p;
         }
     }
     sieve

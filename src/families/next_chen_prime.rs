@@ -37,7 +37,7 @@ fn is_semiprime(n: u64) -> bool {
         }
     }
     let bound = rootint(n, 3);
-    for p in primes(7, bound.min(281)) {
+    for p in primes(7, bound.min(277)) {
         if n % p == 0 {
             return is_prime(n / p) != 0;
         }
@@ -46,7 +46,7 @@ fn is_semiprime(n: u64) -> bool {
         return false;
     }
     // A composite with no prime factor at most its cube root has two factors.
-    for p in primes(283, bound) {
+    for p in primes(281, bound) {
         if n % p == 0 {
             return is_prime(n / p) != 0;
         }

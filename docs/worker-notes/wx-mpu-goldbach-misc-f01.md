@@ -7,3 +7,6 @@ The factor module is empty, so Chen needs a private semiprime predicate followin
 Added four function files, module exports, oracle/property/concurrency tests, and Criterion cases; next run focused tests.
 Goldbach uses two bounded boolean sieve segments; Chen retains C's search and native limit, with extended trial division because factor_one is not yet ported.
 Focused offline compat/property tests are running; gate is queued behind the build lock. Formatting completed.
+Focused tests passed: all four oracle tests and all three algebraic/concurrency tests. Gate passed fmt and pedantic clippy; MSRV build is running.
+Changed Goldbach output ordering to the C reversal rather than sorting; removed unnecessary overflow branches using segment bounds.
+Review found existing lucky-family tests and benchmarks had been overwritten. Restored their exact baseline content and appended the assigned cases.

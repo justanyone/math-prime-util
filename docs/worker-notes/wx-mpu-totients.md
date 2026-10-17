@@ -3,3 +3,4 @@ Reuse the existing integer and factoring APIs after checking their definitions.
 Use the committed arith oracle without changing tools, fixtures, or crate exports.
 Add compatibility, algebraic, and benchmark coverage, then run the offline gate.
 Implemented scalar functions, range sieves, and cached summatory recurrences. The factor module is empty, so arithmetic has a private native factoring helper.
+Added the 14 oracle tests, range and algebraic properties, concurrency checks, and benchmarks. Focused compatibility tests and the gate are running offline.

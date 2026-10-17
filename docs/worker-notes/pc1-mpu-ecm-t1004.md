@@ -15,3 +15,4 @@ oracle test, match Perl/XS output, then tools/gate.sh.
 15:15:16 pure-Perl oracle returns 2 2 5 49 1856137793; aligned that fixture row and dropped the compat special case
 15:15:29 formatted; running ecm_factor tests
 15:16:08 ecm oracle filter passed; starting tools/gate.sh
+- 2026-10-17T15:17:33Z launcher: no commit for 60 s; 776 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-ecm-t1004.md, tests/compat_factor.rs, tests/fixtures/factor.tsv.

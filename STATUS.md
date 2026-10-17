@@ -140,7 +140,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_harshad`
 - [ ] `is_higgs_prime`
 - [ ] `is_lucas_pseudoprime`
-- [ ] `is_lucky`
+- [x] `is_lucky`
 - [ ] `is_mersenne_prime`
 - [x] `is_odd`
 - [ ] `is_omega_prime`
@@ -195,11 +195,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `lucasuvmod`
 - [x] `lucasv`
 - [x] `lucasvmod`
-- [ ] `lucky_count`
-- [ ] `lucky_count_approx`
-- [ ] `lucky_count_lower`
-- [ ] `lucky_count_upper`
-- [ ] `lucky_numbers`
+- [x] `lucky_count`
+- [x] `lucky_count_approx`
+- [x] `lucky_count_lower`
+- [x] `lucky_count_upper`
+- [x] `lucky_numbers`
 - [ ] `mertens`
 - [ ] `miller_rabin_random`
 - [ ] `minimal_goldbach_pair`
@@ -227,10 +227,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_almost_prime_lower`
 - [ ] `nth_almost_prime_upper`
 - [x] `nth_calkin_wilf`
-- [ ] `nth_lucky`
-- [ ] `nth_lucky_approx`
-- [ ] `nth_lucky_lower`
-- [ ] `nth_lucky_upper`
+- [x] `nth_lucky`
+- [x] `nth_lucky_approx`
+- [x] `nth_lucky_lower`
+- [x] `nth_lucky_upper`
 - [ ] `nth_omega_prime`
 - [ ] `nth_perfect_power`
 - [ ] `nth_perfect_power_approx`

@@ -9,3 +9,4 @@ Initial fixtures passed 8/11 functions. Corrected zero-k API mapping and single-
 Ten fixture functions now pass. List fixtures encode an empty list as undef; adapted the harness. Fixed sieve index lint findings. Gate rerun is underway.
 Added the C nth-powerful rank limits, small-rank table, and fitted search bounds. Wide sums deliberately extend the C native overflow path. Native-only fixture skips name signed, bigint, and out-of-u32 inputs.
 All 11 compatibility tests and all 3 property/boundary tests pass offline. Gate reached test/benchmark lint checks; fixed semicolon and empty-assert style findings. No external state or shared mutable cache is used.
+Final gate is running after focused tests passed. Benchmark source is added without changing Cargo.toml. Tools, fixtures, crate root, and STATUS.md remain untouched as required.

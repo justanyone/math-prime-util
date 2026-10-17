@@ -261,8 +261,8 @@ fn wheel_prev_small(n: u64) -> Option<u64> {
 /// Bases proved for `n < 2^64` (Sinclair). `util.c` calls `is_prob_prime`;
 /// on this width the two agree.
 pub(crate) fn is_prime(n: u64) -> bool {
-    if n <= 3 {
-        return n >= 2;
+    if n <= 7 {
+        return matches!(n, 2 | 3 | 5 | 7);
     }
     if n % 2 == 0 || n % 3 == 0 || n % 5 == 0 || n % 7 == 0 {
         return false;
@@ -271,7 +271,7 @@ pub(crate) fn is_prime(n: u64) -> bool {
         return true;
     }
     miller_rabin(n)
-}
+
 
 const MR_BASES: [u64; 7] = [2, 325, 9375, 28_178, 450_775, 9_780_504, 1_795_265_022];
 

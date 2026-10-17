@@ -23,3 +23,4 @@ Next: read PLAN.md sections 5-8, crate patterns, and the C sieve entry points, t
 - 2026-10-17T00:12:22Z launcher: no commit for 61 s; 998 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-sieve-a1.md.
 - 2026-10-17T00:13:52Z launcher: no commit for 60 s; 1088 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-sieve-a1.md, src/sieve/mod.rs.
 19:15 Wrote sieve module, compat, prop, bench. Running lib tests.
+Lib tests: is_prime treated 5 and 7 as composite. Fixed the trial division. Re-run lib tests, then compat.

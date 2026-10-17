@@ -55,7 +55,9 @@ pub fn omega_primes(k: u32, mut lo: u64, hi: u64) -> Vec<u64> {
                 continue;
             }
             for v in (first..=end).step_by(usize::try_from(p).unwrap_or(usize::MAX)) {
-                let i = usize::try_from(v - lo).expect("chunk index fits usize");
+                #[allow(clippy::cast_possible_truncation)]
+                // The chunk has at most five million values.
+                let i = (v - lo) as usize;
                 counts[i] += 1;
                 while residual[i] % p == 0 {
                     residual[i] /= p;

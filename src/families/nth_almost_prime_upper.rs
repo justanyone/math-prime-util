@@ -109,7 +109,7 @@ fn count_lower(mut k: u32, mut n: u64) -> u64 {
                 mult = 1.0;
                 x * (ll + 0.1769) / l * (1.0 + 0.4232 / l)
             } else {
-                x * (ll + 0.261536) / l
+                x * (ll + 0.261_536) / l
             }
         }
         3 => {
@@ -132,7 +132,7 @@ fn count_lower(mut k: u32, mut n: u64) -> u64 {
         4 => x * (ll + 0.26153).powi(3) / (6.0 * l),
         _ => {
             let fk = f64::from(k);
-            let plus = ll + (fk.ln() * fk.ln().ln() - 0.504377);
+            let plus = ll + (fk.ln() * fk.ln().ln() - 0.504_377);
             let mut b = x / l;
             for i in 1..k {
                 b *= plus / f64::from(i);
@@ -423,6 +423,7 @@ fn linear(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
     lo + movement.clamp(1, hi - lo - 1)
 }
 
+#[allow(clippy::too_many_lines)] // Keep the three C interpolation stages together.
 pub(super) fn interpolate(
     mut lo: u64,
     mut hi: u64,

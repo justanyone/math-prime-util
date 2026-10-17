@@ -1,5 +1,6 @@
 //! factor: see PLAN.md section 5. Filled by the port rows; the crate root re-exports `pub use factor::*`.
 
+mod cheb_factor;
 mod fermat_factor;
 mod holf_factor;
 mod is_carmichael;
@@ -11,7 +12,11 @@ mod pbrent_factor;
 mod pminus1_factor;
 mod pplus1_factor;
 mod prho_factor;
+mod prime_bigomega;
+mod prime_omega;
+mod prime_signature;
 mod squfof_factor;
+pub use cheb_factor::cheb_factor;
 pub use fermat_factor::fermat_factor;
 pub use holf_factor::holf_factor;
 pub use is_carmichael::is_carmichael;
@@ -23,4 +28,7 @@ pub use pbrent_factor::pbrent_factor;
 pub use pminus1_factor::pminus1_factor;
 pub use pplus1_factor::pplus1_factor;
 pub use prho_factor::prho_factor;
+pub use prime_bigomega::prime_bigomega;
+pub use prime_omega::prime_omega;
+pub use prime_signature::prime_signature;
 pub use squfof_factor::squfof_factor;

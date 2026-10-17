@@ -2,6 +2,8 @@
 ///
 /// Port of `congruent_numbers.c`, `is_congruent_number`,
 /// `remove_square_part`, and `_is_congruent_number_tunnell`, MPU 0.75.
+/// This port uses the ACK filter and Tunnell's count. The other C factor
+/// filters are not yet ported, so large inputs can take much longer.
 /// Tunnell's test assumes the weak Birch and Swinnerton-Dyer conjecture.
 ///
 /// ```

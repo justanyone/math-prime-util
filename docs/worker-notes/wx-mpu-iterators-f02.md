@@ -10,3 +10,4 @@ The focused build caught a module doc placement error after extraction; fixed it
 The gate is running offline. Added the unchanged 64-bit almost-prime maximum table and benchmark cases for all four workloads; generated fixtures and STATUS remain untouched.
 About five minutes remain. Waiting for offline build results, then resolving gate diagnostics and checking fixture dispatch.
 The gate is waiting on Cargo's build lock while focused tests compile. Corrected the k=63 boundary expectation: both 2^63 and 3*2^62 have 63 prime factors.
+Build jobs have not produced final diagnostics yet. The oracle fixture tests now exercise the independent squarefree integer sieve; all requested API examples remain runnable.

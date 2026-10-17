@@ -150,15 +150,29 @@ fn check(name: &str) {
                 };
                 match name {
                     "forsemiprimes" => joined(semiprimes_in(range), " "),
-                    "foralmostprimes" => joined(almost_primes_in(k, range), " "),
-                    "forfactored" => {
-                        joined(factored_in(range).map(|(n, f)| format_factored(n, &f)), " ")
+                    "foralmostprimes" | "forfactored" | "forsquarefree" | "forsquarefreeint" => {
+                        let mut values = Vec::new();
+                        let mut save = |v| {
+                            values.push(v);
+                            if values.len() == 2000 {
+                                std::ops::ControlFlow::Break(())
+                            } else {
+                                std::ops::ControlFlow::Continue(())
+                            }
+                        };
+                        let _ = match name {
+                            "foralmostprimes" => foralmostprimes(k, range, |n| save(n.to_string())),
+                            "forfactored" => {
+                                forfactored(range, |n, f| save(format_factored(n, &f)))
+                            }
+                            "forsquarefree" => {
+                                forsquarefree(range, |n, f| save(format_factored(n, &f)))
+                            }
+                            _ => forsquarefreeint(range, |n| save(n.to_string())),
+                        };
+                        values.join(" ")
                     }
-                    "forsquarefree" => joined(
-                        squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
-                        " ",
-                    ),
-                    _ => joined(squarefree_integers_in(range), " "),
+                    _ => unreachable!(),
                 }
             }
             "fordivisors" => {

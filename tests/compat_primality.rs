@@ -233,3 +233,19 @@ fn is_mersenne_prime_oracle() {
         }
     });
 }
+
+#[test]
+fn is_prime_oracle() {
+    common::each("primality", "is_prime", |c| {
+        // Negative and bigint n arguments are outside this unsigned native API.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let result = std::panic::catch_unwind(|| is_prime(n));
+        if c.error {
+            assert!(result.is_err(), "{c:?}");
+        } else {
+            c.check(Some(result.unwrap()));
+        }
+    });
+}

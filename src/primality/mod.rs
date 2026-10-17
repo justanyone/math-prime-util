@@ -363,6 +363,21 @@ pub fn is_bpsw_prime(n: u64) -> u8 {
     ) * 2
 }
 
+/// Tests whether n is prime, returning 2 when proven, 1 when probable, else 0.
+///
+/// Port of MPU `util.c`, `is_prime`, for the unsigned 64-bit range. The
+/// result follows `is_prob_prime`, which gives the deterministic answer for
+/// every `u64`.
+///
+/// ```
+/// use math_prime_util::is_prime;
+/// assert_eq!(is_prime(101), 2);
+/// assert_eq!(is_prime(100), 0);
+/// ```
+pub fn is_prime(n: u64) -> u8 {
+    is_prob_prime(n)
+}
+
 const MR_BASES: [u64; 256] = [
     4816, 6332, 958, 6124, 1001, 1431, 9644, 3700, 9251, 20_069, 7085, 2484, 3255, 218, 4660, 732,
     1863, 3716, 2480, 2120, 2464, 38_264, 3070, 2621, 1592, 17_862, 15_223, 2926, 9119, 2181,

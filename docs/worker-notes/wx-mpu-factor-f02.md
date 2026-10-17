@@ -8,3 +8,6 @@ All four oracle tests passed. Product properties passed. Corrected a test that w
 Focused compatibility and property rerun is complete. Fixed the pedantic lint findings in tests and benchmarks. The full offline gate is running; no tools or fixtures were changed.
 Review found that Lehman's final trial fallback can return more than two factors. Ported that full multiplicity behavior and added a regression for 89 cubed, plus direct fallback tests.
 The first full gate printed green. Final review preserved the C uint32_t wrapping in Lehman's B*B expression and added public multiplicity and zero-budget square regressions. Running final validation after those changes.
+Final whole-suite tools/test.sh passed offline, including the four documented examples. The final gate was run after the last code change. Coverage measurement and the cross-platform CI matrix are left to CI; no dependency, tool, fixture, S <<cut 40 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 16 bytes)

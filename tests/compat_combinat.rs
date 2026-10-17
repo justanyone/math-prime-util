@@ -2,7 +2,9 @@
 mod common;
 
 use common::{Case, each};
-use math_prime_util::{factorial, fubini, multifactorial, subfactorial};
+use math_prime_util::{
+    bernfrac, factorial, fubini, harmfrac, multifactorial, pn_primorial, primorial, subfactorial,
+};
 
 fn check_native(case: &Case, function: impl FnOnce(&[u64]) -> Option<u64>) {
     let Ok(args) = case
@@ -28,6 +30,16 @@ fn check_native(case: &Case, function: impl FnOnce(&[u64]) -> Option<u64>) {
     }
 }
 
+fn check_fraction(c: &common::Case, got: Option<(i128, u128)>) {
+    // Fractions outside i128/u128 are represented by None in this native API.
+    let expected = c.result.as_deref().and_then(|s| {
+        let (num, den) = s.split_once(' ')?;
+        Some((num.parse::<i128>().ok()?, den.parse::<u128>().ok()?))
+    });
+    assert!(!c.error);
+    assert_eq!(got, expected, "{} fixture line {}", c.func, c.line);
+}
+
 #[test]
 fn fubini_oracle() {
     each("combinat", "fubini", |c| check_native(c, |a| fubini(a[0])));
@@ -51,5 +63,37 @@ fn multifactorial_oracle() {
 fn subfactorial_oracle() {
     each("combinat", "subfactorial", |c| {
         check_native(c, |a| subfactorial(a[0]));
+    });
+}
+
+#[test]
+fn bernfrac_oracle() {
+    each("combinat", "bernfrac", |c| {
+        check_fraction(c, bernfrac(c.arg(0)));
+    });
+}
+
+#[test]
+fn harmfrac_oracle() {
+    each("combinat", "harmfrac", |c| {
+        check_fraction(c, harmfrac(c.arg(0)));
+    });
+}
+
+#[test]
+fn primorial_oracle() {
+    each("combinat", "primorial", |c| {
+        let expected = c.result.as_deref().and_then(|s| s.parse::<u64>().ok());
+        assert!(!c.error);
+        assert_eq!(primorial(c.arg(0)), expected, "fixture line {}", c.line);
+    });
+}
+
+#[test]
+fn pn_primorial_oracle() {
+    each("combinat", "pn_primorial", |c| {
+        let expected = c.result.as_deref().and_then(|s| s.parse::<u64>().ok());
+        assert!(!c.error);
+        assert_eq!(pn_primorial(c.arg(0)), expected, "fixture line {}", c.line);
     });
 }

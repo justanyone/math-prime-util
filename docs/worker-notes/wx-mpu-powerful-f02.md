@@ -7,3 +7,4 @@ Restored the C predicate shortcuts and factorint dependency. Replaced the trunca
 Ported the C linear interpolation, Ridder refinement, and final binary search for nth_powerful. Added input, overflow, count-step, repeat-call, and concurrent-call tests; no shared state is added.
 The gate passed formatting and is waiting for the focused test build lock. Existing fixture files and their generator stay unchanged because this family is already present.
 No semantic oracle mismatch has appeared yet; test output is buffered by tools/test.sh. The focused build still holds the build lock, so the gate cannot advance.
+Formatting passed. Focused compatibility/property tests, interpolation unit tests, and the required offline gate are queued on the same Cargo build directory.

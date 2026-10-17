@@ -288,9 +288,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_bigomega`
 - [ ] `prime_certificate`
 - [x] `prime_count`
-- [ ] `prime_count_approx`
-- [ ] `prime_count_lower`
-- [ ] `prime_count_upper`
+- [x] `prime_count_approx`
+- [x] `prime_count_lower`
+- [x] `prime_count_upper`
 - [x] `prime_get_config`
 - [ ] `prime_iterator`
 - [ ] `prime_iterator_object`

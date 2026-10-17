@@ -15,3 +15,4 @@ Formatting and all-target Clippy now pass. Full offline tests are building; the 
 Final full-suite compilation is still running with output buffered by tools/test.sh. No new code failures have appeared; the gate remains queued for its MSRV build.
 The final test build released Cargo's lock and the gate is compiling with Rust 1.85. Whitespace validation also passed; waiting for the full-suite results.
 - 2026-10-17T18:47:36Z launcher: no commit for 61 s; 431 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-totients-f03.md, src/arith/dedekind_psi.rs, src/arith/inverse_totient.rs, src/arith/is_totient.rs, src/arith/mod.rs, src/arith/sumtotient.rs, tests/prop_arith.rs.
+Rust 1.85 build passed. The gate is executing the full suite and has reached factor compatibility tests; all observed cases pass so far.

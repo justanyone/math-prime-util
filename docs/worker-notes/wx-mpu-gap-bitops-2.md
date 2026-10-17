@@ -14,3 +14,5 @@ Minute update: waiting on repository-wide offline tests; no source or test chang
 Gate compat_count: chebyshev passed; nth_prime and prime_count exceeded 60 seconds without reporting failure. Focused tests remain green. Waiting for the required gate outcome.
 Progress: existing nth_prime and prime_count oracle tests remain active. No new failures, and no network used. Launcher owns all commits; no git metadata was written.
 The existing nth_prime oracle passed. Ran focused bit-position doc tests separately while prime_count continues, so runnable public examples can be verified without waiting for the full gate.
+All six public doc examples passed offline. Gate still awaiting the existing prime_count oracle; no bit-position failures observed.
+Final diff remains whitespace-clean. Pending full tests are unrelated count oracle work. The requested C/Perl port cannot be certified because all six reference functions are absent; native implementation and laws are complete.

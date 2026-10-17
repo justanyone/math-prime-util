@@ -1,14 +1,10 @@
 //! Algebraic laws and native overflow boundaries.
 use math_prime_util::{
-<<<<<<< HEAD
-    bell_number, bernfrac, binomial, catalan_number, factorial, falling_factorial, fubini,
-    harmfrac, hclassno, integer_complexity, is_happy, is_pillai, multifactorial, numtoperm,
-=======
     PermutationError, bell_number, bernfrac, binomial, catalan_number, consecutive_integer_lcm,
-    factorial, falling_factorial, frobenius_number, fubini, gcd, harmfrac, integer_complexity,
-    is_congruent_number, is_polygonal, lcm, multifactorial, partitions, partitionsq, permtonum,
->>>>>>> origin/dev-001
-    pn_primorial, powersum, primorial, rising_factorial, stirling, subfactorial,
+    factorial, falling_factorial, frobenius_number, fubini, gcd, harmfrac, hclassno,
+    integer_complexity, is_congruent_number, is_happy, is_pillai, is_polygonal, lcm,
+    multifactorial, numtoperm, partitions, partitionsq, permtonum, pn_primorial, powersum,
+    primorial, rising_factorial, stirling, subfactorial,
 };
 use proptest::prelude::*;
 
@@ -385,56 +381,6 @@ fn complexity_matches_exhaustive_recurrence() {
 }
 
 #[test]
-<<<<<<< HEAD
-fn native_boundaries_and_repeated_calls() {
-    assert_eq!(hclassno(0), Some(-1));
-    assert_eq!(hclassno(1_u64 << 63), None);
-    assert_eq!(hclassno(u64::MAX), None);
-    assert_eq!(numtoperm(0, u64::MAX), []);
-    assert_eq!(numtoperm(1, u64::MAX), [0]);
-    for n in [21, 24, 40] {
-        let p = numtoperm(n, u64::MAX);
-        let mut sorted = p.clone();
-        sorted.sort_unstable();
-        assert_eq!(sorted, (0..n).collect::<Vec<_>>());
-        assert_eq!(p, numtoperm(n, u64::MAX));
-    }
-    assert_eq!(is_happy(0, 36, 10), 0);
-    assert_eq!(is_happy(1, 36, 10), 1);
-    assert_eq!(is_happy(u64::MAX, 2, 1), 3);
-    assert_eq!(is_happy(u64::MAX, 36, 10), is_happy(u64::MAX, 36, 10));
-    assert_eq!(is_pillai(29), is_pillai(29));
-    assert_eq!(is_pillai((1_u64 << 32) + 1), 0);
-}
-
-#[test]
-fn happy_rejects_invalid_arguments() {
-    for base in [0, 1, 37, u32::MAX] {
-        assert!(std::panic::catch_unwind(|| is_happy(1, base, 2)).is_err());
-    }
-    assert!(std::panic::catch_unwind(|| is_happy(1, 10, 11)).is_err());
-}
-
-#[test]
-fn independent_calls_are_thread_safe() {
-    let threads: Vec<_> = (0..4)
-        .map(|_| {
-            std::thread::spawn(|| {
-                (
-                    is_pillai(23),
-                    is_happy(19, 10, 2),
-                    hclassno(1000),
-                    numtoperm(24, 987_654_321),
-                )
-            })
-        })
-        .collect();
-    let expected = (14, 5, hclassno(1000), numtoperm(24, 987_654_321));
-    for thread in threads {
-        assert_eq!(thread.join().unwrap(), expected);
-    }
-}
-=======
 fn partition_counts_match_enumeration() {
     for n in 0_u64..=24 {
         assert_eq!(partitions(n), Some(count_partitions(n)));
@@ -641,4 +587,53 @@ fn concurrent_lcm_polygonal_calls() {
         }
     });
 }
->>>>>>> origin/dev-001
+
+#[test]
+fn native_boundaries_and_repeated_calls() {
+    assert_eq!(hclassno(0), Some(-1));
+    assert_eq!(hclassno(1_u64 << 63), None);
+    assert_eq!(hclassno(u64::MAX), None);
+    assert_eq!(numtoperm(0, u64::MAX), []);
+    assert_eq!(numtoperm(1, u64::MAX), [0]);
+    for n in [21, 24, 40] {
+        let p = numtoperm(n, u64::MAX);
+        let mut sorted = p.clone();
+        sorted.sort_unstable();
+        assert_eq!(sorted, (0..n).collect::<Vec<_>>());
+        assert_eq!(p, numtoperm(n, u64::MAX));
+    }
+    assert_eq!(is_happy(0, 36, 10), 0);
+    assert_eq!(is_happy(1, 36, 10), 1);
+    assert_eq!(is_happy(u64::MAX, 2, 1), 3);
+    assert_eq!(is_happy(u64::MAX, 36, 10), is_happy(u64::MAX, 36, 10));
+    assert_eq!(is_pillai(29), is_pillai(29));
+    assert_eq!(is_pillai((1_u64 << 32) + 1), 0);
+}
+
+#[test]
+fn happy_rejects_invalid_arguments() {
+    for base in [0, 1, 37, u32::MAX] {
+        assert!(std::panic::catch_unwind(|| is_happy(1, base, 2)).is_err());
+    }
+    assert!(std::panic::catch_unwind(|| is_happy(1, 10, 11)).is_err());
+}
+
+#[test]
+fn independent_calls_are_thread_safe() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    is_pillai(23),
+                    is_happy(19, 10, 2),
+                    hclassno(1000),
+                    numtoperm(24, 987_654_321),
+                )
+            })
+        })
+        .collect();
+    let expected = (14, 5, hclassno(1000), numtoperm(24, 987_654_321));
+    for thread in threads {
+        assert_eq!(thread.join().unwrap(), expected);
+    }
+}

@@ -39,16 +39,6 @@ pub use falling_factorial::falling_factorial;
 pub use integer_complexity::integer_complexity;
 pub use powersum::powersum;
 pub use rising_factorial::rising_factorial;
-<<<<<<< HEAD
-mod hclassno;
-mod is_happy;
-mod is_pillai;
-mod numtoperm;
-pub use hclassno::hclassno;
-pub use is_happy::is_happy;
-pub use is_pillai::is_pillai;
-pub use numtoperm::numtoperm;
-=======
 mod consecutive_integer_lcm;
 pub use consecutive_integer_lcm::consecutive_integer_lcm;
 mod frobenius_number;
@@ -57,4 +47,11 @@ mod is_congruent_number;
 pub use is_congruent_number::is_congruent_number;
 mod is_polygonal;
 pub use is_polygonal::is_polygonal;
->>>>>>> origin/dev-001
+mod hclassno;
+mod is_happy;
+mod is_pillai;
+mod numtoperm;
+pub use hclassno::hclassno;
+pub use is_happy::is_happy;
+pub use is_pillai::is_pillai;
+pub use numtoperm::numtoperm;

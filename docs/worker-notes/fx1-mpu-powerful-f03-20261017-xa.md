@@ -1,0 +1,1 @@
+- Plan: fix finding 1 (range factorization for k=2 root>100 in powerfree_part_sum) and finding 2 (bounded memory/size guard in powerfree_sum), with tests. Reviewed note first.

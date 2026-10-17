@@ -15,6 +15,10 @@ mod is_qr;
 pub use is_qr::is_qr;
 mod is_fundamental;
 pub use is_fundamental::is_fundamental;
+mod ramanujan_sum;
+pub use ramanujan_sum::ramanujan_sum;
+mod valuation;
+pub use valuation::valuation;
 
 use crate::{gcd, invmod, is_power, is_prime, is_square, powmod, rootint, sqrtint};
 use std::collections::HashMap;
@@ -424,97 +428,14 @@ pub fn moebius_range(lo: u64, hi: u64) -> Vec<i8> {
         .collect()
 }
 
-struct Mertens {
-    prefix: Vec<i64>,
-    cache: HashMap<u64, i64>,
-}
-impl Mertens {
-    fn new(n: u64) -> Self {
-        let limit = (rootint(n, 3).pow(2)).max(sqrtint(n)).max(16);
-        let mut prefix = vec![0];
-        let mut sum = 0;
-        for m in moebius_range(1, limit) {
-            sum += i64::from(m);
-            prefix.push(sum);
-        }
-        Self {
-            prefix,
-            cache: HashMap::new(),
-        }
-    }
-    fn get(&mut self, n: u64) -> i64 {
-        if let Ok(i) = usize::try_from(n) {
-            if let Some(&v) = self.prefix.get(i) {
-                return v;
-            }
-        }
-        if let Some(&v) = self.cache.get(&n) {
-            return v;
-        }
-        let s = sqrtint(n);
-        let ns = n / (s + 1);
-        let mut sum = 1 - i128::from(n / 2) - i128::from(n & 1);
-        for k in 2..=ns {
-            sum -= i128::from(self.get(n / k))
-                + i128::from(self.prefix[usize::try_from(k).unwrap()])
-                    * i128::from(n / k - n / (k + 1));
-        }
-        if s > ns {
-            sum -= i128::from(self.prefix[usize::try_from(s).unwrap()])
-                * i128::from(n / s - n / (s + 1));
-        }
-        let sum = i64::try_from(sum).unwrap();
-        self.cache.insert(n, sum);
-        sum
-    }
-}
-
-/// Return the sum of Moebius values through `n`.
-/// Port of `moebius.c::mertens` and `_rmertens`.
-/// ```
-/// assert_eq!(math_prime_util::mertens(10), -1);
-/// ```
-pub fn mertens(n: u64) -> i64 {
-    Mertens::new(n).get(n)
-}
-
-/// Return Liouville's function. Port of `moebius.c::liouville`.
-/// ```
-/// assert_eq!(math_prime_util::liouville(12), -1);
-/// ```
-pub fn liouville(n: u64) -> i8 {
-    if n == 0 {
-        return -1;
-    }
-    if factors(n).iter().map(|&(_, e)| e).sum::<u32>() % 2 == 0 {
-        1
-    } else {
-        -1
-    }
-}
-
-/// Sum Liouville's function through `n`. Port of `moebius.c::sumliouville`.
-/// ```
-/// assert_eq!(math_prime_util::sumliouville(10), 0);
-/// ```
-pub fn sumliouville(n: u64) -> i64 {
-    let mut ctx = Mertens::new(n);
-    let mut sum = 0;
-    for k in 1..=sqrtint(n) {
-        sum += ctx.get(n / (k * k));
-    }
-    sum
-}
-
-/// Return the prime base of a prime power, or one.
-/// Port of `util.c::exp_mangoldt`.
-/// ```
-/// assert_eq!(math_prime_util::exp_mangoldt(27), 3);
-/// ```
-pub fn exp_mangoldt(n: u64) -> u64 {
-    let f = factors(n);
-    if f.len() == 1 { f[0].0 } else { 1 }
-}
+mod mertens;
+pub use mertens::mertens;
+mod liouville;
+pub use liouville::liouville;
+mod sumliouville;
+pub use sumliouville::sumliouville;
+mod exp_mangoldt;
+pub use exp_mangoldt::exp_mangoldt;
 
 /// Sum Euler's totient through `n`, or return `None` on native overflow.
 /// Port of `totients.c::sumtotient` and `_sumt`.
@@ -697,45 +618,6 @@ pub fn is_totient(n: u64) -> bool {
     } else {
         totpred(n, n)
     }
-}
-
-/// Return Ramanujan's sum. Port of `XS.xs::ramanujan_sum`.
-/// ```
-/// assert_eq!(math_prime_util::ramanujan_sum(12,36), 4);
-/// ```
-#[allow(clippy::missing_panics_doc)] // The residue is less than 2^64.
-pub fn ramanujan_sum(k: u64, n: u64) -> i64 {
-    if k == 0 || n == 0 {
-        return 0;
-    }
-    let g = k / gcd(k, n);
-    let m = moebius(g);
-    let v = i128::from(m) * i128::from(euler_phi(k) / euler_phi(g));
-    i64::from_ne_bytes(
-        u64::try_from(v.rem_euclid(1_i128 << 64))
-            .unwrap()
-            .to_ne_bytes(),
-    )
-}
-
-/// Return the exponent of `k` in `n`, or `None` when `n` is zero.
-/// Port of `util.c::valuation` and the XS argument checks.
-/// # Panics
-/// Panics when `k` is less than two.
-/// ```
-/// assert_eq!(math_prime_util::valuation(72, 3), Some(2));
-/// ```
-pub fn valuation(mut n: u64, k: u64) -> Option<u64> {
-    assert!(k >= 2, "valuation base must be at least two");
-    if n == 0 {
-        return None;
-    }
-    let mut v = 0;
-    while n % k == 0 {
-        v += 1;
-        n /= k;
-    }
-    Some(v)
 }
 
 fn sigma(n: u64, k: u64) -> Option<u128> {

@@ -101,6 +101,14 @@ pub use nth_semiprime::*;
 mod nth_semiprime_approx;
 pub use nth_semiprime_approx::*;
 
+mod perfect_power_count_approx;
+pub use perfect_power_count_approx::perfect_power_count_approx;
+mod perfect_power_count_lower;
+pub use perfect_power_count_lower::perfect_power_count_lower;
+mod perfect_power_count_upper;
+pub use perfect_power_count_upper::perfect_power_count_upper;
+mod nth_perfect_power;
+pub use nth_perfect_power::nth_perfect_power;
 mod is_perfect_power;
 pub use is_perfect_power::is_perfect_power;
 mod next_perfect_power;
@@ -109,3 +117,12 @@ mod prev_perfect_power;
 pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
+
+mod nth_almost_prime_upper;
+pub use nth_almost_prime_upper::nth_almost_prime_upper;
+mod omega_primes;
+pub use omega_primes::omega_primes;
+mod omega_prime_count;
+pub use omega_prime_count::omega_prime_count;
+mod nth_omega_prime;
+pub use nth_omega_prime::nth_omega_prime;

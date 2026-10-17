@@ -270,3 +270,11 @@ mod tests {
 
 mod native;
 pub use native::{binomialmod, factorialmod, pisano_period, znlog};
+mod sqrtmod;
+pub use sqrtmod::sqrtmod;
+mod allsqrtmod;
+pub use allsqrtmod::allsqrtmod;
+mod rootmod;
+pub use rootmod::rootmod;
+mod allrootmod;
+pub use allrootmod::allrootmod;

@@ -272,6 +272,24 @@ proptest! {
 
 proptest! {
     #[test]
+    fn arithmetic_summatory_differences(n in 1_u64..10_000) {
+        prop_assert_eq!(mertens(n) - mertens(n - 1), i64::from(moebius(n)));
+        prop_assert_eq!(sumliouville(n) - sumliouville(n - 1), i64::from(liouville(n)));
+    }
+
+    #[test]
+    fn mangoldt_prime_powers(n in 0_u64..100_000) {
+        let base = exp_mangoldt(n);
+        let exponent = is_prime_power(n);
+        if exponent == 0 {
+            prop_assert_eq!(base, 1);
+        } else {
+            prop_assert_ne!(is_prime(base), 0);
+            prop_assert_eq!(base.checked_pow(exponent), Some(n));
+        }
+    }
+
+    #[test]
     fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
         prop_assert_eq!(sopfr(a * b), sopfr(a) + sopfr(b));
         if gcd(a, b) == 1 {
@@ -294,6 +312,52 @@ proptest! {
     #[test]
     fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
         prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
+    }
+}
+
+#[test]
+fn summatory_table_and_sieve_boundaries() {
+    let (mut m, mut l) = (0, 0);
+    for n in 0..=1_025 {
+        if n > 0 {
+            m += i64::from(moebius(n));
+            l += i64::from(liouville(n));
+        }
+        assert_eq!(mertens(n), m, "M({n})");
+        assert_eq!(sumliouville(n), l, "L({n})");
+    }
+    assert_eq!(liouville(0), -1);
+    assert_eq!(liouville(1_u64 << 63), -1);
+    assert_eq!(liouville(1_u64 << 62), 1);
+    for n in [0, 1, 12, 36, u64::MAX] {
+        assert_eq!(exp_mangoldt(n), 1);
+    }
+    for (n, p) in [
+        (1_u64 << 63, 2),
+        (3_u64.pow(40), 3),
+        (11_u64.pow(18), 11),
+        (18_446_744_073_709_551_557, 18_446_744_073_709_551_557),
+    ] {
+        assert_eq!(exp_mangoldt(n), p);
+    }
+}
+
+#[test]
+fn liouville_concurrent_repeated_calls() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(sumliouville(100), -2);
+                    assert_eq!(sumliouville(0), 0);
+                    assert_eq!(liouville(1), 1);
+                    assert_eq!(exp_mangoldt(121), 11);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
     }
 }
 
@@ -363,6 +427,109 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
                     assert_eq!(chinese(&inputs), Some(17));
                     assert_eq!(inputs, [(5, 12), (17, 18), (5, 12)]);
                     assert_eq!(kronecker(-7, 19), -1);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+proptest! {
+    #[test]
+    fn valuation_is_exact_power(n in 1_u64..50_000, k in 2_u64..300) {
+        let v = valuation(n, k).unwrap();
+        let mut rest = n;
+        for _ in 0..v {
+            prop_assert_eq!(rest % k, 0);
+            rest /= k;
+        }
+        prop_assert!(rest % k != 0);
+        // A second call uses no saved state.
+        prop_assert_eq!(valuation(n, k), Some(v));
+        if k == 2 {
+            prop_assert_eq!(v, u64::from(n.trailing_zeros()));
+        }
+    }
+
+    #[test]
+    fn valuation_adds_over_products(a in 1_u64..2_000, b in 1_u64..2_000, k in 2_u64..40) {
+        prop_assume!(is_prime(k) != 0);
+        let prod = a * b;
+        let va = valuation(a, k).unwrap();
+        let vb = valuation(b, k).unwrap();
+        prop_assert_eq!(valuation(prod, k), Some(va + vb));
+    }
+
+    #[test]
+    fn ramanujan_sum_depends_on_gcd(k in 1_u64..400, n in 1_u64..400) {
+        if gcd(k, n) == 1 {
+            prop_assert_eq!(ramanujan_sum(k, n), i64::from(moebius(k)));
+        }
+        prop_assert_eq!(ramanujan_sum(k, n), ramanujan_sum(k, gcd(k, n)));
+        let sum = (1..=k)
+            .filter(|d| k % d == 0)
+            .map(|d| ramanujan_sum(d, n))
+            .sum::<i64>();
+        let expect = if n % k == 0 { i64::try_from(k).unwrap() } else { 0 };
+        prop_assert_eq!(sum, expect);
+    }
+
+    #[test]
+    fn ramanujan_sum_multiplicative(a in 1_u64..60, b in 1_u64..60, n in 1_u64..120) {
+        if gcd(a, b) == 1 {
+            prop_assert_eq!(
+                ramanujan_sum(a * b, n),
+                ramanujan_sum(a, n) * ramanujan_sum(b, n)
+            );
+        }
+    }
+}
+
+#[test]
+fn valuation_rejects_bad_base_and_stays_pure() {
+    for k in [0, 1] {
+        assert!(std::panic::catch_unwind(|| valuation(12, k)).is_err());
+    }
+    // A rejected call must not change a later call.
+    assert_eq!(valuation(12, 2), Some(2));
+    assert_eq!(valuation(12, 2), Some(2));
+    assert_eq!(valuation(0, 9), None);
+    assert_eq!(valuation(1, 9), Some(0));
+    assert_eq!(valuation(1_u64 << 63, 2), Some(63));
+    assert_eq!(valuation(1_u64 << 62, 4), Some(31));
+    assert_eq!(valuation(u64::MAX, u64::MAX), Some(1));
+    assert_eq!(valuation(1000, 10), Some(3));
+    assert_eq!(valuation(96552, 6), Some(3));
+}
+
+#[test]
+fn ramanujan_sum_edges_and_repeat() {
+    assert_eq!(ramanujan_sum(0, 0), 0);
+    assert_eq!(ramanujan_sum(1, 1), 1);
+    assert_eq!(ramanujan_sum(12, 36), 4);
+    assert_eq!(ramanujan_sum(12, 36), ramanujan_sum(12, 36));
+    // g = 12 has a square factor, so the sum is zero.
+    assert_eq!(ramanujan_sum(12, 1), 0);
+    let p = next_prime(1_u64 << 63).unwrap();
+    assert_ne!(is_prime(p), 0);
+    assert_eq!(
+        ramanujan_sum(p, p),
+        i64::from_ne_bytes((p - 1).to_ne_bytes())
+    );
+}
+
+#[test]
+fn valuation_and_ramanujan_sum_concurrent() {
+    let threads: Vec<_> = (1_u64..=4)
+        .map(|n| {
+            std::thread::spawn(move || {
+                for _ in 0..3 {
+                    assert_eq!(valuation(72, 3), Some(2));
+                    assert_eq!(valuation(1_u64 << 40, 2), Some(40));
+                    assert_eq!(ramanujan_sum(12, 36), 4);
+                    assert_eq!(ramanujan_sum(n, 1), i64::from(moebius(n)));
                 }
             })
         })

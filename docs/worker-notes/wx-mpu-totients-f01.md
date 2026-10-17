@@ -10,3 +10,5 @@ Moved the four functions. Restored C totient tables, sieve thresholds, chunks, a
 Added range, overflow, identity, and concurrency regressions; focused tests are running.
 
 Implementation and added regressions are written; offline gate started, with about five minutes reserved for fixes.
+
+The gate is waiting for the focused test build lock. No network or Perl is used by these checks.

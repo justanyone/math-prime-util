@@ -704,6 +704,13 @@ fn nth_perfect_power_upper_oracle() {
 }
 
 #[test]
+fn perfect_power_count_approx_oracle() {
+    each("families", "perfect_power_count_approx", |c| {
+        c.check(Some(perfect_power_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
 fn is_perfect_power_oracle() {
     each("families", "is_perfect_power", |c| {
         // Skip signed inputs (including -8922003266371364726) and bigint
@@ -711,6 +718,13 @@ fn is_perfect_power_oracle() {
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(Some(u8::from(is_perfect_power(n))));
         }
+    });
+}
+
+#[test]
+fn perfect_power_count_lower_oracle() {
+    each("families", "perfect_power_count_lower", |c| {
+        c.check(Some(perfect_power_count_lower(c.arg(0))));
     });
 }
 
@@ -727,6 +741,13 @@ fn next_perfect_power_oracle() {
 }
 
 #[test]
+fn perfect_power_count_upper_oracle() {
+    each("families", "perfect_power_count_upper", |c| {
+        c.check(Some(perfect_power_count_upper(c.arg(0))));
+    });
+}
+
+#[test]
 fn prev_perfect_power_oracle() {
     each("families", "prev_perfect_power", |c| {
         // Skip signed inputs and bigint input 18446744073709551616.
@@ -735,6 +756,17 @@ fn prev_perfect_power_oracle() {
             let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
             assert_eq!(prev_perfect_power(n), expected, "{c:?}");
         }
+    });
+}
+
+#[test]
+fn nth_perfect_power_oracle() {
+    each("families", "nth_perfect_power", |c| {
+        // Index 4,297,615,582 has the bigint result 2^64, outside the native API.
+        if c.arg::<u64>(0) == 4_297_615_582 {
+            return;
+        }
+        c.check(nth_perfect_power(c.arg(0)));
     });
 }
 

@@ -11,3 +11,4 @@ All four oracle tests and all five property/regression tests passed. Gate found 
 Library lint is clean. Fixed benchmark semicolons and added full-word boundary cases and large root-count rejection.
 Updated assertions for the installed pedantic clippy version. Full offline suite is running; gate will be rerun after these lint-only fixes.
 Full-word regression cases added; final suite and gate are running offline. Checking that shared modular test files retain prior coverage.
+The checkout has no origin/dev ref, so comparison against that ref is unavailable; using local file history to verify scope.

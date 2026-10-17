@@ -10,3 +10,4 @@ Reviewed the moved code against XS RuleAsc and combination stepping. Existing it
 First focused build found the prime-neighbor API returns Option; mapped missing bounds to an empty range and corrected the port. Re-running offline checks.
 Offline dependency compilation and lock waits continue. No network, tool, fixture, or dependency changes were made.
 Gate found Clippy int_plus_one in the faithful C early-exit condition; used the equivalent strict comparison.
+Five-minute checkpoint: all requested code, tests, docs, and benchmarks are written. Focused tests and the corrected gate remain in progress.

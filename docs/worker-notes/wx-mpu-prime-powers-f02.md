@@ -21,3 +21,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 About five minutes remain. All four ports, docs, benchmarks, preserved lucky cases, and new regressions are on disk. The optimized final gate is compiling its test profile; earlier gates passed fmt, clippy, and MSRV.
 - 2026-10-17T06:57:15Z launcher: no commit for 60 s; 577 s elapsed. Files changed so far: benches/families.rs, docs/worker-notes/wx-mpu-prime-powers-f02.md, src/families/mod.rs, src/families/prime_power_count.rs, src/families/prime_power_count_approx.rs, src/families/prime_power_count_lower.rs, src/families/prime_power_count_upper.rs, tests/compat_families.rs, tests/prop_families.rs.
 The final focused rerun passed all 14 family compat tests, all 7 family properties, and the precision regression. The optimized gate is still in existing count-family compatibility tests; no new failure is visible.
+Finished: CARGO_PROFILE_TEST_OPT_LEVEL=2 tools/gate.sh printed == gate: green. All focused compatibility/property tests and the precision regression passed offline. The two-argument range overload remains a named fixture skip because these  <<cut 133 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 108 bytes)

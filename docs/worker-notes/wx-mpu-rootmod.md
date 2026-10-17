@@ -13,3 +13,4 @@ All six native fixture tests passed. Replaced exceptional digit lifting with MPU
 The C recursive all-root path also passes native fixtures and properties. Added word-boundary and root-existence checks. Factoring still uses a private trial-division fallback because this checkout has no factorint API; this limits performa <<cut 23 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -1 bytes)
+Word-boundary tests and exhaustive small root-existence checks passed. Restored the C small-modulus table and fixed a transcription error caught by the oracle. The final gate is running offline.

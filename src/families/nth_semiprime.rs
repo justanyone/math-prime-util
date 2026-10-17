@@ -19,6 +19,11 @@ pub(crate) const SEMIPRIME_LIST: [u32; 191] = [
     583, 586, 589, 591, 597, 611, 614, 622, 623,
 ];
 
+/// Largest semiprime that MPU 0.75 returns (`MPU_MAX_SEMI_PRIME`, 64-bit).
+pub(crate) const MAX_SEMI_PRIME: u64 = 18_446_744_073_709_551_601;
+/// Index of the largest semiprime (`MPU_MAX_SEMI_PRIME_IDX`, 64-bit).
+pub(crate) const MAX_SEMI_PRIME_IDX: u64 = 1_701_748_900_850_019_777;
+
 /// Tests whether `n` is a semiprime (a product of exactly two primes).
 ///
 /// Trial division up to `sqrt(n)`. MPU `is_semiprime` in `semi_primes.c`
@@ -28,7 +33,8 @@ fn is_semiprime(n: u64) -> bool {
         return false;
     }
     let mut d = 2u64;
-    while d * d <= n {
+    // `d <= n / d` is `d * d <= n` without overflow near `u64::MAX`.
+    while d <= n / d {
         if n % d == 0 {
             let q = n / d;
             return is_prime(d) && is_prime(q);
@@ -44,7 +50,7 @@ fn is_prime(n: u64) -> bool {
         return false;
     }
     let mut d = 2u64;
-    while d * d <= n {
+    while d <= n / d {
         if n % d == 0 {
             return false;
         }
@@ -66,7 +72,7 @@ fn is_prime(n: u64) -> bool {
 /// use math_prime_util::nth_semiprime;
 ///
 /// assert_eq!(nth_semiprime(1), Some(4));
-/// assert_eq!(nth_semiprime(5), Some(15));
+/// assert_eq!(nth_semiprime(5), Some(14));
 /// assert_eq!(nth_semiprime(0), None);
 /// ```
 #[must_use]
@@ -77,6 +83,14 @@ pub fn nth_semiprime(n: u64) -> Option<u64> {
     let idx = usize::try_from(n).ok()?;
     if idx < SEMIPRIME_LIST.len() {
         return Some(u64::from(SEMIPRIME_LIST[idx]));
+    }
+    // Overflow boundary of `nth_semiprime` in MPU `semi_primes.c`.
+    if n >= MAX_SEMI_PRIME_IDX {
+        return Some(if n == MAX_SEMI_PRIME_IDX {
+            MAX_SEMI_PRIME
+        } else {
+            0
+        });
     }
     let mut count = SEMIPRIME_LIST.len() as u64 - 1;
     let mut m = u64::from(*SEMIPRIME_LIST.last()?);
@@ -110,5 +124,13 @@ mod tests {
         // 623 is the last table entry; 626 = 2 * 313 is the next semiprime.
         assert_eq!(nth_semiprime(190), Some(623));
         assert_eq!(nth_semiprime(191), Some(626));
+    }
+
+    #[test]
+    fn overflow_boundary() {
+        // Returns before any scan, so an unguarded scan would not reach it.
+        assert_eq!(nth_semiprime(MAX_SEMI_PRIME_IDX), Some(MAX_SEMI_PRIME));
+        assert_eq!(nth_semiprime(MAX_SEMI_PRIME_IDX + 1), Some(0));
+        assert_eq!(nth_semiprime(u64::MAX), Some(0));
     }
 }

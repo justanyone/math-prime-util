@@ -1,11 +1,6 @@
 //! Approximate nth semiprime from MPU 0.75 `semi_primes.c`.
 
-use super::nth_semiprime::SEMIPRIME_LIST;
-
-/// Largest semiprime that MPU 0.75 returns (`MPU_MAX_SEMI_PRIME`, 64-bit).
-const MAX_SEMI_PRIME: u64 = 18_446_744_073_709_551_601;
-/// Index of the largest semiprime (`MPU_MAX_SEMI_PRIME_IDX`, 64-bit).
-const MAX_SEMI_PRIME_IDX: u64 = 1_701_748_900_850_019_777;
+use super::nth_semiprime::{MAX_SEMI_PRIME, MAX_SEMI_PRIME_IDX, SEMIPRIME_LIST};
 
 /// Estimates the `n`-th semiprime (1-based), or returns `None` when `n` is 0.
 ///

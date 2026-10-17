@@ -2,6 +2,26 @@
 use math_prime_util::*;
 use proptest::prelude::*;
 
+/// Semiprimes below `limit`, found by counting prime factors with multiplicity.
+fn semiprimes_below(limit: u64) -> Vec<u64> {
+    (4..limit)
+        .filter(|&m| {
+            let (mut rest, mut d, mut count) = (m, 2u64, 0u32);
+            while d * d <= rest {
+                while rest % d == 0 {
+                    rest /= d;
+                    count += 1;
+                }
+                d += 1;
+            }
+            if rest > 1 {
+                count += 1;
+            }
+            count == 2
+        })
+        .collect()
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
@@ -13,7 +33,10 @@ proptest! {
     }
     #[test]
     fn nth_semiprime_matches_table(k in 1u64..191) {
-        prop_assert!(nth_semiprime(k).unwrap() >= nth_semiprime_approx(k).unwrap().min(nth_semiprime(k).unwrap()));
+        // Independent expected values: semiprimes are numbers with exactly two prime factors.
+        let expected = semiprimes_below(700)[k as usize - 1];
+        prop_assert_eq!(nth_semiprime(k).unwrap(), expected);
+        prop_assert_eq!(nth_semiprime_approx(k).unwrap(), expected);
     }
     #[test]
     fn lucky_rank_inverse(k in 1u64..5000) {

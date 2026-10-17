@@ -1,1 +1,2 @@
 - start: reading reviewer note; plan: fix each Open finding with a failing-first test, decline with reason if not valid
+- edited: F3 boundary+d<=n/d, F4 doctest 14, F5 prop test vs independent semiprimes, F1/F2 declined (need C semiprime_count_approx + inverse_interpolate port). next: run tests

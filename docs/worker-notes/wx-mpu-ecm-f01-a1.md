@@ -10,3 +10,4 @@ Sigma table matches C (400 values). Stage 2 now sieves primes once per call and 
 - 2026-10-17T19:03:49Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.
 - 2026-10-17T19:05:54Z launcher: no commit for 60 s; 336 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.
 - 2026-10-17T19:06:57Z launcher: no commit for 61 s; 399 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.
+- 2026-10-17T19:09:31Z launcher: no commit for 60 s; 553 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md, src/factor/ecm.rs.

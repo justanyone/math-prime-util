@@ -1,8 +1,0 @@
-# Worker notes fxc-gf-mpu-divisor-sums-f03-20261017-x-1401
-- Goal: resolve merge conflicts in src/arith/mod.rs and tests/prop_arith.rs (merge of origin/dev-001), keep both sides, make focused tests pass.
-- Plan: read conflict hunks, merge both sides' intent, run mw-test on arith tests.
-- 2026-10-17T19:03:32Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: STATUS.md, benches/arith.rs, benches/families.rs, benches/iter.rs, benches/modular.rs, benches/primality.rs, docs/worker-notes/fxc-gf-mpu-divisor-sums-f03-20261017-x-1401.md, src/arith/chinese.rs, src/arith/kronecker.rs, src/arith/mod.rs, src/arith/sopf.rs, src/arith/sopfr.rs.
-- Resolved conflicts: mod.rs keeps dev-001 side, drops duplicate mod decls; prop_arith keeps both test sets. Next: mw-test.
-- 2026-10-17T19:05:05Z launcher: no commit for 60 s; 184 s elapsed. Files changed so far: STATUS.md, benches/arith.rs, benches/families.rs, benches/iter.rs, benches/modular.rs, benches/primality.rs, docs/worker-notes/fxc-gf-mpu-divisor-sums-f03-20261017-x-1401.md, src/arith/chinese.rs, src/arith/kronecker.rs, src/arith/mod.rs, src/arith/sopf.rs, src/arith/sopfr.rs.
-- 2026-10-17T19:06:11Z launcher: no commit for 63 s; 250 s elapsed. Files changed so far: STATUS.md, benches/arith.rs, benches/families.rs, benches/iter.rs, benches/modular.rs, benches/primality.rs, docs/worker-notes/fxc-gf-mpu-divisor-sums-f03-20261017-x-1401.md, src/arith/chinese.rs, src/arith/kronecker.rs, src/arith/mod.rs, src/arith/sopf.rs, src/arith/sopfr.rs.
-- Refined: signed-range rule applies to input moduli when >=2 pairs (matches all branch crt asserts). Re-running.

@@ -11,3 +11,5 @@ The stopped run is not complete against the acceptance criteria. No earlier find
 4. src/factor/rough_count.rs:5 — Open. The documentation cites a Perl PP.pm implementation rather than a C file/function, and explicitly substitutes an exponential recurrence for MPU's algorithm. This does not meet the required C provenance or algorithm-port acceptance criteria.
 
 Validation: the supplied candidate tests already contain the failure in finding 1. Local test/gate results below apply only to the base checkout, not the candidate.
+
+Local checks completed: tools/test.sh compat_factor matched zero tests on the base; tools/test.sh passed on the base; tools/gate.sh printed `== gate: green` on the base. These results do not clear the candidate findings.

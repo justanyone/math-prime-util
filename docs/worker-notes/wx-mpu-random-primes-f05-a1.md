@@ -14,3 +14,4 @@ Port `vecsample` and `miller_rabin_random` into `src/random/` as their own files
 - 2026-10-17T07:04:57Z launcher: no commit for 60 s; 392 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-random-primes-f05-a1.md.
 - 2026-10-17T07:05:58Z launcher: no commit for 61 s; 454 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-random-primes-f05-a1.md.
 - 2026-10-17T07:09:30Z launcher: no commit for 60 s; 665 s elapsed. Files changed so far: benches/random.rs, docs/worker-notes/wx-mpu-random-primes-f05-a1.md, src/random/miller_rabin_random.rs, src/random/mod.rs, src/random/vecsample.rs, tests/compat_random.rs, tests/prop_random.rs.
+- 2026-10-17T07:10:30Z launcher: no commit for 60 s; 725 s elapsed. Files changed so far: benches/random.rs, docs/worker-notes/wx-mpu-random-primes-f05-a1.md, src/random/miller_rabin_random.rs, src/random/mod.rs, src/random/vecsample.rs, tests/compat_random.rs, tests/prop_random.rs.

@@ -1,5 +1,18 @@
 //! factor: see PLAN.md section 5. Filled by the port rows; the crate root re-exports `pub use factor::*`.
 
+#[allow(clippy::module_inception)] // Keep each function in its own named file.
+mod factor;
+pub use factor::factor;
+
+mod factor_exp;
+pub use factor_exp::factor_exp;
+
+mod divisors;
+pub use divisors::divisors;
+
+mod trial_factor;
+pub use trial_factor::trial_factor;
+
 mod cheb_factor;
 mod fermat_factor;
 mod holf_factor;
@@ -37,6 +50,7 @@ pub use pminus1_factor::pminus1_factor;
 pub use pplus1_factor::pplus1_factor;
 pub use prho_factor::prho_factor;
 pub use prime_bigomega::prime_bigomega;
+pub(crate) use prime_bigomega::sorted_factors;
 pub use prime_omega::prime_omega;
 pub use prime_signature::prime_signature;
 pub use squfof_factor::squfof_factor;

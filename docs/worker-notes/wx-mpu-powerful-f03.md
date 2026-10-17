@@ -1,0 +1,2 @@
+- Plan: check existing src/families/powerfree.rs, add the 3 functions + compat/prop tests, run focused tests, gate.
+- Functions and compat tests already exist in src/families/powerfree.rs and tests/compat_families.rs; running focused test.

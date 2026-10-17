@@ -116,9 +116,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `irand32`
 - [x] `irand64`
 - [ ] `is_aks_prime`
-- [ ] `is_almost_extra_strong_lucas_pseudoprime`
+- [x] `is_almost_extra_strong_lucas_pseudoprime`
 - [ ] `is_almost_prime`
-- [ ] `is_bpsw_prime`
+- [x] `is_bpsw_prime`
 - [ ] `is_carmichael`
 - [ ] `is_catalan_pseudoprime`
 - [ ] `is_chen_prime`
@@ -127,10 +127,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_cyclic`
 - [ ] `is_delicate_prime`
 - [x] `is_divisible`
-- [ ] `is_euler_plumb_pseudoprime`
-- [ ] `is_euler_pseudoprime`
+- [x] `is_euler_plumb_pseudoprime`
+- [x] `is_euler_pseudoprime`
 - [x] `is_even`
-- [ ] `is_extra_strong_lucas_pseudoprime`
+- [x] `is_extra_strong_lucas_pseudoprime`
 - [ ] `is_frobenius_khashin_pseudoprime`
 - [ ] `is_frobenius_pseudoprime`
 - [ ] `is_frobenius_underwood_pseudoprime`
@@ -139,9 +139,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_happy`
 - [x] `is_harshad`
 - [ ] `is_higgs_prime`
-- [ ] `is_lucas_pseudoprime`
+- [x] `is_lucas_pseudoprime`
 - [x] `is_lucky`
-- [ ] `is_mersenne_prime`
+- [x] `is_mersenne_prime`
 - [x] `is_odd`
 - [ ] `is_omega_prime`
 - [x] `is_palindrome`
@@ -154,25 +154,25 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `is_powerfree`
 - [ ] `is_powerful`
 - [ ] `is_practical`
-- [ ] `is_prime`
+- [x] `is_prime`
 - [ ] `is_prime_power`
 - [ ] `is_primitive_root`
-- [ ] `is_prob_prime`
+- [x] `is_prob_prime`
 - [ ] `is_provable_prime`
 - [ ] `is_provable_prime_with_cert`
-- [ ] `is_pseudoprime`
+- [x] `is_pseudoprime`
 - [ ] `is_qr`
 - [ ] `is_quasi_carmichael`
 - [ ] `is_ramanujan_prime`
 - [ ] `is_rough`
-- [ ] `is_safe_prime`
+- [x] `is_safe_prime`
 - [ ] `is_semiprime`
 - [x] `is_sidon_set`
 - [ ] `is_smooth`
 - [x] `is_square`
 - [ ] `is_square_free`
-- [ ] `is_strong_lucas_pseudoprime`
-- [ ] `is_strong_pseudoprime`
+- [x] `is_strong_lucas_pseudoprime`
+- [x] `is_strong_pseudoprime`
 - [x] `is_sumfree_set`
 - [ ] `is_sum_of_squares`
 - [ ] `is_totient`

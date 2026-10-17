@@ -3,6 +3,9 @@
 mod lucky;
 pub use lucky::*;
 
+mod perfect_powers;
+pub use perfect_powers::*;
+
 mod nth_prime_power;
 pub use nth_prime_power::nth_prime_power;
 

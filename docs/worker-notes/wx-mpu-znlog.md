@@ -4,3 +4,4 @@ Add compatibility, algebraic tests, and benchmarks without changing fixtures or 
 Validate offline with focused tests and the repository gate.
 Read the C paths and found the factoring module is a placeholder; implement a private deterministic helper for these ports.
 Implemented factorial, binomial prime-power/Granville CRT, interleaved BSGS, Pohlig-Hellman, non-coprime reduction, and Pisano prime-power search; running oracle tests next.
+Native oracle tests pass. Properties found one incorrect expected value in a new test (640, not 0); correcting it and resolving lint before the gate.

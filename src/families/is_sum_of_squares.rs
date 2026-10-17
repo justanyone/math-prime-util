@@ -95,27 +95,37 @@ fn push_factors(n: u64, factors: &mut Vec<u64>) {
     }
 }
 
+/// Floyd cycle steps allowed per `rho` attempt, so one call has bounded work.
+const RHO_STEP_BUDGET: u32 = 1 << 20;
+/// `add` constants tried before giving up. Every `u64` composite splits well within this.
+const RHO_ADD_ATTEMPTS: u64 = 64;
+
+/// Return a nontrivial divisor of composite `n` by Pollard rho, with bounded work.
+///
+/// Panics if every attempt exhausts its budget. For `u64` inputs this does not happen.
 fn pollard(n: u64) -> u64 {
-    let mut add = 1u64;
-    loop {
-        let divisor = rho(n, add);
-        if divisor != n {
+    for add in 1..=RHO_ADD_ATTEMPTS {
+        if let Some(divisor) = rho(n, add) {
             return divisor;
         }
-        add += 1;
     }
+    panic!("pollard rho budget exhausted for {n}");
 }
 
-fn rho(n: u64, add: u64) -> u64 {
+/// One Floyd rho attempt with polynomial constant `add`, or `None` when the budget runs out
+/// or the cycle only yields `n` itself.
+fn rho(n: u64, add: u64) -> Option<u64> {
     let mut x = 2u64;
     let mut y = 2u64;
-    let mut divisor = 1u64;
-    while divisor == 1 {
+    for _ in 0..RHO_STEP_BUDGET {
         x = step(x, add, n);
         y = step(step(y, add, n), add, n);
-        divisor = gcd(x.abs_diff(y), n);
+        let divisor = gcd(x.abs_diff(y), n);
+        if divisor != 1 {
+            return (divisor != n).then_some(divisor);
+        }
     }
-    divisor
+    None
 }
 
 #[allow(clippy::cast_possible_truncation)]
@@ -161,6 +171,18 @@ mod tests {
         assert!(!is_sum_of_squares(p * q, 2));
         assert!(is_sum_of_squares(p * p, 2));
         assert!(is_sum_of_squares(53, 2));
+    }
+
+    #[test]
+    fn rho_budget_is_bounded() {
+        // A prime has no divisor, so rho must stop at its budget and return None.
+        assert_eq!(super::rho(1_000_000_007, 1), None);
+        // A semiprime splits within the budget, and the divisor is a proper factor.
+        let n = p_q();
+        let divisor = super::rho(n, 1).expect("semiprime splits within budget");
+        assert_eq!(n % divisor, 0);
+        assert!(divisor != 1 && divisor != n);
+        assert!(super::pollard(n) != n);
     }
 
     #[test]

@@ -14,3 +14,5 @@ Added full-stream closure equivalence, clone independence, native top-bound exha
 The gate reached pre-existing count compatibility tests; nth_prime_oracle and prime_count_oracle exceed 60 seconds. Iterator-only validation continues independently.
 Final-head gate started after all implementation edits. The completed subset has 13 fixture tests, 9 property/state tests, runnable examples, and four benchmark workloads.
 Remaining port work: forsemiprimes, foralmostprimes, forfactored, forsquarefree, forsquarefreeint, fordivisors; these require faithful factor/family algorithms, not trial-division substitutes.
+About five minutes remain. No source changes are pending. The final gate has passed fmt, pedantic clippy, and the offline MSRV build; the full suite is still running.
+Final-head fmt, pedantic clippy, and offline Rust 1.85 build passed. Running iterator doctests separately because existing count compatibility cases hold up full-suite completion.

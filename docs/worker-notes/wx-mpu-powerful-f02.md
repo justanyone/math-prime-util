@@ -3,3 +3,4 @@ Move each owned public function to its own module file, preserving sibling funct
 Use the existing families oracle and add regression tests for any defects found.
 Run focused offline tests and the gate; record unavailable checks here.
 The existing oracle and property suites cover all four functions. Split their definitions into owned files; retain shared sieve helpers for sibling sum functions.
+Restored the C predicate shortcuts and factorint dependency. Replaced the truncated zeta sum with the crate's port of ld_riemann_zeta. Focused offline tests are running.

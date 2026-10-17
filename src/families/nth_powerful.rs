@@ -104,14 +104,112 @@ pub fn nth_powerful(n: u64, k: u32) -> Option<u64> {
         }
         hi = next;
     }
-    while lo < hi {
+    Some(inverse_count(lo, hi, n, k))
+}
+
+// Port of inverse_interpolate.c::_linear_interpolate.
+#[allow(clippy::cast_precision_loss, clippy::cast_sign_loss)]
+fn linear_interpolate(lo: u64, hi: u64, rlo: u64, rhi: u64, n: u64) -> u64 {
+    if n == rlo {
+        return lo + 1;
+    }
+    if n == rhi {
+        return hi - 1;
+    }
+    let span = hi - lo;
+    let movement = ((n - rlo) as f64 * span as f64 / (rhi - rlo) as f64 + 0.5) as u64;
+    lo + movement.clamp(1, span - 1)
+}
+
+// Port of inverse_interpolate.c::_inverse_interpolate, with known upper
+// bounds and threshold zero, as used by powerful.c::nth_powerful.
+#[allow(clippy::cast_precision_loss, clippy::cast_sign_loss)]
+fn inverse_count(mut lo: u64, mut hi: u64, n: u64, k: u32) -> u64 {
+    let mid = lo + (hi - lo) / 2;
+    let rmid = powerful_count(mid, k);
+    let (mut rlo, mut rhi) = if rmid >= n {
+        hi = mid;
+        (powerful_count(lo, k), rmid)
+    } else {
+        lo = mid;
+        (rmid, powerful_count(hi, k))
+    };
+    if rlo == n {
+        return lo;
+    }
+    if hi - lo <= 1 {
+        return hi;
+    }
+    let mut mid = linear_interpolate(lo, hi, rlo, rhi, n);
+    let mut iteration = 1;
+    while hi - lo > 1 && rhi > n {
+        let rmid = powerful_count(mid, k);
+        if rmid >= n {
+            hi = mid;
+            rhi = rmid;
+        } else {
+            lo = mid;
+            rlo = rmid;
+        }
+        if rhi == n || hi - lo <= 1 {
+            break;
+        }
+        mid = linear_interpolate(lo, hi, rlo, rhi, n);
+        if iteration % 6 == 0 {
+            let close = (0.003 * (hi - lo) as f64 + 1.0) as u64;
+            mid = mid.clamp(lo + close, hi - close);
+        }
+        mid = mid.clamp(lo + 1, hi - 1);
+        iteration += 1;
+    }
+    while hi - lo > 8 {
+        let mut x1 = lo + (hi - lo) / 2;
+        let mut rx1 = powerful_count(x1, k);
+        let d0 = (n - rlo) as f64;
+        let d1 = rx1.abs_diff(n) as f64;
+        let d2 = (rhi - n + 1) as f64;
+        let position = (x1 - lo) as f64 * d1 / (d1 * d1 + d0 * d2).sqrt();
+        let movement = (position + 0.5) as u64;
+        let mut x3 = if rx1 >= n {
+            x1.saturating_sub(movement)
+        } else {
+            x1.saturating_add(movement)
+        };
+        if x3 <= lo || x3 >= hi || x3 == x1 {
+            if rx1 >= n {
+                hi = x1;
+                rhi = rx1;
+            } else {
+                lo = x1;
+                rlo = rx1;
+            }
+        } else {
+            let mut rx3 = powerful_count(x3, k);
+            if rx1 > rx3 {
+                std::mem::swap(&mut x1, &mut x3);
+                std::mem::swap(&mut rx1, &mut rx3);
+            }
+            if rx1 >= n {
+                hi = x1;
+                rhi = rx1;
+            } else if rx3 >= n {
+                lo = x1;
+                rlo = rx1;
+                hi = x3;
+                rhi = rx3;
+            } else {
+                lo = x3;
+                rlo = rx3;
+            }
+        }
+    }
+    while hi - lo > 1 {
         let mid = lo + (hi - lo) / 2;
         if powerful_count(mid, k) < n {
-            lo = mid + 1;
+            lo = mid;
         } else {
             hi = mid;
         }
     }
-    Some(lo)
+    hi
 }
-

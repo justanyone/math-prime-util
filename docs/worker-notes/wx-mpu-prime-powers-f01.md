@@ -15,3 +15,4 @@ Chebyshev oracle passed. The two remaining prime-count compatibility tests are s
 No failure has appeared in the full gate; the existing count oracle remains the only active test group. Continue waiting within the session limit.
 The nth-prime oracle passed. Prime-count is the last active compatibility test in that group; all requested code, tests, docs, and benchmarks are complete.
 About five minutes remain in the session. The implementation and focused checks are complete; waiting for the existing prime-count oracle to allow the full gate to finish.
+Prime-count remains active with no failure. The full gate result is not yet available; no repository-wide changes are being made to shorten this unrelated test.

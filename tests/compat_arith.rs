@@ -123,7 +123,7 @@ fn chinese() {
     each("arith", "chinese", |c| {
         if let Some(p) = pairs(c) {
             c.check(math_prime_util::chinese(&p));
->        }
+        }
     });
 }
 #[test]

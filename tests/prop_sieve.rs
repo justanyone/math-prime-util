@@ -60,7 +60,7 @@ proptest! {
 #[test]
 fn cluster_members_are_prime() {
     let found = sieve_prime_cluster(0, 400, &[0, 2, 6]);
-    assert!(!found.is_empty());
+    assert_eq!(found.first().copied(), Some(5));
     for p in found {
         assert_eq!(primes(p, p), vec![p]);
         assert_eq!(primes(p + 2, p + 2), vec![p + 2]);

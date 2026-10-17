@@ -34,7 +34,9 @@ fn cache() -> &'static Mutex<PrimeCache> {
 }
 
 fn lock_cache() -> std::sync::MutexGuard<'static, PrimeCache> {
-    cache().lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+    cache()
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// Fill the shared prime cache at least through `n`.
@@ -92,7 +94,9 @@ pub fn prime_memfree() {
     };
     let padded = pad_limit(INITIAL_CACHE_SIZE);
     let sieve = build_sieve(padded);
-    let mut guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let mut guard = lock
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     guard.sieve = sieve;
     guard.limit = padded;
 }
@@ -184,7 +188,9 @@ impl Iterator for PrimesIn {
 
 fn primes_from_cache(lo: u64, hi: u64) -> Option<Vec<u64>> {
     let lock = CACHE.get()?;
-    let guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let guard = lock
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     if guard.limit == 0 || hi >= guard.limit {
         return None;
     }
@@ -297,7 +303,9 @@ pub fn prev_prime(n: u64) -> Option<u64> {
 
 fn cache_next(n: u64) -> Option<u64> {
     let lock = CACHE.get()?;
-    let guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let guard = lock
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     if guard.limit == 0 || n >= guard.limit {
         return None;
     }
@@ -316,7 +324,9 @@ fn cache_prev(n: u64) -> PrevHit {
     let Some(lock) = CACHE.get() else {
         return PrevHit::Outside;
     };
-    let guard = lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let guard = lock
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     if guard.limit == 0 || n >= guard.limit {
         return PrevHit::Outside;
     }
@@ -480,10 +490,7 @@ fn validate_cluster(offsets: &[u64]) {
     for &c in offsets {
         assert!(c % 2 == 0, "sieve_prime_cluster: values must be even");
         if let Some(p) = prev {
-            assert!(
-                c > p,
-                "sieve_prime_cluster: values must be increasing"
-            );
+            assert!(c > p, "sieve_prime_cluster: values must be increasing");
         }
         prev = Some(c);
     }

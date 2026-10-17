@@ -155,7 +155,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_powerful`
 - [ ] `is_practical`
 - [x] `is_prime`
-- [ ] `is_prime_power`
+- [x] `is_prime_power`
 - [x] `is_primitive_root`
 - [x] `is_prob_prime`
 - [ ] `is_provable_prime`
@@ -220,7 +220,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `next_farey`
 - [ ] `next_perfect_power`
 - [x] `next_prime`
-- [ ] `next_prime_power`
+- [x] `next_prime_power`
 - [x] `next_stern_brocot`
 - [ ] `nth_almost_prime`
 - [ ] `nth_almost_prime_approx`
@@ -283,7 +283,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `pplus1_factor`
 - [ ] `prev_perfect_power`
 - [x] `prev_prime`
-- [ ] `prev_prime_power`
+- [x] `prev_prime_power`
 - [x] `prho_factor`
 - [x] `prime_bigomega`
 - [ ] `prime_certificate`
@@ -300,7 +300,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `prime_power_count_approx`
 - [ ] `prime_power_count_lower`
 - [ ] `prime_power_count_upper`
-- [ ] `prime_powers`
+- [x] `prime_powers`
 - [x] `prime_precalc`
 - [x] `primes`
 - [ ] `prime_set_config`

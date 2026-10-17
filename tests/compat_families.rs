@@ -29,6 +29,51 @@ fn ramanujan_prime_count_upper_oracle() {
 }
 
 #[test]
+fn prime_powers_oracle() {
+    each("families", "prime_powers", |c| {
+        let (lo, hi) = if c.args.len() == 1 {
+            (0, c.arg(0))
+        } else {
+            (c.arg(0), c.arg(1))
+        };
+        let values = prime_powers(lo, hi);
+        c.check((!values.is_empty()).then(|| {
+            values
+                .iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(" ")
+        }));
+    });
+}
+
+#[test]
+fn is_prime_power_oracle() {
+    each("families", "is_prime_power", |c| {
+        c.check(Some(is_prime_power(c.arg(0))));
+    });
+}
+
+#[test]
+fn next_prime_power_oracle() {
+    each("families", "next_prime_power", |c| {
+        // MPU promotes these results to bigint. The native u64 API cannot
+        // return 2^64 for MAX_PRIME, u64::MAX - 1, or u64::MAX.
+        if c.result.as_ref().is_some_and(|v| v.parse::<u64>().is_err()) {
+            assert_eq!(next_prime_power(c.arg(0)), None);
+            return;
+        }
+        c.check(next_prime_power(c.arg(0)));
+    });
+}
+
+#[test]
+fn prev_prime_power_oracle() {
+    each("families", "prev_prime_power", |c| {
+        c.check(prev_prime_power(c.arg(0)));
+    });
+}
+#[test]
 fn nth_prime_power_oracle() {
     each("families", "nth_prime_power", |c| {
         c.check(nth_prime_power(c.arg(0)));

@@ -30,7 +30,7 @@ pub(super) fn scan(lo: u64, hi: u64, mut visit: impl FnMut(u64) -> bool) {
     if hi > 1_000_000_000_000 {
         while low <= hi {
             if matches!(low % 30, 11 | 17 | 29)
-                && crate::is_prime(low) && crate::is_prime(low + 2) && !visit(low) {
+                && crate::is_prime(low) != 0 && crate::is_prime(low + 2) != 0 && !visit(low) {
                 return;
             }
             low += 1;

@@ -8,7 +8,7 @@ proptest! {
     fn count_matches_list(n in 0u64..30_000) {
         let pairs = twin_primes(0, n);
         prop_assert_eq!(pairs.len() as u64, twin_prime_count(n));
-        prop_assert!(pairs.iter().all(|&p| is_prime(p) && is_prime(p + 2)));
+        prop_assert!(pairs.iter().all(|&p| is_prime(p) != 0 && is_prime(p + 2) != 0));
         prop_assert!(pairs.windows(2).all(|p| p[0] < p[1]));
     }
     #[test]

@@ -44,13 +44,13 @@ fn twin_prime_count_oracle() {
 #[test]
 fn twin_prime_count_approx_oracle() {
     each("families", "twin_prime_count_approx", |c| {
-        c.check(Some(twin_prime_count_approx(c.arg(0))))
+        c.check(Some(twin_prime_count_approx(c.arg(0))));
     });
 }
 
 #[test]
 fn nth_twin_prime_oracle() {
     each("families", "nth_twin_prime", |c| {
-        c.check(nth_twin_prime(c.arg(0)))
+        c.check(nth_twin_prime(c.arg(0)));
     });
 }

@@ -80,3 +80,22 @@ fn estimate(n: u64) -> u64 {
     }
     (800.0 + 1.01 * lo as f64).min((u64::MAX - 16) as f64) as u64
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn estimate_covers_each_c_bound() {
+        for n in [
+            6,
+            1200,
+            10_000_000,
+            10_000_000_000_000,
+            10_000_000_000_000_000,
+        ] {
+            assert!(estimate(n) > n);
+        }
+        assert!(estimate(100_000) >= 18_409_199);
+    }
+}

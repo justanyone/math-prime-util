@@ -108,7 +108,7 @@ pub(super) const STEPS: &[u64] = &[
     724_291_736_697_048,
 ];
 
-// The C table has ten entries in its first decade and nine thereafter.
+// The C table covers decimal multiples from 10^7 through 4*10^18.
 pub(super) fn table_skip(mut take: impl FnMut(u64, u64) -> bool) {
     let mut step = 0;
     let mut base = 10_000_000;
@@ -152,4 +152,25 @@ pub fn twin_prime_count(n: u64) -> u64 {
         true
     });
     sum
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn all_decimal_table_entries() {
+        let mut entries = Vec::new();
+        table_skip(|bound, count| {
+            entries.push((bound, count));
+            true
+        });
+        assert_eq!(entries.len(), STEPS.len());
+        assert_eq!(entries[0], (10_000_000, 58_980));
+        assert_eq!(
+            entries.last(),
+            Some(&(4_000_000_000_000_000_000, 724_291_736_697_048))
+        );
+        assert!(entries.windows(2).all(|w| w[0].0 < w[1].0));
+    }
 }

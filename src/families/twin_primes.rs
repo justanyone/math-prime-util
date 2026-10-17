@@ -53,11 +53,22 @@ pub(super) fn scan(lo: u64, hi: u64, mut visit: impl FnMut(u64) -> bool) {
         let base = low / 30 * 30;
         let limit = high + 2;
         let mut composite =
-            vec![false; usize::try_from(limit - base + 1).expect("bounded segment")];
+            vec![0_u8; usize::try_from((limit - base) / 30 + 1).expect("bounded segment")];
         for &p in &base_primes {
             let start = (base.div_ceil(p) * p).max(p * p);
             for n in (start..=limit).step_by(usize::try_from(p).expect("bounded prime")) {
-                composite[usize::try_from(n - base).expect("bounded offset")] = true;
+                let mask = match n % 30 {
+                    1 => 0x01,
+                    7 => 0x02,
+                    11 => 0x04,
+                    13 => 0x08,
+                    17 => 0x10,
+                    19 => 0x20,
+                    23 => 0x40,
+                    29 => 0x80,
+                    _ => continue,
+                };
+                composite[usize::try_from((n - base) / 30).expect("bounded offset")] |= mask;
             }
         }
         for block in (base..=high).step_by(30) {
@@ -66,8 +77,13 @@ pub(super) fn scan(lo: u64, hi: u64, mut visit: impl FnMut(u64) -> bool) {
                 if p < low || p > high {
                     continue;
                 }
-                let i = usize::try_from(p - base).expect("bounded offset");
-                if !composite[i] && !composite[i + 2] && !visit(p) {
+                let i = usize::try_from((p - base) / 30).expect("bounded offset");
+                let pair_is_prime = match offset {
+                    11 => composite[i] & 0x0c == 0,
+                    17 => composite[i] & 0x30 == 0,
+                    _ => composite[i] & 0x80 == 0 && composite[i + 1] & 0x01 == 0,
+                };
+                if pair_is_prime && !visit(p) {
                     return;
                 }
             }

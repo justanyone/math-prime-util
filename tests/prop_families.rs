@@ -31,11 +31,11 @@ proptest! {
 
 #[test]
 fn native_and_segment_boundaries() {
-    assert!(twin_primes(11, 10).is_empty());
+    assert_eq!(twin_primes(11, 10), []);
     assert_eq!(twin_primes(11, 11), vec![11]);
     assert_eq!(twin_primes(29, 29), vec![29]);
     assert_eq!(twin_primes(u64::MAX - 844, u64::MAX), vec![u64::MAX - 844]);
-    assert!(twin_primes(u64::MAX, u64::MAX).is_empty());
+    assert_eq!(twin_primes(u64::MAX, u64::MAX), []);
     assert_eq!(nth_twin_prime(u64::MAX), None);
     let pairs = twin_primes(0, 1_000_100);
     assert_eq!(pairs.len() as u64, twin_prime_count(1_000_100));
@@ -49,9 +49,9 @@ fn native_and_segment_boundaries() {
 #[test]
 fn correction_intervals_and_repeat_calls() {
     for n in [
-        1999, 2000, 3999, 4000, 7999, 8000, 15999, 16000, 31999, 32000, 63999, 64000, 127999,
-        128000, 255999, 256000, 599999, 600000, 999999, 1_000_000, 3_999_999, 4_000_000,
-        15_999_999, 16_000_000, 31_999_999, 32_000_000,
+        1999, 2000, 3999, 4000, 7999, 8000, 15_999, 16_000, 31_999, 32_000, 63_999, 64_000,
+        127_999, 128_000, 255_999, 256_000, 599_999, 600_000, 999_999, 1_000_000, 3_999_999,
+        4_000_000, 15_999_999, 16_000_000, 31_999_999, 32_000_000,
     ] {
         assert!(twin_prime_count_approx(n) > 0);
     }

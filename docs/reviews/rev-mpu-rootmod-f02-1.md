@@ -8,3 +8,4 @@ Verdict: FAIL
 The stopped run is incomplete against its acceptance criteria. There were no earlier findings to verify. Review uses the supplied candidate digest and the local read-only C reference; this checkout is the base, so local gate results cannot establish candidate correctness.
 
 Validation: `tools/test.sh tests/compat_modular.rs` passed all four existing oracle tests on the base; those four tests are removed by the candidate. No candidate execution is claimed.
+`tools/gate.sh` completed with `== gate: green` on the base. This does not validate the candidate changes or resolve the open findings.

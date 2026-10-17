@@ -13,3 +13,4 @@ Approximately five minutes remain. The focused base tests passed; gate is still 
 - 2026-10-17T18:49:52Z launcher: no commit for 62 s; 282 s elapsed. Files changed so far: docs/reviews/rev-mpu-rootmod-f02-1.md, docs/worker-notes/rv1-mpu-rootmod-f02-t1344.md.
 Base gate passed fmt, clippy and MSRV build; full tests are compiling. FAIL review and focused-test evidence are saved; waiting only for the required gate result.
 Full base test compilation is still running; no gate failure has been reported. The review is complete and unchanged. Awaiting gate completion within the remaining time.
+Finished: base focused compat tests passed (4/4), and tools/gate.sh printed == gate: green. FAIL review is saved with four open findings; only the requested review and this required notes file were edited.

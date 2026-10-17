@@ -744,3 +744,52 @@ mod almost_omega_f03 {
         });
     }
 }
+
+/// Input checks, a second call, and parallel calls for the powerfree sums.
+/// A bad `k`, a repeated call, or a second thread must not change the result.
+#[test]
+fn powerfree_validation_repeat_and_threads() {
+    for k in [0, 1] {
+        assert_eq!(powerfree_sum(0, k), 0, "k={k} n=0");
+        assert_eq!(powerfree_sum(8, k), 1, "k={k} n=8");
+        assert_eq!(powerfree_part(0, k), 0, "k={k} part 0");
+        assert_eq!(powerfree_part(1, k), 1, "k={k} part 1");
+        assert_eq!(powerfree_part(8, k), 0, "k={k} part 8");
+        assert_eq!(powerfree_part_sum(0, k), 0, "k={k} part sum 0");
+        assert_eq!(powerfree_part_sum(1, k), 1, "k={k} part sum 1");
+        assert_eq!(powerfree_part_sum(8, k), 1, "k={k} part sum 8");
+    }
+    assert_eq!(powerfree_part(1_024, 64), 1_024);
+    assert_eq!(powerfree_part(1_024, 100), 1_024);
+    assert_eq!(powerfree_part(1_024, 3), 2);
+    assert_eq!(powerfree_sum(0, 5), 0);
+    assert_eq!(powerfree_part(0, 5), 0);
+    assert_eq!(powerfree_part_sum(0, 5), 0);
+
+    let n = 300_u64;
+    let k = 2_u32;
+    let by_filter: u128 = (1..=n)
+        .filter(|&i| is_powerfree(i, k))
+        .map(u128::from)
+        .sum();
+    let by_parts: u128 = (1..=n).map(|i| u128::from(powerfree_part(i, k))).sum();
+    assert_eq!(powerfree_sum(n, k), by_filter);
+    assert_eq!(powerfree_part_sum(n, k), by_parts);
+    // A second call uses no cache, so the result stays the same.
+    assert_eq!(powerfree_sum(n, k), by_filter);
+    assert_eq!(powerfree_part(720, k), powerfree_part(720, k));
+    assert_eq!(powerfree_part_sum(n, k), by_parts);
+
+    let expected_part = powerfree_part(720, k);
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(powerfree_sum(n, k), by_filter);
+                    assert_eq!(powerfree_part(720, k), expected_part);
+                    assert_eq!(powerfree_part_sum(n, k), by_parts);
+                }
+            });
+        }
+    });
+}

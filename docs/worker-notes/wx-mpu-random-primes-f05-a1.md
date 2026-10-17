@@ -5,3 +5,4 @@ Port `vecsample` and `miller_rabin_random` into `src/random/` as their own files
 - Start: notes written. Next: read PLAN §§5–8, existing `src/random`, and the two functions in the C/Perl sources.
 - 2026-10-17T06:59:55Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-random-primes-f05-a1.md.
 - 2026-10-17T07:00:55Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-random-primes-f05-a1.md.
+- 2026-10-17T07:01:55Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-random-primes-f05-a1.md.

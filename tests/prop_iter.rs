@@ -152,7 +152,7 @@ proptest! {
             prop_assert_eq!(omega, 2);
         }
         let mut count = 0;
-        forsemiprimes(0..=hi, |_| { count += 1; ControlFlow::<()>::Continue(()) });
+        let _ = forsemiprimes(0..=hi, |_| { count += 1; ControlFlow::<()>::Continue(()) });
         prop_assert_eq!(count, semiprimes_in(0..=hi).count());
     }
     #[test]

@@ -125,3 +125,41 @@ proptest! {
 fn perrin_bad_restriction() {
     let _ = is_perrin_pseudoprime(271_441, 4);
 }
+
+proptest! {
+    #[test]
+    fn verify_prime_native_fallback(n in any::<u64>()) {
+        // MPU verify_cert checks an unchained native N with its Small test.
+        let cert = format!("[MPU - Primality Certificate]\nProof for:\nN {n}\n");
+        prop_assert_eq!(verify_prime(&cert), Ok(is_prime(n) != 0));
+    }
+
+    #[test]
+    fn verify_prime_whitespace(n in 2_u64..1_000_000) {
+        let cert = format!("[MPU - Primality Certificate]\r\n# comment\r\nProof for:\r\nn\t{n}\r\nType Small\r\nn\t{n}\r\n");
+        prop_assert_eq!(verify_prime(&cert), Ok(is_prime(n) != 0));
+    }
+}
+
+#[test]
+fn verify_prime_concurrent_validation_is_independent() {
+    let cert =
+        "[MPU - Primality Certificate]\nProof for:\nN 13\nType BLS15\nN 13\nQ 7\nLP -1\nLQ 2\n";
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(move || {
+                for _ in 0..8 {
+                    assert_eq!(verify_prime(cert), Ok(true));
+                    assert!(verify_prime(&cert.replace("Q 7", "Q bad")).is_err());
+                    assert_eq!(verify_prime(cert), Ok(true));
+                    // Repeated blocks are independent, as in MPU's parts map.
+                    let repeated = format!("{cert}Type Small\nN 13\nType Small\nN 13\n");
+                    assert_eq!(verify_prime(&repeated), Ok(true));
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}

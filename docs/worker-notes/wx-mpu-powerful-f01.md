@@ -11,3 +11,4 @@ All requested code and regression tests are written. Waiting for offline validat
 Offline validation is still blocked on the shared build directory lock. Trying an isolated target directory so validation can proceed independently.
 The isolated offline test build is running; shared-target validation remains queued. No code failures have been reported yet.
 The isolated gate has also started and will validate formatting, clippy, MSRV, tests, and docs after the focused build releases its lock.
+Family-wide validation has not returned. Starting a powerful-only oracle filter in a separate target to isolate this task from sibling test runtime.

@@ -22,3 +22,5 @@ Required whole-suite tools/test.sh launched once; the gate is rerunning after al
 Fmt, clippy across all targets, and the Rust 1.85 build pass. Final diff contains additions only in the assigned module, tests, benchmarks, and notes.
 About five minutes remain: all focused tests, fmt, clippy, and MSRV pass. Waiting for the required whole-suite run and final gate tests/docs.
 Gate test phase has started and passed the library and early compatibility suites. Whole-suite testing is still in progress.
+Gate completed successfully with == gate: green, including all tests and 439 doctests. Awaiting the separate required whole-suite script result.
+Finished: all four functions, fixtures for native inputs, algebraic/concurrency tests, docs, and benchmarks are complete. Focused tests and the full offline tools/test.sh passed; tools/gate.sh printed == gate: green. Signed and bigint fixture skips are documented. No remaining native work; no commits or pushes performed.

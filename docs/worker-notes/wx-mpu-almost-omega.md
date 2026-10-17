@@ -34,3 +34,5 @@ Added native omega rank overflow checks from the C maximum-count table. Reused t
 Large omega prefixes need a minimum distinct-prime-product check to prune impossible recursive branches. Added the check and reran the prefix oracle test.
 
 Added bounded repeated-factor sieving for narrow almost-prime ranges, matching the reference range algorithm and avoiding prefix construction below lo.
+
+All 26 family compatibility tests pass in 1.73 seconds. All nine family property tests pass. Final gate is running against the current source; generated status, fixtures, tools, and crate root remain unchanged.

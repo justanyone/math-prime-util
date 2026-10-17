@@ -502,3 +502,24 @@ fn next_chen_prime_oracle() {
         c.check(next_chen_prime(c.arg(0)));
     });
 }
+
+#[test]
+fn is_gaussian_prime_oracle() {
+    each("families", "is_gaussian_prime", |c| {
+        // Gaussian primality depends only on |a| and |b|, so signs are dropped.
+        let abs = |i: usize| c.args[i].trim_start_matches('-').parse::<u64>().unwrap();
+        c.check(Some(is_gaussian_prime(abs(0), abs(1))));
+    });
+}
+
+#[test]
+fn is_sum_of_squares_oracle() {
+    each("families", "is_sum_of_squares", |c| {
+        // Skip is_sum_of_squares(-5, 2): the native API takes unsigned n.
+        let Ok(n) = c.args[0].parse::<u64>() else {
+            return;
+        };
+        let k = if c.args.len() > 1 { c.arg(1) } else { 2 };
+        c.check(Some(u8::from(is_sum_of_squares(n, k))));
+    });
+}

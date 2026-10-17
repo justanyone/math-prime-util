@@ -193,8 +193,6 @@ proptest! {
 }
 
 proptest! {
-    #[test]
-<<<<<<< HEAD
     fn totient_slice_identities(n in 1_u64..20_000) {
         prop_assert_eq!(sumtotient(n).unwrap() - sumtotient(n - 1).unwrap(), euler_phi(n));
         let inverse = inverse_totient(n);
@@ -204,7 +202,9 @@ proptest! {
         let squarefree_sum: u64 = (1..=n).filter(|d| n % d == 0 && moebius(*d) != 0)
             .map(|d| n / d).sum();
         prop_assert_eq!(dedekind_psi(n), Some(squarefree_sum));
-=======
+    }
+
+    #[test]
     fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
         prop_assert_eq!(sopfr(a * b), sopfr(a) + sopfr(b));
         if gcd(a, b) == 1 {
@@ -227,12 +227,10 @@ proptest! {
     #[test]
     fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
         prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn totient_slice_boundaries_and_independent_calls() {
     assert_eq!(sumtotient(0), Some(0));
     assert_eq!(sumtotient(7_790_208_951), None);
@@ -252,7 +250,25 @@ fn totient_slice_boundaries_and_independent_calls() {
     // Exercise both C summation paths at their boundary.
     for n in [3, 4, 8, 9, 3999, 4000, 4001, 100_000] {
         assert_eq!(sumtotient(n), Some(euler_phi_range(0, n).iter().sum()));
-=======
+    }
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(sumtotient(4000), Some(4_863_602));
+                    assert_eq!(inverse_totient(4), [5, 8, 10, 12]);
+                    assert_eq!(dedekind_psi(12), Some(24));
+                    assert!(is_totient(12));
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+#[test]
 fn divisor_sums_native_edges() {
     for (n, repeated, distinct) in [
         (0, 0, 0),
@@ -307,18 +323,10 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
         (-3, 2, -1),
     ] {
         assert_eq!(kronecker(a, b), expected);
->>>>>>> origin/dev-001
     }
     let threads: Vec<_> = (0..4)
         .map(|_| {
             std::thread::spawn(|| {
-<<<<<<< HEAD
-                for _ in 0..2 {
-                    assert_eq!(sumtotient(4000), Some(4_863_602));
-                    assert_eq!(inverse_totient(4), [5, 8, 10, 12]);
-                    assert_eq!(dedekind_psi(12), Some(24));
-                    assert!(is_totient(12));
-=======
                 for _ in 0..3 {
                     assert_eq!(sopfr(360), 17);
                     assert_eq!(sopf(360), 10);
@@ -326,7 +334,6 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
                     assert_eq!(chinese(&inputs), Some(17));
                     assert_eq!(inputs, [(5, 12), (17, 18), (5, 12)]);
                     assert_eq!(kronecker(-7, 19), -1);
->>>>>>> origin/dev-001
                 }
             })
         })

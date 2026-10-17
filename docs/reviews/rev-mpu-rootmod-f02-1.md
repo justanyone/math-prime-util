@@ -6,3 +6,5 @@ Verdict: FAIL
 4. docs/worker-notes/pc1-mpu-ramanujan-f01-t0958.md:1 — Open. The diff deletes an unrelated task's notes, outside the cornacchia/divmod task scope. Restore this file.
 
 The stopped run is incomplete against its acceptance criteria. There were no earlier findings to verify. Review uses the supplied candidate digest and the local read-only C reference; this checkout is the base, so local gate results cannot establish candidate correctness.
+
+Validation: `tools/test.sh tests/compat_modular.rs` passed all four existing oracle tests on the base; those four tests are removed by the candidate. No candidate execution is claimed.

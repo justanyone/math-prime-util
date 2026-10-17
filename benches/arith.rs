@@ -16,10 +16,10 @@ fn bench_arith(c: &mut Criterion) {
     c.bench_function("mertens", |b| b.iter(|| mertens(black_box(100_000))));
     c.bench_function("sumtotient", |b| b.iter(|| sumtotient(black_box(100_000))));
     c.bench_function("dedekind_psi", |b| {
-        b.iter(|| dedekind_psi(black_box(360_360)))
+        b.iter(|| dedekind_psi(black_box(360_360)));
     });
     c.bench_function("inverse_totient", |b| {
-        b.iter(|| inverse_totient(black_box(720_720)))
+        b.iter(|| inverse_totient(black_box(720_720)));
     });
     c.bench_function("is_totient", |b| b.iter(|| is_totient(black_box(720_720))));
     c.bench_function("arith/divisor_sum", |b| {

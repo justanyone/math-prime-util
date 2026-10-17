@@ -7,3 +7,6 @@ Restored the small-input direct summation path and prime-half inverse shortcut. 
 Focused offline tests and the gate are running. The fixture contract uses native Option<u64> summation, so the public result and native overflow bound remain unchanged; recursive arithmetic uses u128.
 Matched the C recursive cache bounds: prime-sized table and eight extra probes. Compilation is still holding the shared build lock; no network or oracle regeneration was used.
 The focused run still owns Cargo's build lock. The gate is queued behind it; retain the existing native result contract and wait for concrete compiler/test results.
+Gate found one clippy manual_div_ceil warning in the C triangular-number expression. Replaced it with the equivalent standard method; rerun the gate.
+Focused tests passed: compat_arith 31/31 and prop_arith 19/19. The corrected gate is running; all four selected oracle functions pass without changing fixtures.
+The next gate pass found two benchmark-only semicolon warnings. Added the semicolons; library checks and focused tests are clean. Restarting the gate and final offline suite.

@@ -22,7 +22,7 @@ fn sumtotient_direct(n: u64) -> u64 {
     for i in (1..=r - usize::from(flag)).rev() {
         let m = n / i as u64;
         let s = sqrtint(m);
-        let mut sum = (m + 1) / 2 * (m | 1) - (m - m / 2);
+        let mut sum = m.div_ceil(2) * (m | 1) - (m - m / 2);
         let mut k = 2;
         while k * i as u64 <= r as u64 {
             sum -= quotients[usize::try_from(k).unwrap() * i];

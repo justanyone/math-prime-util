@@ -9,7 +9,7 @@ use std::ops::ControlFlow;
 macro_rules! loop_values {
     ($run:ident, $range:expr) => {{
         let mut values = Vec::new();
-        let _: ControlFlow<()> = $run($range, |n| {
+        let _: ControlFlow<()> = math_prime_util::iter::$run($range, |n| {
             values.push(n);
             if values.len() == 2000 {
                 ControlFlow::Break(())

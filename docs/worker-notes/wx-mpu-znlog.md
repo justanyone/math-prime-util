@@ -17,3 +17,4 @@ Chebyshev full-suite test passed; the remaining prime-count and nth-prime compat
 Full-suite runs continue in the existing count compatibility tests. Formatting, Clippy, MSRV, all four native oracle tests, six property/edge tests, and direct algorithm tests have passed.
 No further code changes are needed. Full-gate completion and local coverage measurement remain unverified; existing count tests have not yet finished.
 The existing nth_prime oracle test has now passed. The gate is waiting for prime_count before it can continue with the remaining suite and docs.
+prime_count remains the only unfinished test in the current count test binary. No code changes or focused-test failures occurred during final validation.

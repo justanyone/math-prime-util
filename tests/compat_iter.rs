@@ -316,3 +316,74 @@ fn lastfor() {
     }
     assert!(seen_outside && seen_after_die);
 }
+
+/// Recomputes one `lastfor_*` fixture scenario from `t/32-5-lastfor.t` with the
+/// Rust loop API; `lastfor` ends only the loop that calls it, as in MPU.
+fn lastfor_value(func: &str) -> String {
+    let mut out: Vec<String> = Vec::new();
+    match func {
+        "lastfor_forprimes_forprimes" => {
+            let _ = forprimes(2..=100, |p| {
+                let _ = forprimes(2..=1000, |c| {
+                    if c % p == 1 {
+                        out.push(c.to_string());
+                        return lastfor();
+                    }
+                    ControlFlow::Continue(())
+                });
+                ControlFlow::Continue(())
+            });
+        }
+        "lastfor_forprimes_forcomposites" => {
+            let _ = forprimes(2..=100, |p| {
+                let _ = forcomposites(2..=1000, |c| {
+                    if c % p == 1 {
+                        out.push(c.to_string());
+                        return lastfor();
+                    }
+                    ControlFlow::Continue(())
+                });
+                ControlFlow::Continue(())
+            });
+        }
+        "lastfor_forcomposites_gt2000" => {
+            let _ = forcomposites(2..=20000, |c| {
+                if c > 2000 {
+                    out.push(c.to_string());
+                    return lastfor();
+                }
+                ControlFlow::Continue(())
+            });
+        }
+        "lastfor_formultiperm_first" => {
+            let _ = formultiperm(&[1, 1, 2], |v| {
+                out.push(v.iter().map(ToString::to_string).collect::<Vec<_>>().join(" "));
+                lastfor()
+            });
+        }
+        "lastfor_fordivisors_power" => {
+            for n in 1..=20 {
+                let _ = fordivisors(n, |d| {
+                    if is_power(d) {
+                        out.push(d.to_string());
+                        return lastfor();
+                    }
+                    ControlFlow::Continue(())
+                });
+            }
+        }
+        other => panic!("lastfor scenario {other} is not ported yet"),
+    }
+    out.join(" ")
+}
+
+/// `true` when `n` is a perfect power `r^k` with `r >= 2` and `k >= 2` (`1` is not).
+fn is_power(n: u64) -> bool {
+    (2..=n).take_while(|r| r * r <= n).any(|r| {
+        let mut p = r * r;
+        while p < n {
+            p *= r;
+        }
+        p == n
+    })
+}

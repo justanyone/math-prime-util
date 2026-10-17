@@ -13,3 +13,4 @@ First checks found an unused parent import and a duplicate chinese2 compatibilit
 All 31 arithmetic oracle tests and 22 property/regression tests pass offline. Clippy is clean. Gate reached the Rust 1.85 build; full test-script run follows.
 The full test script is queued behind the gate's MSRV build. Focused oracle and exhaustive tests passed; final whitespace checks are clean. No further code changes are needed unless the gate reports a failure.
 Rust 1.85 build passed. The full offline test script now holds the build lock; the gate will run its test and documentation stages afterward.
+- 2026-10-17T18:47:40Z launcher: no commit for 62 s; 461 s elapsed. Files changed so far: benches/arith.rs, docs/worker-notes/wx-mpu-divisor-sums-f03.md, src/arith/chinese2.rs, src/arith/is_primitive_root.rs, src/arith/mod.rs, src/arith/znorder.rs, src/arith/znprimroot.rs, tests/prop_arith.rs.

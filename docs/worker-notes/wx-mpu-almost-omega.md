@@ -6,3 +6,5 @@ Run focused offline tests and the repository gate; record any remaining gaps.
 Dependencies checked; existing prime counts can support recursive exact counting. Bounds also need MPU coefficient tables and prime/semiprime approximations.
 
 Implemented exact recursive counts, ordered almost-prime construction, omega factor-sieve windows, and rank inversion. Next: coefficient bounds and compatibility tests.
+
+All twelve public functions and fixture adapters are now written; focused offline compatibility tests are running. Bounds reuse existing prime-bound helpers.

@@ -9,7 +9,7 @@ pub(super) const MAX_INDEX: u64 = 425_656_284_035_217_743;
 pub(super) const MAX_PRIME: u64 = 18_446_744_073_709_551_557;
 
 // MPU prime_counts.c: prime_count_lower and prime_count_upper.
-fn count_bound(n: u64, upper: bool) -> u64 {
+pub(super) fn count_bound(n: u64, upper: bool) -> u64 {
     if n < 33_000 {
         return prime_count(n);
     }

@@ -58,6 +58,7 @@ pub trait Int: Sized {
     /// use math_prime_util::Int;
     /// assert_eq!(12_u128.gcd(&18), 6);
     /// ```
+    #[must_use]
     fn gcd(&self, other: &Self) -> Self;
 
     /// Returns the next prime, or `None` if it exceeds the integer range.

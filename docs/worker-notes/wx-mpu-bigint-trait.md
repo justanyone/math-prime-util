@@ -6,3 +6,4 @@ The native root names already exist; use Int associated methods to avoid ambiguo
 Offline test failed: num-bigint is absent from the registry cache. Remove the unresolved dependency so the checkout remains buildable; finish the native Int implementations and record BigUint as blocked.
 Implemented all five Int methods for native widths, with overflow-safe u128 modular powers. Added fixture replay, algebraic properties, boundary and concurrent-call tests, and benchmarks; focused validation starts now.
 Focused tests and gate are running offline. The optional backend remains blocked by the missing num-bigint package; no tool, fixture, status, or crate-root file was changed.
+Focused tests exposed sieve fixtures with native overflow and alternate primality-status conventions. Keep sieve replay limited to next_prime and compare its bounded native result; clippy also requires must_use on gcd.

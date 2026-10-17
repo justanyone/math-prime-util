@@ -14,3 +14,4 @@ Chebyshev oracle checks completed successfully. The gate still waits on the exis
 The gate remains in the existing prime-counting oracle tests with no reported failures. No source changes since the successful focused run; keeping the worktree ready for launcher snapshots.
 The nth_prime oracle test has now passed. The gate remains on prime_count in that test group; waiting for the required final gate result.
 No new failures or code changes. The existing prime_count oracle test is still running; gate completion remains the sole validation uncertainty.
+About five minutes remain in the session. All task code and focused tests are complete; the full gate is still running its existing prime_count oracle test, so a green gate cannot yet be claimed.

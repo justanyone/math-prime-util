@@ -2,3 +2,6 @@
 
 mod lucky;
 pub use lucky::*;
+
+mod perfect_powers;
+pub use perfect_powers::*;

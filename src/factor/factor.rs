@@ -71,7 +71,7 @@ fn holf(n: u64) -> Option<u64> {
 }
 
 /// One nontrivial factor from a method that returns a factor list.
-fn one_factor(n: u64, factors: Vec<u64>) -> Option<u64> {
+fn one_factor(n: u64, factors: &[u64]) -> Option<u64> {
     let f = *factors.first()?;
     (f > 1 && f < n && n % f == 0).then_some(f)
 }
@@ -91,7 +91,7 @@ fn squfof_stage(n: u64) -> Option<u64> {
     if 64 - n.leading_zeros() > 62 {
         return None;
     }
-    one_factor(n, super::squfof_factor(n, Some(200_000)))
+    one_factor(n, &super::squfof_factor(n, Some(200_000)))
 }
 
 /// Portable `factor_one` chain. `start` skips earlier stages so tests can
@@ -107,14 +107,14 @@ fn dispatcher(n: u64, start: u8) -> Option<u64> {
     // USE_MONTMATH round schedule in factor_one.
     let rounds = 8_000 + 9_000 * extra;
     if start <= 1 {
-        if let Some(f) = one_factor(n, super::pbrent_factor(n, Some(rounds), Some(1))) {
+        if let Some(f) = one_factor(n, &super::pbrent_factor(n, Some(rounds), Some(1))) {
             return Some(f);
         }
     }
     if start <= 2 {
         if let Some(f) = one_factor(
             n,
-            super::pbrent_factor(n, Some(rounds.saturating_mul(2)), Some(3)),
+            &super::pbrent_factor(n, Some(rounds.saturating_mul(2)), Some(3)),
         ) {
             return Some(f);
         }
@@ -125,22 +125,22 @@ fn dispatcher(n: u64, start: u8) -> Option<u64> {
         }
     }
     if start <= 4 {
-        if let Some(f) = one_factor(n, super::pminus1_factor(n, Some(8_000), Some(120_000))) {
+        if let Some(f) = one_factor(n, &super::pminus1_factor(n, Some(8_000), Some(120_000))) {
             return Some(f);
         }
     }
     if start <= 5 {
-        if let Some(f) = one_factor(n, super::pbrent_factor(n, Some(500_000), Some(5))) {
+        if let Some(f) = one_factor(n, &super::pbrent_factor(n, Some(500_000), Some(5))) {
             return Some(f);
         }
     }
     if start <= 6 {
-        if let Some(f) = one_factor(n, super::prho_factor(n, Some(180_000))) {
+        if let Some(f) = one_factor(n, &super::prho_factor(n, Some(180_000))) {
             return Some(f);
         }
     }
     if start <= 7 {
-        if let Some(f) = one_factor(n, super::cheb_factor(n, 1_000_000, 0)) {
+        if let Some(f) = one_factor(n, &super::cheb_factor(n, 1_000_000, 0)) {
             return Some(f);
         }
     }
@@ -255,9 +255,9 @@ mod tests {
 
     #[test]
     fn dispatcher_reaches_each_stage() {
-        assert_eq!(one_factor(15, vec![]), None);
-        assert_eq!(one_factor(15, vec![15]), None);
-        assert_eq!(one_factor(15, vec![3, 5]), Some(3));
+        assert_eq!(one_factor(15, &[]), None);
+        assert_eq!(one_factor(15, &[15]), None);
+        assert_eq!(one_factor(15, &[3, 5]), Some(3));
         assert_eq!(holf_stage(1 << 40), None);
         assert_eq!(holf_stage(101), None);
         let f = holf_stage(403).unwrap();

@@ -1,3 +1,5 @@
+#[cfg(test)]
+use super::prho_factor::multiply;
 use super::prho_factor::{add, dispatch, split};
 use crate::gcd;
 use crate::int::mont::Mont;
@@ -101,6 +103,7 @@ fn mont_step(ctx: &Mont, xi: u64, a_m: u64) -> u64 {
     }
 }
 
+#[cfg(test)]
 fn step(x: u64, a: u64, n: u64) -> u64 {
     // MPU's 64-bit Montgomery path multiplies X by X+a in these cases.
     if n < (1 << 63) || a == 1 {

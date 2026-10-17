@@ -24,3 +24,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The offline MSRV 1.85 build passed. Roughly five minutes remain in the session budget; the full-suite wrapper is still running, while modular checks are complete. Remaining integration work is replacing the trial factoring fallback with the <<cut 86 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 62 bytes)
+The documentation build also passed with warnings denied. The full offline suite has not returned yet; the focused modular suite, scoped Clippy, MSRV build, and documentation build all passed. Final status remains partial because factorint  <<cut 52 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 28 bytes)

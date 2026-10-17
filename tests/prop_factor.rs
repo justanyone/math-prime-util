@@ -1,37 +1,8 @@
-<<<<<<< HEAD
-//! Algebraic laws for factor counts, signatures, and partial factoring.
-use math_prime_util::{cheb_factor, prime_bigomega, prime_omega, prime_signature};
-use proptest::prelude::*;
-
-proptest! {
-    #![proptest_config(ProptestConfig::with_cases(256))]
-
-    #[test]
-    fn signature_counts(n in 1_u64..1_000_000) {
-        let signature = prime_signature(n);
-        prop_assert_eq!(signature.iter().sum::<u32>(), prime_bigomega(n));
-        prop_assert_eq!(signature.len(), usize::try_from(prime_omega(n)).unwrap());
-        prop_assert!(signature.windows(2).all(|pair| pair[0] >= pair[1]));
-    }
-
-    #[test]
-    fn multiplicity_is_additive(a in 1_u64..100_000, b in 1_u64..100_000) {
-        prop_assert_eq!(prime_bigomega(a * b), prime_bigomega(a) + prime_bigomega(b));
-        prop_assert!(prime_omega(a * b) <= prime_omega(a) + prime_omega(b));
-        if math_prime_util::gcd(a, b) == 1 {
-            prop_assert_eq!(prime_omega(a * b), prime_omega(a) + prime_omega(b));
-        }
-    }
-
-    #[test]
-    fn chebyshev_preserves_product(n in 1_u64..10_000_000, bound in 0_u64..200, x in any::<u64>()) {
-        let factors = cheb_factor(n, bound, x);
-        prop_assert_eq!(factors.iter().product::<u64>(), n);
-        prop_assert!(factors.windows(2).all(|pair| pair[0] <= pair[1]));
-        prop_assert!(factors.iter().all(|&f| f > 1));
-=======
-//! Independent algebraic checks for the factor predicates.
-use math_prime_util::{gcd, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael};
+//! Algebraic laws for factor counts, signatures, partial factoring, and predicates.
+use math_prime_util::{
+    cheb_factor, gcd, is_carmichael, is_cyclic, is_perfect_number, is_quasi_carmichael,
+    prime_bigomega, prime_omega, prime_signature,
+};
 use proptest::prelude::*;
 
 fn factors(mut n: u64) -> Vec<u64> {
@@ -51,13 +22,42 @@ fn factors(mut n: u64) -> Vec<u64> {
 }
 
 proptest! {
+    #![proptest_config(ProptestConfig::with_cases(256))]
+
+    #[test]
+    fn signature_counts(n in 1_u64..1_000_000) {
+        let signature = prime_signature(n);
+        prop_assert_eq!(signature.iter().sum::<u32>(), prime_bigomega(n));
+        prop_assert_eq!(signature.len(), usize::try_from(prime_omega(n)).unwrap());
+        prop_assert!(signature.windows(2).all(|pair| pair[0] >= pair[1]));
+    }
+
+    #[test]
+    fn multiplicity_is_additive(a in 1_u64..100_000, b in 1_u64..100_000) {
+        prop_assert_eq!(prime_bigomega(a * b), prime_bigomega(a) + prime_bigomega(b));
+        prop_assert!(prime_omega(a * b) <= prime_omega(a) + prime_omega(b));
+        if gcd(a, b) == 1 {
+            prop_assert_eq!(prime_omega(a * b), prime_omega(a) + prime_omega(b));
+        }
+    }
+
+    #[test]
+    fn chebyshev_preserves_product(n in 1_u64..10_000_000, bound in 0_u64..200, x in any::<u64>()) {
+        let factors = cheb_factor(n, bound, x);
+        prop_assert_eq!(factors.iter().product::<u64>(), n);
+        prop_assert!(factors.windows(2).all(|pair| pair[0] <= pair[1]));
+        prop_assert!(factors.iter().all(|&f| f > 1));
+    }
+
     #[test]
     fn cyclic_iff_coprime_totient(n in 1_u64..100_000) {
         let fs = factors(n);
         let mut phi = n;
         let mut prev = 0;
         for p in fs {
-            if p != prev { phi = phi / p * (p - 1); }
+            if p != prev {
+                phi = phi / p * (p - 1);
+            }
             prev = p;
         }
         prop_assert_eq!(is_cyclic(n), gcd(n, phi) == 1);
@@ -90,12 +90,10 @@ proptest! {
                 .count() as u64
         };
         prop_assert_eq!(is_quasi_carmichael(n), expected);
->>>>>>> origin/dev-001
     }
 }
 
 #[test]
-<<<<<<< HEAD
 fn edges_and_repeated_calls() {
     for _ in 0..2 {
         assert_eq!(prime_signature(0), vec![1]);
@@ -126,7 +124,9 @@ fn concurrent_calls_are_independent() {
     for thread in threads {
         thread.join().unwrap();
     }
-=======
+}
+
+#[test]
 fn perfect_numbers_and_u64_boundaries() {
     for n in [
         6,
@@ -172,5 +172,4 @@ fn repeated_and_concurrent_calls_agree() {
         second.join().unwrap();
     });
     check();
->>>>>>> origin/dev-001
 }

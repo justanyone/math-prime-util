@@ -12,3 +12,8 @@ Offline checks remain pending on Cargo compilation and the shared build lock. Re
 Focused compilation found fixture test names shadowing imported closure functions. Qualified the macro calls through math_prime_util::iter to fix the name collision.
 Revalidation is running after the fixture macro correction. Waiting for offline focused tests and the gate; no tools, fixtures, dependency files, or unrelated source files changed.
 Revalidation is running after the fixture macro correction. Waiting for offline focused tests and the gate; no tools, fixtures, dependency files, or unrelated source files changed.
+Revalidation is running after the fixture macro correction. Waiting for offline focused tests and the gate; no tools, fixtures, dependency files, or unrelated source files changed.
+Revalidation is running after the fixture macro correction. Waiting for offline focused tests and the gate; no tools, fixtures, dependency files, or unrelated source files changed.
+About five minutes remain: focused iterator tests passed (19 compatibility and 18 property tests). The gate fails on pre-existing clippy::float_cmp errors at src/count/mod.rs:247-249 and src/proving/aks.rs:164, outside this task's allowed s <<cut 12 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -12 bytes)

@@ -233,7 +233,7 @@ fn square_add(x: u64, a: u64, n: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use super::{brent, holf, split};
+    use super::{brent, dispatcher, holf, holf_stage, one_factor, split, squfof_stage};
 
     #[test]
     fn split_paths_and_round_limits() {
@@ -244,7 +244,7 @@ mod tests {
         assert_eq!(holf(1), None);
         for n in [403, 1_000_036_000_099, 18_446_743_979_220_271_189] {
             let f = split(n);
-            assert!(f > 1 && f < n);
+            assert!(f > 1 && f < n, "{n}");
             assert_eq!(n % f, 0);
         }
         for a in 1..=10 {
@@ -253,5 +253,26 @@ mod tests {
                 assert_eq!(1_000_036_000_099 % f, 0);
             }
         }
+    }
+
+    #[test]
+    fn dispatcher_reaches_each_stage() {
+        assert_eq!(one_factor(15, vec![]), None);
+        assert_eq!(one_factor(15, vec![15]), None);
+        assert_eq!(one_factor(15, vec![3, 5]), Some(3));
+        assert_eq!(holf_stage(1 << 40), None);
+        assert_eq!(holf_stage(101), None);
+        let f = holf_stage(403).unwrap();
+        assert_eq!(403 % f, 0);
+        assert_eq!(squfof_stage(u64::MAX), None);
+        let f = squfof_stage(91).unwrap();
+        assert_eq!(91 % f, 0);
+        for start in 0..8 {
+            let f = dispatcher(403, start).unwrap();
+            assert!(f > 1 && f < 403 && 403 % f == 0, "start {start} gave {f}");
+        }
+        // Above 45 bits the Montgomery schedule adds rounds; 2^50 is even.
+        assert_eq!(dispatcher(1 << 50, 1), Some(2));
+        assert_eq!(dispatcher(1, 8), None);
     }
 }

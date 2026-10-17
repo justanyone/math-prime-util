@@ -1,1 +1,2 @@
 - Plan: fix findings 2-4 (rough_count Legendre port, squarefree_kernel native-width prime regression), decline if too large. Started 06:44:19
+- Done edits: squarefree_kernel Pollard-Brent; rough_count caps primes at min(k-1,n), n==0 early, loop legendre_phi, brute tests. Next: mw-test. Declining finding 4 table/cache port.

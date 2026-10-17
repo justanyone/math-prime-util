@@ -60,7 +60,7 @@ fn pollard_brent(n: u64) -> u64 {
         let f = |x: u64| mulmod(x, x, n).wrapping_add(c) % n;
         let m = 128;
         let mut y = 2;
-        let mut x = y;
+        let mut x;
         let mut ys = y;
         let mut g = 1;
         let mut q = 1;

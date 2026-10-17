@@ -28,7 +28,12 @@ pub fn rough_count(n: u64, k: u64) -> u64 {
         // Msubint(n, Mrshiftint(n)): odd integers up to n.
         return n - (n >> 1);
     }
-    let primes: Vec<u64> = (2..k).filter(|&p| is_prime_small(p)).collect();
+    if n == 0 {
+        return 0;
+    }
+    // A prime above n divides no value in 1..=n, so only primes up to min(k-1, n) matter.
+    let top = (k - 1).min(n);
+    let primes: Vec<u64> = (2..=top).filter(|&p| is_prime_small(p)).collect();
     legendre_phi(n, &primes)
 }
 
@@ -39,7 +44,9 @@ fn is_prime_small(p: u64) -> bool {
 
 /// `phi(x, a)`: integers in `1..=x` not divisible by any prime in `primes`.
 ///
-/// Recurrence and early exits of `legendre_phi` in `reference/mpu/legendre_phi.c`.
+/// Recurrence and early exits of `legendre_phi` in `reference/mpu/legendre_phi.c`
+/// (MPU 0.75), written as `phi(x, a) = x - sum_i phi(x / p_i, i - 1)`, so the
+/// recursion depth is the number of nested divisions by primes, not `a`.
 /// `primes` must hold every prime below its last element. When `x` is at most
 /// the last prime, every `m` in `2..=x` has a prime factor in `primes`, so only
 /// `1` survives.
@@ -47,7 +54,17 @@ fn legendre_phi(x: u64, primes: &[u64]) -> u64 {
     match primes.split_last() {
         None => x,
         Some((&p, _)) if x <= p => u64::from(x > 0),
-        Some((&p, rest)) => legendre_phi(x, rest) - legendre_phi(x / p, rest),
+        Some(_) => {
+            let mut count = x;
+            for (i, &p) in primes.iter().enumerate() {
+                let y = x / p;
+                if y == 0 {
+                    break;
+                }
+                count -= legendre_phi(y, &primes[..i]);
+            }
+            count
+        }
     }
 }
 
@@ -88,5 +105,33 @@ mod tests {
         // Primes below 8; x = 7 is at most the last prime, so only 1 survives.
         assert_eq!(legendre_phi(7, &[2, 3, 5, 7]), 1);
         assert_eq!(legendre_phi(0, &[2, 3, 5, 7]), 0);
+    }
+
+    /// Brute-force count of `1..=n` with no divisor in `2..k`.
+    fn brute_rough(n: u64, k: u64) -> u64 {
+        (1..=n).filter(|&m| (2..k).all(|d| m % d != 0)).count() as u64
+    }
+
+    #[test]
+    fn huge_k_with_small_bound_is_fast() {
+        // Before the cap at n, this enumerated every prime below u64::MAX.
+        assert_eq!(rough_count(0, u64::MAX), 0);
+        assert_eq!(rough_count(1, u64::MAX), 1);
+        assert_eq!(rough_count(1000, u64::MAX), 1);
+    }
+
+    #[test]
+    fn matches_brute_force_small_domain() {
+        for n in 0..=600 {
+            for k in 1..=40 {
+                assert_eq!(rough_count(n, k), brute_rough(n, k), "n={n} k={k}");
+            }
+        }
+    }
+
+    #[test]
+    fn matches_brute_force_larger_bounds() {
+        assert_eq!(rough_count(200_000, 100), brute_rough(200_000, 100));
+        assert_eq!(rough_count(50_000, 1000), brute_rough(50_000, 1000));
     }
 }

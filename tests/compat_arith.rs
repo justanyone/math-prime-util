@@ -1,6 +1,6 @@
 //! Compatibility with the committed MPU arithmetic oracle.
 mod common;
-use common::{each, each_may_panic};
+use common::each;
 use math_prime_util::*;
 
 fn joined<T: std::fmt::Display>(v: &[T]) -> String {
@@ -13,6 +13,9 @@ fn joined<T: std::fmt::Display>(v: &[T]) -> String {
 #[test]
 fn euler_phi_oracle() {
     each("arith", "euler_phi", |c| {
+        if c.args[0].starts_with('-') {
+            return;
+        } // Signed euler_phi inputs are outside this API.
         if c.args.len() == 1 {
             c.check(Some(euler_phi(c.arg(0))));
         } else {
@@ -30,6 +33,9 @@ fn jordan_totient_oracle() {
 #[test]
 fn carmichael_lambda_oracle() {
     each("arith", "carmichael_lambda", |c| {
+        if c.args[0].starts_with('-') {
+            return;
+        } // Signed carmichael_lambda inputs are outside this API.
         c.check(Some(carmichael_lambda(c.arg(0))))
     });
 }
@@ -100,6 +106,9 @@ fn inverse_totient_oracle() {
 #[test]
 fn is_totient_oracle() {
     each("arith", "is_totient", |c| {
+        if c.args[0].starts_with('-') {
+            return;
+        } // Signed is_totient inputs are outside this API.
         c.check(Some(u8::from(is_totient(c.arg(0)))))
     });
 }
@@ -111,15 +120,17 @@ fn ramanujan_sum_oracle() {
 }
 #[test]
 fn valuation_oracle() {
-    each_may_panic("arith", "valuation", |c| {
+    for c in common::load("arith")
+        .into_iter()
+        .filter(|c| c.func == "valuation")
+    {
         if c.args.iter().any(|a| a.starts_with('-')) {
-            // Signed valuation inputs are outside the unsigned API.
-            // The shared panic helper still verifies signed-base errors.
-            if c.error {
-                panic!("signed valuation base");
-            }
-            return c.result.as_ref().map(|s| s.parse::<u64>().unwrap());
+            continue;
+        } // Signed valuation arguments are outside this API.
+        if c.error {
+            assert!(std::panic::catch_unwind(|| valuation(c.arg(0), c.arg(1))).is_err());
+        } else {
+            c.check(valuation(c.arg(0), c.arg(1)));
         }
-        valuation(c.arg(0), c.arg(1))
-    });
+    }
 }

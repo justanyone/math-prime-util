@@ -6,3 +6,4 @@ Read PLAN 5-8, `src/factor/ecm.rs`, XS `ecm_factor` alias, and `tinyecm64`. Exis
 - 2026-10-17T19:01:49Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.
 - 2026-10-17T19:02:49Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.
 - 2026-10-17T19:03:49Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.
+- 2026-10-17T19:05:54Z launcher: no commit for 60 s; 336 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-ecm-f01-a1.md.

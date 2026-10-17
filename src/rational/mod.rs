@@ -3,10 +3,16 @@
 //!
 //! Ported from MPU's `rational.c` and `rational.h` (MPU 0.75).
 
+#![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_precision_loss, clippy::cast_possible_wrap)]
+
 /// Continued fraction terms of `num / den`, by the Euclidean algorithm.
 ///
 /// Same method as MPU `rational.c` `contfrac`. The last remainder (the
 /// gcd) is dropped.
+///
+/// # Panics
+///
+/// Panics if the denominator is zero.
 ///
 /// # Examples
 ///
@@ -17,6 +23,7 @@
 /// ```
 #[must_use]
 pub fn contfrac(num: u64, den: u64) -> Vec<u64> {
+    assert!(den > 0, "contfrac: denominator must be positive");
     let (mut n, mut d) = (num, den);
     let mut cf = Vec::new();
     while d > 0 {
@@ -31,8 +38,12 @@ pub fn contfrac(num: u64, den: u64) -> Vec<u64> {
 
 /// Numerator and denominator of the value of a continued fraction.
 ///
-/// Walks the terms from the back, as MPU does for `from_contfrac`. Returns
-/// `None` for an empty list or when the value does not fit in `u64`.
+/// Uses MPU `XS.xs` `from_contfrac` and `rational.c` `convergents`.
+/// Returns `None` when the value does not fit in `u64`.
+///
+/// # Panics
+///
+/// Panics if a term after the first is zero.
 ///
 /// # Examples
 ///
@@ -43,14 +54,11 @@ pub fn contfrac(num: u64, den: u64) -> Vec<u64> {
 /// ```
 #[must_use]
 pub fn from_contfrac(cf: &[u64]) -> Option<(u64, u64)> {
-    let (&last, rest) = cf.split_last()?;
-    let (mut p, mut q) = (last, 1u64);
-    for &a in rest.iter().rev() {
-        let np = a.checked_mul(p)?.checked_add(q)?;
-        q = p;
-        p = np;
+    assert!(cf.iter().skip(1).all(|&a| a > 0), "terms after the first must be positive");
+    if cf.is_empty() {
+        return Some((0, 1));
     }
-    Some((p, q))
+    convergents(cf)?.last().copied()
 }
 
 /// The convergents `p_i / q_i` of a continued fraction, as `(p, q)` pairs.
@@ -109,9 +117,9 @@ pub fn convergents(cfrac: &[u64]) -> Option<Vec<(u64, u64)>> {
 /// assert_eq!(bestrational(3.14159265358979, 38), Some((22, 7)));
 /// ```
 #[must_use]
-pub fn bestrational(x: f64, dbound: u64) -> Option<(u64, u64)> {
+pub fn bestrational(x: f64, dbound: u64) -> Option<(i128, u64)> {
     let xabs = x.abs();
-    if dbound == 0 || !(xabs < u64::MAX as f64) {
+    if dbound == 0 || !xabs.is_finite() || xabs >= u64::MAX as f64 {
         return None;
     }
     let (mut p0, mut q0) = (1u64, 0u64);
@@ -120,7 +128,7 @@ pub fn bestrational(x: f64, dbound: u64) -> Option<(u64, u64)> {
     let mut rem = xabs - p1 as f64;
     while rem > 0.0 {
         let invrem = 1.0 / rem;
-        if !(invrem < u64::MAX as f64) {
+        if !invrem.is_finite() || invrem >= u64::MAX as f64 {
             return None;
         }
         let a = invrem as u64;
@@ -165,13 +173,17 @@ pub fn bestrational(x: f64, dbound: u64) -> Option<(u64, u64)> {
         p1 = p2;
         q1 = q2;
     }
-    Some((p1, q1))
+    Some((if x.is_sign_negative() { -i128::from(p1) } else { i128::from(p1) }, q1))
 }
 
 /// The Calkin-Wilf successor of the reduced fraction `num / den`.
 ///
 /// Same formula as MPU `rational.c` `next_calkin_wilf`. Returns `None`
-/// for a zero argument, a fraction that is not reduced, or overflow.
+/// on overflow.
+///
+/// # Panics
+///
+/// Panics if either argument is zero or the fraction is not reduced.
 ///
 /// # Examples
 ///
@@ -183,9 +195,7 @@ pub fn bestrational(x: f64, dbound: u64) -> Option<(u64, u64)> {
 /// ```
 #[must_use]
 pub fn next_calkin_wilf(num: u64, den: u64) -> Option<(u64, u64)> {
-    if num == 0 || den == 0 || gcd(num, den) != 1 {
-        return None;
-    }
+    assert!(num > 0 && den > 0 && gcd(num, den) == 1, "rational must be positive and reduced");
     let (n, d) = (num, den);
     let nd_new = if n < d {
         d - n
@@ -205,7 +215,11 @@ pub fn next_calkin_wilf(num: u64, den: u64) -> Option<(u64, u64)> {
 /// Same method as MPU `rational.c` `next_stern_brocot`: at the end of a
 /// row, move to the start of the next row. Otherwise take the node after
 /// `n(F)` in the tree. Returns `None` for a zero argument, a fraction that
-/// is not reduced, or overflow.
+/// is not reduced. Returns `None` on overflow.
+///
+/// # Panics
+///
+/// Panics if either argument is zero or the fraction is not reduced.
 ///
 /// # Examples
 ///
@@ -217,9 +231,7 @@ pub fn next_calkin_wilf(num: u64, den: u64) -> Option<(u64, u64)> {
 /// ```
 #[must_use]
 pub fn next_stern_brocot(num: u64, den: u64) -> Option<(u64, u64)> {
-    if num == 0 || den == 0 || gcd(num, den) != 1 {
-        return None;
-    }
+    assert!(num > 0 && den > 0 && gcd(num, den) == 1, "rational must be positive and reduced");
     if den == 1 {
         if num == u64::MAX {
             return None;
@@ -252,6 +264,7 @@ pub fn next_stern_brocot(num: u64, den: u64) -> Option<(u64, u64)> {
 /// ```
 #[must_use]
 pub fn calkin_wilf_n(num: u64, den: u64) -> Option<u64> {
+    assert!(num > 0 && den > 0, "rational must be positive");
     let mut cf = contfrac(num, den);
     let rem = gcd(num, den);
     assert!(rem == 1, "Rational must be reduced");
@@ -264,7 +277,7 @@ pub fn calkin_wilf_n(num: u64, den: u64) -> Option<u64> {
     let mut shift: u32 = 0;
     let mut bit_on = true;
     for &term in &cf {
-        if shift + term as u32 >= u64::BITS {
+        if term >= u64::from(u64::BITS - shift) {
             return None;
         }
         if bit_on {
@@ -468,8 +481,7 @@ fn ext_gcd_coeffs(a: i64, b: i64) -> (i64, i64) {
     (old_s, (old_r - old_s * a) / b)
 }
 
-/// Rank of `p / q` in the Farey sequence `F_n`: the count of its terms up
-/// to `p / q`, starting at 1 for `0 / 1`.
+/// Counts fractions strictly below `p / q` in the Farey sequence `F_n`.
 ///
 /// Same method as MPU `rational.c` `farey_rank`: the totient sieve over
 /// `2..=n`. Returns `u64::MAX` where MPU does, on overflow or bad input.
@@ -486,6 +498,9 @@ fn ext_gcd_coeffs(a: i64, b: i64) -> (i64, i64) {
 pub fn farey_rank(n: u32, p: u32, q: u32) -> u64 {
     if n == 0 || q == 0 || p == 0 {
         return 0;
+    }
+    if p > q {
+        return farey_len(n);
     }
     if n == u32::MAX {
         return u64::MAX;
@@ -514,4 +529,106 @@ pub fn farey_rank(n: u32, p: u32, q: u32) -> u64 {
         sum += icount;
     }
     sum
+}
+
+/// Returns the number of terms in the Farey sequence of order `n`.
+///
+/// Uses MPU `rational.c` `farey_length`. The sum of totients equals the
+/// rank of 1/1, computed by `farey_rank`.
+///
+/// # Panics
+///
+/// Panics if `n` is zero.
+///
+/// ```
+/// assert_eq!(math_prime_util::farey_len(5), 11);
+/// ```
+#[must_use]
+pub fn farey_len(n: u32) -> u64 {
+    assert!(n > 0, "farey: order must be positive");
+    farey_rank(n, 1, 1).saturating_add(1)
+}
+
+/// Returns all terms of the Farey sequence of order `n`.
+///
+/// Uses the Haros recurrence in MPU `rational.c` `farey_array`.
+///
+/// # Panics
+///
+/// Panics if `n` is zero or the sequence cannot fit in memory.
+///
+/// ```
+/// assert_eq!(math_prime_util::farey(2), vec![(0, 1), (1, 2), (1, 1)]);
+/// ```
+#[must_use]
+pub fn farey(n: u32) -> Vec<(u32, u32)> {
+    assert!(n > 0, "farey: order must be positive");
+    let len = farey_len(n);
+    assert!(len < u64::from(u32::MAX), "farey: sequence too large");
+    let mut out = Vec::with_capacity(usize::try_from(len).expect("farey: sequence too large"));
+    let (mut p0, mut q0, mut p1, mut q1) = (0u64, 1u64, 1u64, u64::from(n));
+    for _ in 0..len {
+        out.push((p0 as u32, q0 as u32));
+        let j = (q0 + u64::from(n)) / q1;
+        (p0, p1) = (p1, j * p1 - p0);
+        (q0, q1) = (q1, j * q1 - q0);
+    }
+    out
+}
+
+/// Returns the term at zero-based index `k` in the Farey sequence.
+///
+/// Uses the rank search and short walk in MPU `rational.c` `kth_farey`
+/// and `_walk_to_k`. Returns `None` if the index is outside the sequence.
+///
+/// ```
+/// assert_eq!(math_prime_util::farey_nth(5, 3), Some((1, 3)));
+/// ```
+#[must_use]
+pub fn farey_nth(n: u32, k: u64) -> Option<(u32, u32)> {
+    if n == 0 { return None; }
+    if k < 2 { return Some(if k == 0 { (0, 1) } else { (1, n) }); }
+    if n < 2 { return None; }
+    let (mut lo, mut hi, mut count) = (1, n, 1);
+    if n >= 5 {
+        let inc = ((u64::from(n) + 8191) >> 13) as u32;
+        let nf = f64::from(n);
+        let len = 1.0 + (0.304 * nf * nf + 0.29 * nf + 0.95);
+        let estimate = k as f64 * (nf / len);
+        let mut guess = if estimate <= f64::from(lo) { lo + 1 }
+            else if estimate >= f64::from(hi) { hi - 1 }
+            else { estimate as u32 };
+        let mut rank = 0;
+        if lo < hi {
+            rank = farey_rank(n, guess, n);
+            if rank <= k { lo = guess; count = rank; } else { hi = guess - 1; }
+        }
+        guess = if rank <= k {
+            if hi - inc < guess { hi } else { guess + inc }
+        } else if lo + inc + 1 > guess { lo } else { guess - 1 - inc };
+        if lo < hi && guess > lo && guess < hi {
+            rank = farey_rank(n, guess, n);
+            if rank <= k { lo = guess; count = rank; } else { hi = guess - 1; }
+        }
+    }
+    while lo < hi {
+        let mid = lo + ((hi - lo + 1) >> 1);
+        let rank = farey_rank(n, mid, n);
+        if rank <= k { lo = mid; count = rank; } else { hi = mid - 1; }
+    }
+    if lo == n { return (k == count).then_some((1, 1)); }
+    let g = gcd(u64::from(lo), u64::from(n)) as u32;
+    let (mut p0, mut q0) = (lo / g, n / g);
+    let mut remaining = k - count;
+    if remaining == 0 { return Some((p0, q0)); }
+    let (mut p1, mut q1) = next_farey(n, p0, q0)?;
+    remaining -= 1;
+    for _ in 0..remaining {
+        let j = (u64::from(q0) + u64::from(n)) / u64::from(q1);
+        let p2 = j * u64::from(p1) - u64::from(p0);
+        let q2 = j * u64::from(q1) - u64::from(q0);
+        (p0, p1) = (p1, u32::try_from(p2).ok()?);
+        (q0, q1) = (q1, u32::try_from(q2).ok()?);
+    }
+    Some((p1, q1))
 }

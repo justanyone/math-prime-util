@@ -159,4 +159,20 @@ mod tests {
         assert_eq!(exponents(1_000_003_u64.pow(3)), vec![3]);
         assert_eq!(exponents(2_u64.pow(2) * 3_u64.pow(5) * 7), vec![2, 5, 1]);
     }
+
+    #[test]
+    fn rho_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let mut h = 0;
+        for n in inputs() {
+            for seed in [7, 9, 11] {
+                let got = rho(n, seed);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "rho({n},{seed})");
+                }
+                h = fold_opt(h, got);
+            }
+        }
+        assert_eq!(h, 11_760_351_284_532_846_272);
+    }
 }

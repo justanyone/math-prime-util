@@ -38,6 +38,8 @@ mod prime_bigomega;
 mod prime_omega;
 mod prime_signature;
 mod squfof_factor;
+#[cfg(test)]
+mod test_support;
 pub use cheb_factor::cheb_factor;
 pub use fermat_factor::fermat_factor;
 pub use holf_factor::holf_factor;

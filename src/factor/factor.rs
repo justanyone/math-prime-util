@@ -273,4 +273,28 @@ mod tests {
         assert_eq!(dispatcher(1 << 50, 1), Some(2));
         assert_eq!(dispatcher(1, 8), None);
     }
+
+    #[test]
+    fn brent_and_holf_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let (mut hb, mut hh) = (0, 0);
+        for n in inputs() {
+            if let Ok(small) = u32::try_from(n) {
+                hh = fold_opt(hh, holf(u64::from(small)));
+            }
+            for a in [1, 2, 3, 5] {
+                for rounds in [100, 5_000, 500_000] {
+                    let got = brent(n, rounds, a);
+                    if let Some(f) = got {
+                        assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                    }
+                    hb = fold_opt(hb, got);
+                }
+            }
+        }
+        assert_eq!(
+            (hb, hh),
+            (4_434_182_252_870_372_899, 7_831_995_469_746_149_911)
+        );
+    }
 }

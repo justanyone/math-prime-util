@@ -208,8 +208,7 @@ fn read_fields<'a>(
                 }
             }
             if let Some(index) = key.strip_prefix("A[").and_then(|s| s.strip_suffix(']')) {
-                if !index.parse::<usize>().is_ok_and(|i| i <= factor_index)
-                {
+                if !index.parse::<usize>().is_ok_and(|i| i <= factor_index) {
                     return Err("Invalid A index".into());
                 }
             }

@@ -17,3 +17,4 @@ Started focused tests with CARGO_TARGET_DIR=target/iter-verify to avoid the shar
 Final source review retained the C thresholds and maximum table, and simplified the private factor-value type for pedantic lint. Isolated focused compilation is still pending.
 Verification is pending: the original gate remains blocked on Cargo's lock, while the isolated test run has not returned output. No test success is claimed.
 The isolated build directory has populated (75 MB), confirming compilation is progressing. Started the gate against that same local directory to obtain final lint and MSRV diagnostics.
+Added an independent property: prime-square sieve output equals the unit-exponent factorization predicate over arbitrary small intervals. Gates remain queued behind compilation.

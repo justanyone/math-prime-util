@@ -13,3 +13,4 @@ About five minutes remain in the session budget. Implementation and focused test
 The full gate and required whole-suite run are still in existing count tests; focused modular tests remain green. Coverage was not measured locally.
 - 2026-10-17T07:49:37Z launcher: no commit for 60 s; 364 s elapsed. Files changed so far: benches/modular.rs, docs/worker-notes/wx-mpu-znlog.md, src/modular/mod.rs, src/modular/native.rs, tests/compat_modular.rs, tests/prop_modular.rs.
 The existing full-suite count tests are still running; no modular failures or new compiler warnings. Continue waiting within the session limit.
+Chebyshev full-suite test passed; the remaining prime-count and nth-prime compatibility tests still run. No implementation edits are pending.

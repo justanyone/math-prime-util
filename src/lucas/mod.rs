@@ -364,7 +364,7 @@ pub fn lucasvmod(p: i64, q: i64, k: u64, n: u64) -> u64 {
 /// assert_eq!(math_prime_util::lucasuv(1, -1, 10), Some((55, 123)));
 /// ```
 pub fn lucasuv(p: i64, q: i64, k: u64) -> Option<(i128, i128)> {
-    let (u, v) = exact_uv(p, q, k)?;
+    let (u, v) = exact_uv(p, q, k, true)?;
     (fits_native(u) && fits_native(v)).then_some((u, v))
 }
 
@@ -372,7 +372,7 @@ fn fits_native(x: i128) -> bool {
     x.unsigned_abs() <= u128::from(u64::MAX)
 }
 
-fn exact_uv(p: i64, q: i64, k: u64) -> Option<(i128, i128)> {
+fn exact_uv(p: i64, q: i64, k: u64, need_v: bool) -> Option<(i128, i128)> {
     if k == 0 {
         return Some((0, 2));
     }
@@ -396,14 +396,18 @@ fn exact_uv(p: i64, q: i64, k: u64) -> Option<(i128, i128)> {
     }
     ql = ql.checked_mul(qh)?;
     uh = uh.checked_mul(vl)?.checked_sub(ql)?;
-    vl = vh.checked_mul(vl)?.checked_sub(p.checked_mul(ql)?)?;
+    if s > 0 || need_v {
+        vl = vh.checked_mul(vl)?.checked_sub(p.checked_mul(ql)?)?;
+    }
     if s > 0 {
         qh = ql.checked_mul(q)?;
         ql = ql.checked_mul(qh)?;
     }
     for j in 0..s {
         uh = uh.checked_mul(vl)?;
-        vl = vl.checked_mul(vl)?.checked_sub(ql.checked_mul(2)?)?;
+        if j + 1 < s || need_v {
+            vl = vl.checked_mul(vl)?.checked_sub(ql.checked_mul(2)?)?;
+        }
         if j + 1 < s {
             ql = ql.checked_mul(ql)?;
         }
@@ -421,7 +425,7 @@ fn exact_uv(p: i64, q: i64, k: u64) -> Option<(i128, i128)> {
 /// assert_eq!(math_prime_util::lucasu(1, -1, 10), Some(55));
 /// ```
 pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i128> {
-    exact_uv(p, q, k).map(|(u, _)| u).filter(|&u| fits_native(u))
+    exact_uv(p, q, k, false).map(|(u, _)| u).filter(|&u| fits_native(u))
 }
 
 /// Exact `V_k(P, Q)`, or `None` when it is larger than `u64::MAX` in magnitude.
@@ -434,7 +438,7 @@ pub fn lucasu(p: i64, q: i64, k: u64) -> Option<i128> {
 /// assert_eq!(math_prime_util::lucasv(1, -1, 10), Some(123));
 /// ```
 pub fn lucasv(p: i64, q: i64, k: u64) -> Option<i128> {
-    exact_uv(p, q, k).map(|(_, v)| v).filter(|&v| fits_native(v))
+    exact_uv(p, q, k, true).map(|(_, v)| v).filter(|&v| fits_native(v))
 }
 
 /// Computes `F(k)` and `F(k+1)` by doubling, or `None` on overflow.

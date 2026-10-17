@@ -4,7 +4,7 @@
 //! Skipped cases: negative `k` for `fibonacci` and `lucas_number` (the Rust
 //! functions take `u64`, and MPU returns `undef` for them). `lucasuv` cases
 //! where MPU gives a value in `U` but `undef` in `V`: the Rust function returns
-//! `None` for the whole pair when one value does not fit `i64`.
+//! `None` for the whole pair when one value does not fit the native magnitude bound.
 
 mod common;
 
@@ -31,7 +31,8 @@ fn lucas_sequence_oracle() {
 #[test]
 fn lucasuvmod_oracle() {
     each("lucas", "lucasuvmod", |c| {
-        if c.error {
+        // MPU Perl returns undef for n=0; the C contract and Rust API panic.
+        if c.error || c.arg::<u64>(3) == 0 {
             assert!(std::panic::catch_unwind(|| lucasuvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
             return;
         }
@@ -42,7 +43,8 @@ fn lucasuvmod_oracle() {
 #[test]
 fn lucasumod_oracle() {
     each("lucas", "lucasumod", |c| {
-        if c.error {
+        // MPU Perl returns undef for n=0; the C contract and Rust API panic.
+        if c.error || c.arg::<u64>(3) == 0 {
             assert!(std::panic::catch_unwind(|| lucasumod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
             return;
         }
@@ -53,7 +55,8 @@ fn lucasumod_oracle() {
 #[test]
 fn lucasvmod_oracle() {
     each("lucas", "lucasvmod", |c| {
-        if c.error {
+        // MPU Perl returns undef for n=0; the C contract and Rust API panic.
+        if c.error || c.arg::<u64>(3) == 0 {
             assert!(std::panic::catch_unwind(|| lucasvmod(c.arg(0), c.arg(1), c.arg(2), c.arg(3))).is_err());
             return;
         }
@@ -64,7 +67,7 @@ fn lucasvmod_oracle() {
 #[test]
 fn lucasuv_oracle() {
     each("lucas", "lucasuv", |c| {
-        // Skipped: MPU gives a U beyond i64 with V undef; the Rust pair is None.
+        // Skipped: MPU gives a U beyond the native bound with V undef; the Rust pair is None.
         if c.result.as_deref().is_some_and(|r| r.contains("undef")) {
             return;
         }

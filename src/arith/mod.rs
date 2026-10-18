@@ -876,6 +876,10 @@ pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
     if congruences.is_empty() {
         return Some((0, 0));
     }
+    // With two or more pairs, every input modulus must stay in the signed range (native C path).
+    if congruences.len() > 1 && congruences.iter().any(|&(_, m)| m > u64::MAX >> 1) {
+        return None;
+    }
     let mut pairs = congruences.to_vec();
     pairs.sort_unstable_by_key(|a| std::cmp::Reverse(a.1));
     let (mut r, mut m) = pairs[0];

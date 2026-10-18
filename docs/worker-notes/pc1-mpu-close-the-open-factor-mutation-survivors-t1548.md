@@ -17,3 +17,5 @@ Run focused factor tests and the required gate, recording remaining validation l
 - Validation heartbeat: the required gate and the single whole-suite command remain active; no further source changes or readiness changes are planned.
 - Gate passed fmt, clippy and MSRV build and is running tests. The independent whole-suite command remains active. No unnamed survivor report is available and no blanket equivalence claim is made.
 - Full validation is still running after the focused pass; preserving source edits and waiting for the required gate result.
+- Integration suites are progressing without reported failures; gate is beyond library tests. Waiting for docs and the final green marker.
+- Open acceptance item: the original roughly 35-survivor report is absent; unnamed mutants cannot be individually classified. The new named-case tests pass, but a fresh mutation run has not been performed.

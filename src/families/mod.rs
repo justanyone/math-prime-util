@@ -1,4 +1,166 @@
 //! Lucky numbers from MPU 0.75.
 
+mod is_gaussian_prime;
+mod is_sum_of_squares;
 mod lucky;
+pub use is_gaussian_prime::is_gaussian_prime;
+pub use is_sum_of_squares::is_sum_of_squares;
 pub use lucky::*;
+
+mod prime_power_count;
+pub use prime_power_count::prime_power_count;
+
+mod prime_power_count_approx;
+pub use prime_power_count_approx::prime_power_count_approx;
+
+mod prime_power_count_lower;
+pub use prime_power_count_lower::prime_power_count_lower;
+
+mod prime_power_count_upper;
+pub use prime_power_count_upper::prime_power_count_upper;
+
+mod minimal_goldbach_pair;
+pub use minimal_goldbach_pair::minimal_goldbach_pair;
+mod goldbach_pair_count;
+pub use goldbach_pair_count::goldbach_pair_count;
+mod goldbach_pairs;
+pub use goldbach_pairs::goldbach_pairs;
+mod next_chen_prime;
+pub use next_chen_prime::next_chen_prime;
+mod is_prime_power;
+pub use is_prime_power::is_prime_power;
+mod next_prime_power;
+pub use next_prime_power::next_prime_power;
+mod prev_prime_power;
+pub use prev_prime_power::prev_prime_power;
+mod prime_powers;
+pub use prime_powers::prime_powers;
+mod nth_ramanujan_prime;
+pub use nth_ramanujan_prime::nth_ramanujan_prime;
+mod nth_ramanujan_prime_approx;
+pub use nth_ramanujan_prime_approx::nth_ramanujan_prime_approx;
+mod nth_ramanujan_prime_lower;
+pub use nth_ramanujan_prime_lower::nth_ramanujan_prime_lower;
+mod ramanujan_prime_count_upper;
+pub use ramanujan_prime_count_upper::ramanujan_prime_count_upper;
+
+mod perfect_powers;
+pub use perfect_powers::*;
+
+mod nth_prime_power;
+pub use nth_prime_power::nth_prime_power;
+
+mod nth_prime_power_approx;
+pub use nth_prime_power_approx::nth_prime_power_approx;
+
+mod nth_prime_power_lower;
+pub use nth_prime_power_lower::nth_prime_power_lower;
+
+mod nth_prime_power_upper;
+pub use nth_prime_power_upper::nth_prime_power_upper;
+
+mod twin_primes;
+pub use twin_primes::twin_primes;
+mod twin_prime_count;
+pub use twin_prime_count::twin_prime_count;
+mod twin_prime_count_approx;
+pub use twin_prime_count_approx::twin_prime_count_approx;
+mod nth_twin_prime;
+pub use nth_twin_prime::nth_twin_prime;
+
+mod powerfree;
+mod powerfree_sum;
+mod powerful;
+pub use powerfree_sum::powerfree_sum;
+mod powerfree_part;
+pub use powerfree_part::powerfree_part;
+mod powerfree_part_sum;
+pub use powerfree_part_sum::powerfree_part_sum;
+mod is_powerful;
+pub use is_powerful::is_powerful;
+mod powerful_numbers;
+pub use powerful_numbers::powerful_numbers;
+mod powerful_count;
+pub use powerful_count::powerful_count;
+mod sumpowerful;
+pub use sumpowerful::sumpowerful;
+
+mod nth_twin_prime_approx;
+pub use nth_twin_prime_approx::nth_twin_prime_approx;
+mod semi_primes;
+pub use semi_primes::semi_primes;
+mod semiprime_count;
+pub use semiprime_count::semiprime_count;
+mod semiprime_count_approx;
+pub use semiprime_count_approx::semiprime_count_approx;
+
+mod is_ramanujan_prime;
+pub use is_ramanujan_prime::is_ramanujan_prime;
+mod nth_ramanujan_prime_upper;
+pub use nth_ramanujan_prime_upper::nth_ramanujan_prime_upper;
+mod ramanujan_primes;
+pub use ramanujan_primes::ramanujan_primes;
+mod ramanujan_prime_count;
+pub use ramanujan_prime_count::ramanujan_prime_count;
+mod ramanujan_prime_count_approx;
+pub use ramanujan_prime_count_approx::ramanujan_prime_count_approx;
+mod ramanujan_prime_count_lower;
+pub use ramanujan_prime_count_lower::ramanujan_prime_count_lower;
+mod nth_semiprime;
+pub use nth_semiprime::*;
+mod nth_semiprime_approx;
+pub use nth_semiprime_approx::*;
+
+mod perfect_power_count_approx;
+pub use perfect_power_count_approx::perfect_power_count_approx;
+mod perfect_power_count_lower;
+pub use perfect_power_count_lower::perfect_power_count_lower;
+mod perfect_power_count_upper;
+pub use perfect_power_count_upper::perfect_power_count_upper;
+mod nth_perfect_power;
+pub use nth_perfect_power::nth_perfect_power;
+mod is_perfect_power;
+pub use is_perfect_power::is_perfect_power;
+mod next_perfect_power;
+pub use next_perfect_power::next_perfect_power;
+mod prev_perfect_power;
+pub use prev_perfect_power::prev_perfect_power;
+mod perfect_power_count;
+pub use perfect_power_count::perfect_power_count;
+
+mod almost_primes;
+pub use almost_primes::almost_primes;
+mod almost_prime_count;
+pub use almost_prime_count::almost_prime_count;
+mod almost_prime_count_approx;
+pub use almost_prime_count_approx::almost_prime_count_approx;
+mod almost_prime_count_lower;
+pub use almost_prime_count_lower::almost_prime_count_lower;
+mod nth_almost_prime_upper;
+pub use nth_almost_prime_upper::nth_almost_prime_upper;
+mod omega_primes;
+pub use omega_primes::omega_primes;
+mod omega_prime_count;
+pub use omega_prime_count::omega_prime_count;
+mod nth_omega_prime;
+pub use nth_omega_prime::nth_omega_prime;
+
+mod nth_powerful;
+pub use nth_powerful::nth_powerful;
+
+mod is_powerfree;
+pub use is_powerfree::is_powerfree;
+
+mod powerfree_count;
+pub use powerfree_count::powerfree_count;
+
+mod nth_powerfree;
+pub use nth_powerfree::nth_powerfree;
+mod almost_prime_count_upper;
+pub use almost_prime_count_upper::almost_prime_count_upper;
+mod nth_almost_prime;
+pub use nth_almost_prime::nth_almost_prime;
+mod nth_almost_prime_approx;
+pub use nth_almost_prime_approx::nth_almost_prime_approx;
+mod nth_almost_prime_lower;
+pub use nth_almost_prime_lower::nth_almost_prime_lower;

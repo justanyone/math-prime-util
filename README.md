@@ -30,8 +30,8 @@ next number starts from `main`. `main` carries releases only. The rotation is `t
 Each line is ticked, with its date, by the milestone row of the build board when every requirement of that milestone is done.
 The phases are described in `PLAN.md` section 6.
 
-- [ ] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration)
-- [ ] Milestone 2: factoring and number theory ported and benchmarked against Perl
+- [x] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration) (done 2026-10-17)
+- [x] Milestone 2: factoring and number theory ported and benchmarked against Perl (done 2026-10-17)
 - [ ] Release 0.1.0 published on crates.io
 - [ ] Milestone 3: prime counting, nth prime and prime sums ported
 - [ ] Milestone 4: prime families ported
@@ -46,7 +46,21 @@ The phases are described in `PLAN.md` section 6.
 
 1.85 (edition 2024).
 
+## Relationship to Math::Prime::Util
+
+This crate is a derivative work: a Rust port of Math::Prime::Util (MPU) 0.75 by Dana Jacobsen. The algorithms, the
+function behaviour and the test oracle come from MPU. The Rust code is a new implementation of them. What differs
+from MPU:
+
+- The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
+- The native path covers `u64` and `u128`; big integers are not ported yet.
+- Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
+  and reports the difference upstream. See [NOTICE](NOTICE).
+
+MPU is not affiliated with this port and has not endorsed it.
+
 ## License
 
-Same terms as MPU and Perl itself: GPL-1.0-or-later OR Artistic-1.0-Perl. See
-[LICENSE](LICENSE). Math::Prime::Util is copyright Dana Jacobsen.
+Same terms as MPU and Perl itself: GPL-1.0-or-later OR Artistic-1.0-Perl. You may choose either one. See
+[LICENSE](LICENSE) and [NOTICE](NOTICE). Math::Prime::Util is copyright Dana Jacobsen; the Rust port is
+copyright Kevin J. Rice and contributors.

@@ -56,7 +56,11 @@ fn interpolate(n: u64) -> (u64, u64) {
             let span = max - min;
             let below = guess <= min;
             guess = if span <= 1 {
-                if below { max } else { min }
+                if below {
+                    max
+                } else {
+                    min
+                }
             } else if 999 >= span {
                 min + (span >> 1)
             } else if below {
@@ -109,7 +113,11 @@ fn next(n: u64) -> u64 {
             best = c;
         }
     }
-    if best == u64::MAX { 0 } else { best }
+    if best == u64::MAX {
+        0
+    } else {
+        best
+    }
 }
 
 /// Return the `n`th positive perfect power, with 1 at index 1.

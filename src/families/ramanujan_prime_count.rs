@@ -1,4 +1,4 @@
-use super::ramanujan_primes::{SMALL, range};
+use super::ramanujan_primes::{range, SMALL};
 
 /// Count the Ramanujan primes at most `n`.
 ///

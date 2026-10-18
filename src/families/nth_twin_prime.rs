@@ -6,7 +6,7 @@
 )]
 
 use super::twin_prime_count::table_skip;
-use super::twin_primes::{MAX_TWIN, scan};
+use super::twin_primes::{scan, MAX_TWIN};
 
 /// Return the smaller prime of twin pair number `n`.
 ///

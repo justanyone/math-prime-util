@@ -1,4 +1,4 @@
-use super::ramanujan_primes::{SMALL, count_bound, nth_bound};
+use super::ramanujan_primes::{count_bound, nth_bound, SMALL};
 
 /// Return a lower bound on the number of Ramanujan primes at most `n`.
 ///

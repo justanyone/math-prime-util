@@ -1,5 +1,5 @@
 use super::nth_ramanujan_prime_approx::inverse;
-use super::nth_ramanujan_prime_lower::{SMALL, count_lower, count_upper};
+use super::nth_ramanujan_prime_lower::{count_lower, count_upper, SMALL};
 
 /// Return an upper bound for the count of Ramanujan primes at most `n`.
 ///

@@ -225,13 +225,13 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_almost_prime`
 - [ ] `nth_almost_prime_approx`
 - [ ] `nth_almost_prime_lower`
-- [ ] `nth_almost_prime_upper`
+- [x] `nth_almost_prime_upper`
 - [x] `nth_calkin_wilf`
 - [x] `nth_lucky`
 - [x] `nth_lucky_approx`
 - [x] `nth_lucky_lower`
 - [x] `nth_lucky_upper`
-- [ ] `nth_omega_prime`
+- [x] `nth_omega_prime`
 - [x] `nth_perfect_power`
 - [x] `nth_perfect_power_approx`
 - [x] `nth_perfect_power_lower`
@@ -257,8 +257,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_twin_prime`
 - [x] `nth_twin_prime_approx`
 - [x] `numtoperm`
-- [ ] `omega_prime_count`
-- [ ] `omega_primes`
+- [x] `omega_prime_count`
+- [x] `omega_primes`
 - [x] `partitions`
 - [x] `partitionsq`
 - [x] `pbrent_factor`

@@ -29,7 +29,7 @@ fn count(n: u64) -> u64 {
         return crate::prime_count(n);
     }
     if n > 10_000_000_000_000_000 {
-        use super::prime_power_count_approx::{Wide, li};
+        use super::prime_power_count_approx::{li, Wide};
         let x = n as f64;
         // Li returns NV in MPU before the long double subtraction.
         let value = Wide(li(n).0, 0.0).add(Wide(-2.0 * x.sqrt() / x.ln(), 0.0));

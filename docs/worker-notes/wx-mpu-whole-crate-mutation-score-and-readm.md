@@ -72,3 +72,4 @@ No production code changed, so this task adds no state or concurrency paths.
 The full offline suite has been requested once through tools/test.sh. The notes now include the exact mutation command and score formula. Completed module runs and survivor triage remain pending.
 
 The arith run was interrupted through its own session after roughly four minutes with no completed baseline or mutant outcomes. The full 21988-candidate run cannot fit this session. No timeout or survivor result is claimed. Format and Clippy passed; MSRV and full tests are still running.
+The mutation attempt is stopped. No run is left active for mutation testing. Validation is still in progress; the recorded score remains unavailable.

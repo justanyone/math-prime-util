@@ -109,4 +109,21 @@ mod tests {
         assert_eq!(rho(7, 4096), vec![7]);
         assert_eq!(rho(49, 64), vec![7, 7]);
     }
+
+    #[test]
+    fn rho_exact_results() {
+        use crate::factor::test_support::{fold, inputs};
+        let mut h = 0;
+        for n in inputs() {
+            for rounds in [64, 200, 4_000, 100_000] {
+                let got = rho(n, rounds);
+                assert_eq!(got.iter().product::<u64>(), n);
+                for f in got {
+                    h = fold(h, f);
+                }
+                h = fold(h, 1);
+            }
+        }
+        assert_eq!(h, 12_464_662_942_918_696_722);
+    }
 }

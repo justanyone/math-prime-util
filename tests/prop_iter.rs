@@ -199,6 +199,331 @@ proptest! {
 }
 
 #[test]
+fn requested_iterator_bounds_and_state() {
+    assert_eq!(almost_primes_in(64, 0..=u64::MAX).next(), None);
+    assert_eq!(almost_primes_in(u32::MAX, 0..=u64::MAX).next(), None);
+    assert_eq!(
+        almost_primes_in(63, 0..=u64::MAX).collect::<Vec<_>>(),
+        [1_u64 << 63, 3_u64 << 62]
+    );
+    assert_eq!(almost_primes_in(0, 0..=10).count(), 0);
+    let lo = 10;
+    let hi = 2;
+    assert_eq!(almost_primes_in(2, lo..=hi).count(), 0);
+    assert_eq!(factored_in(lo..=hi).count(), 0);
+    assert_eq!(squarefree_integers_in(lo..=hi).count(), 0);
+    assert_eq!(squarefree_integers_in(0..=0).count(), 0);
+    for (n, factors) in factored_in(0..=1000) {
+        assert_eq!(factors, math_prime_util::factor_exp(n));
+    }
+    let mut a = factored_in(1..=300);
+    assert_eq!(a.next(), Some((1, vec![])));
+    let b = a.clone();
+    assert_eq!(a.collect::<Vec<_>>(), b.collect::<Vec<_>>());
+    let mut a = squarefree_integers_in(0..=100);
+    assert_eq!(a.next(), Some(1));
+    let b = a.clone();
+    assert_eq!(a.collect::<Vec<_>>(), b.collect::<Vec<_>>());
+    let mut empty = squarefree_integers_in(4..=4);
+    assert_eq!(empty.next(), None);
+    assert_eq!(empty.next(), None);
+    assert_eq!(
+        foralmostprimes(2, 0..=100, ControlFlow::Break),
+        ControlFlow::Break(4)
+    );
+    assert_eq!(
+        forfactored(1..=100, |n, _| ControlFlow::Break(n)),
+        ControlFlow::Break(1)
+    );
+    assert_eq!(
+        forsquarefree(1..=100, |n, _| ControlFlow::Break(n)),
+        ControlFlow::Break(1)
+    );
+    assert_eq!(
+        forsquarefreeint(1..=100, ControlFlow::Break),
+        ControlFlow::Break(1)
+    );
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                let mut seen = Vec::new();
+                let _: ControlFlow<()> = forsquarefreeint(0..=100, |n| {
+                    assert!(forfactored(n..=n, |_, _| ControlFlow::Break(())).is_break());
+                    seen.push(n);
+                    ControlFlow::Continue(())
+                });
+                seen
+            })
+        })
+        .collect();
+    for worker in workers {
+        assert_eq!(
+            worker.join().unwrap(),
+            squarefree_in(0..=100).map(|(n, _)| n).collect::<Vec<_>>()
+        );
+    }
+}
+
+proptest! {
+    #[test]
+    fn multiset_matches_unique_index_permutations(values in prop::collection::vec(0_u8..4, 0..7)) {
+        let expected: std::collections::BTreeSet<_> = permutations_of(values.len())
+            .map(|indices| indices.into_iter().map(|i| values[i]).collect::<Vec<_>>())
+            .collect();
+        let actual: Vec<_> = multipermutations_of(&values).collect();
+        prop_assert_eq!(&actual, &expected.into_iter().collect::<Vec<_>>());
+        prop_assert!(actual.windows(2).all(|pair| pair[0] < pair[1]));
+    }
+
+    #[test]
+    fn product_preserves_order_and_duplicates(
+        left in prop::collection::vec(0_u8..3, 0..5),
+        right in prop::collection::vec(0_u8..3, 0..5),
+    ) {
+        let expected: Vec<_> = left.iter().flat_map(|&a| right.iter().map(move |&b| vec![a, b])).collect();
+        prop_assert_eq!(set_product(&[left, right]).collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn derangement_count_obeys_recurrence(n in 2_usize..9) {
+        let expected = (n - 1) * (derangements_of(n - 1).count() + derangements_of(n - 2).count());
+        prop_assert_eq!(derangements_of(n).count(), expected);
+    }
+}
+
+#[test]
+fn arrangement_state_is_independent() {
+    macro_rules! independent {
+        ($iterator:expr) => {{
+            let mut first = $iterator;
+            let saved = first.next().unwrap();
+            let mut duplicate = first.clone();
+            assert_eq!(first.next(), duplicate.next());
+            let tail = first.collect::<Vec<_>>();
+            assert_eq!(tail, duplicate.by_ref().collect::<Vec<_>>());
+            assert_eq!(duplicate.next(), None);
+            assert_eq!(duplicate.next(), None);
+            assert!(!saved.is_empty());
+        }};
+    }
+    independent!(permutations_of(4));
+    independent!(derangements_of(4));
+    independent!(multipermutations_of(&[1, 1, 2, 3]));
+    independent!(set_product(&[vec![1, 2], vec![3, 4]]));
+}
+
+#[test]
+fn arrangement_callbacks_are_reentrant_and_stop() {
+    macro_rules! callback {
+        ($function:ident, $argument:expr, $expected:expr) => {{
+            let mut calls = 0;
+            let result = $function($argument, |mut value| {
+                calls += 1;
+                value.clear();
+                assert_eq!(
+                    $function($argument, |_| ControlFlow::Break(17)),
+                    ControlFlow::Break(17)
+                );
+                ControlFlow::Break(23)
+            });
+            assert_eq!(result, ControlFlow::Break(23));
+            assert_eq!(calls, 1);
+            assert!(
+                std::panic::catch_unwind(|| {
+                    let _: ControlFlow<()> = $function($argument, |_| panic!("callback"));
+                })
+                .is_err()
+            );
+            let mut count = 0;
+            let result: ControlFlow<()> = $function($argument, |_| {
+                count += 1;
+                ControlFlow::Continue(())
+            });
+            assert!(result.is_continue());
+            assert_eq!(count, $expected);
+        }};
+    }
+    callback!(forperm, 4, 24);
+    callback!(forderange, 4, 9);
+    callback!(formultiperm, &[1, 1, 2], 3);
+    callback!(forsetproduct, &[vec![1, 2], vec![3, 4]], 4);
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    permutations_of(5).count(),
+                    derangements_of(5).count(),
+                    multipermutations_of(&[1, 1, 2, 2]).count(),
+                    set_product(&[vec![1, 2], vec![3, 4]]).count(),
+                )
+            })
+        })
+        .collect();
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), (120, 44, 6, 4));
+    }
+}
+
+#[test]
+fn requested_iterator_unwind_and_relaunch() {
+    assert!(
+        std::panic::catch_unwind(|| {
+            let _: ControlFlow<()> = forfactored(0..=300, |_, _| panic!("callback"));
+        })
+        .is_err()
+    );
+    assert_eq!(factored_in(0..=300).count(), 300);
+    assert!(
+        std::panic::catch_unwind(|| {
+            let _: ControlFlow<()> = forsquarefreeint(1..=100, |_| panic!("callback"));
+        })
+        .is_err()
+    );
+    assert_eq!(squarefree_integers_in(1..=100).count(), 61);
+    let mut end = factored_in(u64::MAX..=u64::MAX);
+    assert_eq!(end.next().unwrap().0, u64::MAX);
+    assert_eq!(end.next(), None);
+    assert_eq!(end.next(), None);
+    let lo = 100_000_000_000_000;
+    for (n, factors) in factored_in(lo..=lo + 100) {
+        assert_eq!(factors, math_prime_util::factor_exp(n));
+    }
+}
+
+proptest! {
+    #[test]
+    fn squarefree_integer_sieve_matches_factorization(lo in 0_u64..500, len in 0_u64..100) {
+        let expected: Vec<_> = (lo..=lo + len).filter(|&n| {
+            n > 0 && math_prime_util::factor_exp(n).iter().all(|&(_, e)| e == 1)
+        }).collect();
+        prop_assert_eq!(squarefree_integers_in(lo..=lo + len).collect::<Vec<_>>(), expected);
+    }
+}
+
+#[test]
+fn arrangement_empty_and_singleton_boundaries() {
+    assert_eq!(
+        permutations_of(0).collect::<Vec<_>>(),
+        [Vec::<usize>::new()]
+    );
+    assert_eq!(permutations_of(1).collect::<Vec<_>>(), [vec![0]]);
+    assert_eq!(
+        derangements_of(0).collect::<Vec<_>>(),
+        [Vec::<usize>::new()]
+    );
+    assert_eq!(derangements_of(1).next(), None);
+    assert_eq!(derangements_of(2).collect::<Vec<_>>(), [vec![1, 0]]);
+    let mut empty = multipermutations_of::<u8>(&[]);
+    assert_eq!(empty.next(), Some(vec![]));
+    assert_eq!(empty.next(), None);
+    assert_eq!(empty.next(), None);
+    assert_eq!(multipermutations_of(&[7]).collect::<Vec<_>>(), [vec![7]]);
+    assert_eq!(set_product::<u8>(&[]).next(), None);
+    for sets in [vec![vec![]], vec![vec![], vec![1]], vec![vec![1], vec![]]] {
+        let mut calls = 0;
+        let result: ControlFlow<()> = forsetproduct(&sets, |_| {
+            calls += 1;
+            ControlFlow::Continue(())
+        });
+        assert!(result.is_continue());
+        assert_eq!(calls, 0);
+    }
+    assert_eq!(
+        set_product(&[vec![2, 2]]).collect::<Vec<_>>(),
+        [vec![2], vec![2]]
+    );
+}
+
+proptest! {
+    #[test]
+    fn range_loop_laws(lo in 0_u64..500, width in 0_u64..200) {
+        let hi = lo + width;
+        let composites = composites_in(lo..=hi).collect::<Vec<_>>();
+        prop_assert_eq!(odd_composites_in(lo..=hi).collect::<Vec<_>>(),
+            composites.iter().copied().filter(|n| n % 2 == 1).collect::<Vec<_>>());
+        prop_assert_eq!(semiprimes_in(lo..=hi).collect::<Vec<_>>(),
+            composites.into_iter().filter(|&n| math_prime_util::is_semiprime(n)).collect::<Vec<_>>());
+    }
+}
+
+#[test]
+fn range_loops_stop_and_keep_local_state() {
+    type Loop = fn(std::ops::RangeInclusive<u64>, fn(u64) -> ControlFlow<u64>) -> ControlFlow<u64>;
+    let loops: [Loop; 4] = [forprimes, forcomposites, foroddcomposites, forsemiprimes];
+    for (run, first) in loops.into_iter().zip([2, 4, 9, 4]) {
+        assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
+        assert_eq!(
+            run(std::ops::RangeInclusive::new(30, 0), |_| panic!(
+                "empty callback"
+            )),
+            ControlFlow::Continue(())
+        );
+        assert!(std::panic::catch_unwind(|| run(0..=30, |_| panic!("callback"))).is_err());
+        assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
+    }
+    let mut outer = Vec::new();
+    let result: ControlFlow<()> = forsemiprimes(0..=10, |n| {
+        outer.push(n);
+        assert_eq!(
+            forsemiprimes(0..=10, ControlFlow::Break),
+            ControlFlow::Break(4)
+        );
+        ControlFlow::Continue(())
+    });
+    assert!(result.is_continue());
+    assert_eq!(outer, [4, 6, 9, 10]);
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    composites_in(0..=100).count(),
+                    odd_composites_in(0..=100).count(),
+                    semiprimes_in(0..=100).count(),
+                )
+            })
+        })
+        .collect();
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), (74, 25, 34));
+    }
+}
+
+#[test]
+fn range_iterators_end_at_native_bounds() {
+    let max = u64::MAX;
+    let mut composites = composites_in(max..=max);
+    assert_eq!(composites.next(), Some(max));
+    assert_eq!(composites.next(), None);
+    assert_eq!(composites.next(), None);
+    assert_eq!(odd_composites_in(max..=max).collect::<Vec<_>>(), [max]);
+    assert_eq!(semiprimes_in(max..=max).next(), None);
+    let last = 18_446_744_073_709_551_601;
+    let mut semis = semiprimes_in(last..=max);
+    assert_eq!(semis.next(), Some(last));
+    assert_eq!(semis.next(), None);
+    assert_eq!(semis.next(), None);
+    assert_eq!(semiprimes_in(0..=3).next(), None);
+    assert_eq!(composites_in(0..=3).next(), None);
+    assert_eq!(odd_composites_in(0..=8).next(), None);
+    assert_eq!(primes_in(max..=max).next(), None);
+}
+
+#[test]
+fn semiprime_exhausted_input_stays_empty() {
+    let mut range = 4..=4;
+    assert_eq!(range.next(), Some(4));
+    assert_eq!(semiprimes_in(range).next(), None);
+    assert_eq!(
+        semiprimes_in(std::ops::RangeInclusive::new(10, 4)).next(),
+        None
+    );
+    let mut iter = semiprimes_in(0..=10);
+    assert_eq!(iter.next(), Some(4));
+    assert_eq!(iter.clone().collect::<Vec<_>>(), [6, 9, 10]);
+    assert_eq!(iter.collect::<Vec<_>>(), [6, 9, 10]);
+}
+
+#[test]
 fn impossible_partition_bounds_need_no_state_allocation() {
     for options in [
         PartitionOptions {

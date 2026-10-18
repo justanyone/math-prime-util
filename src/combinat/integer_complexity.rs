@@ -100,6 +100,65 @@ mod tests {
         assert_eq!(cache[59_049], 30);
     }
 
+    /// Complexity by the textbook recurrence: sums and products of smaller values.
+    fn reference(limit: usize) -> Vec<u8> {
+        let mut c = vec![0_u8; limit + 1];
+        for n in 1..=limit {
+            let mut best = if n == 1 { 1 } else { u8::MAX };
+            for a in 1..=n / 2 {
+                best = best.min(c[a] + c[n - a]);
+            }
+            let mut d = 2;
+            while d * d <= n {
+                if n % d == 0 {
+                    best = best.min(c[d] + c[n / d]);
+                }
+                d += 1;
+            }
+            c[n] = best;
+        }
+        c
+    }
+
+    #[test]
+    fn matches_the_recurrence() {
+        let want = reference(6_000);
+        let mut cache = Vec::new();
+        expand(&mut cache, 1);
+        assert_eq!(cache[1..=6_000], want[1..=6_000]);
+        for n in [1_u64, 2, 3, 11, 12, 27, 239, 1_000, 5_999] {
+            assert_eq!(
+                integer_complexity(n),
+                Some(u64::from(want[usize::try_from(n).unwrap()]))
+            );
+        }
+    }
+
+    #[test]
+    fn growing_in_steps_equals_one_big_step() {
+        // The second call starts above half of its end, the case where the
+        // product pass over the old part of the table must reach `to / 2`.
+        let mut grown = Vec::new();
+        expand(&mut grown, 1);
+        assert_eq!(grown.len(), 32_769);
+        expand(&mut grown, 32_769);
+        assert_eq!(grown.len(), 65_537);
+        let mut once = Vec::new();
+        expand(&mut once, 32_769);
+        assert_eq!(once.len(), 65_537);
+        assert_eq!(grown, once);
+        // 2^16 = 2 * 2^15 is reached only through a product with i = to / 2.
+        assert_eq!(grown[65_536], 32);
+    }
+
+    #[test]
+    #[should_panic(expected = "capacity overflow")]
+    fn expand_to_the_address_space_limit() {
+        // The clamp keeps `to + 1` from wrapping, so the failure is the allocation.
+        let mut cache = Vec::new();
+        expand(&mut cache, usize::MAX);
+    }
+
     #[test]
     fn repeated_calls_and_concurrent_resets() {
         let threads: Vec<_> = (0..4)

@@ -12,3 +12,4 @@ The host has no python command. Used python3 to write the document; no repositor
 Offline checks for the six compatibility and property targets passed. Families and rational properties include repeat-call and thread checks. The gate is running.
 The temporary authoring script was truncated on long lines. Repair the script with short lines before publishing the document.
 Repaired the temporary script and wrote the findings file plus NOTICE and README links.
+The script also contained a tool truncation note. Removed that note. Next: validate links, table values, and gate output.

@@ -55,7 +55,8 @@ from MPU:
 - The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
 - The native path covers `u64` and `u128`; big integers are not ported yet.
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
-  and reports the difference upstream. See [NOTICE](NOTICE).
+  and records the difference for upstream review. See
+  [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
 
 MPU is not affiliated with this port and has not endorsed it.
 

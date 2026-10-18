@@ -70,9 +70,13 @@ pub use nth_twin_prime::nth_twin_prime;
 
 mod powerfree;
 mod powerful;
-pub use powerfree::{
-    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
-};
+pub use powerfree::{is_powerfree, nth_powerfree, powerfree_count};
+mod powerfree_sum;
+pub use powerfree_sum::powerfree_sum;
+mod powerfree_part;
+pub use powerfree_part::powerfree_part;
+mod powerfree_part_sum;
+pub use powerfree_part_sum::powerfree_part_sum;
 pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};
 
 mod nth_twin_prime_approx;

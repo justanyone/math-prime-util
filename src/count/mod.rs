@@ -243,6 +243,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::float_cmp)] // Exact zeros from the Chebyshev definitions.
     fn chebyshev_known_values() {
         // ±0.0 is the defined value. Compare bits after abs so -0.0 matches.
         assert_eq!(chebyshev_theta(1).abs().to_bits(), 0);

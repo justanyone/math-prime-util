@@ -199,6 +199,18 @@ fn bench_prime_power_counts(c: &mut Criterion) {
         b.iter(|| prime_power_count_upper(black_box(100_000_000)));
     });
 }
+fn bench_powerfree(c: &mut Criterion) {
+    c.bench_function("powerfree_sum", |b| {
+        b.iter(|| math_prime_util::powerfree_sum(black_box(1_000_000), 2));
+    });
+    c.bench_function("powerfree_part", |b| {
+        b.iter(|| math_prime_util::powerfree_part(black_box(720_720), 2));
+    });
+    c.bench_function("powerfree_part_sum", |b| {
+        b.iter(|| math_prime_util::powerfree_part_sum(black_box(10_000), 2));
+    });
+}
+
 fn bench_perfect_powers(c: &mut Criterion) {
     let mut group = c.benchmark_group("perfect_powers");
     for n in [1_000_003, 4_294_967_296, 1 << 63, u64::MAX] {
@@ -226,6 +238,7 @@ criterion_group!(
     bench_squares,
     bench_pp_f05,
     bench_prime_power_counts,
-    bench_perfect_powers
+    bench_perfect_powers,
+    bench_powerfree
 );
 criterion_main!(benches);

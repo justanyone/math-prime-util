@@ -76,3 +76,4 @@ The mutation attempt is stopped. No run is left active for mutation testing. Val
 MSRV build passed. The gate reached the compatibility tests. Full-suite validation continues offline.
 The gate is still running the prime-count oracle test. It has reported no failure. No mutation results were produced.
 The gate passed the count oracle tests and reached the iterator tests. No failure has been reported.
+The iterator oracle test forsquarefreeint has exceeded 60 seconds. Validation remains active, with no green gate result yet.

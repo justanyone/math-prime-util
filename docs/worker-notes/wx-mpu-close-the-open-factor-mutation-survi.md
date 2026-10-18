@@ -29,3 +29,4 @@ Final fmt and clippy pass. Final gate is on the MSRV build. Mutants have copied 
 Validation continues offline. The original gate reports a long-running forsquarefreeint test; no failure has been reported. Retry and dispatcher survivors remain explicitly open.
 Mutation results confirm dispatcher and fallback mutations remain missed. The first snapshot predates the HOLF test; rerunning that one mutation against the final source using cached dependencies.
 The small-input mutations time out on the private factor tests, which catches their nontermination. The superseded gate was stopped; the final gate and sole tools/test.sh whole-suite run continue.
+- 2026-10-18T15:46:18Z launcher: no commit for 60 s; 708 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-the-open-factor-mutation-survi.md, src/factor/holf_factor.rs, src/factor/is_carmichael.rs, src/factor/lehman_factor.rs, src/factor/pminus1_factor.rs.

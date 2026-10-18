@@ -51,6 +51,15 @@ fn bench_arith(c: &mut Criterion) {
     c.bench_function("arith/znprimroot", |b| {
         b.iter(|| znprimroot(black_box(1_000_003)));
     });
+    c.bench_function("arith/qnr", |b| {
+        b.iter(|| math_prime_util::qnr(black_box(1_000_003)));
+    });
+    c.bench_function("arith/is_qr", |b| {
+        b.iter(|| math_prime_util::is_qr(black_box(10), black_box(1_000_003)));
+    });
+    c.bench_function("arith/is_fundamental", |b| {
+        b.iter(|| math_prime_util::is_fundamental(black_box(-10_007)));
+    });
     c.bench_function("arith/inverse_sigma0", |b| {
         b.iter(|| inverse_sigma0(black_box(12), 1, 1_000_000));
     });

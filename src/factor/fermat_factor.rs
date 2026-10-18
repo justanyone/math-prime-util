@@ -71,3 +71,30 @@ pub(super) fn attempt_list(mut n: u64, method: impl FnOnce(u64) -> Vec<u64>) -> 
     }
     result
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{pair, split};
+
+    #[test]
+    fn pair_requires_a_proper_divisor() {
+        assert_eq!(pair(15, 1), [15]);
+        assert_eq!(pair(15, 15), [15]);
+        assert_eq!(pair(15, 0), [15]);
+        assert_eq!(pair(15, 3), [3, 5]);
+        assert_eq!(pair(15, 5), [3, 5]);
+        assert_eq!(pair(15, 30), [15]);
+        assert_eq!(pair(30, 12), [5, 6]);
+        assert_eq!(pair(2, 1), [2]);
+    }
+
+    #[test]
+    fn split_returns_the_difference_of_squares_half() {
+        // 91 = 10^2 - 3^2 = (10 - 3)(10 + 3).
+        assert_eq!(split(91, 1000), 7);
+        // 143 = 12^2 - 1^2 = 11 * 13.
+        assert_eq!(split(143, 1000), 11);
+        // Round limit: 0 rounds stops before the first step.
+        assert_eq!(split(91, 0), 91);
+    }
+}

@@ -9,12 +9,18 @@ mod kronecker;
 pub use kronecker::kronecker;
 mod chinese;
 pub use chinese::chinese;
+mod qnr;
+pub use qnr::qnr;
+mod is_qr;
+pub use is_qr::is_qr;
+mod is_fundamental;
+pub use is_fundamental::is_fundamental;
 mod ramanujan_sum;
 pub use ramanujan_sum::ramanujan_sum;
 mod valuation;
 pub use valuation::valuation;
 
-use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
+use crate::{gcd, invmod, is_power, is_prime, is_square, powmod, rootint, sqrtint};
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
@@ -857,24 +863,6 @@ fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
     if b == 1 { s } else { 0 }
 }
 
-/// Test whether n is a fundamental discriminant.
-///
-/// Port of MPU 0.75 `util.c::is_fundamental`.
-///
-/// ```
-/// assert!(math_prime_util::is_fundamental(-4));
-/// ```
-pub fn is_fundamental(n: i64) -> bool {
-    let r = n.rem_euclid(16);
-    let m = n.unsigned_abs();
-    let square_free = |x| x != 0 && factor_powers(x).iter().all(|&(_, e)| e == 1);
-    if r != 0 && r % 4 == 0 && r != 4 {
-        square_free(m >> 2)
-    } else {
-        r % 4 == 1 && square_free(m)
-    }
-}
-
 /// Return the least solution and the combined modulus.
 /// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
 /// An empty input gives `(0, 0)`.
@@ -1059,92 +1047,6 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
             .iter()
             .all(|&(q, _)| powmod(a, phi / q, p) != Some(1)),
     )
-}
-
-/// Return the least quadratic nonresidue modulo n.
-/// Return `None` if n is zero or no nonresidue exists.
-///
-/// Port of MPU 0.75 `util.c::qnr`.
-///
-/// ```
-/// assert_eq!(math_prime_util::qnr(7), Some(3));
-/// ```
-pub fn qnr(n: u64) -> Option<u64> {
-    if n == 0 {
-        return None;
-    }
-    if n <= 2 {
-        return Some(n);
-    }
-    if kronecker_unsigned(2, n) == -1 {
-        return Some(2);
-    }
-    if is_prime(n) != 0 {
-        return (3..n).step_by(2).find(|&a| kronecker_unsigned(a, n) == -1);
-    }
-    let mut n = n;
-    if n % 2 == 0 {
-        let e = n.trailing_zeros();
-        n >>= e;
-        if e >= 2 || n == 1 {
-            return Some(2);
-        }
-    }
-    if [3, 5, 11, 13, 19].iter().any(|p| n % p == 0) {
-        return Some(2);
-    }
-    let factors = factor_powers(n);
-    let mut a = 2;
-    while a < n {
-        if factors
-            .iter()
-            .any(|&(p, _)| a < p && kronecker_unsigned(a, p) == -1)
-        {
-            return Some(a);
-        }
-        a = next_prime(a)?;
-    }
-    None
-}
-
-/// Test whether a is a square modulo n.
-/// Return false for modulus zero, as in the MPU wrapper.
-///
-/// Port of MPU 0.75 `util.c::is_qr and rootmod.c::_sqrtmod_composite`.
-///
-/// ```
-/// assert!(math_prime_util::is_qr(2, 7));
-/// ```
-pub fn is_qr(a: u64, n: u64) -> bool {
-    if n == 0 {
-        return false;
-    }
-    if n <= 2 || a % n <= 1 {
-        return true;
-    }
-    let a = a % n;
-    factor_powers(n).iter().all(|&(p, e)| {
-        let mut unit = a;
-        let mut v = 0;
-        while unit % p == 0 && v < e {
-            unit /= p;
-            v += 1;
-        }
-        if v == e {
-            return true;
-        }
-        if v % 2 == 1 {
-            return false;
-        }
-        if p != 2 {
-            return kronecker_unsigned(unit, p) == 1;
-        }
-        match e - v {
-            1 => true,
-            2 => unit % 4 == 1,
-            _ => unit % 8 == 1,
-        }
-    })
 }
 
 mod inverse_sigma0;

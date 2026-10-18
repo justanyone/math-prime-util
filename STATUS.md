@@ -10,8 +10,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `addint`
 - [x] `addmod`
 - [x] `aliquot_sum`
-- [ ] `allrootmod`
-- [ ] `allsqrtmod`
+- [x] `allrootmod`
+- [x] `allsqrtmod`
 - [ ] `almost_prime_count`
 - [ ] `almost_prime_count_approx`
 - [ ] `almost_prime_count_lower`
@@ -225,13 +225,13 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [ ] `nth_almost_prime`
 - [ ] `nth_almost_prime_approx`
 - [ ] `nth_almost_prime_lower`
-- [ ] `nth_almost_prime_upper`
+- [x] `nth_almost_prime_upper`
 - [x] `nth_calkin_wilf`
 - [x] `nth_lucky`
 - [x] `nth_lucky_approx`
 - [x] `nth_lucky_lower`
 - [x] `nth_lucky_upper`
-- [ ] `nth_omega_prime`
+- [x] `nth_omega_prime`
 - [x] `nth_perfect_power`
 - [x] `nth_perfect_power_approx`
 - [x] `nth_perfect_power_lower`
@@ -257,8 +257,8 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_twin_prime`
 - [x] `nth_twin_prime_approx`
 - [x] `numtoperm`
-- [ ] `omega_prime_count`
-- [ ] `omega_primes`
+- [x] `omega_prime_count`
+- [x] `omega_primes`
 - [x] `partitions`
 - [x] `partitionsq`
 - [x] `pbrent_factor`
@@ -340,7 +340,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `RiemannZeta`
 - [x] `rising_factorial`
 - [x] `rootint`
-- [ ] `rootmod`
+- [x] `rootmod`
 - [x] `rough_count`
 - [x] `rshiftint`
 - [x] `semiprime_count`
@@ -371,7 +371,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `sopf`
 - [x] `sopfr`
 - [x] `sqrtint`
-- [ ] `sqrtmod`
+- [x] `sqrtmod`
 - [x] `squarefree_kernel`
 - [x] `squfof_factor`
 - [x] `srand`

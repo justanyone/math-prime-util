@@ -7,6 +7,18 @@ pub use is_gaussian_prime::is_gaussian_prime;
 pub use is_sum_of_squares::is_sum_of_squares;
 pub use lucky::*;
 
+mod prime_power_count;
+pub use prime_power_count::prime_power_count;
+
+mod prime_power_count_approx;
+pub use prime_power_count_approx::prime_power_count_approx;
+
+mod prime_power_count_lower;
+pub use prime_power_count_lower::prime_power_count_lower;
+
+mod prime_power_count_upper;
+pub use prime_power_count_upper::prime_power_count_upper;
+
 mod minimal_goldbach_pair;
 pub use minimal_goldbach_pair::minimal_goldbach_pair;
 mod goldbach_pair_count;
@@ -58,9 +70,13 @@ pub use nth_twin_prime::nth_twin_prime;
 
 mod powerfree;
 mod powerful;
-pub use powerfree::{
-    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
-};
+pub use powerfree::{is_powerfree, nth_powerfree, powerfree_count};
+mod powerfree_sum;
+pub use powerfree_sum::powerfree_sum;
+mod powerfree_part;
+pub use powerfree_part::powerfree_part;
+mod powerfree_part_sum;
+pub use powerfree_part_sum::powerfree_part_sum;
 pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};
 
 mod nth_twin_prime_approx;
@@ -89,6 +105,14 @@ pub use nth_semiprime::*;
 mod nth_semiprime_approx;
 pub use nth_semiprime_approx::*;
 
+mod perfect_power_count_approx;
+pub use perfect_power_count_approx::perfect_power_count_approx;
+mod perfect_power_count_lower;
+pub use perfect_power_count_lower::perfect_power_count_lower;
+mod perfect_power_count_upper;
+pub use perfect_power_count_upper::perfect_power_count_upper;
+mod nth_perfect_power;
+pub use nth_perfect_power::nth_perfect_power;
 mod is_perfect_power;
 pub use is_perfect_power::is_perfect_power;
 mod next_perfect_power;
@@ -97,3 +121,12 @@ mod prev_perfect_power;
 pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
+
+mod nth_almost_prime_upper;
+pub use nth_almost_prime_upper::nth_almost_prime_upper;
+mod omega_primes;
+pub use omega_primes::omega_primes;
+mod omega_prime_count;
+pub use omega_prime_count::omega_prime_count;
+mod nth_omega_prime;
+pub use nth_omega_prime::nth_omega_prime;

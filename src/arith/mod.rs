@@ -1,16 +1,26 @@
 //! Totients and multiplicative arithmetic from MPU 0.75.
 //! Divisor sums, discriminants, and arithmetic in residue rings.
 
-mod euler_phi;
-pub use euler_phi::{euler_phi, euler_phi_range};
-mod jordan_totient;
-pub use jordan_totient::jordan_totient;
-mod carmichael_lambda;
-pub use carmichael_lambda::carmichael_lambda;
-mod moebius;
-pub use moebius::{moebius, moebius_range};
+mod sopfr;
+pub use sopfr::sopfr;
+mod sopf;
+pub use sopf::sopf;
+mod kronecker;
+pub use kronecker::kronecker;
+mod chinese;
+pub use chinese::chinese;
+mod qnr;
+pub use qnr::qnr;
+mod is_qr;
+pub use is_qr::is_qr;
+mod is_fundamental;
+pub use is_fundamental::is_fundamental;
+mod ramanujan_sum;
+pub use ramanujan_sum::ramanujan_sum;
+mod valuation;
+pub use valuation::valuation;
 
-use crate::{gcd, invmod, is_power, is_prime, is_square, next_prime, powmod, rootint, sqrtint};
+use crate::{gcd, invmod, is_power, is_prime, is_square, powmod, rootint, sqrtint};
 use std::collections::HashMap;
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
@@ -202,97 +212,14 @@ fn range_len(lo: u64, hi: u64) -> usize {
     .expect("range fits usize")
 }
 
-struct Mertens {
-    prefix: Vec<i64>,
-    cache: HashMap<u64, i64>,
-}
-impl Mertens {
-    fn new(n: u64) -> Self {
-        let limit = (rootint(n, 3).pow(2)).max(sqrtint(n)).max(16);
-        let mut prefix = vec![0];
-        let mut sum = 0;
-        for m in moebius_range(1, limit) {
-            sum += i64::from(m);
-            prefix.push(sum);
-        }
-        Self {
-            prefix,
-            cache: HashMap::new(),
-        }
-    }
-    fn get(&mut self, n: u64) -> i64 {
-        if let Ok(i) = usize::try_from(n) {
-            if let Some(&v) = self.prefix.get(i) {
-                return v;
-            }
-        }
-        if let Some(&v) = self.cache.get(&n) {
-            return v;
-        }
-        let s = sqrtint(n);
-        let ns = n / (s + 1);
-        let mut sum = 1 - i128::from(n / 2) - i128::from(n & 1);
-        for k in 2..=ns {
-            sum -= i128::from(self.get(n / k))
-                + i128::from(self.prefix[usize::try_from(k).unwrap()])
-                    * i128::from(n / k - n / (k + 1));
-        }
-        if s > ns {
-            sum -= i128::from(self.prefix[usize::try_from(s).unwrap()])
-                * i128::from(n / s - n / (s + 1));
-        }
-        let sum = i64::try_from(sum).unwrap();
-        self.cache.insert(n, sum);
-        sum
-    }
-}
-
-/// Return the sum of Moebius values through `n`.
-/// Port of `moebius.c::mertens` and `_rmertens`.
-/// ```
-/// assert_eq!(math_prime_util::mertens(10), -1);
-/// ```
-pub fn mertens(n: u64) -> i64 {
-    Mertens::new(n).get(n)
-}
-
-/// Return Liouville's function. Port of `moebius.c::liouville`.
-/// ```
-/// assert_eq!(math_prime_util::liouville(12), -1);
-/// ```
-pub fn liouville(n: u64) -> i8 {
-    if n == 0 {
-        return -1;
-    }
-    if factors(n).iter().map(|&(_, e)| e).sum::<u32>() % 2 == 0 {
-        1
-    } else {
-        -1
-    }
-}
-
-/// Sum Liouville's function through `n`. Port of `moebius.c::sumliouville`.
-/// ```
-/// assert_eq!(math_prime_util::sumliouville(10), 0);
-/// ```
-pub fn sumliouville(n: u64) -> i64 {
-    let mut ctx = Mertens::new(n);
-    let mut sum = 0;
-    for k in 1..=sqrtint(n) {
-        sum += ctx.get(n / (k * k));
-    }
-    sum
-}
-
-/// Return the prime base of a prime power, or one.
-/// Port of `util.c::exp_mangoldt`.
-/// ```
-/// assert_eq!(math_prime_util::exp_mangoldt(27), 3);
-/// ```
-pub fn exp_mangoldt(n: u64) -> u64 {
-    let f = factors(n);
-    if f.len() == 1 { f[0].0 } else { 1 }
-}
+mod mertens;
+pub use mertens::mertens;
+mod liouville;
+pub use liouville::liouville;
+mod sumliouville;
+pub use sumliouville::sumliouville;
+mod exp_mangoldt;
+pub use exp_mangoldt::exp_mangoldt;
 
 /// Sum Euler's totient through `n`, or return `None` on native overflow.
 /// Port of `totients.c::sumtotient` and `_sumt`.
@@ -475,45 +402,6 @@ pub fn is_totient(n: u64) -> bool {
     } else {
         totpred(n, n)
     }
-}
-
-/// Return Ramanujan's sum. Port of `XS.xs::ramanujan_sum`.
-/// ```
-/// assert_eq!(math_prime_util::ramanujan_sum(12,36), 4);
-/// ```
-#[allow(clippy::missing_panics_doc)] // The residue is less than 2^64.
-pub fn ramanujan_sum(k: u64, n: u64) -> i64 {
-    if k == 0 || n == 0 {
-        return 0;
-    }
-    let g = k / gcd(k, n);
-    let m = moebius(g);
-    let v = i128::from(m) * i128::from(euler_phi(k) / euler_phi(g));
-    i64::from_ne_bytes(
-        u64::try_from(v.rem_euclid(1_i128 << 64))
-            .unwrap()
-            .to_ne_bytes(),
-    )
-}
-
-/// Return the exponent of `k` in `n`, or `None` when `n` is zero.
-/// Port of `util.c::valuation` and the XS argument checks.
-/// # Panics
-/// Panics when `k` is less than two.
-/// ```
-/// assert_eq!(math_prime_util::valuation(72, 3), Some(2));
-/// ```
-pub fn valuation(mut n: u64, k: u64) -> Option<u64> {
-    assert!(k >= 2, "valuation base must be at least two");
-    if n == 0 {
-        return None;
-    }
-    let mut v = 0;
-    while n % k == 0 {
-        v += 1;
-        n /= k;
-    }
-    Some(v)
 }
 
 fn sigma(n: u64, k: u64) -> Option<u128> {
@@ -727,28 +615,6 @@ pub fn abundance(n: u64) -> Option<i64> {
     Some(i64::from_ne_bytes(sum.wrapping_sub(n).to_ne_bytes()))
 }
 
-/// Return the sum of prime factors with repetition.
-///
-/// Port of MPU 0.75 `factor.c::sopfr`.
-///
-/// ```
-/// assert_eq!(math_prime_util::sopfr(12), 7);
-/// ```
-pub fn sopfr(n: u64) -> u64 {
-    prime_factors(n).iter().sum()
-}
-
-/// Return the sum of distinct prime factors.
-///
-/// Port of MPU 0.75 `factor.c::sopf`.
-///
-/// ```
-/// assert_eq!(math_prime_util::sopf(12), 5);
-/// ```
-pub fn sopf(n: u64) -> u64 {
-    factor_powers(n).iter().map(|&(p, _)| p).sum()
-}
-
 fn kronecker_unsigned(a: u64, mut b: u64) -> i32 {
     if b == 0 {
         return i32::from(a == 1);
@@ -781,66 +647,6 @@ fn kronecker_odd(mut a: u64, mut b: u64, mut s: i32) -> i32 {
     if b == 1 { s } else { 0 }
 }
 
-/// Return the signed Kronecker symbol (a/b).
-///
-/// Port of MPU 0.75 `util.c::kronecker_ss, kronecker_su, kronecker_uu_sign`.
-///
-/// ```
-/// assert_eq!(math_prime_util::kronecker(-1, 3), -1);
-/// ```
-pub fn kronecker(a: i64, b: i64) -> i32 {
-    let mut s = if a < 0 && b < 0 { -1 } else { 1 };
-    let mut b = b.unsigned_abs();
-    if a >= 0 {
-        return s * kronecker_unsigned(a.unsigned_abs(), b);
-    }
-    if b == 0 {
-        return i32::from(a == -1);
-    }
-    let r = b.trailing_zeros();
-    if r > 0 {
-        if a % 2 == 0 {
-            return 0;
-        }
-        if r % 2 == 1 && matches!(a.rem_euclid(8), 3 | 5) {
-            s = -s;
-        }
-        b >>= r;
-    }
-    let rem = a.unsigned_abs() % b;
-    kronecker_odd(if rem == 0 { 0 } else { b - rem }, b, s)
-}
-
-/// Test whether n is a fundamental discriminant.
-///
-/// Port of MPU 0.75 `util.c::is_fundamental`.
-///
-/// ```
-/// assert!(math_prime_util::is_fundamental(-4));
-/// ```
-pub fn is_fundamental(n: i64) -> bool {
-    let r = n.rem_euclid(16);
-    let m = n.unsigned_abs();
-    let square_free = |x| x != 0 && factor_powers(x).iter().all(|&(_, e)| e == 1);
-    if r != 0 && r % 4 == 0 && r != 4 {
-        square_free(m >> 2)
-    } else {
-        r % 4 == 1 && square_free(m)
-    }
-}
-
-/// Solve simultaneous congruences. Each pair is (residue, modulus).
-/// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
-///
-/// Port of MPU 0.75 `util.c::chinese and _simple_chinese`.
-///
-/// ```
-/// assert_eq!(math_prime_util::chinese(&[(2, 3), (3, 5)]), Some(8));
-/// ```
-pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
-    chinese2(congruences).map(|(r, _)| r)
-}
-
 /// Return the least solution and the combined modulus.
 /// Return `None` for a zero modulus, inconsistent inputs, or modulus overflow.
 /// An empty input gives `(0, 0)`.
@@ -853,6 +659,10 @@ pub fn chinese(congruences: &[(u64, u64)]) -> Option<u64> {
 pub fn chinese2(congruences: &[(u64, u64)]) -> Option<(u64, u64)> {
     if congruences.is_empty() {
         return Some((0, 0));
+    }
+    // With two or more pairs, every input modulus must stay in the signed range (native C path).
+    if congruences.len() > 1 && congruences.iter().any(|&(_, m)| m > u64::MAX >> 1) {
+        return None;
     }
     let mut pairs = congruences.to_vec();
     pairs.sort_unstable_by_key(|a| std::cmp::Reverse(a.1));
@@ -1023,91 +833,13 @@ pub fn is_primitive_root(a: u64, n: u64) -> Option<bool> {
     )
 }
 
-/// Return the least quadratic nonresidue modulo n.
-/// Return `None` if n is zero or no nonresidue exists.
-///
-/// Port of MPU 0.75 `util.c::qnr`.
-///
-/// ```
-/// assert_eq!(math_prime_util::qnr(7), Some(3));
-/// ```
-pub fn qnr(n: u64) -> Option<u64> {
-    if n == 0 {
-        return None;
-    }
-    if n <= 2 {
-        return Some(n);
-    }
-    if kronecker_unsigned(2, n) == -1 {
-        return Some(2);
-    }
-    if is_prime(n) != 0 {
-        return (3..n).step_by(2).find(|&a| kronecker_unsigned(a, n) == -1);
-    }
-    let mut n = n;
-    if n % 2 == 0 {
-        let e = n.trailing_zeros();
-        n >>= e;
-        if e >= 2 || n == 1 {
-            return Some(2);
-        }
-    }
-    if [3, 5, 11, 13, 19].iter().any(|p| n % p == 0) {
-        return Some(2);
-    }
-    let factors = factor_powers(n);
-    let mut a = 2;
-    while a < n {
-        if factors
-            .iter()
-            .any(|&(p, _)| a < p && kronecker_unsigned(a, p) == -1)
-        {
-            return Some(a);
-        }
-        a = next_prime(a)?;
-    }
-    None
-}
-
-/// Test whether a is a square modulo n.
-/// Return false for modulus zero, as in the MPU wrapper.
-///
-/// Port of MPU 0.75 `util.c::is_qr and rootmod.c::_sqrtmod_composite`.
-///
-/// ```
-/// assert!(math_prime_util::is_qr(2, 7));
-/// ```
-pub fn is_qr(a: u64, n: u64) -> bool {
-    if n == 0 {
-        return false;
-    }
-    if n <= 2 || a % n <= 1 {
-        return true;
-    }
-    let a = a % n;
-    factor_powers(n).iter().all(|&(p, e)| {
-        let mut unit = a;
-        let mut v = 0;
-        while unit % p == 0 && v < e {
-            unit /= p;
-            v += 1;
-        }
-        if v == e {
-            return true;
-        }
-        if v % 2 == 1 {
-            return false;
-        }
-        if p != 2 {
-            return kronecker_unsigned(unit, p) == 1;
-        }
-        match e - v {
-            1 => true,
-            2 => unit % 4 == 1,
-            _ => unit % 8 == 1,
-        }
-    })
-}
-
 mod inverse_sigma0;
 pub use inverse_sigma0::*;
+mod euler_phi;
+pub use euler_phi::{euler_phi, euler_phi_range};
+mod jordan_totient;
+pub use jordan_totient::jordan_totient;
+mod carmichael_lambda;
+pub use carmichael_lambda::carmichael_lambda;
+mod moebius;
+pub use moebius::{moebius, moebius_range};

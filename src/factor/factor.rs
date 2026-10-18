@@ -314,4 +314,44 @@ mod tests {
             (4_434_182_252_870_372_899, 7_831_995_469_746_149_911)
         );
     }
+
+    #[test]
+    fn dispatcher_and_brent_wide_golden() {
+        use crate::factor::test_support::{extra_inputs, fold_opt, inputs};
+        let (mut hd, mut hb, mut hs, mut ho) = (0, 0, 0, 0);
+        for n in inputs().into_iter().chain(extra_inputs()) {
+            for start in 0..=8 {
+                let got = dispatcher(n, start);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "dispatcher({n},{start})");
+                }
+                hd = fold_opt(hd, got);
+            }
+            for (rounds, a) in [
+                (40, 1),
+                (700, 2),
+                (2_000, 3),
+                (17_000, 1),
+                (60_000, 7),
+                (500_000, 9),
+            ] {
+                let got = brent(n, rounds, a);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                }
+                hb = fold_opt(hb, got);
+            }
+            hs = fold_opt(hs, Some(split(n)));
+            ho = fold_opt(ho, squfof_stage(n));
+        }
+        assert_eq!(
+            (hd, hb, hs, ho),
+            (
+                14_304_924_916_325_233_394,
+                17_368_928_067_952_416_314,
+                6_631_126_701_719_544_614,
+                7_377_928_766_603_976_030
+            )
+        );
+    }
 }

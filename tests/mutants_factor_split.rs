@@ -217,3 +217,27 @@ fn holf_factor_exact_results_across_bands() {
     }
     assert_eq!(h, 10_344_991_621_845_703_262);
 }
+
+#[test]
+fn holf_factor_top_band_dense() {
+    // Multiplier bands 60 (up to 2^56) and 30 (up to 2^58): dense samples.
+    let mut h = 0;
+    for bits in [55_u32, 56, 57, 58] {
+        for k in 0..120_u64 {
+            let p = next_prime((1_u64 << (bits / 2 - 1)) + 9_973 * k).expect("below 2^64");
+            let q =
+                next_prime((1_u64 << (bits - bits / 2 - 1)) + 7_919 * k + 5).expect("below 2^64");
+            let Some(n) = p.checked_mul(q) else { continue };
+            for r in [1_u64, 4, 30, 400, 5_000] {
+                let got = holf_factor(n, Some(r));
+                assert_eq!(got.iter().product::<u64>(), n);
+                for f in got {
+                    h = fold(h, f);
+                }
+                h = fold(h, 0);
+            }
+        }
+    }
+    println!("GOLD {h}");
+    assert_eq!(h, 0);
+}

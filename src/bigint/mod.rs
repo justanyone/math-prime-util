@@ -216,8 +216,11 @@ macro_rules! native_ops {
             if *modulus == 0 {
                 return None;
             }
+            // Operands must be smaller than the modulus: `addmod` subtracts from it.
             let n = <$wide>::from(*modulus);
-            Self::try_from(mulmod(<$wide>::from(*self), <$wide>::from(*other), n)).ok()
+            let a = <$wide>::from(*self % *modulus);
+            let b = <$wide>::from(*other % *modulus);
+            Self::try_from(mulmod(a, b, n)).ok()
         }
 
         fn shl_bits(&self, bits: u32) -> Option<Self> {

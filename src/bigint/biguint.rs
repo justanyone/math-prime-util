@@ -307,7 +307,14 @@ impl Int for BigUint {
     /// assert_eq!(BigUint::from(3_u8).powmod(&BigUint::from(5_u8), &n), Some(BigUint::from(5_u8)));
     /// ```
     fn powmod(&self, exponent: &Self, modulus: &Self) -> Option<Self> {
-        (modulus != &zero()).then(|| self.modpow(exponent, modulus))
+        if modulus == &zero() {
+            return None;
+        }
+        // Every residue modulo 1 is 0. `BigUint::modpow` can return 1 for a^0.
+        if modulus == &one() {
+            return Some(zero());
+        }
+        Some(self.modpow(exponent, modulus))
     }
 
     /// Euclidean reduction, MPU `util.h::gcd_ui`.
@@ -387,6 +394,18 @@ mod tests {
         assert_eq!(jacobi(BigUint::from(5_u8), BigUint::from(11_u8)), 1);
         assert_eq!(jacobi(BigUint::from(6_u8), BigUint::from(9_u8)), 0);
         assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(11_u8)), -1);
+        // Both arguments are 3 mod 4, so quadratic reciprocity flips the sign.
+        assert_eq!(jacobi(BigUint::from(3_u8), BigUint::from(7_u8)), -1);
+        // 13 is 5 mod 8, so the factor of 2 flips the sign.
+        assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(13_u8)), -1);
+        assert!(!extra_strong_lucas(&BigUint::from(9_u8)));
+        assert!(!extra_strong_lucas(&BigUint::from(15_u8)));
+        assert!(!extra_strong_lucas(&BigUint::from(25_u8)));
+        assert_eq!(zero().powmod(&zero(), &one()), Some(zero()));
+        assert_eq!(
+            zero().powmod(&zero(), &BigUint::from(5_u8)),
+            Some(one())
+        );
     }
 
     #[test]
@@ -490,6 +509,11 @@ mod tests {
         assert_eq!(1_u128.to_decimal(), "1");
         assert_eq!(1_u128.divrem(&0), None);
         assert_eq!(1_u128.shr_bits(1), 0);
+        // Values above the modulus must not overflow the widening multiply.
+        assert_eq!(u128::MAX.mulmod(&u128::MAX, &1), Some(0));
+        assert_eq!(u128::MAX.mulmod(&3, &10), Some(7));
+        assert_eq!(0_u64.powmod(&0, &5), Some(1));
+        assert_eq!(0_u128.powmod(&0, &1), Some(0));
     }
 
     proptest! {

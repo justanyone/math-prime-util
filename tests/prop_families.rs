@@ -500,6 +500,26 @@ fn repeat_and_concurrent_calls() {
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
+    fn root_sum_and_bounds(n in 0_u64..1_000_000) {
+        let exact = prime_power_count(n);
+        let expected: u64 = (1..=n.checked_ilog2().unwrap_or(0))
+            .map(|k| prime_count(rootint(n, k))).sum();
+        prop_assert_eq!(exact, expected);
+        prop_assert!(prime_power_count_lower(n) <= exact);
+        prop_assert!(prime_power_count_upper(n) >= exact);
+        prop_assert_eq!(prime_power_count_approx(n), exact);
+    }
+
+    #[test]
+    fn increments_are_prime_powers(n in 2_u64..10_000) {
+        let is_power = (1..=n.ilog2()).any(|k| {
+            let r = rootint(n, k);
+            r.checked_pow(k) == Some(n) && is_prime(r) != 0
+        });
+        prop_assert_eq!(prime_power_count(n) - prime_power_count(n - 1), u64::from(is_power));
+    }
+
+    #[test]
     fn nth_semiprime_is_increasing(k in 1u64..300) {
         let a = nth_semiprime(k).unwrap();
         let b = nth_semiprime(k + 1).unwrap();
@@ -562,6 +582,28 @@ proptest! {
     }
 }
 
+proptest! {
+    #[test]
+    fn count_bounds_are_exact(n in any::<u64>()) {
+        let count = perfect_power_count_approx(n);
+        prop_assert_eq!(perfect_power_count_lower(n), count);
+        prop_assert_eq!(perfect_power_count_upper(n), count);
+        if n > 0 {
+            let previous = perfect_power_count_approx(n - 1);
+            let increment = u64::from(n == 1 || is_power_exp(n) > 1);
+            prop_assert_eq!(count, previous + increment);
+        }
+    }
+
+    #[test]
+    fn nth_and_count_are_inverses(n in 1u64..=4_297_615_581) {
+        let power = nth_perfect_power(n).unwrap();
+        prop_assert_eq!(perfect_power_count_approx(power), n);
+        prop_assert_eq!(perfect_power_count_approx(power - 1), n - 1);
+        prop_assert!(power == 1 || is_power_exp(power) > 1);
+    }
+}
+
 #[test]
 fn small_values_match_enumeration() {
     let powers: Vec<u64> = (0u64..=1000)
@@ -599,6 +641,22 @@ fn native_boundaries_and_repeat_calls() {
 }
 
 #[test]
+fn exhaustive_small_powers() {
+    let mut count = 0;
+    for n in 0..=10_000_u64 {
+        if n == 1
+            || (n > 1
+                && (2..=n.ilog2())
+                    .any(|k| (2..=100).any(|base: u64| base.checked_pow(k) == Some(n))))
+        {
+            count += 1;
+            assert_eq!(nth_perfect_power(count), Some(n));
+        }
+        assert_eq!(perfect_power_count_approx(n), count);
+    }
+}
+
+#[test]
 fn concurrent_calls_agree() {
     std::thread::scope(|scope| {
         for _ in 0..4 {
@@ -607,6 +665,54 @@ fn concurrent_calls_agree() {
                 assert_eq!(prev_perfect_power(64), Some(49));
                 assert_eq!(perfect_power_count(64), 11);
                 assert!(is_perfect_power(64));
+            });
+        }
+    });
+}
+
+#[test]
+fn small_counts_and_repeat_calls() {
+    for (n, expected) in [0, 0, 1, 2, 3, 4, 4, 5, 6, 7].into_iter().enumerate() {
+        let n = n as u64;
+        for _ in 0..2 {
+            assert_eq!(prime_power_count(n), expected);
+            assert_eq!(prime_power_count_lower(n), expected);
+            assert_eq!(prime_power_count_upper(n), expected);
+            assert_eq!(prime_power_count_approx(n), expected);
+        }
+    }
+}
+
+#[test]
+fn large_estimates_and_concurrent_calls() {
+    let inputs = [
+        10_000_000_000_000_001,
+        1_000_000_000_000_000_000,
+        10_000_000_000_000_000_000,
+        u64::MAX,
+    ];
+    std::thread::scope(|scope| {
+        for n in inputs {
+            scope.spawn(move || {
+                let estimate = prime_power_count_approx(n);
+                assert!(prime_power_count_lower(n) <= estimate);
+                assert!(estimate <= prime_power_count_upper(n));
+                assert_eq!(prime_power_count_approx(n), estimate);
+            });
+        }
+    });
+}
+
+#[test]
+fn repeated_and_concurrent_calls_agree() {
+    let expected: Vec<_> = (0..100).map(nth_perfect_power).collect();
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            let expected = &expected;
+            scope.spawn(move || {
+                for (n, &power) in (0u64..).zip(expected) {
+                    assert_eq!(nth_perfect_power(n), power);
+                }
             });
         }
     });
@@ -622,6 +728,7 @@ fn all_binary_exponents_are_perfect_powers() {
     }
 }
 
+<<<<<<< HEAD
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
@@ -683,4 +790,75 @@ fn nth_almost_prime_generic_search_has_exact_rank() {
             }
         }
     }
+=======
+mod almost_omega_f03 {
+    use math_prime_util::{
+        is_almost_prime, is_omega_prime, nth_almost_prime_upper, nth_omega_prime,
+        omega_prime_count, omega_primes,
+    };
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(ProptestConfig::with_cases(48))]
+        #[test]
+        fn count_difference_is_membership(k in 0_u32..7, n in 1_u64..10000) {
+            prop_assert_eq!(omega_prime_count(k,n)-omega_prime_count(k,n-1), u64::from(is_omega_prime(k,n)));
+        }
+        #[test]
+        fn list_matches_count(k in 0_u32..7, lo in 0_u64..1000, width in 0_u64..1000) {
+            let hi=lo+width;
+            let list=omega_primes(k,lo,hi);
+            prop_assert!(list.windows(2).all(|v| v[0]<v[1]));
+            prop_assert!(list.iter().all(|&v| is_omega_prime(k,v)));
+            prop_assert_eq!(list.len() as u64,omega_prime_count(k,hi)-if lo==0 { 0 } else { omega_prime_count(k,lo-1) });
+        }
+        #[test]
+        fn nth_inverts_count(k in 1_u32..6, n in 1_u64..100) {
+            let value=nth_omega_prime(k,n).unwrap();
+            prop_assert!(is_omega_prime(k,value));
+            prop_assert_eq!(omega_prime_count(k,value),n);
+            prop_assert_eq!(omega_prime_count(k,value-1),n-1);
+        }
+        #[test]
+        fn almost_upper_bounds_nth(k in 1_u32..7,n in 1_u64..60) {
+            let upper=nth_almost_prime_upper(k,n).unwrap();
+            let count=(1..=upper).filter(|&v| is_almost_prime(u64::from(k),v)).count() as u64;
+            prop_assert!(count>=n);
+        }
+    }
+
+    #[test]
+    fn invalid_and_native_limits() {
+        assert_eq!(nth_almost_prime_upper(64, 1), None);
+        assert_eq!(nth_almost_prime_upper(63, 3), None);
+        assert_eq!(
+            nth_almost_prime_upper(63, 2),
+            Some(13_835_058_055_282_163_712)
+        );
+        assert_eq!(nth_omega_prime(16, 1), None);
+        assert_eq!(nth_omega_prime(15, 299_179), None);
+        assert_eq!(omega_prime_count(16, u64::MAX), 0);
+        assert_eq!(omega_primes(16, 1, u64::MAX), Vec::<u64>::new());
+        assert_eq!(omega_primes(0, 2, 100), Vec::<u64>::new());
+        assert_eq!(omega_primes(3, 1, 29), Vec::<u64>::new());
+        assert_eq!(omega_primes(2, 100, 1), Vec::<u64>::new());
+    }
+
+    #[test]
+    fn concurrent_repeated_calls_are_independent() {
+        let expected = omega_primes(3, 1, 3000);
+        std::thread::scope(|scope| {
+            for _ in 0..4 {
+                let expected = &expected;
+                scope.spawn(move || {
+                    for _ in 0..2 {
+                        assert_eq!(&omega_primes(3, 1, 3000), expected);
+                        assert_eq!(omega_prime_count(3, 3000), expected.len() as u64);
+                        assert_eq!(nth_omega_prime(3, 1000), Some(2988));
+                    }
+                });
+            }
+        });
+    }
+>>>>>>> origin/dev-001
 }

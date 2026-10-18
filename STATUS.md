@@ -232,7 +232,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_lucky_lower`
 - [x] `nth_lucky_upper`
 - [ ] `nth_omega_prime`
-- [ ] `nth_perfect_power`
+- [x] `nth_perfect_power`
 - [x] `nth_perfect_power_approx`
 - [x] `nth_perfect_power_lower`
 - [x] `nth_perfect_power_upper`
@@ -263,9 +263,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `partitionsq`
 - [x] `pbrent_factor`
 - [x] `perfect_power_count`
-- [ ] `perfect_power_count_approx`
-- [ ] `perfect_power_count_lower`
-- [ ] `perfect_power_count_upper`
+- [x] `perfect_power_count_approx`
+- [x] `perfect_power_count_lower`
+- [x] `perfect_power_count_upper`
 - [x] `permtonum`
 - [x] `Pi`
 - [x] `pisano_period`
@@ -296,10 +296,10 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `prime_iterator_object`
 - [x] `prime_memfree`
 - [x] `prime_omega`
-- [ ] `prime_power_count`
-- [ ] `prime_power_count_approx`
-- [ ] `prime_power_count_lower`
-- [ ] `prime_power_count_upper`
+- [x] `prime_power_count`
+- [x] `prime_power_count_approx`
+- [x] `prime_power_count_lower`
+- [x] `prime_power_count_upper`
 - [x] `prime_powers`
 - [x] `prime_precalc`
 - [x] `primes`

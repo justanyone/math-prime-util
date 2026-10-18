@@ -606,6 +606,50 @@ fn ramanujan_prime_count_lower_oracle() {
 }
 
 #[test]
+fn prime_power_count_oracle() {
+    common::each("families", "prime_power_count", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_approx_oracle() {
+    common::each("families", "prime_power_count_approx", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_lower_oracle() {
+    common::each("families", "prime_power_count_lower", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count_lower(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_upper_oracle() {
+    common::each("families", "prime_power_count_upper", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count_upper(c.arg(0))));
+    });
+}
+
+#[test]
 fn nth_semiprime_oracle() {
     each("families", "nth_semiprime", |c| {
         c.check(nth_semiprime(c.arg(0)).map(|v| v.to_string()));
@@ -660,6 +704,13 @@ fn nth_perfect_power_upper_oracle() {
 }
 
 #[test]
+fn perfect_power_count_approx_oracle() {
+    each("families", "perfect_power_count_approx", |c| {
+        c.check(Some(perfect_power_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
 fn is_perfect_power_oracle() {
     each("families", "is_perfect_power", |c| {
         // Skip signed inputs (including -8922003266371364726) and bigint
@@ -667,6 +718,13 @@ fn is_perfect_power_oracle() {
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(Some(u8::from(is_perfect_power(n))));
         }
+    });
+}
+
+#[test]
+fn perfect_power_count_lower_oracle() {
+    each("families", "perfect_power_count_lower", |c| {
+        c.check(Some(perfect_power_count_lower(c.arg(0))));
     });
 }
 
@@ -683,6 +741,13 @@ fn next_perfect_power_oracle() {
 }
 
 #[test]
+fn perfect_power_count_upper_oracle() {
+    each("families", "perfect_power_count_upper", |c| {
+        c.check(Some(perfect_power_count_upper(c.arg(0))));
+    });
+}
+
+#[test]
 fn prev_perfect_power_oracle() {
     each("families", "prev_perfect_power", |c| {
         // Skip signed inputs and bigint input 18446744073709551616.
@@ -691,6 +756,17 @@ fn prev_perfect_power_oracle() {
             let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
             assert_eq!(prev_perfect_power(n), expected, "{c:?}");
         }
+    });
+}
+
+#[test]
+fn nth_perfect_power_oracle() {
+    each("families", "nth_perfect_power", |c| {
+        // Index 4,297,615,582 has the bigint result 2^64, outside the native API.
+        if c.arg::<u64>(0) == 4_297_615_582 {
+            return;
+        }
+        c.check(nth_perfect_power(c.arg(0)));
     });
 }
 
@@ -712,6 +788,7 @@ fn perfect_power_count_oracle() {
     });
 }
 
+<<<<<<< HEAD
 fn almost_omega_native_cases(name: &str, f: impl Fn(u32, u64) -> Option<u64>) {
     each("families", name, |c| {
         // Skip bigint input n (above u64::MAX); the Rust API is native only.
@@ -747,4 +824,75 @@ fn nth_almost_prime_approx_oracle() {
 #[test]
 fn nth_almost_prime_lower_oracle() {
     almost_omega_native_cases("nth_almost_prime_lower", nth_almost_prime_lower);
+=======
+mod almost_omega_f03 {
+    use super::common;
+    use math_prime_util::{
+        nth_almost_prime_upper, nth_omega_prime, omega_prime_count, omega_primes,
+    };
+
+    fn native(case: &common::Case) -> bool {
+        // Signed k=-2 is outside the unsigned API in each of the four functions.
+        // nth_almost_prime_upper(100,3), (63,2011), and (150,4557) need bigint results.
+        case.args.iter().all(|a| a.parse::<u64>().is_ok())
+            && case
+                .result
+                .as_ref()
+                .is_none_or(|r| r.is_empty() || r.contains(' ') || r.parse::<u64>().is_ok())
+    }
+
+    #[test]
+    fn compat_nth_almost_prime_upper() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "nth_almost_prime_upper")
+        {
+            if native(case) {
+                case.check(nth_almost_prime_upper(case.arg(0), case.arg(1)));
+            }
+        }
+    }
+    #[test]
+    fn compat_omega_prime_count() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "omega_prime_count")
+        {
+            if native(case) {
+                case.check(Some(omega_prime_count(case.arg(0), case.arg(1))));
+            }
+        }
+    }
+    #[test]
+    fn compat_nth_omega_prime() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "nth_omega_prime")
+        {
+            if native(case) {
+                case.check(nth_omega_prime(case.arg(0), case.arg(1)));
+            }
+        }
+    }
+    #[test]
+    fn compat_omega_primes() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "omega_primes")
+        {
+            let (lo, hi) = if case.args.len() == 2 {
+                (1, case.arg(1))
+            } else {
+                (case.arg(1), case.arg(2))
+            };
+            let result = omega_primes(case.arg(0), lo, hi);
+            let text = result
+                .iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(" ");
+            case.check((!result.is_empty()).then_some(text));
+        }
+    }
+>>>>>>> origin/dev-001
 }

@@ -4,7 +4,7 @@ use math_prime_util::*;
 #[test]
 fn is_aks_prime_oracle() {
     common::each("primality", "is_aks_prime", |c| {
-        // Signed inputs such as -1 and -2 are outside the u64 API.
+        // Signed inputs such as -1 and -2, and bigint inputs, are outside the u64 API.
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(Some(u8::from(is_aks_prime(n))));
         }
@@ -19,7 +19,7 @@ fn is_provable_prime_oracle() {
         }
     });
 }
-// The committed primality fixture has no rows for these three APIs.
+// The committed primality fixture has no rows for the certificate APIs.
 // The expected text follows MPU PrimalityProving.pm::_small_cert.
 #[test]
 fn prime_certificate_compat() {
@@ -27,11 +27,23 @@ fn prime_certificate_compat() {
         prime_certificate(101),
         "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN 101\n\nType Small\nN 101\n"
     );
-    assert_eq!(prime_certificate(1), "");
+    for n in [0, 1, 4, 561, 3_215_031_751, u64::MAX] {
+        assert_eq!(prime_certificate(n), "");
+    }
+    for n in [2, 3, 4_294_967_311, u64::MAX - 58] {
+        assert_eq!(
+            prime_certificate(n),
+            format!(
+                "[MPU - Primality Certificate]\nVersion 1.0\n\nProof for:\nN {n}\n\nType Small\nN {n}\n"
+            )
+        );
+    }
 }
 #[test]
 fn is_provable_prime_with_cert_compat() {
-    assert_eq!(is_provable_prime_with_cert(15), (0, String::new()));
+    for n in [0, 1, 15, 561, 3_215_031_751, u64::MAX] {
+        assert_eq!(is_provable_prime_with_cert(n), (0, String::new()));
+    }
     assert_eq!(
         is_provable_prime_with_cert(101),
         (2, prime_certificate(101))
@@ -194,4 +206,68 @@ fn is_delicate_prime_oracle() {
             }
         }
     });
+}
+
+#[test]
+fn verify_prime_native_bls15() {
+    // MPU PrimalityProving.pm::_verify_bls15, with V_7(-1, 2) = 13.
+    let header = "[MPU - Primality Certificate]\nVersion 1.0\nProof for:\nN 13\n";
+    let proof = "Type BLS15\nN 13\nQ 7\nLP -1\nLQ 2\n";
+    assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(true));
+    for proof in [
+        "Type BLS15\nN 13\nQ 2\nLP 1\nLQ -1",
+        "Type BLS15\nN 13\nQ 5\nLP 1\nLQ -1",
+        "Type BLS15\nN 13\nQ 7\nLP 2\nLQ 1",
+        "Type BLS15\nN 13\nQ 7\nLP 1\nLQ 1",
+    ] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    }
+    assert!(verify_prime(&format!("{header}Type BLS15\nN 13\nQ 7\nLP 1")).is_err());
+}
+
+#[test]
+fn verify_prime_field_validation() {
+    let header = "[MPU - Primality Certificate]\nProof for:\nn\t101\n";
+    assert_eq!(
+        verify_prime(&format!("{header}Type Small\nn 101")),
+        Ok(true)
+    );
+    let header = "[MPU - Primality Certificate]\nProof for:\nN 101\n";
+    // MPU requires Q indices to arrive in order, even when all values are valid.
+    for proof in [
+        "Type BLS5\nN 101\nQ[2] 5\nQ[1] 2\n----",
+        "Type Lucas\nN 101\nQ[2] 5\nQ[1] 2\nA 2",
+        "Type BLS5\nN 101\nA[1] 2\nQ[1] 5\n----",
+        "Type BLS5\nN 101\nQ[1] -5\n----",
+    ] {
+        assert!(
+            verify_prime(&format!("{header}{proof}")).is_err(),
+            "{proof}"
+        );
+    }
+}
+
+#[test]
+fn verify_prime_bls15_native_boundaries() {
+    let header = "[MPU - Primality Certificate]\nProof for:\nN 13\nType BLS15\n";
+    for proof in [
+        "N 2\nQ 7\nLP -1\nLQ 2",
+        "N 14\nQ 7\nLP -1\nLQ 2",
+        "N 17\nQ 9\nLP -1\nLQ 2",
+        "N 101\nQ 3\nLP -1\nLQ 2",
+        "N 13\nQ 7\nLP 1\nLQ -1",
+    ] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    }
+    // Residues larger than i64::MAX are centered before the Lucas call.
+    let proof = "N 18446744073709551565\nQ 9223372036854775783\nLP 18446744073709551564\nLQ 2";
+    assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    for proof in [
+        "Q 7\nLP -1\nLQ 2\nA 2",
+        "N -13\nQ 7\nLP -1\nLQ 2",
+        "N 13\nQ 7\nLP -18446744073709551616\nLQ 2",
+        "N 13\nQ 7\nLP 18446744073709551616\nLQ 2",
+    ] {
+        assert!(verify_prime(&format!("{header}{proof}")).is_err());
+    }
 }

@@ -58,7 +58,8 @@ from MPU:
   gives `is_prime`, `factor`, `powmod`, `gcd` and `next_prime` one generic surface; the rest of the
   bigint path is not ported yet.
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
-  and reports the difference upstream. See [NOTICE](NOTICE).
+  and records the difference for upstream review. See
+  [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
 
 MPU is not affiliated with this port and has not endorsed it.
 

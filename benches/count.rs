@@ -25,6 +25,19 @@ fn bench_count(c: &mut Criterion) {
     g.bench_function("prime_count/10^7", |b| {
         b.iter(|| prime_count(black_box(10_000_000)));
     });
+    // 10^4 takes the binary searches, the rest the closed bounds; the
+    // estimate runs Halley's method on R(x) in software `long double`.
+    for n in [10_u64.pow(4), 10_u64.pow(6), 10_u64.pow(12), 10_u64.pow(17)] {
+        g.bench_function(format!("nth_prime_lower/{n}"), |b| {
+            b.iter(|| nth_prime_lower(black_box(n)));
+        });
+        g.bench_function(format!("nth_prime_upper/{n}"), |b| {
+            b.iter(|| nth_prime_upper(black_box(n)));
+        });
+        g.bench_function(format!("nth_prime_approx/{n}"), |b| {
+            b.iter(|| nth_prime_approx(black_box(n)));
+        });
+    }
     g.finish();
 }
 

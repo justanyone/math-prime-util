@@ -7,6 +7,18 @@ pub use is_gaussian_prime::is_gaussian_prime;
 pub use is_sum_of_squares::is_sum_of_squares;
 pub use lucky::*;
 
+mod prime_power_count;
+pub use prime_power_count::prime_power_count;
+
+mod prime_power_count_approx;
+pub use prime_power_count_approx::prime_power_count_approx;
+
+mod prime_power_count_lower;
+pub use prime_power_count_lower::prime_power_count_lower;
+
+mod prime_power_count_upper;
+pub use prime_power_count_upper::prime_power_count_upper;
+
 mod minimal_goldbach_pair;
 pub use minimal_goldbach_pair::minimal_goldbach_pair;
 mod goldbach_pair_count;
@@ -57,11 +69,21 @@ mod nth_twin_prime;
 pub use nth_twin_prime::nth_twin_prime;
 
 mod powerfree;
+mod powerfree_sum;
 mod powerful;
-pub use powerfree::{
-    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
-};
-pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};
+pub use powerfree_sum::powerfree_sum;
+mod powerfree_part;
+pub use powerfree_part::powerfree_part;
+mod powerfree_part_sum;
+pub use powerfree_part_sum::powerfree_part_sum;
+mod is_powerful;
+pub use is_powerful::is_powerful;
+mod powerful_numbers;
+pub use powerful_numbers::powerful_numbers;
+mod powerful_count;
+pub use powerful_count::powerful_count;
+mod sumpowerful;
+pub use sumpowerful::sumpowerful;
 
 mod nth_twin_prime_approx;
 pub use nth_twin_prime_approx::nth_twin_prime_approx;
@@ -89,6 +111,14 @@ pub use nth_semiprime::*;
 mod nth_semiprime_approx;
 pub use nth_semiprime_approx::*;
 
+mod perfect_power_count_approx;
+pub use perfect_power_count_approx::perfect_power_count_approx;
+mod perfect_power_count_lower;
+pub use perfect_power_count_lower::perfect_power_count_lower;
+mod perfect_power_count_upper;
+pub use perfect_power_count_upper::perfect_power_count_upper;
+mod nth_perfect_power;
+pub use nth_perfect_power::nth_perfect_power;
 mod is_perfect_power;
 pub use is_perfect_power::is_perfect_power;
 mod next_perfect_power;
@@ -97,6 +127,35 @@ mod prev_perfect_power;
 pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
+
+mod almost_primes;
+pub use almost_primes::almost_primes;
+mod almost_prime_count;
+pub use almost_prime_count::almost_prime_count;
+mod almost_prime_count_approx;
+pub use almost_prime_count_approx::almost_prime_count_approx;
+mod almost_prime_count_lower;
+pub use almost_prime_count_lower::almost_prime_count_lower;
+mod nth_almost_prime_upper;
+pub use nth_almost_prime_upper::nth_almost_prime_upper;
+mod omega_primes;
+pub use omega_primes::omega_primes;
+mod omega_prime_count;
+pub use omega_prime_count::omega_prime_count;
+mod nth_omega_prime;
+pub use nth_omega_prime::nth_omega_prime;
+
+mod nth_powerful;
+pub use nth_powerful::nth_powerful;
+
+mod is_powerfree;
+pub use is_powerfree::is_powerfree;
+
+mod powerfree_count;
+pub use powerfree_count::powerfree_count;
+
+mod nth_powerfree;
+pub use nth_powerfree::nth_powerfree;
 mod almost_prime_count_upper;
 pub use almost_prime_count_upper::almost_prime_count_upper;
 mod nth_almost_prime;

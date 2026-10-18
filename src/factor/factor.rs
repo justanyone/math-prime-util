@@ -263,6 +263,13 @@ mod tests {
         let f = holf_stage(403).unwrap();
         assert_eq!(403 % f, 0);
         assert_eq!(squfof_stage(u64::MAX), None);
+        // The cutoff is 62 bits: 62 bits splits, 63 bits does not.
+        let p = crate::prev_prime(1 << 31).unwrap();
+        let q = crate::prev_prime(p - 100_000).unwrap();
+        assert_eq!(64 - (p * q).leading_zeros(), 62);
+        let f = squfof_stage(p * q).unwrap();
+        assert!(f == p || f == q);
+        assert_eq!(squfof_stage(3 << 61), None);
         let f = squfof_stage(91).unwrap();
         assert_eq!(91 % f, 0);
         for start in 0..8 {
@@ -272,5 +279,97 @@ mod tests {
         // Above 45 bits the Montgomery schedule adds rounds; 2^50 is even.
         assert_eq!(dispatcher(1 << 50, 1), Some(2));
         assert_eq!(dispatcher(1, 8), None);
+        // Stage 0 is `holf`: start 0 returns its factor, start 1 skips it.
+        let mut differs = 0;
+        for n in crate::factor::test_support::inputs() {
+            if u32::try_from(n).is_ok() {
+                let h = holf_stage(n);
+                assert_eq!(dispatcher(n, 0), h.or(dispatcher(n, 1)), "{n}");
+                differs += usize::from(h.is_some() && h != dispatcher(n, 1));
+            }
+        }
+        assert!(differs > 0);
+    }
+
+    #[test]
+    fn brent_and_holf_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let (mut hb, mut hh) = (0, 0);
+        for n in inputs() {
+            if let Ok(small) = u32::try_from(n) {
+                hh = fold_opt(hh, holf(u64::from(small)));
+            }
+            for a in [1, 2, 3, 5] {
+                for rounds in [100, 5_000, 500_000] {
+                    let got = brent(n, rounds, a);
+                    if let Some(f) = got {
+                        assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                    }
+                    hb = fold_opt(hb, got);
+                }
+            }
+        }
+        assert_eq!(
+            (hb, hh),
+            (4_434_182_252_870_372_899, 7_831_995_469_746_149_911)
+        );
+    }
+
+    #[test]
+    fn dispatcher_and_brent_wide_golden() {
+        use crate::factor::test_support::{extra_inputs, fold_opt, inputs};
+        let (mut hd, mut hb, mut hs, mut ho) = (0, 0, 0, 0);
+        for n in inputs().into_iter().chain(extra_inputs()) {
+            for start in 0..=8 {
+                let got = dispatcher(n, start);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "dispatcher({n},{start})");
+                }
+                hd = fold_opt(hd, got);
+            }
+            for (rounds, a) in [
+                (40, 1),
+                (700, 2),
+                (2_000, 3),
+                (17_000, 1),
+                (60_000, 7),
+                (500_000, 9),
+            ] {
+                let got = brent(n, rounds, a);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                }
+                hb = fold_opt(hb, got);
+            }
+            hs = fold_opt(hs, Some(split(n)));
+            ho = fold_opt(ho, squfof_stage(n));
+        }
+        assert_eq!(
+            (hd, hb, hs, ho),
+            (
+                14_304_924_916_325_233_394,
+                17_368_928_067_952_416_314,
+                6_631_126_701_719_544_614,
+                7_377_928_766_603_976_030
+            )
+        );
+    }
+
+    #[test]
+    fn brent_small_composites_golden() {
+        use crate::factor::test_support::{extra_inputs, fold_opt};
+        let mut h = 0;
+        for n in extra_inputs().into_iter().filter(|&n| n < 20_000) {
+            for a in 1..=12 {
+                for rounds in [60, 2_000] {
+                    let got = brent(n, rounds, a);
+                    if let Some(f) = got {
+                        assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                    }
+                    h = fold_opt(h, got);
+                }
+            }
+        }
+        assert_eq!(h, 18_061_944_565_925_939_231);
     }
 }

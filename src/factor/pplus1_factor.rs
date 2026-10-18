@@ -88,4 +88,33 @@ mod tests {
         assert_eq!(pplus1(49, 1), vec![49]);
         assert_eq!(pplus1(7, 200), vec![7]);
     }
+
+    #[test]
+    fn seeds_do_not_overflow_near_u64_max() {
+        // 7 % n and 11 % n must stay reduced: n + 7 would overflow.
+        for n in [u64::MAX - 4, u64::MAX - 9, u64::MAX - 12] {
+            let got = pplus1(n, 30);
+            assert_eq!(got.iter().product::<u64>(), n);
+        }
+    }
+
+    #[test]
+    fn exact_results() {
+        use crate::factor::test_support::{fold, wide_inputs};
+        let mut h = 0;
+        for n in wide_inputs() {
+            if n % 2 == 0 {
+                continue;
+            }
+            for bound in [0, 2, 20, 200, 2000] {
+                let got = pplus1(n, bound);
+                assert_eq!(got.iter().product::<u64>(), n, "pplus1({n},{bound})");
+                h = fold(h, 1);
+                for f in got {
+                    h = fold(h, f);
+                }
+            }
+        }
+        assert_eq!(h, 18_287_764_772_764_943_135);
+    }
 }

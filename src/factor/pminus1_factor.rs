@@ -107,6 +107,7 @@ fn pminus1(n: u64, b1: u64, b2: u64) -> Vec<u64> {
 #[cfg(test)]
 mod tests {
     use super::{pminus1, prime_power};
+    use crate::{is_prime, primes_in};
 
     #[test]
     fn bounds_and_recovery() {
@@ -116,5 +117,96 @@ mod tests {
         assert_eq!(pminus1(49, 0, 10), vec![7, 7]);
         assert_eq!(pminus1(91, 1000, 1000), vec![91]);
         assert_eq!(pminus1(563_777_293, 1000, 20_000), vec![23_099, 24_407]);
+    }
+
+    /// Primes `p > 2011` below `limit` with `p - 1` made of primes up to `bound`.
+    fn smooth_primes(bound: u64, limit: u64, step: usize, take: usize) -> Vec<u64> {
+        let small: Vec<u64> = primes_in(2..=bound).collect();
+        (2..limit)
+            .step_by(2)
+            .map(|m| m + 1)
+            .filter(|&p| {
+                p > 2011 && is_prime(p) != 0 && {
+                    let mut m = p - 1;
+                    for &q in &small {
+                        while m % q == 0 {
+                            m /= q;
+                        }
+                    }
+                    m == 1
+                }
+            })
+            .step_by(step)
+            .take(take)
+            .collect()
+    }
+
+    fn pin(h: u64, n: u64, b1: u64, b2: u64) -> u64 {
+        use crate::factor::test_support::fold;
+        let got = pminus1(n, b1, b2);
+        assert_eq!(got.iter().product::<u64>(), n, "pminus1({n},{b1},{b2})");
+        let mut h = fold(h, 1);
+        for f in got {
+            h = fold(h, f);
+        }
+        h
+    }
+
+    #[test]
+    fn exact_results_on_wide_inputs() {
+        use crate::factor::test_support::wide_inputs;
+        let mut h = 0;
+        for n in wide_inputs() {
+            if n % 2 == 0 {
+                continue;
+            }
+            for (b1, b2) in [(2, 100), (30, 0), (100, 1000), (1000, 20_000)] {
+                h = pin(h, n, b1, b2);
+            }
+        }
+        assert_eq!(h, 5_801_696_687_396_265_089);
+    }
+
+    #[test]
+    fn smooth_pairs_backtrack_inside_a_block() {
+        let s = smooth_primes(131, 400_000, 3, 12);
+        assert!(s.len() >= 10, "{}", s.len());
+        let mut h = 0;
+        for (i, &p) in s.iter().enumerate() {
+            for &q in &s[i + 1..] {
+                for (b1, b2) in [(131, 131), (200, 2000), (131, 0), (400, 400)] {
+                    h = pin(h, p * q, b1, b2);
+                }
+            }
+        }
+        assert_eq!(h, 14_515_565_484_178_560_481);
+    }
+
+    #[test]
+    fn second_stage_gaps_and_cache() {
+        let q = smooth_primes(97, 400_000, 5, 3);
+        let mut h = 0;
+        let mut found = 0;
+        let mut prev = 3;
+        for r in primes_in(4..=60_000) {
+            let gap = r - prev;
+            prev = r;
+            if r < 300 || gap < 30 {
+                continue;
+            }
+            for s in [2, 6, 12, 30] {
+                let p = 2 * s * r + 1;
+                if is_prime(p) == 0 {
+                    continue;
+                }
+                found += 1;
+                for &q in &q {
+                    h = pin(h, p * q, 100, r + 1);
+                    h = pin(h, p * q, 100, r - 1);
+                }
+            }
+        }
+        assert!(found > 20, "{found}");
+        assert_eq!(h, 6_254_269_951_800_095_395);
     }
 }

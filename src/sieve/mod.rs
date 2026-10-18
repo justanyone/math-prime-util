@@ -645,6 +645,46 @@ mod tests {
 
     fn assert_send_sync<T: Send + Sync>() {}
 
+    /// Tests that change the shared cache run one at a time.
+    static SERIAL: Mutex<()> = Mutex::new(());
+
+    fn serial() -> std::sync::MutexGuard<'static, ()> {
+        SERIAL
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+    }
+
+    fn limit() -> u64 {
+        lock_cache().limit
+    }
+
+    #[test]
+    fn cache_limit_follows_precalc_and_memfree() {
+        let _serial = serial();
+        // (4096 - 16) * 30 - 128 * 30
+        assert_eq!(INITIAL_CACHE_SIZE, 118_560);
+        prime_precalc(1);
+        prime_memfree();
+        let base = pad_limit(INITIAL_CACHE_SIZE);
+        assert_eq!(limit(), base);
+        prime_precalc(1_000_000);
+        assert_eq!(limit(), pad_limit(1_000_000));
+        // A smaller request, and the default request, never shrink the cache.
+        prime_precalc(500_000);
+        assert_eq!(limit(), pad_limit(1_000_000));
+        prime_precalc(0);
+        assert_eq!(limit(), pad_limit(1_000_000));
+        prime_memfree();
+        assert_eq!(limit(), base);
+        prime_precalc(0);
+        assert_eq!(limit(), base);
+        // Asking for exactly the current limit still grows the cache.
+        prime_precalc(base);
+        assert_eq!(limit(), pad_limit(base));
+        prime_memfree();
+        assert_eq!(limit(), base);
+    }
+
     #[test]
     fn cache_type_is_send_sync() {
         assert_send_sync::<PrimeCache>();
@@ -679,6 +719,7 @@ mod tests {
 
     #[test]
     fn precalc_then_memfree_keeps_answers() {
+        let _serial = serial();
         prime_memfree();
         prime_precalc(0);
         prime_precalc(30_000);
@@ -701,6 +742,7 @@ mod tests {
 
     #[test]
     fn duplicate_precalc_from_many_threads() {
+        let _serial = serial();
         let mut joins = Vec::new();
         for i in 0..8u64 {
             joins.push(std::thread::spawn(move || {

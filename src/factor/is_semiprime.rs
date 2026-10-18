@@ -162,7 +162,7 @@ pub(super) fn factors(n: u64) -> Vec<u64> {
 
 #[cfg(test)]
 mod tests {
-    use super::{factors, rho, split, trial_split};
+    use super::{factors, rho, split, step, trial_split};
 
     #[test]
     fn factoring_support() {
@@ -179,5 +179,53 @@ mod tests {
         let f = rho(n, 1).expect("composite splits");
         assert!(f > 1 && f < n && n % f == 0);
         assert_eq!(factors(n), [1_000_003, 1_000_033]);
+    }
+
+    #[test]
+    fn rho_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let mut h = 0;
+        for n in inputs() {
+            for a in [1, 3, 5, 7] {
+                let got = rho(n, a);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "rho({n},{a})");
+                }
+                h = fold_opt(h, got);
+            }
+        }
+        assert_eq!(h, 14_561_977_967_123_951_357);
+    }
+
+    #[test]
+    fn rho_small_and_split_edges() {
+        use crate::factor::test_support::{extra_inputs, fold, fold_opt};
+        let (mut h, mut hs) = (0, 0);
+        for n in extra_inputs() {
+            for a in [1, 3, 5, 7, 9, 21] {
+                let got = rho(n, a);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "rho({n},{a})");
+                }
+                h = fold_opt(h, got);
+            }
+            hs = fold(hs, split(n));
+        }
+        assert_eq!(
+            (h, hs),
+            (11_462_009_608_631_017_843, 12_067_257_513_942_240_652)
+        );
+        assert_eq!(split(11 * 13), 11);
+        assert_eq!(split(2011 * 2017), 2011);
+        assert_eq!(split(13 * 2017 * 2027), 13);
+        assert_eq!(trial_split(15), 15);
+        assert_eq!(trial_split(3 * 2017), 3 * 2017);
+        assert_eq!(trial_split(2029), 2029);
+        assert_eq!(trial_split(2027 * 2029), 2027);
+        assert_eq!(trial_split(2017 * 2017), 2017);
+        assert_eq!(factors(2027 * 2029 * 2039), [2027, 2029, 2039]);
+        assert_eq!(factors(2), [2]);
+        assert_eq!(factors(0), [] as [u64; 0]);
+        assert_eq!(step(5, 7, 3), 2);
     }
 }

@@ -788,7 +788,6 @@ fn perfect_power_count_oracle() {
     });
 }
 
-<<<<<<< HEAD
 #[test]
 fn almost_primes_oracle() {
     each("families", "almost_primes", |c| {
@@ -851,7 +850,8 @@ fn almost_prime_count_lower_oracle() {
         }
         c.check(Some(almost_prime_count_lower(c.arg(0), c.arg(1))));
     });
-=======
+}
+
 mod almost_omega_f03 {
     use super::common;
     use math_prime_util::{
@@ -921,5 +921,3 @@ mod almost_omega_f03 {
             case.check((!result.is_empty()).then_some(text));
         }
     }
->>>>>>> origin/dev-001
-}

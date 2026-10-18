@@ -728,7 +728,6 @@ fn all_binary_exponents_are_perfect_powers() {
     }
 }
 
-<<<<<<< HEAD
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
@@ -842,7 +841,8 @@ fn almost_high_ranges_and_fit_boundaries() {
     assert_eq!(almost_prime_count(1, u64::MAX), 425_656_284_035_217_743);
     assert_eq!(almost_prime_count(2, u64::MAX), 1_701_748_900_850_019_777);
     assert_eq!(almost_prime_count(3, u64::MAX), 3_167_597_434_038_354_478);
-=======
+}
+
 mod almost_omega_f03 {
     use math_prime_util::{
         is_almost_prime, is_omega_prime, nth_almost_prime_upper, nth_omega_prime,
@@ -912,5 +912,3 @@ mod almost_omega_f03 {
             }
         });
     }
->>>>>>> origin/dev-001
-}

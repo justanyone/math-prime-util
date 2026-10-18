@@ -138,7 +138,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_gaussian_prime`
 - [x] `is_happy`
 - [x] `is_harshad`
-- [ ] `is_higgs_prime`
+- [-] `is_higgs_prime` — not in Math::Prime::Util 0.75 (no source, no fixture; the Phase 0 list was wrong)
 - [x] `is_lucas_pseudoprime`
 - [x] `is_lucky`
 - [x] `is_mersenne_prime`

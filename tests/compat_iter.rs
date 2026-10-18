@@ -300,18 +300,18 @@ fn prime_iterator_nested_streams_are_independent() {
         .find(|c| c.func == "prime_iterator_nested3")
         .expect("fixture row");
     let mut out = Vec::new();
-    let mut outer = math_prime_util::prime_iterator(0);
-    while let Some(a) = outer.next() {
+    let outer = math_prime_util::prime_iterator(0);
+    for a in outer {
         if a > 10 {
             break;
         }
-        let mut middle = math_prime_util::prime_iterator(10 * a);
-        while let Some(b) = middle.next() {
+        let middle = math_prime_util::prime_iterator(10 * a);
+        for b in middle {
             if b > 10 * a + 10 {
                 break;
             }
-            let mut inner = math_prime_util::prime_iterator(b);
-            while let Some(c) = inner.next() {
+            let inner = math_prime_util::prime_iterator(b);
+            for c in inner {
                 if c > b + 10 {
                     break;
                 }

@@ -40,3 +40,33 @@ Total: 21988 candidates. No whole-crate score can be computed from this inventor
 Focused validation passed: tools/test.sh --test mutants_rest (14 tests). The gate is still running.
 The focused regression suite passed all 14 tests. The whole-crate inventory is being collected. The gate and arith baseline share the worktree target directory, so Cargo may serialize their builds.
 Inventory complete: 21988 candidates in 21 modules. README distinguishes candidate totals from a mutation score. There are no completed mutant outcomes yet, so survivor triage cannot start.
+
+## Reproduce the measurements
+
+Fixture rows are nonblank lines that do not start with `#` after whitespace.
+The count includes all `tests/fixtures/*.tsv` files. No fixture was changed.
+The inventory command was `cargo mutants --all-features --list --json`.
+It used `CARGO_NET_OFFLINE=true` and `nice -n 19`.
+The source folders `bigint` and `config` are present; `bigint` has no generated candidates.
+The crate root also has no generated candidates. All other source folders are in the table.
+
+The arith run used this command from the worktree root:
+
+```sh
+CARGO_NET_OFFLINE=true CARGO_TARGET_DIR="$PWD/target" \
+TMPDIR="$PWD/target/mutation-tmp" nice -n 19 cargo mutants \
+  --all-features -j 2 --timeout 300 --file 'src/arith/**' \
+  --output target/mutation-runs/arith
+```
+
+The output and scratch folders were created inside `target` before the run.
+Use the same command with each module name and a distinct output folder.
+Run the modules in sequence to avoid duplicate runs and shared target locks.
+Keep raw outcomes with each completed run. Report caught, missed, timeout,
+and unviable counts separately. Compute the score as
+`100 * caught / (caught + missed)`; exclude timeouts and unviable mutants.
+For each missed mutant, record its source location, mutation, classification,
+and a regression test or a reason why its behavior is equivalent.
+A timeout is unresolved evidence, not a caught mutant.
+No production code changed, so this task adds no state or concurrency paths.
+The full offline suite has been requested once through tools/test.sh. The notes now include the exact mutation command and score formula. Completed module runs and survivor triage remain pending.

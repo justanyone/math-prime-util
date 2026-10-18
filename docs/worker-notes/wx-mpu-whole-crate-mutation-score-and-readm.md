@@ -75,3 +75,4 @@ The arith run was interrupted through its own session after roughly four minutes
 The mutation attempt is stopped. No run is left active for mutation testing. Validation is still in progress; the recorded score remains unavailable.
 MSRV build passed. The gate reached the compatibility tests. Full-suite validation continues offline.
 The gate is still running the prime-count oracle test. It has reported no failure. No mutation results were produced.
+The gate passed the count oracle tests and reached the iterator tests. No failure has been reported.

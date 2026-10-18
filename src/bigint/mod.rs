@@ -1,7 +1,10 @@
 //! Generic unsigned integer operations.
 //!
 //! Use [`Int`] methods to keep the native free functions unambiguous.
-//! The current backends are `u64` and `u128`.
+//! The backends are `u64`, `u128`, and, with feature `bigint`, `num_bigint::BigUint`.
+
+#[cfg(feature = "bigint")]
+mod biguint;
 
 /// The shared number theory surface for unsigned integers.
 ///

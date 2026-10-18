@@ -15,6 +15,10 @@ exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 
 [dependencies]
 getrandom = { version = "0.3", features = ["std"] }
+num-bigint = { version = "0.4", optional = true }
+
+[features]
+bigint = ["dep:num-bigint"]
 
 [dev-dependencies]
 proptest = "1"

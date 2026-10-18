@@ -9,5 +9,6 @@ Report audit passed: all 166 documented rows match stored fixtures and all 18 li
 Gate passed fmt and clippy and reached the MSRV build. Started the one required tools/test.sh whole-suite run; missing draft content remains the documentation blocker.
 Validation continues: waiting for focused tests, MSRV/full gate, and the final whole-suite run; no fixture or source-code changes were needed.
 All six focused compatibility/property targets passed. Gate fmt, clippy -D warnings, and Rust 1.85.0 MSRV build passed; full-suite and docs checks remain in progress.
+Progress monitoring failed when the sandbox could not register /tmp/.git: Quota exceeded (os error 122). Existing test sessions still poll; trying to preserve validation evidence without changing build tooling or unrelated files.
 - 2026-10-18T20:52:54Z launcher: no commit for 62 s; 274 s elapsed. Files changed so far: docs/upstream-findings.md, docs/worker-notes/pc1-mpu-publish-upstream-findings-file-t1548.md.
 - 2026-10-18T20:53:54Z launcher: no commit for 60 s; 334 s elapsed. Files changed so far: docs/upstream-findings.md, docs/worker-notes/pc1-mpu-publish-upstream-findings-file-t1548.md.

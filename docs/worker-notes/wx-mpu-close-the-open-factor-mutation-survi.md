@@ -9,3 +9,4 @@ Independent modular checks found a Lehman division witness. The addition mutatio
 Corrected a Lehman expectation after the focused test failed. Stopped the mutation run to avoid counting that failure as a kill; p-1 replay test passes.
 Found p-1 checkpoint witnesses with three prime factors. Two-factor inputs hid the gap because replay selected the same divisor. Added exact split assertions.
 Focused library tests pass: 71 tests. The gate has passed fmt, clippy and the MSRV build and is running the full suite offline.
+Found a HOLF shift witness in the multiplier-30 interval. Added a two-round private splitter assertion. Brent retry searches found no witness; those mutations remain open.

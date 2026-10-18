@@ -66,3 +66,17 @@ fn split(n: u64, mut rounds: u64) -> u64 {
     }
     n
 }
+
+#[cfg(test)]
+mod tests {
+    use super::split;
+
+    #[test]
+    fn multiplier_above_the_eight_bit_cutoff() {
+        // MPU factor.c::holf_factor uses multiplier 30 in this interval.
+        // Multiplier 60 finds a factor within two rounds; 30 does not.
+        let n = 154_078_529_008_469_773;
+        assert_eq!(n, 430_000_561 * 358_321_693);
+        assert_eq!(split(n, 2), n);
+    }
+}

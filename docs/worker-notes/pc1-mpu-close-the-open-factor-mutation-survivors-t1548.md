@@ -15,3 +15,4 @@ Run focused factor tests and the required gate, recording remaining validation l
 - Gate fmt and clippy passed; gate advanced to the MSRV build. Waiting for focused and full-suite results before recording final validation status.
 - Focused validation passed: tools/test.sh --lib factor reports 74 passed, 0 failed. Three new regressions cover HOLF round sensitivity, dispatcher budgets and retry sequencing; unnamed survivors remain unclassified without their report.
 - Validation heartbeat: the required gate and the single whole-suite command remain active; no further source changes or readiness changes are planned.
+- Gate passed fmt, clippy and MSRV build and is running tests. The independent whole-suite command remains active. No unnamed survivor report is available and no blanket equivalence claim is made.

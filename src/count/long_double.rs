@@ -100,6 +100,20 @@ impl Ld {
         }
     }
 
+    /// Round to binary64 precision, as the NV argument and result of
+    /// MPU 0.75 `real.c`, `Li`. Callers stay in the normal binary64 range.
+    pub(super) fn round_binary64(self) -> Self {
+        let sig = self.sig >> 11;
+        let tail = self.sig & 0x7ff;
+        let up = tail > 0x400 || (tail == 0x400 && sig & 1 != 0);
+        Self::round(
+            self.neg,
+            u128::from(sig + u64::from(up)),
+            self.exp - 52,
+            false,
+        )
+    }
+
     /// `fabsl`.
     pub(super) fn abs(self) -> Self {
         Self { neg: false, ..self }
@@ -498,6 +512,23 @@ mod tests {
         assert_eq!(bits(ld(0.0)), (0, 0));
         assert_eq!(bits(ld(f64::from_bits(1))), (-1074, 1 << 63));
         assert_eq!(ld(1e19).floor_u64(), 10_000_000_000_000_000_000);
+    }
+
+    #[test]
+    fn binary64_rounding() {
+        let one = 1_u64 << 63;
+        for (sig, want) in [
+            (one, one),
+            (one + 0x3ff, one),
+            (one + 0x400, one),
+            (one + 0x401, one + 0x800),
+            (one + 0xc00, one + 0x1000),
+        ] {
+            assert_eq!(bits(Ld::new(0, sig).round_binary64()), (0, want));
+        }
+        assert_eq!(Ld::ZERO.round_binary64(), Ld::ZERO);
+        assert_eq!(bits(Ld::new(0, u64::MAX).round_binary64()), (1, one));
+        assert_eq!((-ld(1.5)).round_binary64(), -ld(1.5));
     }
 
     #[test]

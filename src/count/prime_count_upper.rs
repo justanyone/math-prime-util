@@ -1,4 +1,5 @@
-use crate::real::logarithmic_integral;
+use super::long_double::Ld;
+use super::nth_prime_approx::li_nv;
 
 use super::prime_count;
 
@@ -35,11 +36,6 @@ const UPPER_THRESH: [(u64, f32); 21] = [
 /// the `UPPER_THRESH` table. Above that it uses `Li(n)`, or a tightened `Li(n)`
 /// up to 101 260 000 000.
 ///
-/// The Rust port evaluates `Li(n)` in `f64`, where MPU uses `long double`.
-/// Results can differ near a rounding edge. The native endpoint is cached
-/// from MPU’s `prime_counts.c::prime_count_upper`, avoiding loss of integer
-/// precision in both the input and the result at `u64::MAX`.
-///
 /// # Examples
 ///
 /// ```
@@ -47,46 +43,38 @@ const UPPER_THRESH: [(u64, f32); 21] = [
 /// assert!(math_prime_util::prime_count_upper(n) >= math_prime_util::prime_count(n));
 /// ```
 #[must_use]
-#[allow(
-    clippy::cast_precision_loss,
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
-)]
 pub fn prime_count_upper(n: u64) -> u64 {
     if n < 33_000 {
         return prime_count(n);
     }
-    // MPU 0.75 prime_counts.c::prime_count_upper evaluated at UV_MAX.
-    // Preserve the C long-double endpoint instead of rounding it through f64.
-    if n == u64::MAX {
-        return 425_656_284_115_718_592;
-    }
-    let fn_ = n as f64;
+    let fn_ = Ld::from_u64(n);
     let fl1 = fn_.ln();
     let fl2 = fl1 * fl1;
 
-    let upper = if fn_ <= 821_800_000.0 {
+    let upper = if n <= 821_800_000 {
         // Dusart 2010, page 2.
         let a = UPPER_THRESH
             .iter()
             .find(|&&(thresh, _)| n < thresh)
-            .map_or(2.334, |&(_, a)| f64::from(a));
-        fn_ / fl1 * (1.0 + 1.0 / fl1 + a / fl2)
-    } else if fn_ < 101_260_000_000.0 {
+            .map_or(Ld::new(1, 0x9560_4189_374b_c6a8), |&(_, a)| {
+                Ld::from_f64(f64::from(a))
+            });
+        fn_ / fl1 * (Ld::ONE + Ld::ONE / fl1 + a / fl2)
+    } else if n < 101_260_000_000 {
         // Empirical tightening for the smaller inputs above 821 800 000.
-        let a = if fn_ < 1_100_000_000.0 {
+        let a = if n < 1_100_000_000 {
             0.032
-        } else if fn_ < 10_010_000_000.0 {
+        } else if n < 10_010_000_000 {
             0.027
         } else {
             0.021
         };
-        logarithmic_integral(fn_) - a * fl1 * fn_.sqrt() / 25.132_741_228_718_345
+        li_nv(fn_) - Ld::from_f64(a) * fl1 * fn_.sqrt() / Ld::new(4, 0xc90f_daa2_2168_c235)
     } else {
         // Büthe 2015 and Dusart 2018: pi(x) <= Li(x).
-        logarithmic_integral(fn_)
+        li_nv(fn_)
     };
-    upper.floor() as u64
+    upper.floor_u64()
 }
 
 #[cfg(test)]

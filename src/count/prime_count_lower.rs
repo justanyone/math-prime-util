@@ -1,4 +1,5 @@
-use crate::real::logarithmic_integral;
+use super::long_double::Ld;
+use super::nth_prime_approx::li_nv;
 
 use super::prime_count;
 
@@ -8,9 +9,6 @@ use super::prime_count;
 /// exact count is returned. Up to 4 000 000 000 the bound uses Axler's
 /// corollaries. Above that it uses Dusart 2018, Lemma 2.2.
 ///
-/// The Rust port evaluates `Li(n)` in `f64`, where MPU uses `long double`.
-/// Results can differ by one near a rounding edge.
-///
 /// # Examples
 ///
 /// ```
@@ -18,16 +16,11 @@ use super::prime_count;
 /// assert!(math_prime_util::prime_count_lower(n) <= math_prime_util::prime_count(n));
 /// ```
 #[must_use]
-#[allow(
-    clippy::cast_precision_loss,
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
-)]
 pub fn prime_count_lower(n: u64) -> u64 {
     if n < 33_000 {
         return prime_count(n);
     }
-    let fn_ = n as f64;
+    let fn_ = Ld::from_u64(n);
     let fl1 = fn_.ln();
     let fl2 = fl1 * fl1;
 
@@ -46,7 +39,12 @@ pub fn prime_count_lower(n: u64) -> u64 {
         } else {
             846.66
         };
-        fn_ / (fl1 - 1.0 - 1.0 / fl1 - 2.975_666 / fl2 - 13.024_334 / (fl1 * fl2) + a / (fl2 * fl2))
+        fn_ / (fl1
+            - Ld::ONE
+            - Ld::ONE / fl1
+            - Ld::from_f64(2.975_666) / fl2
+            - Ld::from_f64(13.024_334) / (fl1 * fl2)
+            + Ld::from_f64(a) / (fl2 * fl2))
     } else if n < 4_000_000_000 {
         // `prime_counts.c` also lists `a = 4` below 88 783 and `a = -3` below
         // 300 000. Both cuts are below 300 070, so this branch never takes them.
@@ -65,12 +63,16 @@ pub fn prime_count_lower(n: u64) -> u64 {
         } else {
             -84.0
         };
-        logarithmic_integral(fn_) - (fn_.sqrt() / fl1) * (1.94 + 2.50 / fl1 + a / fl2)
+        li_nv(fn_)
+            - (fn_.sqrt() / fl1)
+                * (Ld::new(0, 0xf851_eb85_1eb8_51ec)
+                    + Ld::from_f64(2.50) / fl1
+                    + Ld::from_f64(a) / fl2)
     } else {
         // Dusart 2018, Lemma 2.2.
-        logarithmic_integral(fn_) - 2.0 * fn_.sqrt() / fl1
+        li_nv(fn_) - Ld::from_u64(2) * fn_.sqrt() / fl1
     };
-    lower.ceil() as u64
+    lower.ceil_u64()
 }
 
 #[cfg(test)]

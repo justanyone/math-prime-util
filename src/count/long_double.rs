@@ -100,6 +100,20 @@ impl Ld {
         }
     }
 
+    /// Round to binary64 precision, as the NV argument and result of
+    /// MPU 0.75 `real.c`, `Li`. Callers stay in the normal binary64 range.
+    pub(super) fn round_binary64(self) -> Self {
+        let sig = self.sig >> 11;
+        let tail = self.sig & 0x7ff;
+        let up = tail > 0x400 || (tail == 0x400 && sig & 1 != 0);
+        Self::round(
+            self.neg,
+            u128::from(sig + u64::from(up)),
+            self.exp - 52,
+            false,
+        )
+    }
+
     /// `fabsl`.
     pub(super) fn abs(self) -> Self {
         Self { neg: false, ..self }

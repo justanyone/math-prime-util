@@ -52,8 +52,10 @@ pub fn is_smooth(mut n: u64, k: u64) -> bool {
     if n < p * p {
         return n <= k;
     }
+    // MPU 0.75 util.c returns 0 for any prime remainder here, which is wrong
+    // when that prime is at most k (docs/upstream-findings.md, finding 1).
     if is_prime(n) != 0 {
-        return false;
+        return n <= k;
     }
     let limit = if k <= 290_000 { k } else { 4999 };
     while p <= limit && p <= n / p {

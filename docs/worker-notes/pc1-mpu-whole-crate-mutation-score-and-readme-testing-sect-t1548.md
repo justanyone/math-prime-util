@@ -8,3 +8,4 @@ Progress: cargo-mutants 27.1.0 works; focused mutants_rest tests started, collec
 Progress: launched all 55 bits/config mutations against library tests (two jobs, offline); required gate runs concurrently.
 Progress: module jobs are building their isolated scratch copies; focused tests and gate are waiting on compilation, with no reported failure yet.
 Progress: focused mutants_rest suite passed (14 tests). Added the measured module inventory and explicit score denominator in docs/mutation-testing.md; baseline compilation continues.
+Progress: library baseline still compiling; no mutation score claimed before results exist. Required gate has reached clippy.

@@ -5,6 +5,22 @@ use math_prime_util::iter::*;
 use std::fmt::Display;
 use std::ops::ControlFlow;
 
+// Match the oracle callback cap and exercise the public closure APIs.
+macro_rules! loop_values {
+    ($run:ident, $range:expr) => {{
+        let mut values = Vec::new();
+        let _: ControlFlow<()> = math_prime_util::iter::$run($range, |n| {
+            values.push(n);
+            if values.len() == 2000 {
+                ControlFlow::Break(())
+            } else {
+                ControlFlow::Continue(())
+            }
+        });
+        joined(values, " ")
+    }};
+}
+
 fn joined<T: Display>(values: impl IntoIterator<Item = T>, sep: &str) -> String {
     values
         .into_iter()
@@ -81,9 +97,9 @@ fn check(name: &str) {
                 };
                 let a = if c.args.len() == 1 { 0 } else { a };
                 match name {
-                    "forprimes" => joined(primes_in(a..=b), " "),
-                    "forcomposites" => joined(composites_in(a..=b), " "),
-                    _ => joined(odd_composites_in(a..=b), " "),
+                    "forprimes" => loop_values!(forprimes, a..=b),
+                    "forcomposites" => loop_values!(forcomposites, a..=b),
+                    _ => loop_values!(foroddcomposites, a..=b),
                 }
             }
             "forpart" | "forcomp" => {
@@ -174,16 +190,32 @@ fn check(name: &str) {
                     continue;
                 };
                 match name {
-                    "forsemiprimes" => joined(semiprimes_in(range), " "),
-                    "foralmostprimes" => joined(almost_primes_in(k, range), " "),
-                    "forfactored" => {
-                        joined(factored_in(range).map(|(n, f)| format_factored(n, &f)), " ")
+                    "forsemiprimes" => loop_values!(forsemiprimes, range),
+                    "foralmostprimes" | "forfactored" | "forsquarefree" | "forsquarefreeint" => {
+                        let mut values = Vec::new();
+                        let mut save = |v| {
+                            values.push(v);
+                            if values.len() == 2000 {
+                                std::ops::ControlFlow::Break(())
+                            } else {
+                                std::ops::ControlFlow::Continue(())
+                            }
+                        };
+                        let _ = match name {
+                            "foralmostprimes" => {
+                                math_prime_util::foralmostprimes(k, range, |n| save(n.to_string()))
+                            }
+                            "forfactored" => math_prime_util::forfactored(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            "forsquarefree" => math_prime_util::forsquarefree(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            _ => math_prime_util::forsquarefreeint(range, |n| save(n.to_string())),
+                        };
+                        values.join(" ")
                     }
-                    "forsquarefree" => joined(
-                        squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
-                        " ",
-                    ),
-                    _ => joined(squarefree_in(range).map(|(n, _)| n), " "),
+                    _ => unreachable!(),
                 }
             }
             "fordivisors" => {

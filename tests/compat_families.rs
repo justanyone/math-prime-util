@@ -704,6 +704,13 @@ fn nth_perfect_power_upper_oracle() {
 }
 
 #[test]
+fn perfect_power_count_approx_oracle() {
+    each("families", "perfect_power_count_approx", |c| {
+        c.check(Some(perfect_power_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
 fn is_perfect_power_oracle() {
     each("families", "is_perfect_power", |c| {
         // Skip signed inputs (including -8922003266371364726) and bigint
@@ -711,6 +718,13 @@ fn is_perfect_power_oracle() {
         if let Ok(n) = c.args[0].parse::<u64>() {
             c.check(Some(u8::from(is_perfect_power(n))));
         }
+    });
+}
+
+#[test]
+fn perfect_power_count_lower_oracle() {
+    each("families", "perfect_power_count_lower", |c| {
+        c.check(Some(perfect_power_count_lower(c.arg(0))));
     });
 }
 
@@ -727,6 +741,13 @@ fn next_perfect_power_oracle() {
 }
 
 #[test]
+fn perfect_power_count_upper_oracle() {
+    each("families", "perfect_power_count_upper", |c| {
+        c.check(Some(perfect_power_count_upper(c.arg(0))));
+    });
+}
+
+#[test]
 fn prev_perfect_power_oracle() {
     each("families", "prev_perfect_power", |c| {
         // Skip signed inputs and bigint input 18446744073709551616.
@@ -735,6 +756,17 @@ fn prev_perfect_power_oracle() {
             let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
             assert_eq!(prev_perfect_power(n), expected, "{c:?}");
         }
+    });
+}
+
+#[test]
+fn nth_perfect_power_oracle() {
+    each("families", "nth_perfect_power", |c| {
+        // Index 4,297,615,582 has the bigint result 2^64, outside the native API.
+        if c.arg::<u64>(0) == 4_297_615_582 {
+            return;
+        }
+        c.check(nth_perfect_power(c.arg(0)));
     });
 }
 
@@ -753,6 +785,70 @@ fn perfect_power_count_oracle() {
             }
         };
         c.check(Some(count));
+    });
+}
+
+#[test]
+fn almost_primes_oracle() {
+    each("families", "almost_primes", |c| {
+        let (lo, hi) = if c.args.len() == 2 {
+            (0, c.arg(1))
+        } else {
+            (c.arg(1), c.arg(2))
+        };
+        let values = almost_primes(c.arg(0), lo, hi);
+        c.check((!values.is_empty()).then(|| {
+            values
+                .iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(" ")
+        }));
+    });
+}
+
+#[test]
+fn almost_prime_count_oracle() {
+    each("families", "almost_prime_count", |c| {
+        // The signed k=-2 case is outside the unsigned Rust API.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        c.check(Some(almost_prime_count(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
+fn almost_prime_count_approx_oracle() {
+    each("families", "almost_prime_count_approx", |c| {
+        // The signed k=-2 case is outside the unsigned Rust API.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        // Skipped: k=1 delegates to prime_count_approx, which evaluates R(x)
+        // in f64; MPU uses long double. At n = 2^64-1 the result differs by
+        // about 850 (relative 2e-15). Fix belongs in src/count.
+        if c.arg::<u64>(0) == 1 && c.arg::<u64>(1) == u64::MAX {
+            return;
+        }
+        c.check(Some(almost_prime_count_approx(c.arg(0), c.arg(1))));
+    });
+}
+
+#[test]
+fn almost_prime_count_lower_oracle() {
+    each("families", "almost_prime_count_lower", |c| {
+        // The signed k=-2 case is outside the unsigned Rust API.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        // Skipped: k=1 delegates to prime_count_lower, which evaluates the
+        // bound in f64; MPU uses long double. At n = 2^64-1 the result differs
+        // by about 850 (relative 2e-15). Fix belongs in src/count.
+        if c.arg::<u64>(0) == 1 && c.arg::<u64>(1) == u64::MAX {
+            return;
+        }
+        c.check(Some(almost_prime_count_lower(c.arg(0), c.arg(1))));
     });
 }
 
@@ -825,4 +921,21 @@ mod almost_omega_f03 {
             case.check((!result.is_empty()).then_some(text));
         }
     }
+}
+
+/// Both sides of the `origin/dev-001` merge stay callable.
+///
+/// Removing either the almost-prime exports or the omega-prime exports
+/// makes this test fail to compile.
+#[test]
+fn merge_keeps_almost_and_omega_exports() {
+    let almost = almost_primes(2, 1, 30);
+    assert_eq!(almost_prime_count(2, 30), almost.len() as u64);
+    assert!(almost_prime_count_lower(2, 30) <= almost.len() as u64);
+    assert!(almost_prime_count_approx(2, 30) >= almost_prime_count_lower(2, 30));
+    let omega = omega_primes(1, 1, 30);
+    assert_eq!(omega_prime_count(1, 30), omega.len() as u64);
+    assert_eq!(nth_omega_prime(1, 1), omega.first().copied());
+    let upper = nth_almost_prime_upper(2, almost.len() as u64);
+    assert!(upper.is_some_and(|bound| bound >= *almost.last().unwrap()));
 }

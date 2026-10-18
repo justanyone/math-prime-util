@@ -1,9 +1,9 @@
 //! Native primality proofs and MPU certificates.
 
-mod certificate;
 mod is_aks_prime;
-pub use certificate::verify_prime;
+mod verify_prime;
 pub use is_aks_prime::is_aks_prime;
+pub use verify_prime::verify_prime;
 
 mod is_provable_prime;
 pub use is_provable_prime::is_provable_prime;

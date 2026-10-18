@@ -544,3 +544,121 @@ pub fn lucas_number(k: u64) -> Option<u64> {
     let (a, b) = calc_fib(k - 1)?;
     a.checked_add(b)?.checked_add(a)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{alt_lucas_seq, inv_mod, uvmod_core};
+
+    /// `(U_k, V_k) mod n` by the defining recurrence.
+    fn naive(n: u64, p: u64, q: u64, k: u64) -> (u64, u64) {
+        let n128 = u128::from(n);
+        let (p, q) = (u128::from(p), u128::from(q));
+        let (mut u0, mut u1) = (0_u128, 1 % n128);
+        let (mut v0, mut v1) = (2 % n128, p % n128);
+        for _ in 1..k {
+            let u2 = (p * u1 + n128 * n128 - q * u0 % n128) % n128;
+            let v2 = (p * v1 + n128 * n128 - q * v0 % n128) % n128;
+            (u0, u1) = (u1, u2);
+            (v0, v1) = (v1, v2);
+        }
+        (u64::try_from(u1).unwrap(), u64::try_from(v1).unwrap())
+    }
+
+    #[test]
+    fn inv_mod_known_values() {
+        assert_eq!(inv_mod(3, 7), Some(5));
+        assert_eq!(inv_mod(1, 7), Some(1));
+        assert_eq!(inv_mod(6, 7), Some(6));
+        assert_eq!(inv_mod(2, 4), None);
+        assert_eq!(inv_mod(0, 5), None);
+        assert_eq!(inv_mod(10, 15), None);
+        assert_eq!(inv_mod(7, 15), Some(13));
+        assert_eq!(inv_mod(12, 7), Some(3));
+        assert_eq!(inv_mod(u64::MAX - 1, u64::MAX), Some(u64::MAX - 1));
+        for n in 2..60_u64 {
+            for a in 0..n {
+                match inv_mod(a, n) {
+                    Some(i) => assert_eq!(a * i % n, 1, "a={a} n={n}"),
+                    None => assert!((0..n).all(|i| a * i % n != 1), "a={a} n={n}"),
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn alt_ladder_matches_the_recurrence() {
+        for n in 2..=30_u64 {
+            for p in 0..n {
+                for q in 0..n {
+                    for k in 1..=40 {
+                        assert_eq!(
+                            alt_lucas_seq(n, p, q, k),
+                            naive(n, p, q, k),
+                            "n={n} p={p} q={q} k={k}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn alt_ladder_special_case_p1_q_minus_1() {
+        // The Fibonacci-like branch has its own sign tracking.
+        for n in 2..=200_u64 {
+            for k in 1..=130 {
+                assert_eq!(
+                    alt_lucas_seq(n, 1, n - 1, k),
+                    naive(n, 1, n - 1, k),
+                    "n={n} k={k}"
+                );
+            }
+        }
+        let n = 1_000_000_007;
+        for k in [1_000, 65_536, 1 << 40, 999_999_999_999] {
+            let a = alt_lucas_seq(n, 1, n - 1, k);
+            let b = uvmod_core(1, n - 1, k, n);
+            assert_eq!(a, b, "k={k}");
+        }
+    }
+
+    #[test]
+    fn core_matches_the_recurrence() {
+        for n in 2..=45_u64 {
+            for p in 0..n {
+                for q in 0..n {
+                    for k in 1..=45 {
+                        assert_eq!(
+                            uvmod_core(p, q, k, n),
+                            naive(n, p, q, k),
+                            "n={n} p={p} q={q} k={k}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn core_matches_the_recurrence_for_larger_moduli() {
+        for n in [97_u64, 100, 255, 256, 1_001, 1_024, 4_096, 65_537] {
+            for (p, q) in [
+                (1, 1),
+                (1, n - 1),
+                (3, 1),
+                (5, 7 % n),
+                (n - 1, 1),
+                (2, 1),
+                (4, 4),
+            ] {
+                for k in [1_u64, 2, 3, 7, 8, 64, 100, 127, 128, 129, 255] {
+                    assert_eq!(
+                        uvmod_core(p, q, k, n),
+                        naive(n, p, q, k),
+                        "n={n} p={p} q={q} k={k}"
+                    );
+                }
+            }
+        }
+    }
+}

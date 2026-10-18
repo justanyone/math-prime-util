@@ -11,6 +11,8 @@ Restored `util.c::cornacchia` prime Kronecker rejection plus `corn_all` for `p >
 `mw-test --full` on compat_modular, prop_modular, and the cornacchia unit tests passed (compat pairs match the oracle). Clippy `-D warnings` is clean. Next: `tools/gate.sh`.
 
 `tools/gate.sh` passed fmt, clippy, and the 1.85 build, then the full test run was killed by the session time limit while results were still `ok` (through `compat_families`). `cargo doc -D warnings` passed afterwards. About 5 minutes remain: one more gate attempt if the suite is still cached.
+
+Second `tools/gate.sh` again passed fmt, clippy, and MSRV, then was killed during `forsquarefreeint` (still `ok`, over 60s). Focused modular tests stay green. Stopping: both review findings are fixed on disk.
 - 2026-10-18T03:26:10Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:27:10Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:28:10Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.

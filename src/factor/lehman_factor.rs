@@ -97,7 +97,7 @@ mod tests {
     #[test]
     fn odd_multiplier_and_square_paths() {
         // k = 1 is odd. The search must use the odd residue class.
-        assert_eq!(split(47 * 53, false), [47, 53]);
+        assert_eq!(split(12_987, false), [111, 117]);
         // An exact square reaches the a*a == kn return before the interval search.
         assert_eq!(split(101 * 101, false), [101, 101]);
     }

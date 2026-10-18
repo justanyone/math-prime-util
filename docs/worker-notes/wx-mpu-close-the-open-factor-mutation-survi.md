@@ -12,7 +12,7 @@ Focused library tests pass: 71 tests. The gate has passed fmt, clippy and the MS
 Found a HOLF shift witness in the multiplier-30 interval. Added a two-round private splitter assertion. Brent retry searches found no witness; those mutations remain open.
 
 PR text draft (line numbers refer to the original source):
-Caught candidates: prime_factors 52:14 (`<` to `==` or `>`), Lehman 49:52 (`%` to `/`), Lehman 56:14 (`*` to `+` or `/`), p-1 42:15 (`+` to `-` or `*`), HOLF 34:33 (`>>` to `<<`). Direct regression tests cover these paths. Mutation verifica <<cut 16 chars by kit>>
+Caught candidates: prime_factors 52:14 (`<` to `==` or `>`), Lehman 49:52 (`%` to `/`), p-1 42:15 (`+` to `-` or `*`), HOLF 34:33 (`>>` to `<<`). Direct regression tests cover these paths. Mutation verifica <<cut 16 chars by kit>>
 Equivalent: prime_factors 52:14 (`<` to `<=`): small-prime stripping removes every factor of 2. Pending values are 0, 1, or odd values above 43; no pending value is 2.
 Equivalent: Lehman 49:52 (`%` to `+`): the residue is reduced modulo four at its only use, so both give the same b.
 Equivalent: p-1 56:35 (`+` to `-` or `*`): replay can repeat primes at or below save_q. Their full prime powers are already in save_a. Replay occurs only when the final gcd is n. Every factor order then divides the final exponent. Repeating <<cut 104 chars by kit>>
@@ -30,3 +30,7 @@ Validation continues offline. The original gate reports a long-running forsquare
 Mutation results confirm dispatcher and fallback mutations remain missed. The first snapshot predates the HOLF test; rerunning that one mutation against the final source using cached dependencies.
 The small-input mutations time out on the private factor tests, which catches their nontermination. The superseded gate was stopped; the final gate and sole tools/test.sh whole-suite run continue.
 - 2026-10-18T15:46:18Z launcher: no commit for 60 s; 708 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-the-open-factor-mutation-survi.md, src/factor/holf_factor.rs, src/factor/is_carmichael.rs, src/factor/lehman_factor.rs, src/factor/pminus1_factor.rs.
+The gate and full suite failed during concurrent builds after the HOLF rerun shared their target directory. Those results and the shared-target HOLF miss are invalid. Started isolated HOLF verification and a clean gate; no green gate is claimed.
+
+Equivalent: Lehman 56:14 (`*` to `+` or `/`) removes the exact-square shortcut for odd cofactors above 5. If k*n is square, its first square k is odd. The interval then starts at twice its root and sees c = 0. Its gcd is gcd(2*root,n) = gcd(root,n), since n is odd. Both paths return the same pair.
+Confirmed locally: the p-1 replay mutations survive, as predicted by the exponent argument. The dispatcher division mutation is caught by the existing tests; the addition mutation remains open.

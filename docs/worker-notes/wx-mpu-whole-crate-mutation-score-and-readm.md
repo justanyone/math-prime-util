@@ -74,3 +74,4 @@ The full offline suite has been requested once through tools/test.sh. The notes 
 The arith run was interrupted through its own session after roughly four minutes with no completed baseline or mutant outcomes. The full 21988-candidate run cannot fit this session. No timeout or survivor result is claimed. Format and Clippy passed; MSRV and full tests are still running.
 The mutation attempt is stopped. No run is left active for mutation testing. Validation is still in progress; the recorded score remains unavailable.
 MSRV build passed. The gate reached the compatibility tests. Full-suite validation continues offline.
+The gate is still running the prime-count oracle test. It has reported no failure. No mutation results were produced.

@@ -69,11 +69,21 @@ mod nth_twin_prime;
 pub use nth_twin_prime::nth_twin_prime;
 
 mod powerfree;
+mod powerfree_sum;
 mod powerful;
-pub use powerfree::{
-    is_powerfree, nth_powerfree, powerfree_count, powerfree_part, powerfree_part_sum, powerfree_sum,
-};
-pub use powerful::{is_powerful, nth_powerful, powerful_count, powerful_numbers, sumpowerful};
+pub use powerfree_sum::powerfree_sum;
+mod powerfree_part;
+pub use powerfree_part::powerfree_part;
+mod powerfree_part_sum;
+pub use powerfree_part_sum::powerfree_part_sum;
+mod is_powerful;
+pub use is_powerful::is_powerful;
+mod powerful_numbers;
+pub use powerful_numbers::powerful_numbers;
+mod powerful_count;
+pub use powerful_count::powerful_count;
+mod sumpowerful;
+pub use sumpowerful::sumpowerful;
 
 mod nth_twin_prime_approx;
 pub use nth_twin_prime_approx::nth_twin_prime_approx;
@@ -118,6 +128,14 @@ pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
 
+mod almost_primes;
+pub use almost_primes::almost_primes;
+mod almost_prime_count;
+pub use almost_prime_count::almost_prime_count;
+mod almost_prime_count_approx;
+pub use almost_prime_count_approx::almost_prime_count_approx;
+mod almost_prime_count_lower;
+pub use almost_prime_count_lower::almost_prime_count_lower;
 mod nth_almost_prime_upper;
 pub use nth_almost_prime_upper::nth_almost_prime_upper;
 mod omega_primes;
@@ -126,3 +144,23 @@ mod omega_prime_count;
 pub use omega_prime_count::omega_prime_count;
 mod nth_omega_prime;
 pub use nth_omega_prime::nth_omega_prime;
+
+mod nth_powerful;
+pub use nth_powerful::nth_powerful;
+
+mod is_powerfree;
+pub use is_powerfree::is_powerfree;
+
+mod powerfree_count;
+pub use powerfree_count::powerfree_count;
+
+mod nth_powerfree;
+pub use nth_powerfree::nth_powerfree;
+mod almost_prime_count_upper;
+pub use almost_prime_count_upper::almost_prime_count_upper;
+mod nth_almost_prime;
+pub use nth_almost_prime::nth_almost_prime;
+mod nth_almost_prime_approx;
+pub use nth_almost_prime_approx::nth_almost_prime_approx;
+mod nth_almost_prime_lower;
+pub use nth_almost_prime_lower::nth_almost_prime_lower;

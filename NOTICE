@@ -1,0 +1,30 @@
+Rust port of Math::Prime::Util 0.75
+
+Copyright (c) 2026 Kevin J. Rice and contributors (the Rust code).
+
+This work is a derivative of Math::Prime::Util (MPU) 0.75,
+Copyright (c) 2011-2026 Dana Jacobsen <dana@acm.org>,
+https://github.com/danaj/Math-Prime-Util (commit 581c217bb530c4343edec182df72036623c9ceea).
+It is distributed under the same terms as MPU and Perl itself: the GNU General
+Public License, version 1 or (at your option) any later version, or the
+Artistic License (Perl, version 1). See LICENSE. You may choose either license.
+
+Statement of changes (Artistic License, section 3): MPU's C and Perl
+algorithms were translated into Rust, with changes to types, error handling and
+structure. All changes are recorded in the git history of this repository.
+
+Third-party material in reference/ (a read-only copy of the MPU 0.75 tree,
+excluded from the published crate). Each part keeps its own notices:
+  - reference/mpu/*: Dana Jacobsen, Perl terms (reference/mpu/LICENSE).
+  - reference/mpu/ppport.h: Marcus Holland-Moritz, Paul Marquess and Kenneth
+    Albanowski, under the same terms as Perl itself.
+  - reference/mpu/inc/Devel/CheckLib.pm: David Cantrell and David Golden, under
+    the same conditions as Perl itself.
+
+Test fixtures (tests/fixtures/*.tsv) are the recorded output of MPU 0.75,
+produced by the scripts in tools/fixtures/. They are used to check that this
+port gives the same answers as MPU. Where MPU's answer is mathematically wrong,
+the test asserts the correct value and skips the row with a named comment; such
+differences are listed in docs/upstream-findings.md when it is published.
+
+MPU is not affiliated with this port and has not endorsed it.

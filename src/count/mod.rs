@@ -4,11 +4,18 @@ use std::collections::HashMap;
 
 use crate::{primes, rootint, sqrtint};
 
+mod long_double;
+mod nth_prime_approx;
+mod nth_prime_lower;
+mod nth_prime_upper;
 mod prime_count_approx;
 mod prime_count_lower;
 mod prime_count_upper;
 mod tables;
 
+pub use nth_prime_approx::nth_prime_approx;
+pub use nth_prime_lower::nth_prime_lower;
+pub use nth_prime_upper::nth_prime_upper;
 pub use prime_count_approx::prime_count_approx;
 pub use prime_count_lower::prime_count_lower;
 pub use prime_count_upper::prime_count_upper;
@@ -243,6 +250,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::float_cmp)] // Exact zeros from the Chebyshev definitions.
     fn chebyshev_known_values() {
         // ±0.0 is the defined value. Compare bits after abs so -0.0 matches.
         assert_eq!(chebyshev_theta(1).abs().to_bits(), 0);

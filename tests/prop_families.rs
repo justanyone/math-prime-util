@@ -728,6 +728,121 @@ fn all_binary_exponents_are_perfect_powers() {
     }
 }
 
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn almost_count_matches_list(k in 0_u64..12, n in 0_u64..3000) {
+        let list = almost_primes(k, 0, n);
+        prop_assert_eq!(almost_prime_count(k,n), list.len() as u64);
+        prop_assert!(list.windows(2).all(|w| w[0] < w[1]));
+        prop_assert!(list.iter().all(|&v| is_almost_prime(k,v)));
+        prop_assert!(almost_prime_count_lower(k,n) <= almost_prime_count(k,n));
+    }
+    #[test]
+    fn almost_counts_partition(n in 1_u64..2000) {
+        prop_assert_eq!((0..=n.ilog2()+1).map(|k| almost_prime_count(u64::from(k),n)).sum::<u64>(), n);
+    }
+}
+
+#[test]
+fn almost_edges_and_parallel_calls() {
+    assert_eq!(almost_primes(64, 0, u64::MAX), Vec::<u64>::new());
+    assert_eq!(almost_primes(3, 100, 50), Vec::<u64>::new());
+    assert_eq!(almost_primes(0, 0, u64::MAX), vec![1]);
+    assert_eq!(
+        almost_primes(63, 0, u64::MAX),
+        vec![1_u64 << 63, 3_u64 << 62]
+    );
+    for k in [64, 65, u64::MAX] {
+        assert_eq!(almost_prime_count(k, u64::MAX), 0);
+        assert_eq!(almost_prime_count_lower(k, u64::MAX), 0);
+        assert_eq!(almost_prime_count_approx(k, u64::MAX), 0);
+    }
+    for handle in (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                let list = almost_primes(4, 0, 10000);
+                assert_eq!(almost_prime_count(4, 10000), list.len() as u64);
+                (
+                    almost_prime_count_approx(4, 10000),
+                    almost_prime_count_lower(4, 10000),
+                )
+            })
+        })
+        .collect::<Vec<_>>()
+    {
+        assert_eq!(
+            handle.join().unwrap(),
+            (
+                almost_prime_count_approx(4, 10000),
+                almost_prime_count_lower(4, 10000)
+            )
+        );
+    }
+}
+
+#[test]
+fn almost_high_ranges_and_fit_boundaries() {
+    for (k, lo, hi) in [
+        (3, 1_000_000_000_000, 1_000_000_000_010),
+        (4, 1_000_000_000_000, 1_000_000_000_100),
+        (30, 1_000_000_000_000, 1_000_000_000_100),
+        (3, 1_000_000_000_000, 1_000_000_262_150),
+    ] {
+        let list = almost_primes(k, lo, hi);
+        assert!(list.windows(2).all(|w| w[0] < w[1]));
+        // Factor independently at both ends of a sieve window.
+        for n in (lo..=lo + 50.min(hi - lo)).chain(hi - 50.min(hi - lo)..=hi) {
+            assert_eq!(list.binary_search(&n).is_ok(), is_almost_prime(k, n));
+        }
+    }
+    for n in [
+        102,
+        638,
+        639,
+        1544,
+        1545,
+        1926,
+        1927,
+        1928,
+        486_586,
+        486_587,
+        500_194,
+        500_195,
+        1_913_680,
+        1_913_681,
+        22_347_532,
+        22_347_533,
+        295_000_000,
+        295_000_001,
+        3_184_393_786,
+        3_184_393_787,
+        4_200_000_000,
+        4_200_000_001,
+        70_700_000_000,
+        70_700_000_001,
+        1_360_000_000_000,
+        1_360_000_000_001,
+        41_000_000_000_000,
+        41_000_000_000_001,
+        920_000_000_000_000,
+        920_000_000_000_001,
+        u64::MAX,
+    ] {
+        let lower = almost_prime_count_lower(3, n);
+        assert!(almost_prime_count_approx(3, n) >= lower);
+    }
+    for k in 0..64 {
+        let n = 1_u64 << k;
+        assert_eq!(almost_prime_count(k, n), 1);
+        assert_eq!(almost_prime_count_lower(k, n), 1);
+        assert_eq!(almost_prime_count_approx(k, n), 1);
+    }
+    assert_eq!(almost_prime_count(1, u64::MAX), 425_656_284_035_217_743);
+    assert_eq!(almost_prime_count(2, u64::MAX), 1_701_748_900_850_019_777);
+    assert_eq!(almost_prime_count(3, u64::MAX), 3_167_597_434_038_354_478);
+}
+
 mod almost_omega_f03 {
     use math_prime_util::{
         is_almost_prime, is_omega_prime, nth_almost_prime_upper, nth_omega_prime,
@@ -796,5 +911,283 @@ mod almost_omega_f03 {
                 });
             }
         });
+    }
+}
+
+/// Input checks, a second call, and parallel calls for the powerfree sums.
+/// A bad `k`, a repeated call, or a second thread must not change the result.
+#[test]
+fn powerfree_validation_repeat_and_threads() {
+    for k in [0, 1] {
+        assert_eq!(powerfree_sum(0, k), 0, "k={k} n=0");
+        assert_eq!(powerfree_sum(8, k), 1, "k={k} n=8");
+        assert_eq!(powerfree_part(0, k), 0, "k={k} part 0");
+        assert_eq!(powerfree_part(1, k), 1, "k={k} part 1");
+        assert_eq!(powerfree_part(8, k), 0, "k={k} part 8");
+        assert_eq!(powerfree_part_sum(0, k), 0, "k={k} part sum 0");
+        assert_eq!(powerfree_part_sum(1, k), 1, "k={k} part sum 1");
+        assert_eq!(powerfree_part_sum(8, k), 1, "k={k} part sum 8");
+    }
+    assert_eq!(powerfree_part(1_024, 64), 1_024);
+    assert_eq!(powerfree_part(1_024, 100), 1_024);
+    assert_eq!(powerfree_part(1_024, 3), 2);
+    assert_eq!(powerfree_sum(0, 5), 0);
+    assert_eq!(powerfree_part(0, 5), 0);
+    assert_eq!(powerfree_part_sum(0, 5), 0);
+
+    let n = 300_u64;
+    let k = 2_u32;
+    let by_filter: u128 = (1..=n)
+        .filter(|&i| is_powerfree(i, k))
+        .map(u128::from)
+        .sum();
+    let by_parts: u128 = (1..=n).map(|i| u128::from(powerfree_part(i, k))).sum();
+    let first_sum = powerfree_sum(n, k);
+    let first_part = powerfree_part(720, k);
+    let first_part_sum = powerfree_part_sum(n, k);
+    assert_eq!(first_sum, by_filter);
+    assert_eq!(first_part_sum, by_parts);
+    // A second call uses no cache, so the result stays the same.
+    assert_eq!(powerfree_sum(n, k), first_sum);
+    assert_eq!(powerfree_part(720, k), first_part);
+    assert_eq!(powerfree_part_sum(n, k), first_part_sum);
+
+    let expected_part = powerfree_part(720, k);
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(powerfree_sum(n, k), by_filter);
+                    assert_eq!(powerfree_part(720, k), expected_part);
+                    assert_eq!(powerfree_part_sum(n, k), by_parts);
+                }
+            });
+        }
+    });
+}
+
+#[test]
+fn powerfree_c_shortcuts_and_full_factorization() {
+    for k in [0, 1, 2, 3, 63, 64, u32::MAX] {
+        assert!(!is_powerfree(0, k));
+        assert!(is_powerfree(1, k));
+    }
+    for p in [2_u64, 3, 5, 7, 11, 13, 17, 1_000_003] {
+        let cube = p.pow(3);
+        assert!(!is_powerfree(cube, 3));
+        assert!(is_powerfree(cube, 4));
+    }
+    assert!(is_powerfree(4910, 3));
+    assert!(is_powerfree(4915, 3));
+    assert!(!is_powerfree(17_u64.pow(4), 4));
+    assert!(is_powerfree(1_u64 << 62, 63));
+    assert!(!is_powerfree(1_u64 << 63, 63));
+    assert!(is_powerfree(u64::MAX, 64));
+    assert_eq!(nth_powerfree(u64::MAX, 63), None);
+    assert_eq!(nth_powerfree(u64::MAX - 1, 63), Some(u64::MAX));
+}
+
+#[test]
+fn powerful_interpolation_branches_and_overflow() {
+    for (rank, k) in [(170, 2), (200, 4), (200, 5), (50, 11), (84_000, 3)] {
+        let value = nth_powerful(rank, k).unwrap();
+        assert_eq!(powerful_count(value, k), rank);
+        assert_eq!(powerful_count(value - 1, k), rank - 1);
+    }
+    for (rank, k) in [(9_330_124_696, 2), (11_938_036, 3), (526_403, 4)] {
+        assert_eq!(nth_powerful(rank, k), None);
+    }
+    assert_eq!(nth_powerful(1, u32::MAX), Some(1));
+    assert_eq!(nth_powerful(2, 63), Some(1_u64 << 63));
+    assert_eq!(nth_powerful(3, 63), None);
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn powerfree_count_steps(n in 1_u64..100_000, k in 2_u32..70) {
+        prop_assert_eq!(powerfree_count(n, k) - powerfree_count(n - 1, k), u64::from(is_powerfree(n, k)));
+        if is_powerfree(n, k) {
+            prop_assert!(is_powerfree(n, k + 1));
+        }
+    }
+}
+
+#[test]
+fn powerfree_queries_are_independent_across_threads() {
+    let handles: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(nth_powerful(100, 2), Some(3136));
+                    assert_eq!(nth_powerfree(7, 2), Some(10));
+                    assert_eq!(powerfree_count(10, 2), 7);
+                    assert!(!is_powerfree(27, 3));
+                }
+            })
+        })
+        .collect();
+    for handle in handles {
+        handle.join().unwrap();
+    }
+}
+
+// Compare against factor exponents without using the powerful implementation.
+fn powerful_by_trial_division(mut n: u64, k: u32) -> bool {
+    if n == 0 {
+        return false;
+    }
+    let mut p = 2;
+    while p <= n / p {
+        let mut exponent = 0;
+        while n % p == 0 {
+            n /= p;
+            exponent += 1;
+        }
+        if exponent > 0 && exponent < k {
+            return false;
+        }
+        p += 1;
+    }
+    n == 1 || k <= 1
+}
+
+#[test]
+fn powerful_factor_exponents_and_prefixes() {
+    for k in 0..=8 {
+        let mut count = 0;
+        let mut sum = 0_u128;
+        for n in 0..=512 {
+            let expected = powerful_by_trial_division(n, k);
+            assert_eq!(is_powerful(n, k), expected, "n={n}, k={k}");
+            count += u64::from(expected);
+            sum += if expected { u128::from(n) } else { 0 };
+            assert_eq!(powerful_count(n, k), count, "n={n}, k={k}");
+            assert_eq!(sumpowerful(n, k), sum, "n={n}, k={k}");
+        }
+    }
+}
+
+#[test]
+fn powerful_range_thresholds_and_native_edges() {
+    for lo in [1, 499_999, 500_000, 399_999_999, 400_000_000] {
+        for k in [2, 3, 4] {
+            let hi = lo + 2500;
+            let expected: Vec<_> = (lo..=hi).filter(|&n| is_powerful(n, k)).collect();
+            let values = powerful_numbers(lo, hi, k);
+            assert_eq!(values, expected);
+            assert!(values.windows(2).all(|pair| pair[0] < pair[1]));
+            assert_eq!(
+                powerful_count(hi, k) - powerful_count(lo - 1, k),
+                values.len() as u64
+            );
+        }
+    }
+    assert_eq!(
+        powerful_numbers(u64::MAX - 1, u64::MAX, 1),
+        vec![u64::MAX - 1, u64::MAX]
+    );
+    assert_eq!(
+        powerful_numbers(u64::MAX - 1, u64::MAX, 2),
+        Vec::<u64>::new()
+    );
+    for k in [63, 64, u32::MAX] {
+        let expected = if k == 63 {
+            vec![1, 1_u64 << 63]
+        } else {
+            vec![1]
+        };
+        assert_eq!(powerful_numbers(0, u64::MAX, k), expected);
+        assert_eq!(powerful_count(u64::MAX, k), expected.len() as u64);
+        assert_eq!(
+            sumpowerful(u64::MAX, k),
+            expected.iter().map(|&n| u128::from(n)).sum::<u128>()
+        );
+    }
+    assert_eq!(
+        sumpowerful(u64::MAX, 1),
+        u128::from(u64::MAX) * (u128::from(u64::MAX) + 1) / 2
+    );
+}
+
+#[test]
+fn powerful_parallel_repeat_calls() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert!(is_powerful(72, 2));
+                    assert_eq!(powerful_numbers(1, 100, 3), vec![1, 8, 16, 27, 32, 64, 81]);
+                    assert_eq!(powerful_count(100, 3), 7);
+                    assert_eq!(sumpowerful(100, 3), 229);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn almost_omega_bounds(k in 1_u32..9, n in 1_u64..150) {
+        let value=nth_almost_prime(k,n).unwrap();
+        prop_assert!(is_almost_prime(u64::from(k),value));
+        prop_assert!(nth_almost_prime_lower(k,n).unwrap()<=value);
+        prop_assert!(almost_prime_count_upper(k,value)>=n);
+        prop_assert!(nth_almost_prime_approx(k,n).is_some());
+        prop_assert!(nth_almost_prime(k,n+1).unwrap()>value);
+    }
+}
+#[test]
+fn almost_omega_edges_and_parallel_calls() {
+    for k in [0, 1, 2, 3, 63, 64, u32::MAX] {
+        assert_eq!(nth_almost_prime(k, 0), None);
+        assert_eq!(nth_almost_prime_lower(k, 0), None);
+        assert_eq!(nth_almost_prime_approx(k, 0), None);
+        assert_eq!(almost_prime_count_upper(k, 0), 0);
+    }
+    for k in [64, u32::MAX] {
+        assert_eq!(nth_almost_prime(k, 1), None);
+        assert_eq!(nth_almost_prime_lower(k, 1), None);
+        assert_eq!(nth_almost_prime_approx(k, 1), None);
+    }
+    assert_eq!(nth_almost_prime(0, 2), None);
+    assert_eq!(nth_almost_prime(63, 2), Some(3_u64 << 62));
+    let handles: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(nth_almost_prime(3, 40), Some(171));
+                    assert_eq!(nth_almost_prime_approx(3, 456), Some(1805));
+                    assert_eq!(nth_almost_prime_lower(3, 456), Some(1471));
+                }
+            })
+        })
+        .collect();
+    for h in handles {
+        h.join().unwrap();
+    }
+}
+
+#[test]
+fn nth_almost_prime_generic_search_has_exact_rank() {
+    // Enumerate independently of the count interpolation. n=150 exceeds all
+    // FIRST_3 thresholds for k=5..9, so every call takes the generic search.
+    for k in 5..=9 {
+        let mut rank = 0;
+        for value in (1_u64 << k).. {
+            if is_almost_prime(u64::from(k), value) {
+                rank += 1;
+                if [8, 40, 150].contains(&rank) {
+                    assert_eq!(nth_almost_prime(k, rank), Some(value));
+                }
+                if rank == 150 {
+                    break;
+                }
+            }
+        }
     }
 }

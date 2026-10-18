@@ -433,3 +433,212 @@ fn arrangement_empty_and_singleton_boundaries() {
         [vec![2], vec![2]]
     );
 }
+
+proptest! {
+    #[test]
+    fn range_loop_laws(lo in 0_u64..500, width in 0_u64..200) {
+        let hi = lo + width;
+        let composites = composites_in(lo..=hi).collect::<Vec<_>>();
+        prop_assert_eq!(odd_composites_in(lo..=hi).collect::<Vec<_>>(),
+            composites.iter().copied().filter(|n| n % 2 == 1).collect::<Vec<_>>());
+        prop_assert_eq!(semiprimes_in(lo..=hi).collect::<Vec<_>>(),
+            composites.into_iter().filter(|&n| math_prime_util::is_semiprime(n)).collect::<Vec<_>>());
+    }
+}
+
+#[test]
+fn range_loops_stop_and_keep_local_state() {
+    type Loop = fn(std::ops::RangeInclusive<u64>, fn(u64) -> ControlFlow<u64>) -> ControlFlow<u64>;
+    let loops: [Loop; 4] = [forprimes, forcomposites, foroddcomposites, forsemiprimes];
+    for (run, first) in loops.into_iter().zip([2, 4, 9, 4]) {
+        assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
+        assert_eq!(
+            run(std::ops::RangeInclusive::new(30, 0), |_| panic!(
+                "empty callback"
+            )),
+            ControlFlow::Continue(())
+        );
+        assert!(std::panic::catch_unwind(|| run(0..=30, |_| panic!("callback"))).is_err());
+        assert_eq!(run(0..=30, ControlFlow::Break), ControlFlow::Break(first));
+    }
+    let mut outer = Vec::new();
+    let result: ControlFlow<()> = forsemiprimes(0..=10, |n| {
+        outer.push(n);
+        assert_eq!(
+            forsemiprimes(0..=10, ControlFlow::Break),
+            ControlFlow::Break(4)
+        );
+        ControlFlow::Continue(())
+    });
+    assert!(result.is_continue());
+    assert_eq!(outer, [4, 6, 9, 10]);
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                (
+                    composites_in(0..=100).count(),
+                    odd_composites_in(0..=100).count(),
+                    semiprimes_in(0..=100).count(),
+                )
+            })
+        })
+        .collect();
+    for worker in workers {
+        assert_eq!(worker.join().unwrap(), (74, 25, 34));
+    }
+}
+
+#[test]
+fn range_iterators_end_at_native_bounds() {
+    let max = u64::MAX;
+    let mut composites = composites_in(max..=max);
+    assert_eq!(composites.next(), Some(max));
+    assert_eq!(composites.next(), None);
+    assert_eq!(composites.next(), None);
+    assert_eq!(odd_composites_in(max..=max).collect::<Vec<_>>(), [max]);
+    assert_eq!(semiprimes_in(max..=max).next(), None);
+    let last = 18_446_744_073_709_551_601;
+    let mut semis = semiprimes_in(last..=max);
+    assert_eq!(semis.next(), Some(last));
+    assert_eq!(semis.next(), None);
+    assert_eq!(semis.next(), None);
+    assert_eq!(semiprimes_in(0..=3).next(), None);
+    assert_eq!(composites_in(0..=3).next(), None);
+    assert_eq!(odd_composites_in(0..=8).next(), None);
+    assert_eq!(primes_in(max..=max).next(), None);
+}
+
+#[test]
+fn semiprime_exhausted_input_stays_empty() {
+    let mut range = 4..=4;
+    assert_eq!(range.next(), Some(4));
+    assert_eq!(semiprimes_in(range).next(), None);
+    assert_eq!(
+        semiprimes_in(std::ops::RangeInclusive::new(10, 4)).next(),
+        None
+    );
+    let mut iter = semiprimes_in(0..=10);
+    assert_eq!(iter.next(), Some(4));
+    assert_eq!(iter.clone().collect::<Vec<_>>(), [6, 9, 10]);
+    assert_eq!(iter.collect::<Vec<_>>(), [6, 9, 10]);
+}
+
+#[test]
+fn impossible_partition_bounds_need_no_state_allocation() {
+    for options in [
+        PartitionOptions {
+            n: Some(0),
+            ..PartitionOptions::default()
+        },
+        PartitionOptions {
+            amax: Some(0),
+            ..PartitionOptions::default()
+        },
+        PartitionOptions {
+            nmin: Some(u64::MAX),
+            ..PartitionOptions::default()
+        },
+        PartitionOptions {
+            amin: Some(u64::MAX),
+            ..PartitionOptions::default()
+        },
+        PartitionOptions {
+            nmin: Some(3),
+            nmax: Some(2),
+            ..PartitionOptions::default()
+        },
+    ] {
+        assert_eq!(partitions_of(u64::MAX - 2, options).next(), None);
+        assert_eq!(compositions_of(u64::MAX - 2, options).next(), None);
+    }
+}
+
+#[test]
+fn composition_overflow_is_rejected() {
+    assert!(
+        std::panic::catch_unwind(|| compositions_of(u64::MAX, PartitionOptions::default()))
+            .is_err()
+    );
+}
+
+#[test]
+fn task_iterators_keep_independent_state() {
+    macro_rules! cloned_stream {
+        ($iter:expr) => {{
+            let mut first = $iter;
+            let _ = first.next();
+            let second = first.clone();
+            let expected: Vec<_> = second.collect();
+            assert_eq!(first.by_ref().collect::<Vec<_>>(), expected);
+            assert_eq!(first.next(), None);
+            assert_eq!(first.next(), None);
+        }};
+    }
+    cloned_stream!(partitions_of(8, PartitionOptions::default()));
+    cloned_stream!(compositions_of(8, PartitionOptions::default()));
+    cloned_stream!(combinations_of(8, Some(3)));
+    cloned_stream!(divisors_of(360));
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                assert_eq!(partitions_of(8, PartitionOptions::default()).count(), 22);
+                assert_eq!(compositions_of(8, PartitionOptions::default()).count(), 128);
+                assert_eq!(combinations_of(8, Some(3)).count(), 56);
+                assert_eq!(divisors_of(360).count(), 24);
+            })
+        })
+        .collect();
+    for worker in workers {
+        worker.join().unwrap();
+    }
+}
+
+#[test]
+fn task_callbacks_break_and_can_restart() {
+    macro_rules! restart {
+        ($function:ident, $($arg:expr),+) => {{
+            let mut calls = 0;
+            assert_eq!($function($($arg,)+ |_| {
+                calls += 1;
+                ControlFlow::Break(17)
+            }), ControlFlow::Break(17));
+            assert_eq!(calls, 1);
+            assert!(std::panic::catch_unwind(|| {
+                let _: ControlFlow<()> = $function($($arg,)+ |_| panic!("callback"));
+            }).is_err());
+            assert!($function($($arg,)+ |_| ControlFlow::<()>::Continue(())).is_continue());
+        }};
+    }
+    restart!(forpart, 6, PartitionOptions::default());
+    restart!(forcomp, 6, PartitionOptions::default());
+    restart!(forcomb, 6, Some(3));
+    restart!(fordivisors, 60);
+}
+
+proptest! {
+    #[test]
+    fn task_restricted_sums(n in 0_u64..11, amin in 0_u64..6, amax in 0_u64..12,
+        nmin in 0_u64..7, nmax in 0_u64..12, prime in prop::option::of(any::<bool>())) {
+        let options = PartitionOptions { amin: Some(amin), amax: Some(amax), nmin: Some(nmin), nmax: Some(nmax), prime, n: None };
+        let valid = |p: &Vec<u64>| {
+            if n == 0 { return nmin <= 1; }
+            p.len() as u64 >= nmin.max(1) && p.len() as u64 <= nmax
+                && p.iter().all(|&v| v >= amin.max(1) && v <= amax && prime.is_none_or(|want| (math_prime_util::is_prime(v) != 0) == want))
+        };
+        let expected: Vec<_> = partitions_of(n, PartitionOptions::default()).filter(valid).collect();
+        prop_assert_eq!(partitions_of(n, options).collect::<Vec<_>>(), expected);
+        let expected: Vec<_> = compositions_of(n, PartitionOptions::default()).filter(valid).collect();
+        prop_assert_eq!(compositions_of(n, options).collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
+    fn task_divisors_and_combinations(n in 1_u64..1000, size in 0_usize..12, k in 0_usize..14) {
+        let ds: Vec<_> = divisors_of(n).collect();
+        prop_assert_eq!(&ds, &(1..=n).filter(|d| n % d == 0).collect::<Vec<_>>());
+        let cs: Vec<_> = combinations_of(size, Some(k)).collect();
+        prop_assert!(cs.windows(2).all(|v| v[0] < v[1]));
+        prop_assert!(cs.iter().all(|v| v.len() == k && v.windows(2).all(|p| p[0] < p[1]) && v.iter().all(|&i| i < size)));
+        let expected = if k > size { 0 } else { (0..k).fold(1, |count, i| count * (size-i) / (i+1)) };
+        prop_assert_eq!(cs.len(), expected);
+    }
+}

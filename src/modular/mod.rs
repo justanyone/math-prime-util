@@ -268,8 +268,15 @@ mod tests {
     }
 }
 
+mod binomialmod;
 mod native;
-pub use native::{binomialmod, factorialmod, pisano_period, znlog};
+pub use binomialmod::binomialmod;
+mod factorialmod;
+pub use factorialmod::factorialmod;
+mod pisano_period;
+pub use pisano_period::pisano_period;
+mod znlog;
+pub use znlog::znlog;
 mod sqrtmod;
 pub use sqrtmod::sqrtmod;
 mod allsqrtmod;
@@ -278,3 +285,8 @@ mod rootmod;
 pub use rootmod::rootmod;
 mod allrootmod;
 pub use allrootmod::allrootmod;
+
+mod cornacchia;
+mod divmod;
+pub use cornacchia::cornacchia;
+pub use divmod::divmod;

@@ -328,6 +328,7 @@ fn prime_iterator_nested_streams_are_independent() {
 // `after_callback_die` croak in MPU because no loop is active; Rust `lastfor`
 // is only a `Break` value with no loop stack, so those two rows have no Rust
 // failure to raise and are checked only as named error rows.
+#[allow(clippy::too_many_lines)] // Keep the scenario dispatcher together.
 fn lastfor_row(func: &str, args: &[String]) -> String {
     use math_prime_util::{lastfor, PartitionOptions};
     let cont = ControlFlow::<()>::Continue(());

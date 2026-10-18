@@ -230,6 +230,15 @@ fn bench_powerfree(c: &mut Criterion) {
     c.bench_function("powerfree_part_sum", |b| {
         b.iter(|| math_prime_util::powerfree_part_sum(black_box(10_000), 2));
     });
+    c.bench_function("is_powerfree", |b| {
+        b.iter(|| math_prime_util::is_powerfree(black_box(1_000_000_007), 3));
+    });
+    c.bench_function("nth_powerful", |b| {
+        b.iter(|| math_prime_util::nth_powerful(black_box(10_000), 2));
+    });
+    c.bench_function("nth_powerfree", |b| {
+        b.iter(|| math_prime_util::nth_powerfree(black_box(100_000), 3));
+    });
 }
 
 fn bench_perfect_powers(c: &mut Criterion) {

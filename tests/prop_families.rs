@@ -965,3 +965,69 @@ fn powerfree_validation_repeat_and_threads() {
         }
     });
 }
+
+#[test]
+fn powerfree_c_shortcuts_and_full_factorization() {
+    for k in [0, 1, 2, 3, 63, 64, u32::MAX] {
+        assert!(!is_powerfree(0, k));
+        assert!(is_powerfree(1, k));
+    }
+    for p in [2_u64, 3, 5, 7, 11, 13, 17, 1_000_003] {
+        let cube = p.pow(3);
+        assert!(!is_powerfree(cube, 3));
+        assert!(is_powerfree(cube, 4));
+    }
+    assert!(is_powerfree(4910, 3));
+    assert!(is_powerfree(4915, 3));
+    assert!(!is_powerfree(17_u64.pow(4), 4));
+    assert!(is_powerfree(1_u64 << 62, 63));
+    assert!(!is_powerfree(1_u64 << 63, 63));
+    assert!(is_powerfree(u64::MAX, 64));
+    assert_eq!(nth_powerfree(u64::MAX, 63), None);
+    assert_eq!(nth_powerfree(u64::MAX - 1, 63), Some(u64::MAX));
+}
+
+#[test]
+fn powerful_interpolation_branches_and_overflow() {
+    for (rank, k) in [(170, 2), (200, 4), (200, 5), (50, 11), (84_000, 3)] {
+        let value = nth_powerful(rank, k).unwrap();
+        assert_eq!(powerful_count(value, k), rank);
+        assert_eq!(powerful_count(value - 1, k), rank - 1);
+    }
+    for (rank, k) in [(9_330_124_696, 2), (11_938_036, 3), (526_403, 4)] {
+        assert_eq!(nth_powerful(rank, k), None);
+    }
+    assert_eq!(nth_powerful(1, u32::MAX), Some(1));
+    assert_eq!(nth_powerful(2, 63), Some(1_u64 << 63));
+    assert_eq!(nth_powerful(3, 63), None);
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn powerfree_count_steps(n in 1_u64..100_000, k in 2_u32..70) {
+        prop_assert_eq!(powerfree_count(n, k) - powerfree_count(n - 1, k), u64::from(is_powerfree(n, k)));
+        if is_powerfree(n, k) {
+            prop_assert!(is_powerfree(n, k + 1));
+        }
+    }
+}
+
+#[test]
+fn powerfree_queries_are_independent_across_threads() {
+    let handles: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(nth_powerful(100, 2), Some(3136));
+                    assert_eq!(nth_powerfree(7, 2), Some(10));
+                    assert_eq!(powerfree_count(10, 2), 7);
+                    assert!(!is_powerfree(27, 3));
+                }
+            })
+        })
+        .collect();
+    for handle in handles {
+        handle.join().unwrap();
+    }
+}

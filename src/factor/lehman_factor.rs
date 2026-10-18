@@ -95,6 +95,14 @@ mod tests {
     use super::split;
 
     #[test]
+    fn odd_multiplier_and_square_paths() {
+        // k = 1 is odd. The search must use the odd residue class.
+        assert_eq!(split(15_707, false), [113, 139]);
+        // An exact square reaches the a*a == kn return before the interval search.
+        assert_eq!(split(127 * 127, false), [127, 127]);
+    }
+
+    #[test]
     fn trial_fallback_keeps_multiplicity() {
         assert_eq!(split(89_u64.pow(3), true), vec![89, 89, 89]);
         assert_eq!(split(1009, true), vec![1009]);

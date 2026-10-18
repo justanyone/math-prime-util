@@ -5,3 +5,4 @@ Check families, rational, and combinat with offline tests, then add the document
 Keep all edits in this worktree. The launcher commits and pushes.
 
 The draft path is absent. Local skip comments identify precision and API limits; no upstream defect is assumed. Next: run the three area checks.
+Started offline compatibility and property tests for families, rational, and combinat. Reviewed their skip conditions; these do not establish upstream defects.

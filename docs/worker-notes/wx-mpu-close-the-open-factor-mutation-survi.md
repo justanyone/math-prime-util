@@ -26,3 +26,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 HOLF regression passes. Stopped a slow target-copy mutation attempt and restarted without copying target artifacts. Local mutation results are not yet available.
 Corrected the prime_factors equivalence note: <= is equivalent because pending values cannot be 2; == is caught by input 0. About five minutes remain; finishing validation and recording unresolved items.
 Final fmt and clippy pass. Final gate is on the MSRV build. Mutants have copied the source and are building; no results are counted yet.
+Validation continues offline. The original gate reports a long-running forsquarefreeint test; no failure has been reported. Retry and dispatcher survivors remain explicitly open.

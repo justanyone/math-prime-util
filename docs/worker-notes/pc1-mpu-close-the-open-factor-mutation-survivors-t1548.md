@@ -19,3 +19,4 @@ Run focused factor tests and the required gate, recording remaining validation l
 - Full validation is still running after the focused pass; preserving source edits and waiting for the required gate result.
 - Integration suites are progressing without reported failures; gate is beyond library tests. Waiting for docs and the final green marker.
 - Open acceptance item: the original roughly 35-survivor report is absent; unnamed mutants cannot be individually classified. The new named-case tests pass, but a fresh mutation run has not been performed.
+- Validation heartbeat: factor oracle integration tests report passes, including HOLF; whole-suite commands are still active.

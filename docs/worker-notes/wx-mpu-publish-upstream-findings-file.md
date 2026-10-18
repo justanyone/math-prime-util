@@ -22,3 +22,4 @@ The full gate passed the long count fixture and has reached iterator tests. The 
 Both final offline checks remain active. No source code or fixtures were changed; missing draft evidence is the only authoring blocker.
 Gate and whole-suite checks are still running. The gate has reached iterator fixtures; focused checks and documentation validation passed.
 Final checks still wait on existing long iterator tests. The report remains marked incomplete for the absent external draft.
+About five minutes remain in the session. Focused checks passed; full checks are still on the existing forsquarefreeint iterator test. Preserve the partial report if the gate exceeds the budget.

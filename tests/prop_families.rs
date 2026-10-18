@@ -1087,7 +1087,10 @@ fn powerful_range_thresholds_and_native_edges() {
         powerful_numbers(u64::MAX - 1, u64::MAX, 1),
         vec![u64::MAX - 1, u64::MAX]
     );
-    assert!(powerful_numbers(u64::MAX - 1, u64::MAX, 2).is_empty());
+    assert_eq!(
+        powerful_numbers(u64::MAX - 1, u64::MAX, 2),
+        Vec::<u64>::new()
+    );
     for k in [63, 64, u32::MAX] {
         let expected = if k == 63 {
             vec![1, 1_u64 << 63]

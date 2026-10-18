@@ -422,11 +422,13 @@ fn lastfor_row(func: &str, args: &[String]) -> String {
             let letters: Vec<char> = args.iter().filter_map(|s| s.chars().next()).collect();
             let mut t = 0u64;
             let _ = math_prime_util::formultiperm(&letters, |v| {
-                if v.iter().collect::<String>() == "miles" {
-                    return lastfor();
-                }
+                // Perl `lastfor if ...; $t++` does not return: the match is counted too.
                 t += 1;
-                cont
+                if v.iter().collect::<String>() == "miles" {
+                    lastfor()
+                } else {
+                    cont
+                }
             });
             t.to_string()
         }

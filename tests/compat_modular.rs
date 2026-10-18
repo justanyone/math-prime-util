@@ -1,5 +1,6 @@
-//! Compat tests against MPU for `rootmod.c` and `util.c` (`cornacchia`,
-//! `divmod`). Fixture: `tests/fixtures/modular.tsv`.
+//! Compat tests against MPU for `rootmod.c` (`sqrtmod`, `allsqrtmod`,
+//! `rootmod`, `allrootmod`), `util.c` (`cornacchia`, `divmod`), and
+//! `pisano_period`. Fixture: `tests/fixtures/modular.tsv`.
 
 mod common;
 
@@ -35,11 +36,15 @@ fn compat_divmod() {
         assert_eq!(got, c.result.clone(), "line {}", c.line);
     });
 }
-<<<<<<< HEAD
-=======
 #[test]
 fn pisano_period_oracle() {
-    native_cases("pisano_period", |c| c.check(Some(pisano_period(c.arg(0)))));
+    // Two fixture rows use moduli past `u64` (Perl bigint). Skip those;
+    // every u64 row must match, which fails if the native export is dropped.
+    each("modular", "pisano_period", |c| {
+        if c.args.iter().all(|a| a.parse::<u64>().is_ok()) {
+            c.check(Some(pisano_period(c.arg(0))));
+        }
+    });
 }
 
 mod roots {

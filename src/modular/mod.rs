@@ -268,21 +268,17 @@ mod tests {
     }
 }
 
-mod native;
-pub use native::{binomialmod, factorialmod, pisano_period, znlog};
-<<<<<<< HEAD
-
+mod allrootmod;
+mod allsqrtmod;
 mod cornacchia;
 mod divmod;
+mod native;
+mod rootmod;
+mod sqrtmod;
+pub use allrootmod::allrootmod;
+pub use allsqrtmod::allsqrtmod;
 pub use cornacchia::cornacchia;
 pub use divmod::divmod;
-=======
-mod sqrtmod;
-pub use sqrtmod::sqrtmod;
-mod allsqrtmod;
-pub use allsqrtmod::allsqrtmod;
-mod rootmod;
+pub use native::{binomialmod, factorialmod, pisano_period, znlog};
 pub use rootmod::rootmod;
-mod allrootmod;
-pub use allrootmod::allrootmod;
->>>>>>> origin/dev-001
+pub use sqrtmod::sqrtmod;

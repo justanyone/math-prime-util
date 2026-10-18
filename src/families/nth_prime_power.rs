@@ -1,4 +1,4 @@
-use super::nth_prime_power_approx::{count, nth_prime_power_approx, MAX_INDEX, MAX_PRIME};
+use super::nth_prime_power_approx::{MAX_INDEX, MAX_PRIME, count, nth_prime_power_approx};
 use crate::{is_power_exp, is_prime, rootint};
 
 // MPU prime_powers.c: prime_power; test the prime root of a perfect power.
@@ -56,11 +56,7 @@ pub fn nth_prime_power(n: u64) -> Option<u64> {
         if guess <= min || guess >= max {
             let span = max - min;
             guess = if span <= 1 {
-                if guess <= min {
-                    max
-                } else {
-                    min
-                }
+                if guess <= min { max } else { min }
             } else if 799 >= span {
                 min + span / 2
             } else if guess <= min {

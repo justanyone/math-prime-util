@@ -1,6 +1,6 @@
 //! Twin prime counts and the MPU count table.
 
-use super::twin_primes::{scan, MAX_TWIN};
+use super::twin_primes::{MAX_TWIN, scan};
 
 pub(super) const STEPS: &[u64] = &[
     58_980,

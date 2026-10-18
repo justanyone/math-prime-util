@@ -1,4 +1,4 @@
-use super::nth_ramanujan_prime_lower::{axler, prime_bound, SMALL};
+use super::nth_ramanujan_prime_lower::{SMALL, axler, prime_bound};
 
 // MPU ramanujan_primes.c, nth_ramanujan_prime_upper.
 pub(super) fn upper(n: u64) -> u64 {

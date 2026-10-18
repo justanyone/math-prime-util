@@ -1,6 +1,6 @@
 #![allow(missing_docs)]
 //! Benchmarks for the lucky-number, prime-power, twin prime and semiprime functions.
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
     goldbach_pair_count, goldbach_pairs, is_gaussian_prime, is_lucky, is_perfect_power,
     is_prime_power, is_sum_of_squares, lucky_count, lucky_numbers, minimal_goldbach_pair,

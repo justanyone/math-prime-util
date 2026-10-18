@@ -36,11 +36,7 @@ pub fn is_gaussian_prime(a: u64, b: u64) -> u8 {
 }
 
 fn prime_3_mod_4(n: u64) -> u8 {
-    if n % 4 == 3 {
-        is_prime(n)
-    } else {
-        0
-    }
+    if n % 4 == 3 { is_prime(n) } else { 0 }
 }
 
 /// 0, 1, or 2 bits above 2^128. The sum of two `u64` squares is below 2^129.
@@ -153,11 +149,7 @@ impl Wide {
 
 fn addmod(a: Wide, b: Wide, m: Wide) -> Wide {
     let sum = a.add(b);
-    if sum.cmp_ge(m) {
-        sum.sub(m)
-    } else {
-        sum
-    }
+    if sum.cmp_ge(m) { sum.sub(m) } else { sum }
 }
 
 fn modmul(mut a: Wide, mut b: Wide, m: Wide) -> Wide {

@@ -54,35 +54,67 @@ pub fn nth_prime_upper(n: u64) -> Option<u64> {
 
 /// MPU 0.75 `prime_counts.c::simple_nth_limits` and the binary searches
 /// in `nth_prime_lower` and `nth_prime_upper`.
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 pub(super) fn search_count_bound(n: u64, count: fn(u64) -> u64) -> u64 {
     let x = n as f64;
     let log = x.ln();
     let loglog = log.ln();
-    let a = if n < 228 { 0.6483 } else if n < 948 { 0.8032 }
-        else if n < 2195 { 0.8800 } else if n < 39_017 { 0.9019 } else { 0.9484 };
+    let a = if n < 228 {
+        0.6483
+    } else if n < 948 {
+        0.8032
+    } else if n < 2195 {
+        0.8800
+    } else if n < 39_017 {
+        0.9019
+    } else {
+        0.9484
+    };
     let mut lo = (x * (log + loglog - 1.0 + (loglog - 2.10) / log)) as u64;
     let mut hi = (x * (log + loglog - a)) as u64;
-    if hi < lo { hi = MAX_PRIME; }
+    if hi < lo {
+        hi = MAX_PRIME;
+    }
     while lo < hi {
         let mid = lo + (hi - lo) / 2;
-        if count(mid) < n { lo = mid + 1; } else { hi = mid; }
+        if count(mid) < n {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
     }
     lo
 }
 
 /// MPU 0.75 `prime_counts.c::prime_count_lower`, restricted to the
 /// range used by `nth_prime_upper` (below 180 thousand).
-#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 fn count_lower(n: u64) -> u64 {
-    if n < 33_000 { return prime_count(n); }
-    let a = if n < 69_720 { 905.0 } else if n < 70_120 { 961.0 }
-        else if n < 88_800 { 918.2 } else { 887.7 };
+    if n < 33_000 {
+        return prime_count(n);
+    }
+    let a = if n < 69_720 {
+        905.0
+    } else if n < 70_120 {
+        961.0
+    } else if n < 88_800 {
+        918.2
+    } else {
+        887.7
+    };
     let x = n as f64;
     let log = x.ln();
     let log2 = log * log;
-    (x / (log - 1.0 - 1.0 / log - 2.975_666 / log2
-        - 13.024_334 / (log * log2) + a / (log2 * log2))).ceil() as u64
+    (x / (log - 1.0 - 1.0 / log - 2.975_666 / log2 - 13.024_334 / (log * log2) + a / (log2 * log2)))
+        .ceil() as u64
 }
 
 /// Return the `(c, d)` pair of MPU `nth_prime_upper` for the range of `n`.
@@ -140,9 +172,34 @@ mod tests {
 
     #[test]
     fn large_bound_holds() {
-        assert!(nth_prime_upper(15_360).unwrap() >= 169_553);
+        assert!(nth_prime_upper(15_360).unwrap() >= nth_prime(15_360).unwrap());
         assert!(nth_prime_upper(1_000_000).unwrap() >= 15_485_863);
         assert!(nth_prime_upper(1_000_000_000).unwrap() >= 22_801_763_489);
+    }
+
+    #[test]
+    fn inverse_count_regressions() {
+        assert_eq!(nth_prime_upper(7_919), Some(81_069));
+        assert_eq!(nth_prime_upper(10_000), Some(104_925));
+        for n in [100, 306, 947, 948, 2_194, 2_195, 15_359] {
+            let bound = search_count_bound(n, count_lower);
+            assert!(count_lower(bound) >= n);
+            assert!(count_lower(bound - 1) < n);
+        }
+        for n in [33_000, 69_720, 70_120, 88_800] {
+            assert!(count_lower(n) <= prime_count(n));
+        }
+    }
+
+    #[test]
+    fn all_polynomial_ranges() {
+        for n in [
+            15_360, 25_070, 31_490, 39_016, 85_820, 138_630, 301_130, 382_440, 467_650, 575_750,
+            688_382, 876_700, 2_110_840, 3_906_280, 5_450_000, 8_009_824, 46_254_381,
+        ] {
+            assert!(nth_prime_upper(n).unwrap() >= super::super::nth_prime_lower(n).unwrap());
+        }
+        assert_eq!(nth_prime_upper(MAX_PRIME_IDX - 1), Some(MAX_PRIME));
     }
 
     #[test]

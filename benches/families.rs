@@ -19,9 +19,30 @@ use math_prime_util::{
     ramanujan_primes,
 };
 fn bench_almost_omega(c: &mut Criterion) {
+    c.bench_function("almost_prime_count_upper", |b| {
+        b.iter(|| math_prime_util::almost_prime_count_upper(5, black_box(1_000_000)));
+    });
     c.bench_function("nth_almost_prime_upper", |b| {
         b.iter(|| math_prime_util::nth_almost_prime_upper(4, black_box(5678)));
     });
+    for (name, f) in [
+        (
+            "nth_almost_prime",
+            math_prime_util::nth_almost_prime as fn(u32, u64) -> Option<u64>,
+        ),
+        (
+            "nth_almost_prime_lower",
+            math_prime_util::nth_almost_prime_lower,
+        ),
+        (
+            "nth_almost_prime_approx",
+            math_prime_util::nth_almost_prime_approx,
+        ),
+    ] {
+        c.bench_function(name, |b| {
+            b.iter(|| f(3, black_box(1000)));
+        });
+    }
     c.bench_function("omega_primes", |b| {
         b.iter(|| math_prime_util::omega_primes(3, 1, black_box(100_000)));
     });
@@ -217,34 +238,10 @@ fn bench_perfect_powers(c: &mut Criterion) {
     }
     group.finish();
 }
-fn bench_almost_omega(c: &mut Criterion) {
-    c.bench_function("almost_prime_count_upper", |b| {
-        b.iter(|| math_prime_util::almost_prime_count_upper(5, black_box(1_000_000)));
-    });
-    for (name, f) in [
-        (
-            "nth_almost_prime",
-            math_prime_util::nth_almost_prime as fn(u32, u64) -> Option<u64>,
-        ),
-        (
-            "nth_almost_prime_lower",
-            math_prime_util::nth_almost_prime_lower,
-        ),
-        (
-            "nth_almost_prime_approx",
-            math_prime_util::nth_almost_prime_approx,
-        ),
-    ] {
-        c.bench_function(name, |b| {
-            b.iter(|| f(3, black_box(1000)));
-        });
-    }
-}
 criterion_group!(
     benches,
     bench_almost_omega,
     bench_families,
-    bench_almost_omega,
     bench_ramanujan,
     bench_goldbach_misc,
     bench_squares,

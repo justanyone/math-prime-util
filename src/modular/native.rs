@@ -145,7 +145,7 @@ mod tests {
 
     #[test]
     fn factorization_handles_units_powers_and_semiprimes() {
-        assert!(factor_exp(1).is_empty());
+        assert_eq!(factor_exp(1), Vec::<(u64, u32)>::new());
         assert_eq!(factor_exp(1024), vec![(2, 10)]);
         assert_eq!(
             factor_exp(1_000_003 * 1_000_033),

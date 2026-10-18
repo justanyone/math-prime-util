@@ -664,3 +664,23 @@ fn almost_omega_edges_and_parallel_calls() {
         h.join().unwrap();
     }
 }
+
+#[test]
+fn nth_almost_prime_generic_search_has_exact_rank() {
+    // Enumerate independently of the count interpolation. n=150 exceeds all
+    // FIRST_3 thresholds for k=5..9, so every call takes the generic search.
+    for k in 5..=9 {
+        let mut rank = 0;
+        for value in (1_u64 << k).. {
+            if is_almost_prime(u64::from(k), value) {
+                rank += 1;
+                if [8, 40, 150].contains(&rank) {
+                    assert_eq!(nth_almost_prime(k, rank), Some(value));
+                }
+                if rank == 150 {
+                    break;
+                }
+            }
+        }
+    }
+}

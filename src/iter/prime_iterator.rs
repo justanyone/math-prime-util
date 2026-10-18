@@ -1,6 +1,6 @@
 /// Buffered prime cursor from `reference/mpu/lib/Math/Prime/Util.pm`, `prime_iterator`.
 ///
-/// Each refill asks `primes` for about 10_000 primes, matching the Perl closure.
+/// Each refill asks `primes` for about `10_000` primes, matching the Perl closure.
 #[derive(Debug, Clone)]
 pub struct PrimeIterator {
     cursor: Option<u64>,

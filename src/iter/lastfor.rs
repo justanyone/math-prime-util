@@ -10,7 +10,6 @@ use std::ops::ControlFlow;
 /// use math_prime_util::{forprimes, lastfor};
 /// assert!(forprimes(2..=10, |_| lastfor()).is_break());
 /// ```
-#[must_use]
 pub fn lastfor() -> ControlFlow<()> {
     ControlFlow::Break(())
 }

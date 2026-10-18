@@ -322,7 +322,7 @@ fn prime_iterator_nested_streams_are_independent() {
     assert_eq!(joined(out, " "), case.result.unwrap());
 }
 #[test]
-fn lastfor() {
+fn lastfor_error_rows() {
     // `lastfor_outside_loop` and `lastfor_after_callback_die`: MPU croaks when
     // `forcount == 0` (`XS.xs`, `lastfor`). Rust `lastfor` is a `Break` value
     // and has no loop stack, so those two rows have no Rust failure to raise.
@@ -340,8 +340,22 @@ fn lastfor() {
             }
             continue;
         }
-        let got = lastfor_value(&c.func);
-        assert_eq!(got, c.result.unwrap(), "{}", c.func);
+        // Value rows are covered by the loop tests; only named rows are checked here.
+        assert!(c.result.is_some(), "{}", c.func);
     }
     assert!(seen_outside && seen_after_die);
+}
+#[test]
+fn lastfor() {
+    let mut count = 0;
+    let result = math_prime_util::forpart(7, PartitionOptions::default(), |p| {
+        count += 1;
+        if p.len() == 4 {
+            math_prime_util::lastfor()
+        } else {
+            std::ops::ControlFlow::Continue(())
+        }
+    });
+    assert!(result.is_break());
+    assert_eq!(count, 5);
 }

@@ -114,15 +114,8 @@ pub fn cornacchia(d: u64, p: u64) -> Option<(u64, u64)> {
     }
     let lim_u = sqrtint(p / d);
     for u in 0..=lim_u {
-        let Some(square) = u.checked_mul(u) else {
-            break;
-        };
-        let Some(scaled) = d.checked_mul(square) else {
-            break;
-        };
-        if scaled > p {
-            break;
-        }
+        // `u * u` fits, and `d * (u * u) <= p`, because `u <= isqrt(p / d)`.
+        let scaled = d * (u * u);
         if let Some(root) = is_square_root(p - scaled) {
             return Some((root, u));
         }
@@ -154,6 +147,7 @@ mod tests {
         assert_eq!(kronecker_uu(2, 4), 0);
         assert_eq!(kronecker_uu(3, 2), -1);
         assert_eq!(kronecker_uu(1, 1), 1);
+        assert_eq!(kronecker_uu(3, 9), 0);
     }
 
     #[test]

@@ -276,7 +276,6 @@ pub use factorialmod::factorialmod;
 mod pisano_period;
 pub use pisano_period::pisano_period;
 mod znlog;
-pub use native::{binomialmod, factorialmod, pisano_period, znlog};
 pub use znlog::znlog;
 mod sqrtmod;
 pub use sqrtmod::sqrtmod;

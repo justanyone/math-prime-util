@@ -75,6 +75,27 @@ mod tests {
     use super::*;
 
     #[test]
+    fn sqrt_u128_small_and_boundary_values() {
+        for (n, root) in [
+            (2_u128, 1),
+            (3, 1),
+            (4, 2),
+            (5, 2),
+            (8, 2),
+            (9, 3),
+            (15, 3),
+            (16, 4),
+        ] {
+            assert_eq!(sqrt_u128(n), root, "n={n}");
+        }
+        for r in [1_u128 << 40, (1 << 63) + 12_345, u128::from(u64::MAX)] {
+            assert_eq!(sqrt_u128(r * r), r);
+            assert_eq!(sqrt_u128(r * r - 1), r - 1);
+            assert_eq!(sqrt_u128(r * r + 1), r);
+        }
+    }
+
+    #[test]
     fn large_discriminants() {
         assert_eq!(sqrt_u128(0), 0);
         assert_eq!(sqrt_u128(1), 1);

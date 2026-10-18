@@ -83,7 +83,7 @@ fn harmreal_asymptotic_branch_matches_the_sum() {
         let want = pairwise_harmonic(1, n + 1);
         assert!((harmreal(n) - want).abs() < 1e-13, "n={n}");
     }
-    assert_eq!(harmreal(0), 0.0);
+    assert_eq!(harmreal(0).to_bits(), 0.0_f64.to_bits());
     // H_10000 to 16 digits.
     assert!((harmreal(10_000) - 9.787_606_036_044_382).abs() < 1e-13);
 }
@@ -116,11 +116,11 @@ fn drand_is_a_scaled_unit_draw() {
     #[allow(clippy::cast_precision_loss)]
     let want = raw as f64 * (1.0 / 18_446_744_073_709_551_616.0);
     assert!(unit > 0.0 && unit < 1.0);
-    assert_eq!(unit, want);
+    assert_eq!(unit.to_bits(), want.to_bits());
     srand(15);
-    assert_eq!(drand(0.0), want);
+    assert_eq!(drand(0.0).to_bits(), want.to_bits());
     srand(15);
-    assert_eq!(drand(8.0), want * 8.0);
+    assert_eq!(drand(8.0).to_bits(), (want * 8.0).to_bits());
 }
 
 #[test]

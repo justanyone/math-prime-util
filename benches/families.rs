@@ -18,6 +18,27 @@ use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
 };
+fn bench_almost(c: &mut Criterion) {
+    c.bench_function("almost_primes", |b| {
+        b.iter(|| math_prime_util::almost_primes(4, 0, black_box(100_000)));
+    });
+    for (name, f) in [
+        (
+            "almost_prime_count",
+            math_prime_util::almost_prime_count as fn(u64, u64) -> u64,
+        ),
+        (
+            "almost_prime_count_approx",
+            math_prime_util::almost_prime_count_approx,
+        ),
+        (
+            "almost_prime_count_lower",
+            math_prime_util::almost_prime_count_lower,
+        ),
+    ] {
+        c.bench_function(name, |b| b.iter(|| f(4, black_box(100_000))));
+    }
+}
 fn bench_almost_omega(c: &mut Criterion) {
     c.bench_function("nth_almost_prime_upper", |b| {
         b.iter(|| math_prime_util::nth_almost_prime_upper(4, black_box(5678)));
@@ -231,6 +252,7 @@ fn bench_perfect_powers(c: &mut Criterion) {
 }
 criterion_group!(
     benches,
+    bench_almost,
     bench_almost_omega,
     bench_families,
     bench_ramanujan,

@@ -14,3 +14,4 @@ The gate is waiting on the existing forsquarefreeint integration test, which has
 About five minutes remain. Full gate is still in the unrelated forsquarefreeint test; running offline warning-free documentation separately to record that check.
 Offline all-feature documentation built with warnings denied. Running the count doctests while the full gate continues on forsquarefreeint.
 All 11 matching count doctests passed. Documentation, fmt, clippy and MSRV passed offline; full gate is still waiting on forsquarefreeint.
+Final: all task code and regression tests are complete; 41 restored rows, 12 compatibility tests and 11 doctests pass. Offline fmt, clippy, MSRV and docs passed. Full gate has not finished forsquarefreeint or printed green; aragog/wonko checks are unavailable from this host under the no-network/no-ssh rule. No git writes were performed.

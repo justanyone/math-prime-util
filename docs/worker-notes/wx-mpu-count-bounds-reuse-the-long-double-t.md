@@ -6,3 +6,4 @@ Run focused tests and the repository gate on this host if permitted.
 Reused the existing series, preserved the C Li NV conversions, and removed 41 precision skips. Host is wowbagger; requested remote gate is unavailable without prohibited access.
 Verified exact x87 constants with decimal arithmetic; added ties-to-even, endpoint, repeated-call, and concurrent-call regression tests. Focused fixture test is compiling.
 Offline clippy passed with all targets and features; the gate is building MSRV. Focused compatibility tests are still running. STATUS already marks all three functions complete.
+MSRV build passed offline. Focused tests and the full gate are compiling; no test failure has been reported yet.

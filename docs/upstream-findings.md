@@ -308,6 +308,10 @@ The continuation reran the six focused compatibility and property test
 targets listed above with `tools/test.sh`; they passed. Formatting, clippy
 with warnings denied, and the Rust 1.85.0 MSRV build also passed. Full-suite
 and documentation validation are still pending; no green gate is claimed.
+The first `tools/gate.sh` attempt exited 101 during tests, with its log
+ending at 4,096 bytes before a diagnostic. A bounded-output retry and the
+single final `tools/test.sh` run had not finished before this session ended.
+Progress recording also encountered intermittent sandbox quota errors.
 
 ## Remaining work
 

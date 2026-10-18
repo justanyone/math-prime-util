@@ -10,19 +10,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `addint`
 - [x] `addmod`
 - [x] `aliquot_sum`
-<<<<<<< HEAD
-- [ ] `allrootmod`
-- [ ] `allsqrtmod`
+- [x] `allrootmod`
+- [x] `allsqrtmod`
 - [x] `almost_prime_count`
 - [x] `almost_prime_count_approx`
 - [x] `almost_prime_count_lower`
-=======
-- [x] `allrootmod`
-- [x] `allsqrtmod`
-- [ ] `almost_prime_count`
-- [ ] `almost_prime_count_approx`
-- [ ] `almost_prime_count_lower`
->>>>>>> origin/dev-001
 - [ ] `almost_prime_count_upper`
 - [x] `almost_primes`
 - [x] `bell_number`

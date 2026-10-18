@@ -9,6 +9,7 @@ The task names an external draft at
 `/home/kevin/mpu-fix/upstream-findings-draft.md`.
 That file is absent in this checkout. The task describes three confirmed
 findings, two probable findings, and six API or documentation differences.
+No draft-named path was found in the tracked repository history either.
 Their text and evidence are not available. Those eleven entries cannot yet
 be transcribed or checked. Do not treat the entries below as their replacement.
 No upstream report has been sent by this task.
@@ -295,10 +296,17 @@ Examples are `native_overflow_and_validation`,
 `repeat_and_concurrent_partition_calls`.
 This documentation change introduces no state or launch path.
 
+## Report validation
+
+The continuation checked all 166 table rows against the committed fixture
+files: each function, argument string, and recorded Perl value matched.
+All 18 relative links in this report resolve to files in this checkout.
+This checks the report's transcription and links; it does not establish the
+missing draft's findings or verify a corrected mathematical result.
+
 ## Remaining work
 
 Recover the external draft. Add one entry for each of its eleven findings.
 Each entry must name the function, input, Perl 0.75 value, corrected value,
 verification method, and the test that skips the row.
 Keep confirmed defects separate from probable defects and API differences.
-

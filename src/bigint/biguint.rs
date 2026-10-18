@@ -402,10 +402,7 @@ mod tests {
         assert!(!extra_strong_lucas(&BigUint::from(15_u8)));
         assert!(!extra_strong_lucas(&BigUint::from(25_u8)));
         assert_eq!(zero().powmod(&zero(), &one()), Some(zero()));
-        assert_eq!(
-            zero().powmod(&zero(), &BigUint::from(5_u8)),
-            Some(one())
-        );
+        assert_eq!(zero().powmod(&zero(), &BigUint::from(5_u8)), Some(one()));
     }
 
     #[test]
@@ -511,7 +508,7 @@ mod tests {
         assert_eq!(1_u128.shr_bits(1), 0);
         // Values above the modulus must not overflow the widening multiply.
         assert_eq!(u128::MAX.mulmod(&u128::MAX, &1), Some(0));
-        assert_eq!(u128::MAX.mulmod(&3, &10), Some(7));
+        assert_eq!(u128::MAX.mulmod(&3, &10), Some(5));
         assert_eq!(0_u64.powmod(&0, &5), Some(1));
         assert_eq!(0_u128.powmod(&0, &1), Some(0));
     }

@@ -34,6 +34,18 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - run: cargo nextest run --all-features
       - run: cargo test --doc --all-features
+  test-bigint:
+    name: test-bigint (${{ matrix.rust }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [stable, "1.85"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with: { toolchain: "${{ matrix.rust }}" }
+      - run: cargo test --features bigint
   # Other platforms and toolchains: only on pushes to main and dev-* (not on pull requests), to save runner time.
   test-extra:
     if: github.event_name == 'push'

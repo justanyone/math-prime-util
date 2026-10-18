@@ -75,9 +75,192 @@ pub trait Int: Sized {
     /// assert_eq!(u128::MAX.next_prime(), None);
     /// ```
     fn next_prime(&self) -> Option<Self>;
+
+    /// Returns `self + other`, or `None` on overflow of a fixed-width type.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(2_u64.add_int(&3), Some(5));
+    /// assert_eq!(u64::MAX.add_int(&1), None);
+    /// ```
+    fn add_int(&self, other: &Self) -> Option<Self>;
+
+    /// Returns `self - other`, or `None` if the result is negative.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(5_u128.sub_int(&3), Some(2));
+    /// assert_eq!(3_u128.sub_int(&5), None);
+    /// ```
+    fn sub_int(&self, other: &Self) -> Option<Self>;
+
+    /// Returns `self * other`, or `None` on overflow of a fixed-width type.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(6_u64.mul_int(&7), Some(42));
+    /// assert_eq!(u64::MAX.mul_int(&2), None);
+    /// ```
+    fn mul_int(&self, other: &Self) -> Option<Self>;
+
+    /// Returns quotient and remainder, or `None` for a zero divisor.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(17_u64.divrem(&5), Some((3, 2)));
+    /// assert_eq!(17_u64.divrem(&0), None);
+    /// ```
+    fn divrem(&self, divisor: &Self) -> Option<(Self, Self)>;
+
+    /// Returns `self * other mod modulus`, or `None` for modulus zero.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(7_u128.mulmod(&8, &10), Some(6));
+    /// assert_eq!(7_u128.mulmod(&8, &0), None);
+    /// ```
+    fn mulmod(&self, other: &Self, modulus: &Self) -> Option<Self>;
+
+    /// Returns `self << bits`, or `None` if bits are lost in a fixed-width type.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(3_u64.shl_bits(4), Some(48));
+    /// assert_eq!(1_u64.shl_bits(64), None);
+    /// ```
+    fn shl_bits(&self, bits: u32) -> Option<Self>;
+
+    /// Returns `self >> bits`. Shifting by the full width or more gives zero.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(48_u64.shr_bits(4), 3);
+    /// assert_eq!(48_u64.shr_bits(70), 0);
+    /// ```
+    #[must_use]
+    fn shr_bits(&self, bits: u32) -> Self;
+
+    /// Returns the number of bits needed to write the value. Zero has length 0.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(255_u64.bit_length(), 8);
+    /// assert_eq!(0_u128.bit_length(), 0);
+    /// ```
+    fn bit_length(&self) -> u64;
+
+    /// Returns true if the value is even.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert!(10_u64.is_even());
+    /// assert!(!7_u128.is_even());
+    /// ```
+    fn is_even(&self) -> bool;
+
+    /// Converts from `u64`.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(<u128 as Int>::from_u64(9), 9);
+    /// ```
+    fn from_u64(value: u64) -> Self;
+
+    /// Converts to `u64`, or `None` if the value is too large.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(9_u128.to_u64(), Some(9));
+    /// assert_eq!(u128::MAX.to_u64(), None);
+    /// ```
+    fn to_u64(&self) -> Option<u64>;
+
+    /// Parses a decimal string of digits. Returns `None` for bad input or overflow.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(<u64 as Int>::from_decimal("123"), Some(123));
+    /// assert_eq!(<u64 as Int>::from_decimal("12x"), None);
+    /// assert_eq!(<u64 as Int>::from_decimal("99999999999999999999"), None);
+    /// ```
+    fn from_decimal(text: &str) -> Option<Self>;
+
+    /// Prints the value in decimal.
+    ///
+    /// ```
+    /// use math_prime_util::Int;
+    /// assert_eq!(1234_u64.to_decimal(), "1234");
+    /// ```
+    fn to_decimal(&self) -> String;
+}
+
+macro_rules! native_ops {
+    ($t:ty, $wide:ty) => {
+        fn add_int(&self, other: &Self) -> Option<Self> {
+            self.checked_add(*other)
+        }
+
+        fn sub_int(&self, other: &Self) -> Option<Self> {
+            self.checked_sub(*other)
+        }
+
+        fn mul_int(&self, other: &Self) -> Option<Self> {
+            self.checked_mul(*other)
+        }
+
+        fn divrem(&self, divisor: &Self) -> Option<(Self, Self)> {
+            Some((self.checked_div(*divisor)?, self.checked_rem(*divisor)?))
+        }
+
+        fn mulmod(&self, other: &Self, modulus: &Self) -> Option<Self> {
+            if *modulus == 0 {
+                return None;
+            }
+            let n = <$wide>::from(*modulus);
+            Self::try_from(mulmod(<$wide>::from(*self), <$wide>::from(*other), n)).ok()
+        }
+
+        fn shl_bits(&self, bits: u32) -> Option<Self> {
+            let shifted = self.checked_shl(bits)?;
+            (shifted >> bits == *self).then_some(shifted)
+        }
+
+        fn shr_bits(&self, bits: u32) -> Self {
+            self.checked_shr(bits).unwrap_or(0)
+        }
+
+        fn bit_length(&self) -> u64 {
+            u64::from(<$t>::BITS - self.leading_zeros())
+        }
+
+        fn is_even(&self) -> bool {
+            self & 1 == 0
+        }
+
+        fn from_u64(value: u64) -> Self {
+            Self::try_from(value).unwrap_or(Self::MAX)
+        }
+
+        fn to_u64(&self) -> Option<u64> {
+            u64::try_from(*self).ok()
+        }
+
+        fn from_decimal(text: &str) -> Option<Self> {
+            if text.is_empty() || !text.bytes().all(|b| b.is_ascii_digit()) {
+                return None;
+            }
+            text.parse().ok()
+        }
+
+        fn to_decimal(&self) -> String {
+            self.to_string()
+        }
+    };
 }
 
 impl Int for u64 {
+    native_ops!(u64, u128);
+
     fn is_prime(&self) -> u8 {
         crate::primality::is_prime(*self)
     }
@@ -120,6 +303,8 @@ fn mulmod(mut a: u128, mut b: u128, n: u128) -> u128 {
 }
 
 impl Int for u128 {
+    native_ops!(u128, u128);
+
     fn is_prime(&self) -> u8 {
         crate::factor::is_prime_u128(*self)
     }

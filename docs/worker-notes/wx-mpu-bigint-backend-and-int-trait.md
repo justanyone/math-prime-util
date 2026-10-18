@@ -1,1 +1,2 @@
 - Int trait exists (is_prime, factor, powmod, gcd, next_prime) for u64/u128/BigUint. Adding arithmetic ops (add/sub/mul/divrem/mulmod/shifts/bit_length/is_even/from/to u64/decimal), optional num-integer/num-traits, CI job, PLAN.md section, proptest.
+- Edits done (trait ops, BigUint impl, tests, CI job, PLAN, deps). cargo cannot resolve num-bigint offline (not in registry cache), so nothing compiled or tested here.

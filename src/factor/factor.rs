@@ -263,6 +263,13 @@ mod tests {
         let f = holf_stage(403).unwrap();
         assert_eq!(403 % f, 0);
         assert_eq!(squfof_stage(u64::MAX), None);
+        // The cutoff is 62 bits: 62 bits splits, 63 bits does not.
+        let p = crate::prev_prime(1 << 31).unwrap();
+        let q = crate::prev_prime(p - 100_000).unwrap();
+        assert_eq!(64 - (p * q).leading_zeros(), 62);
+        let f = squfof_stage(p * q).unwrap();
+        assert!(f == p || f == q);
+        assert_eq!(squfof_stage(3 << 61), None);
         let f = squfof_stage(91).unwrap();
         assert_eq!(91 % f, 0);
         for start in 0..8 {
@@ -272,5 +279,39 @@ mod tests {
         // Above 45 bits the Montgomery schedule adds rounds; 2^50 is even.
         assert_eq!(dispatcher(1 << 50, 1), Some(2));
         assert_eq!(dispatcher(1, 8), None);
+        // Stage 0 is `holf`: start 0 returns its factor, start 1 skips it.
+        let mut differs = 0;
+        for n in crate::factor::test_support::inputs() {
+            if u32::try_from(n).is_ok() {
+                let h = holf_stage(n);
+                assert_eq!(dispatcher(n, 0), h.or(dispatcher(n, 1)), "{n}");
+                differs += usize::from(h.is_some() && h != dispatcher(n, 1));
+            }
+        }
+        assert!(differs > 0);
+    }
+
+    #[test]
+    fn brent_and_holf_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let (mut hb, mut hh) = (0, 0);
+        for n in inputs() {
+            if let Ok(small) = u32::try_from(n) {
+                hh = fold_opt(hh, holf(u64::from(small)));
+            }
+            for a in [1, 2, 3, 5] {
+                for rounds in [100, 5_000, 500_000] {
+                    let got = brent(n, rounds, a);
+                    if let Some(f) = got {
+                        assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                    }
+                    hb = fold_opt(hb, got);
+                }
+            }
+        }
+        assert_eq!(
+            (hb, hh),
+            (4_434_182_252_870_372_899, 7_831_995_469_746_149_911)
+        );
     }
 }

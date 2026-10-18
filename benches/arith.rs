@@ -6,6 +6,18 @@ use math_prime_util::{
     moebius, sumtotient, znorder, znprimroot,
 };
 fn bench_arith(c: &mut Criterion) {
+    c.bench_function("arith/sopfr", |b| {
+        b.iter(|| math_prime_util::sopfr(black_box(360_360)));
+    });
+    c.bench_function("arith/sopf", |b| {
+        b.iter(|| math_prime_util::sopf(black_box(360_360)));
+    });
+    c.bench_function("arith/kronecker", |b| {
+        b.iter(|| math_prime_util::kronecker(black_box(-7), black_box(1_000_000_007)));
+    });
+    c.bench_function("arith/chinese", |b| {
+        b.iter(|| math_prime_util::chinese(black_box(&[(2, 3), (3, 5), (2, 7)])));
+    });
     c.bench_function("euler_phi", |b| {
         b.iter(|| euler_phi(black_box(1_000_000_007)));
     });
@@ -14,6 +26,15 @@ fn bench_arith(c: &mut Criterion) {
         b.iter(|| euler_phi_range(0, black_box(10_000)));
     });
     c.bench_function("mertens", |b| b.iter(|| mertens(black_box(100_000))));
+    c.bench_function("liouville", |b| {
+        b.iter(|| math_prime_util::liouville(black_box(1_000_000_007)));
+    });
+    c.bench_function("sumliouville", |b| {
+        b.iter(|| math_prime_util::sumliouville(black_box(100_000)));
+    });
+    c.bench_function("exp_mangoldt", |b| {
+        b.iter(|| math_prime_util::exp_mangoldt(black_box(11_u64.pow(18))));
+    });
     c.bench_function("sumtotient", |b| b.iter(|| sumtotient(black_box(100_000))));
     c.bench_function("arith/divisor_sum", |b| {
         b.iter(|| divisor_sum(black_box(360_360), 2));
@@ -24,11 +45,26 @@ fn bench_arith(c: &mut Criterion) {
     c.bench_function("arith/znprimroot", |b| {
         b.iter(|| znprimroot(black_box(1_000_003)));
     });
+    c.bench_function("arith/qnr", |b| {
+        b.iter(|| math_prime_util::qnr(black_box(1_000_003)));
+    });
+    c.bench_function("arith/is_qr", |b| {
+        b.iter(|| math_prime_util::is_qr(black_box(10), black_box(1_000_003)));
+    });
+    c.bench_function("arith/is_fundamental", |b| {
+        b.iter(|| math_prime_util::is_fundamental(black_box(-10_007)));
+    });
     c.bench_function("arith/inverse_sigma0", |b| {
         b.iter(|| inverse_sigma0(black_box(12), 1, 1_000_000));
     });
     c.bench_function("arith/inverse_sigma0_count", |b| {
         b.iter(|| inverse_sigma0_count(black_box(48), 1, 1_000_000));
+    });
+    c.bench_function("arith/ramanujan_sum", |b| {
+        b.iter(|| math_prime_util::ramanujan_sum(black_box(12), black_box(360_360)));
+    });
+    c.bench_function("arith/valuation", |b| {
+        b.iter(|| math_prime_util::valuation(black_box(1_u64 << 62), black_box(4)));
     });
 }
 criterion_group!(benches, bench_arith);

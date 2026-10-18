@@ -12,8 +12,8 @@ Focused library tests pass: 71 tests. The gate has passed fmt, clippy and the MS
 Found a HOLF shift witness in the multiplier-30 interval. Added a two-round private splitter assertion. Brent retry searches found no witness; those mutations remain open.
 
 PR text draft (line numbers refer to the original source):
-Caught candidates: prime_factors 52:14 (`<` to `>` or `<=`), Lehman 49:52 (`%` to `/`), Lehman 56:14 (`*` to `+` or `/`), p-1 42:15 (`+` to `-` or `*`), HOLF 34:33 (`>>` to `<<`). Direct regression tests cover these paths. Mutation verifica <<cut 16 chars by kit>>
-Equivalent: prime_factors 52:14 (`<` to `==`): after small-prime stripping, the pending value is 1 or is greater than 43; it cannot be 0 or 2.
+Caught candidates: prime_factors 52:14 (`<` to `==` or `>`), Lehman 49:52 (`%` to `/`), Lehman 56:14 (`*` to `+` or `/`), p-1 42:15 (`+` to `-` or `*`), HOLF 34:33 (`>>` to `<<`). Direct regression tests cover these paths. Mutation verifica <<cut 16 chars by kit>>
+Equivalent: prime_factors 52:14 (`<` to `<=`): small-prime stripping removes every factor of 2. Pending values are 0, 1, or odd values above 43; no pending value is 2.
 Equivalent: Lehman 49:52 (`%` to `+`): the residue is reduced modulo four at its only use, so both give the same b.
 Equivalent: p-1 56:35 (`+` to `-` or `*`): replay can repeat primes at or below save_q. Their full prime powers are already in save_a. Replay occurs only when the final gcd is n. Every factor order then divides the final exponent. Repeating <<cut 104 chars by kit>>
 Still open: prime_factors 64:15 retry updates; factor 108:32 round schedule; factor 161:11 fallback updates. No witness or equivalence proof found.
@@ -24,3 +24,4 @@ State and concurrency: these tests call deterministic local splitters. There is 
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 71 bytes)
 HOLF regression passes. Stopped a slow target-copy mutation attempt and restarted without copying target artifacts. Local mutation results are not yet available.
+Corrected the prime_factors equivalence note: <= is equivalent because pending values cannot be 2; == is caught by input 0. About five minutes remain; finishing validation and recording unresolved items.

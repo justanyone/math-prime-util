@@ -285,3 +285,98 @@ impl Int for BigUint {
         Some(n)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use proptest::prelude::*;
+
+    fn mersenne(bits: usize) -> BigUint {
+        (one() << bits) - 1_u8
+    }
+
+    #[test]
+    fn arbitrary_precision_primality() {
+        for bits in [127, 521, 607] {
+            let p = mersenne(bits);
+            assert_ne!(p.is_prime(), 0);
+            assert!(strong_base_two(&p));
+            assert!(extra_strong_lucas(&p));
+            assert_eq!((&p * 3_u8).is_prime(), 0);
+            assert_eq!((&p * &p).is_prime(), 0);
+            assert!(!extra_strong_lucas(&(&p * &p)));
+        }
+        // Strong base-two pseudoprimes must still fail the Lucas test.
+        for n in [2047_u32, 3277, 4033, 4681, 8321, 15841, 29341, 42799, 49141] {
+            let n = BigUint::from(n);
+            assert!(strong_base_two(&n));
+            assert!(!extra_strong_lucas(&n));
+        }
+        assert!(!strong_base_two(&BigUint::from(341_u32)));
+        assert!(!strong_base_two(&BigUint::from(9_u8)));
+        assert_eq!(jacobi(BigUint::from(5_u8), BigUint::from(11_u8)), 1);
+        assert_eq!(jacobi(BigUint::from(6_u8), BigUint::from(9_u8)), 0);
+        assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(11_u8)), -1);
+    }
+
+    #[test]
+    fn arbitrary_precision_arithmetic_and_factors() {
+        let p = mersenne(521);
+        assert_eq!(p.factor(), Ok(vec![p.clone()]));
+        assert_eq!((&p * 6_u8).factor(), Ok(vec![BigUint::from(2_u8), BigUint::from(3_u8), p.clone()]));
+        let q = mersenne(127);
+        assert_eq!((&q * &q).factor(), Ok(vec![q.clone(), q.clone()]));
+        assert_eq!((&q * 101_u8).factor(), Ok(vec![BigUint::from(101_u8), q]));
+        assert_eq!((one() << 140_usize).factor(), Ok(vec![BigUint::from(2_u8); 140]));
+        assert_eq!(zero().factor(), Ok(vec![zero()]));
+        assert_eq!(one().factor(), Ok(vec![]));
+        assert_eq!(p.powmod(&zero(), &one()), Some(zero()));
+        assert_eq!(p.powmod(&one(), &zero()), None);
+        assert_eq!(p.powmod(&(&p - 1_u8), &p), Some(zero()));
+        assert_eq!(BigUint::from(2_u8).powmod(&(&p - 1_u8), &p), Some(one()));
+        assert_eq!((&p * 15_u8).gcd(&(&p * 21_u8)), &p * 3_u8);
+        assert_eq!(zero().gcd(&zero()), zero());
+        assert_eq!(zero().gcd(&p), p.clone());
+        assert_eq!(p.gcd(&zero()), p);
+        assert_eq!(brent(&BigUint::from(101_u8), 0), None);
+        assert_eq!(brent(&BigUint::from(101_u8), 100), None);
+        for n in [9_u32, 15, 25, 49, 77, 101 * 103] {
+            let n = BigUint::from(n);
+            let f = brent(&n, 10_000).unwrap();
+            assert!(f > one() && f < n);
+            assert_eq!(&n % f, zero());
+        }
+    }
+
+    #[test]
+    fn next_prime_crosses_native_ranges() {
+        for n in [0_u8, 1, 2, 3, 4, 5, 6, 7, 14] {
+            assert_eq!(BigUint::from(n).next_prime(), u64::from(n).next_prime().map(BigUint::from));
+        }
+        let boundary = BigUint::from(u128::MAX);
+        // First prime after 2^128 is 2^128 + 51.
+        assert_eq!(boundary.next_prime(), Some((one() << 128_usize) + 51_u8));
+        assert_eq!((boundary + 1_u8).next_prime(), Some((one() << 128_usize) + 51_u8));
+        assert_eq!(BigUint::from(u64::MAX).next_prime(), u128::from(u64::MAX).next_prime().map(BigUint::from));
+    }
+
+    proptest! {
+        #[test]
+        fn native_agreement(a: u64, b: u64, exponent in 0_u64..128, n in 0_u64..100_000) {
+            let (big_a, big_b) = (BigUint::from(a), BigUint::from(b));
+            prop_assert_eq!(big_a.is_prime(), a.is_prime());
+            prop_assert_eq!(big_a.gcd(&big_b), BigUint::from(a.gcd(&b)));
+            prop_assert_eq!(big_a.powmod(&BigUint::from(exponent), &big_b),
+                a.powmod(&exponent, &b).map(BigUint::from));
+            let big_n = BigUint::from(n);
+            prop_assert_eq!(big_n.factor(), n.factor().map(|v| v.into_iter().map(BigUint::from).collect()).map_err(BigUint::from));
+            prop_assert_eq!(big_n.next_prime(), n.next_prime().map(BigUint::from));
+        }
+
+        #[test]
+        fn wide_modular_powers(a: u128, b in 1_u128..=u128::MAX, e in 0_u128..128) {
+            prop_assert_eq!(BigUint::from(a).powmod(&BigUint::from(e), &BigUint::from(b)),
+                a.powmod(&e, &b).map(BigUint::from));
+        }
+    }
+}

@@ -104,10 +104,7 @@ pub fn cornacchia(d: u64, p: u64) -> Option<(u64, u64)> {
         if kronecker_uu(neg_d, p) == -1 {
             return None;
         }
-        let Some(root) = sqrtmod(neg_d, p) else {
-            return None;
-        };
-        return corn_one(root, d, p);
+        return corn_one(sqrtmod(neg_d, p)?, d, p);
     }
     // `(p >> 31) >> 22` in the C source: `p >= 2^53`.
     if p >= 1_u64 << 53 && kronecker_uu(neg_d, p) != -1 {

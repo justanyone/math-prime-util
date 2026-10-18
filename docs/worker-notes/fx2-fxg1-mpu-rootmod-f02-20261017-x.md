@@ -9,6 +9,8 @@ Next: open the review note and the relevant source once the findings name the fu
 Restored `util.c::cornacchia` prime Kronecker rejection plus `corn_all` for `p >= 2^53`. Put `znlog` / `factorialmod` / `binomialmod` oracles and the old property tests back beside the rootmod tests. Next: `mw-test` on the modular tests.
 
 `mw-test --full` on compat_modular, prop_modular, and the cornacchia unit tests passed (compat pairs match the oracle). Clippy `-D warnings` is clean. Next: `tools/gate.sh`.
+
+`tools/gate.sh` passed fmt, clippy, and the 1.85 build, then the full test run was killed by the session time limit while results were still `ok` (through `compat_families`). `cargo doc -D warnings` passed afterwards. About 5 minutes remain: one more gate attempt if the suite is still cached.
 - 2026-10-18T03:26:10Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:27:10Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:28:10Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.

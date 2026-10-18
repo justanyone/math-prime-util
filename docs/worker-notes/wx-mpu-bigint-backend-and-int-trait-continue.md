@@ -5,6 +5,7 @@ Previous run left the bigint feature written but unbuilt: `num-bigint` was missi
 Plan: read PLAN.md sections 5–8 and the bigint module, run `tools/test.sh --features bigint --lib bigint`, then `tools/gate.sh` if the crate builds. No new dependencies beyond the named optional ones. Do not mark READY.
 
 - Crates are in the local cargo cache. Fixed `Int::mulmod` so operands are reduced before `addmod`, and `BigUint::powmod` so every residue modulo 1 is 0. Next: `tools/test.sh --lib bigint`.
+- `tools/test.sh --lib bigint`: 9 passed. `tools/gate.sh` passed fmt, clippy, and MSRV 1.85, then the full suite was killed during `compat_iter` (tool timeout, not a failure). About 5 minutes left: run doc tests, then gate again.
 - 2026-10-18T22:36:24Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-backend-and-int-trait-continue.md.
 - 2026-10-18T22:37:24Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-backend-and-int-trait-continue.md.
 - 2026-10-18T22:38:25Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-backend-and-int-trait-continue.md.

@@ -33,8 +33,36 @@ impl Mont {
     }
 
     /// Montgomery product `a * b / R mod n` for `a, b < n`.
+    ///
+    /// `n < 2^63` uses the `_mulredc63` reduction from `montmath.h` (one
+    /// conditional subtract). Larger odd moduli use `_mulredc64`, which
+    /// keeps the overflow bit out of the high half.
     #[inline]
     pub(crate) fn mul(self, a: u64, b: u64) -> u64 {
+        if self.n < 1 << 63 {
+            self.mul63(a, b)
+        } else {
+            self.mul64(a, b)
+        }
+    }
+
+    /// `_mulredc63`: `n < 2^63` and `a, b < n`, so the REDC result is `< 2n`.
+    #[inline]
+    fn mul63(self, a: u64, b: u64) -> u64 {
+        let x = u128::from(a) * u128::from(b);
+        #[allow(clippy::cast_possible_truncation)]
+        let m = (x as u64).wrapping_mul(self.npi);
+        let y = u128::from(m) * u128::from(self.n);
+        #[allow(clippy::cast_possible_truncation)]
+        let (xh, xl, yh, yl) = ((x >> 64) as u64, x as u64, (y >> 64) as u64, y as u64);
+        let carry = u64::from(xl.overflowing_add(yl).1);
+        let z = xh.wrapping_add(yh).wrapping_add(carry);
+        if z >= self.n { z - self.n } else { z }
+    }
+
+    /// `_mulredc64`, including moduli with the high bit set.
+    #[inline]
+    fn mul64(self, a: u64, b: u64) -> u64 {
         let x = u128::from(a) * u128::from(b);
         #[allow(clippy::cast_possible_truncation)]
         let m = (x as u64).wrapping_mul(self.npi);

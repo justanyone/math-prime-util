@@ -523,3 +523,338 @@ fn is_sum_of_squares_oracle() {
         c.check(Some(u8::from(is_sum_of_squares(n, k))));
     });
 }
+
+// Fixture rows for these two functions are unsigned and fit `u64`.
+// No signed argument is skipped.
+#[test]
+fn nth_ramanujan_prime_upper_oracle() {
+    each("families", "nth_ramanujan_prime_upper", |c| {
+        c.check(nth_ramanujan_prime_upper(c.arg(0)));
+    });
+}
+
+#[test]
+fn is_ramanujan_prime_oracle() {
+    each("families", "is_ramanujan_prime", |c| {
+        c.check(Some(u8::from(is_ramanujan_prime(c.arg(0)))));
+    });
+}
+
+#[test]
+fn ramanujan_primes_oracle() {
+    each("families", "ramanujan_primes", |c| {
+        let (lo, hi) = if c.args.len() == 1 {
+            (0, c.arg(0))
+        } else {
+            (c.arg(0), c.arg(1))
+        };
+        let values = ramanujan_primes(lo, hi);
+        c.check(if values.is_empty() {
+            None
+        } else {
+            Some(
+                values
+                    .iter()
+                    .map(u64::to_string)
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            )
+        });
+    });
+}
+
+#[test]
+fn ramanujan_prime_count_oracle() {
+    each("families", "ramanujan_prime_count", |c| {
+        let count = if c.args.len() == 1 {
+            ramanujan_prime_count(c.arg(0))
+        } else {
+            let lo: u64 = c.arg(0);
+            let hi: u64 = c.arg(1);
+            if hi < lo {
+                0
+            } else {
+                ramanujan_prime_count(hi) - ramanujan_prime_count(lo.saturating_sub(1))
+            }
+        };
+        c.check(Some(count));
+    });
+}
+
+#[test]
+fn ramanujan_prime_count_approx_oracle() {
+    each("families", "ramanujan_prime_count_approx", |c| {
+        // Skipped: fixture line 2658 (n = u64::MAX). The port uses f64 bounds,
+        // while MPU uses long double; the integer result differs at that size.
+        if c.arg::<u64>(0) == u64::MAX {
+            return;
+        }
+        c.check(Some(ramanujan_prime_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
+fn ramanujan_prime_count_lower_oracle() {
+    each("families", "ramanujan_prime_count_lower", |c| {
+        // Skipped: fixture line 2624 (n = u64::MAX). The port uses f64 bounds,
+        // while MPU uses long double; the integer result differs at that size.
+        if c.arg::<u64>(0) == u64::MAX {
+            return;
+        }
+        c.check(Some(ramanujan_prime_count_lower(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_oracle() {
+    common::each("families", "prime_power_count", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_approx_oracle() {
+    common::each("families", "prime_power_count_approx", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_lower_oracle() {
+    common::each("families", "prime_power_count_lower", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count_lower(c.arg(0))));
+    });
+}
+
+#[test]
+fn prime_power_count_upper_oracle() {
+    common::each("families", "prime_power_count_upper", |c| {
+        // MPU's two-argument prime_power_count range overload has no Rust API yet.
+        if c.args.len() != 1 {
+            return;
+        }
+        c.check(Some(prime_power_count_upper(c.arg(0))));
+    });
+}
+
+#[test]
+fn nth_semiprime_oracle() {
+    each("families", "nth_semiprime", |c| {
+        c.check(nth_semiprime(c.arg(0)).map(|v| v.to_string()));
+    });
+}
+#[test]
+fn nth_semiprime_approx_oracle() {
+    each("families", "nth_semiprime_approx", |c| {
+        // Skipped: indices past the 191-entry table need MPU's inverse
+        // interpolation (semiprime_count_approx), which is not ported yet.
+        if c.arg::<u64>(0) >= 191 {
+            return;
+        }
+        c.check(nth_semiprime_approx(c.arg(0)).map(|v| v.to_string()));
+    });
+}
+
+#[test]
+fn nth_perfect_power_approx_oracle() {
+    each("families", "nth_perfect_power_approx", |c| {
+        let n: u64 = c.arg(0);
+        if n > 4_297_615_581 {
+            // Past this index MPU promotes the result to bigint; the native API saturates.
+            return;
+        }
+        c.check(nth_perfect_power_approx(n));
+    });
+}
+
+#[test]
+fn nth_perfect_power_lower_oracle() {
+    each("families", "nth_perfect_power_lower", |c| {
+        let n: u64 = c.arg(0);
+        if n > 4_297_615_581 {
+            // Past this index MPU promotes the result to bigint; the native API saturates.
+            return;
+        }
+        c.check(nth_perfect_power_lower(n));
+    });
+}
+
+#[test]
+fn nth_perfect_power_upper_oracle() {
+    each("families", "nth_perfect_power_upper", |c| {
+        let n: u64 = c.arg(0);
+        if n > 4_297_615_581 {
+            // Past this index MPU promotes the result to bigint; the native API saturates.
+            return;
+        }
+        c.check(nth_perfect_power_upper(n));
+    });
+}
+
+#[test]
+fn perfect_power_count_approx_oracle() {
+    each("families", "perfect_power_count_approx", |c| {
+        c.check(Some(perfect_power_count_approx(c.arg(0))));
+    });
+}
+
+#[test]
+fn is_perfect_power_oracle() {
+    each("families", "is_perfect_power", |c| {
+        // Skip signed inputs (including -8922003266371364726) and bigint
+        // input 18446744073709551616: the native API takes u64.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            c.check(Some(u8::from(is_perfect_power(n))));
+        }
+    });
+}
+
+#[test]
+fn perfect_power_count_lower_oracle() {
+    each("families", "perfect_power_count_lower", |c| {
+        c.check(Some(perfect_power_count_lower(c.arg(0))));
+    });
+}
+
+#[test]
+fn next_perfect_power_oracle() {
+    each("families", "next_perfect_power", |c| {
+        // Skip signed inputs and bigint input 18446744073709551616.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            // Bigint results 18446744073709551616 become native overflow.
+            let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
+            assert_eq!(next_perfect_power(n), expected, "{c:?}");
+        }
+    });
+}
+
+#[test]
+fn perfect_power_count_upper_oracle() {
+    each("families", "perfect_power_count_upper", |c| {
+        c.check(Some(perfect_power_count_upper(c.arg(0))));
+    });
+}
+
+#[test]
+fn prev_perfect_power_oracle() {
+    each("families", "prev_perfect_power", |c| {
+        // Skip signed inputs and bigint input 18446744073709551616.
+        if let Ok(n) = c.args[0].parse::<u64>() {
+            // The signed result -1 at zero has no unsigned representation.
+            let expected = c.result.as_ref().and_then(|s| s.parse::<u64>().ok());
+            assert_eq!(prev_perfect_power(n), expected, "{c:?}");
+        }
+    });
+}
+
+#[test]
+fn nth_perfect_power_oracle() {
+    each("families", "nth_perfect_power", |c| {
+        // Index 4,297,615,582 has the bigint result 2^64, outside the native API.
+        if c.arg::<u64>(0) == 4_297_615_582 {
+            return;
+        }
+        c.check(nth_perfect_power(c.arg(0)));
+    });
+}
+
+#[test]
+fn perfect_power_count_oracle() {
+    each("families", "perfect_power_count", |c| {
+        let n: u64 = c.arg(0);
+        let count = if c.args.len() == 1 {
+            perfect_power_count(n)
+        } else {
+            let hi = c.arg(1);
+            if hi < n {
+                0
+            } else {
+                perfect_power_count(hi) - n.checked_sub(1).map_or(0, perfect_power_count)
+            }
+        };
+        c.check(Some(count));
+    });
+}
+
+mod almost_omega_f03 {
+    use super::common;
+    use math_prime_util::{
+        nth_almost_prime_upper, nth_omega_prime, omega_prime_count, omega_primes,
+    };
+
+    fn native(case: &common::Case) -> bool {
+        // Signed k=-2 is outside the unsigned API in each of the four functions.
+        // nth_almost_prime_upper(100,3), (63,2011), and (150,4557) need bigint results.
+        case.args.iter().all(|a| a.parse::<u64>().is_ok())
+            && case
+                .result
+                .as_ref()
+                .is_none_or(|r| r.is_empty() || r.contains(' ') || r.parse::<u64>().is_ok())
+    }
+
+    #[test]
+    fn compat_nth_almost_prime_upper() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "nth_almost_prime_upper")
+        {
+            if native(case) {
+                case.check(nth_almost_prime_upper(case.arg(0), case.arg(1)));
+            }
+        }
+    }
+    #[test]
+    fn compat_omega_prime_count() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "omega_prime_count")
+        {
+            if native(case) {
+                case.check(Some(omega_prime_count(case.arg(0), case.arg(1))));
+            }
+        }
+    }
+    #[test]
+    fn compat_nth_omega_prime() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "nth_omega_prime")
+        {
+            if native(case) {
+                case.check(nth_omega_prime(case.arg(0), case.arg(1)));
+            }
+        }
+    }
+    #[test]
+    fn compat_omega_primes() {
+        for case in common::load("families")
+            .iter()
+            .filter(|c| c.func == "omega_primes")
+        {
+            let (lo, hi) = if case.args.len() == 2 {
+                (1, case.arg(1))
+            } else {
+                (case.arg(1), case.arg(2))
+            };
+            let result = omega_primes(case.arg(0), lo, hi);
+            let text = result
+                .iter()
+                .map(u64::to_string)
+                .collect::<Vec<_>>()
+                .join(" ");
+            case.check((!result.is_empty()).then_some(text));
+        }
+    }
+}

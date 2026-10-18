@@ -2,10 +2,11 @@
 //! Benchmarks for the factor family.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    cheb_factor, divisors, factor, factor_exp, fermat_factor, holf_factor, is_almost_prime,
-    is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_quasi_carmichael, is_semiprime,
-    is_square_free, lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor,
-    prime_bigomega, prime_omega, prime_signature, squfof_factor, trial_factor,
+    cheb_factor, divisors, ecm_factor, factor, factor_exp, factor_u128, fermat_factor, holf_factor,
+    is_almost_prime, is_carmichael, is_cyclic, is_omega_prime, is_perfect_number, is_practical,
+    is_prime_u128, is_quasi_carmichael, is_rough, is_semiprime, is_smooth, is_square_free,
+    lehman_factor, pbrent_factor, pminus1_factor, pplus1_factor, prho_factor, prime_bigomega,
+    prime_omega, prime_signature, smooth_count, squfof_factor, trial_factor,
 };
 
 fn bench_factor(c: &mut Criterion) {
@@ -49,6 +50,9 @@ fn bench_factor(c: &mut Criterion) {
             b.iter(|| pplus1_factor(black_box(n), None));
         });
     }
+    c.bench_function("ecm_factor", |b| {
+        b.iter(|| ecm_factor(black_box(1_000_036_000_099), None, None, None));
+    });
     c.bench_function("cheb_factor", |b| {
         b.iter(|| cheb_factor(black_box(1_000_036_000_099), 0, 0));
     });
@@ -60,6 +64,18 @@ fn bench_factor(c: &mut Criterion) {
     });
     c.bench_function("prime_signature", |b| {
         b.iter(|| prime_signature(black_box(600_851_475_143)));
+    });
+    c.bench_function("is_practical", |b| {
+        b.iter(|| is_practical(black_box(720_720)));
+    });
+    c.bench_function("is_smooth", |b| {
+        b.iter(|| is_smooth(black_box(614_889_782_588_491_410), 100));
+    });
+    c.bench_function("is_rough", |b| {
+        b.iter(|| is_rough(black_box(1_000_003 * 1_000_033), 10_000));
+    });
+    c.bench_function("smooth_count", |b| {
+        b.iter(|| smooth_count(black_box(10_000_000), 400));
     });
     let mut group = c.benchmark_group("factor");
     for n in [30_u64, 1_000_003 * 1_000_033, u64::MAX] {
@@ -78,6 +94,14 @@ fn bench_factor(c: &mut Criterion) {
     }
     group.finish();
 }
+fn bench_wide(c: &mut Criterion) {
+    let n = 595_424_139_679_831_880_741u128;
+    c.bench_function("factor_u128", |b| b.iter(|| factor_u128(black_box(n))));
+    c.bench_function("is_prime_u128", |b| {
+        b.iter(|| is_prime_u128(black_box((1u128 << 127) - 1)));
+    });
+}
+
 fn bench_native(c: &mut Criterion) {
     let mut group = c.benchmark_group("factor");
     for n in [360, 600_851_475_143, 1_000_036_000_099, u64::MAX] {
@@ -96,5 +120,5 @@ fn bench_native(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group!(benches, bench_factor, bench_native);
+criterion_group!(benches, bench_factor, bench_native, bench_wide);
 criterion_main!(benches);

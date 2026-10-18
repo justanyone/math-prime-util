@@ -58,6 +58,13 @@ fn bench_random(c: &mut Criterion) {
     c.bench_function("shuffle/1000", |b| {
         b.iter(|| shuffle(black_box(&mut items)));
     });
+    let data: Vec<u64> = (0..1000).collect();
+    c.bench_function("random/vecsample", |b| {
+        b.iter(|| vecsample(black_box(10), black_box(&data)));
+    });
+    c.bench_function("random/miller_rabin_random", |b| {
+        b.iter(|| miller_rabin_random(black_box(1_000_003_u128), black_box(8_u64)));
+    });
 }
 criterion_group!(benches, bench_random);
 criterion_main!(benches);

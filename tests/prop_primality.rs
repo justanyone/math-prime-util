@@ -1,40 +1,47 @@
-//! Algebraic checks for the native pseudoprime tests.
+//! Algebraic laws for native proving.
 use math_prime_util::*;
 use proptest::prelude::*;
 proptest! {
     #[test]
-    fn primality_matches_trial_division(n in 0_u64..100_000) {
-        let prime = n >= 2 && (2..=sqrtint(n)).all(|d| n % d != 0);
-        prop_assert_eq!(is_prob_prime(n), 2 * u8::from(prime));
-        prop_assert_eq!(is_bpsw_prime(n), 2 * u8::from(prime));
+    fn certificates_agree(n in any::<u64>()) {
+        let (status, cert) = is_provable_prime_with_cert(n);
+        prop_assert_eq!(status, is_prime(n));
+        prop_assert_eq!(verify_prime(&cert), Ok(status == 2));
+        prop_assert_eq!(prime_certificate(n), cert);
     }
     #[test]
-    fn strong_implies_fermat(n in 3_u64..1_000_000, a in 2_u64..1000) {
-        if gcd(n,a) == 1 && is_strong_pseudoprime(n,a) {
-            prop_assert!(is_pseudoprime(n,a));
-        }
-    }
+    fn aks_agrees(n in 0u64..10_000) { prop_assert_eq!(is_aks_prime(n), is_prime(n) == 2); }
     #[test]
-    fn extra_strong_implies_almost(n in 0_u64..1_000_000) {
-        if is_extra_strong_lucas_pseudoprime(n) {
-            prop_assert!(is_almost_extra_strong_lucas_pseudoprime(n,1));
-        }
+    fn squares_are_composite(n in 2u64..=u64::from(u32::MAX)) {
+        prop_assert!(!is_aks_prime(n*n));
+        prop_assert_eq!(is_provable_prime(n*n), 0);
     }
 }
+proptest! {
+    #[test]
+    fn products_have_no_certificate(a in 2_u64..=u64::from(u32::MAX), b in 2_u64..=u64::from(u32::MAX)) {
+        let n = a * b;
+        prop_assert_eq!(is_provable_prime(n), 0);
+        prop_assert!(prime_certificate(n).is_empty());
+        prop_assert_eq!(is_provable_prime_with_cert(n), (0, String::new()));
+    }
+}
+
 #[test]
-fn repeat_and_concurrent_calls() {
-    let handles: Vec<_> = (0..4)
+fn repeated_concurrent_calls() {
+    let threads: Vec<_> = (0..4)
         .map(|_| {
             std::thread::spawn(|| {
-                for _ in 0..10 {
-                    assert_eq!(is_prob_prime(u64::MAX - 58), 2);
-                    assert_eq!(is_prob_prime(u64::MAX), 0);
+                for n in [0, 2, 97, 101, 121, u64::MAX - 58] {
+                    let first = is_provable_prime_with_cert(n);
+                    assert_eq!(first, is_provable_prime_with_cert(n));
+                    assert_eq!(verify_prime(&first.1), Ok(first.0 == 2));
                 }
             })
         })
         .collect();
-    for handle in handles {
-        handle.join().unwrap();
+    for thread in threads {
+        thread.join().unwrap();
     }
 }
 
@@ -117,4 +124,42 @@ proptest! {
 #[should_panic(expected = "restriction must be between 0 and 3")]
 fn perrin_bad_restriction() {
     let _ = is_perrin_pseudoprime(271_441, 4);
+}
+
+proptest! {
+    #[test]
+    fn verify_prime_native_fallback(n in any::<u64>()) {
+        // MPU verify_cert checks an unchained native N with its Small test.
+        let cert = format!("[MPU - Primality Certificate]\nProof for:\nN {n}\n");
+        prop_assert_eq!(verify_prime(&cert), Ok(is_prime(n) != 0));
+    }
+
+    #[test]
+    fn verify_prime_whitespace(n in 2_u64..1_000_000) {
+        let cert = format!("[MPU - Primality Certificate]\r\n# comment\r\nProof for:\r\nn\t{n}\r\nType Small\r\nn\t{n}\r\n");
+        prop_assert_eq!(verify_prime(&cert), Ok(is_prime(n) != 0));
+    }
+}
+
+#[test]
+fn verify_prime_concurrent_validation_is_independent() {
+    let cert =
+        "[MPU - Primality Certificate]\nProof for:\nN 13\nType BLS15\nN 13\nQ 7\nLP -1\nLQ 2\n";
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(move || {
+                for _ in 0..8 {
+                    assert_eq!(verify_prime(cert), Ok(true));
+                    assert!(verify_prime(&cert.replace("Q 7", "Q bad")).is_err());
+                    assert_eq!(verify_prime(cert), Ok(true));
+                    // Repeated blocks are independent, as in MPU's parts map.
+                    let repeated = format!("{cert}Type Small\nN 13\nType Small\nN 13\n");
+                    assert_eq!(verify_prime(&repeated), Ok(true));
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
 }

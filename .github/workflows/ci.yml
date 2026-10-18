@@ -25,10 +25,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
+        os: [ubuntu-latest]
+        rust: [stable, "1.85"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with: { toolchain: "${{ matrix.rust }}" }
+      - uses: taiki-e/install-action@nextest
+      - run: cargo nextest run --all-features
+      - run: cargo test --doc --all-features
+  # Other platforms and toolchains: only on pushes to main and dev-* (not on pull requests), to save runner time.
+  test-extra:
+    if: github.event_name == 'push'
+    name: test-extra (${{ matrix.os }}, ${{ matrix.rust }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04-arm, macos-latest, windows-latest]
         rust: [stable]
         include:
-          - { os: ubuntu-latest, rust: "1.85" }
           - { os: ubuntu-latest, rust: beta }
           - { os: ubuntu-latest, rust: nightly }
     steps:

@@ -5,8 +5,9 @@ A Rust port of Perl's [Math::Prime::Util](https://metacpan.org/pod/Math::Prime::
 number-theory toolbox around them (totients, Möbius, modular roots and logs,
 Lucas sequences, continued fractions, combinatorics, random primes, and more).
 
-Status: **pre-release, under construction.** See [PLAN.md](PLAN.md) for the
-phases and [STATUS.md](STATUS.md) for the per-function checklist (428 names).
+Status: **version 1.0.0.** All 428 exported names of MPU 0.75 are ported, except
+`is_higgs_prime`, which does not exist in 0.75. See [STATUS.md](STATUS.md) for the
+per-function checklist and [PLAN.md](PLAN.md) for the phases. Ongoing work lands on `dev-002`.
 
 ## Goals
 

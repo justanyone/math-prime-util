@@ -161,7 +161,11 @@ fn inverse_r(lx: Ld) -> Ld {
 
 /// MPU 0.75 `real.c`, `RiemannR(x, 1e-12)`, for `x >= 1`.
 fn riemann_r(x: Ld) -> Ld {
-    let eps = Ld::from_f64(1e-12);
+    riemann_r_with_precision(x, Ld::from_f64(1e-12))
+}
+
+/// Port of MPU 0.75 `real.c`, `RiemannR`, for `x >= 1`.
+pub(super) fn riemann_r_with_precision(x: Ld, eps: Ld) -> Ld {
     let mut sum = Neumaier::new();
     if x > Ld::from_f64(1e19) {
         // R(x) = sum of moebius(k) / k * li(x^(1/k)).
@@ -219,6 +223,12 @@ fn zeta_minus_one(x: u64) -> Ld {
         }
     }
     s
+}
+
+/// Port of MPU 0.75 `real.c`, `Li`: round the NV argument and result.
+/// Perl's NV is binary64 in the oracle build; `_Li` uses long double.
+pub(super) fn li_nv(x: Ld) -> Ld {
+    li(x.round_binary64()).round_binary64()
 }
 
 /// MPU 0.75 `real.c`, `_Li(x)`, for `x > 1`: Ramanujan's series up to

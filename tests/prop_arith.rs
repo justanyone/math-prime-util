@@ -270,6 +270,12 @@ proptest! {
     }
 }
 
+#[test]
+fn tau_prime_does_not_require_the_prime_power_term() {
+    // From the q-series recurrence for Delta, independent of the class-number path.
+    assert_eq!(ramanujan_tau(3011), Some(-6_602_349_165_399_272_388));
+}
+
 proptest! {
     #[test]
     fn crt_shared_moduli(x in any::<u64>(), m in 1_u64..1000, n in 1_u64..1000) {
@@ -504,6 +510,21 @@ fn residue_ring_repeated_parallel_inputs() {
 
 proptest! {
     #[test]
+    fn divisor_power_sums_match_enumeration(n in 0_u64..300, k in 0_u32..5) {
+        let expected = (1..=n).filter(|d| n % d == 0).map(|d| d.pow(k)).sum();
+        prop_assert_eq!(divisor_sum(n, u64::from(k)), Some(expected));
+    }
+
+    #[test]
+    fn divisor_sums_are_multiplicative(a in 1_u64..100, b in 1_u64..100, k in 0_u64..4) {
+        if gcd(a, b) == 1 {
+            prop_assert_eq!(divisor_sum(a * b, k), Some(divisor_sum(a, k).unwrap() * divisor_sum(b, k).unwrap()));
+        }
+    }
+}
+
+proptest! {
+    #[test]
     fn valuation_is_exact_power(n in 1_u64..50_000, k in 2_u64..300) {
         let v = valuation(n, k).unwrap();
         let mut rest = n;
@@ -551,6 +572,41 @@ proptest! {
             );
         }
     }
+}
+
+#[test]
+fn divisor_sum_native_boundaries_and_prime_powers() {
+    assert_eq!(divisor_sum(1, u64::MAX), Some(1));
+    assert_eq!(divisor_sum(2, 63), Some((1_u64 << 63) + 1));
+    assert_eq!(divisor_sum(2, 64), None);
+    assert_eq!(divisor_sum(2, 128), None);
+    assert_eq!(divisor_sum(4, 127), None);
+    assert_eq!(divisor_sum(6, 63), None);
+    assert_eq!(divisor_sum(u64::MAX, 2), None);
+    assert_eq!(aliquot_sum(3_u64 << 62), None);
+    assert_eq!(abundance(3_u64 << 62), None);
+    assert_eq!(divisor_sum(1_u64 << 63, 0), Some(64));
+    assert_eq!(divisor_sum(1_u64 << 63, 1), Some(u64::MAX));
+    assert_eq!(aliquot_sum(1_u64 << 63), Some((1_u64 << 63) - 1));
+    assert_eq!(aliquot_sum(18_446_744_073_709_551_557), Some(1));
+    // Sigma exceeds u64, but the proper divisor sum still fits.
+    assert_eq!(aliquot_sum(5_u64 << 61), Some(16_140_901_064_495_857_658));
+}
+
+#[test]
+fn divisor_sums_have_no_shared_call_state() {
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(divisor_sum(12, 2), Some(210));
+                    assert_eq!(aliquot_sum(27), Some(13));
+                    assert_eq!(abundance(28), Some(0));
+                    assert_eq!(ramanujan_tau(49), Some(-1_696_965_207));
+                }
+            });
+        }
+    });
 }
 
 #[test]
@@ -603,4 +659,100 @@ fn valuation_and_ramanujan_sum_concurrent() {
     for thread in threads {
         thread.join().unwrap();
     }
+}
+
+proptest! {
+    #[test]
+    fn totient_range_sieves(lo in 0_u64..10_000, width in 0_u64..300) {
+        let hi = lo + width;
+        prop_assert_eq!(euler_phi_range(lo, hi), (lo..=hi).map(euler_phi).collect::<Vec<_>>());
+        prop_assert_eq!(moebius_range(lo, hi), (lo..=hi).map(moebius).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn jordan_divisor_identity(n in 1_u64..500, k in 1_u32..5) {
+        let sum: u64 = (1..=n).filter(|d| n % d == 0)
+            .map(|d| jordan_totient(u64::from(k), d).unwrap()).sum();
+        prop_assert_eq!(sum, n.pow(k));
+    }
+
+    #[test]
+    fn lambda_annihilates_units(a in 1_u64..1000, n in 2_u64..1000) {
+        if gcd(a, n) == 1 {
+            prop_assert_eq!(powmod(a, carmichael_lambda(n), n), Some(1));
+        }
+    }
+}
+
+#[test]
+fn totient_native_boundaries() {
+    assert_eq!(jordan_totient(64, 2), Some(u64::MAX));
+    assert_eq!(jordan_totient(65, 2), None);
+    assert_eq!(jordan_totient(u64::MAX, 3), None);
+    assert_eq!(jordan_totient(64, 4), None);
+    assert_eq!(jordan_totient(2, u64::MAX), None);
+    assert_eq!(jordan_totient(0, 2), Some(0));
+    assert_eq!(jordan_totient(u64::MAX, 1), Some(1));
+    assert_eq!(jordan_totient(128, 3), None);
+    for n in 0..256 {
+        let ds: Vec<_> = (1..=n).filter(|d| n % d == 0).collect();
+        assert_eq!(ds.iter().map(|&d| euler_phi(d)).sum::<u64>(), n);
+        if n > 0 {
+            assert_eq!(
+                ds.iter().map(|&d| i64::from(moebius(d))).sum::<i64>(),
+                i64::from(n == 1)
+            );
+        }
+    }
+    for e in 3..64 {
+        assert_eq!(carmichael_lambda(1 << e), 1 << (e - 2));
+    }
+    for (lo, hi) in [
+        (0, 16),
+        (0, 17),
+        (1, 262_149),
+        (100_000_000_000_000, 100_000_000_000_100),
+        (33_554_433, 33_554_443),
+        (10_000, 10_300),
+    ] {
+        assert_eq!(
+            euler_phi_range(lo, hi),
+            (lo..=hi).map(euler_phi).collect::<Vec<_>>()
+        );
+        assert_eq!(
+            moebius_range(lo, hi),
+            (lo..=hi).map(moebius).collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
+fn totient_calls_are_independent() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(
+                        euler_phi_range(0, 1000),
+                        (0..=1000).map(euler_phi).collect::<Vec<_>>()
+                    );
+                    assert_eq!(
+                        moebius_range(0, 1000),
+                        (0..=1000).map(moebius).collect::<Vec<_>>()
+                    );
+                    assert_eq!(jordan_totient(3, 12), Some(1456));
+                    assert_eq!(carmichael_lambda(360), 12);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+#[test]
+#[should_panic(expected = "invalid or oversized range")]
+fn oversized_totient_range() {
+    euler_phi_range(0, u64::MAX);
 }

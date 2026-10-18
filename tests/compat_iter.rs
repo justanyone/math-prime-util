@@ -118,14 +118,11 @@ fn check(name: &str) {
                         _ => panic!("unknown option"),
                     }
                 }
-                tuples(
-                    if name == "forpart" {
-                        partitions_of(n, options)
-                    } else {
-                        compositions_of(n, options)
-                    },
-                    "+",
-                )
+                if name == "forpart" {
+                    tuples(partitions_of(n, options), "+")
+                } else {
+                    tuples(compositions_of(n, options), "+")
+                }
             }
             "forcomb" => tuples(
                 combinations_of(c.arg(0), c.args.get(1).map(|s| s.parse().unwrap())),

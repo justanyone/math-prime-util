@@ -19,6 +19,15 @@ pub use foroddcomposites::{foroddcomposites, odd_composites_in};
 mod forsemiprimes;
 pub use forsemiprimes::{SemiprimesIn, forsemiprimes, semiprimes_in};
 
+mod fordivisors;
+pub use fordivisors::{DivisorsOf, divisors_of, fordivisors};
+mod forpart;
+pub use forpart::{PartitionOptions, PartitionsOf, forpart, partitions_of};
+mod forcomp;
+pub use forcomp::{CompositionsOf, compositions_of, forcomp};
+mod forcomb;
+pub use forcomb::{CombinationsOf, combinations_of, forcomb};
+
 pub use crate::sieve::{PrimesIn, primes_in};
 
 fn run<I: Iterator, B>(mut iter: I, f: impl FnMut(I::Item) -> ControlFlow<B>) -> ControlFlow<B> {

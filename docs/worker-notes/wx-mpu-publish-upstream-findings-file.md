@@ -25,3 +25,4 @@ Final checks still wait on existing long iterator tests. The report remains mark
 About five minutes remain in the session. Focused checks passed; full checks are still on the existing forsquarefreeint iterator test. Preserve the partial report if the gate exceeds the budget.
 No new test failure is reported. Both full checks are still active; the gate has not printed green.
 The existing forsquarefreeint full-suite test remains active. Keep the changes limited to documentation; do not change iterator code in this task.
+Full checks remain unfinished within the session budget. Focused tests passed. Missing draft and unfinished full validation are recorded as remaining work.

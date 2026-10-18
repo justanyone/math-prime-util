@@ -128,7 +128,7 @@ fn brent(n: &BigUint, mut rounds: usize) -> Option<BigUint> {
             let batch = left.min(160);
             left -= batch;
             rounds -= batch;
-            saved = x.clone();
+            saved.clone_from(&x);
             let mut product = one();
             for _ in 0..batch {
                 x = (&x * &x + a) % n;

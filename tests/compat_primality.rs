@@ -220,13 +220,32 @@ mod generic {
                 if case.func != function || (family == "sieve" && function != "next_prime") {
                     continue;
                 }
-                // Signed inputs and values above u128 are not supported by these backends.
+                // Signed rows (modular: powmod with a negative base or exponent) are
+                // outside these unsigned backends. A row above u128 (modular: the
+                // 41-digit powmod) is replayed through BigUint when `bigint` is on.
                 let Ok(args) = case
                     .args
                     .iter()
                     .map(|s| s.parse::<u128>())
                     .collect::<Result<Vec<_>, _>>()
                 else {
+                    #[cfg(feature = "bigint")]
+                    {
+                        if let Ok(big_args) = case
+                            .args
+                            .iter()
+                            .map(|s| s.parse::<num_bigint::BigUint>())
+                            .collect::<Result<Vec<_>, _>>()
+                        {
+                            assert_eq!(
+                                evaluate(&big_args, function),
+                                case.result,
+                                "BigUint {family}:{}",
+                                case.line
+                            );
+                            count += 1;
+                        }
+                    }
                     continue;
                 };
                 let result = evaluate(&args, function);

@@ -6,3 +6,4 @@ Keep all edits in this worktree. The launcher commits and pushes.
 
 The draft path is absent. Local skip comments identify precision and API limits; no upstream defect is assumed. Next: run the three area checks.
 Started offline compatibility and property tests for families, rational, and combinat. Reviewed their skip conditions; these do not establish upstream defects.
+Reviewed rational C overflow and Farey guards. Existing property tests cover input validation, repeat calls, and threads; this docs change adds no launch or state path.

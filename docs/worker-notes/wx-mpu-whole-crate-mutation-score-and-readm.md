@@ -80,3 +80,4 @@ The iterator oracle test forsquarefreeint has exceeded 60 seconds. Validation re
 About five minutes remain in the session. The iterator oracle test is still running. I will preserve the partial mutation inventory and report any unfinished validation.
 Validation is still waiting on the iterator oracle test. No source changes or new tests were needed for this documentation-only partial result.
 Stopped the separate tools/test.sh full-suite session to avoid duplicate test work. It did not complete. The gate remains active and is still on forsquarefreeint.
+The separate full-suite session exited 130. The gate remains the only active validation session. Format, Clippy, MSRV, and 14 focused tests passed; no green gate result yet.

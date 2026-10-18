@@ -47,7 +47,7 @@ Fixture rows are nonblank lines that do not start with `#` after whitespace.
 The count includes all `tests/fixtures/*.tsv` files. No fixture was changed.
 The inventory command was `cargo mutants --all-features --list --json`.
 It used `CARGO_NET_OFFLINE=true` and `nice -n 19`.
-The source folders `bigint` and `config` are present; `bigint` has no generated candidates.
+The source folder `bigint` has no generated candidates.
 The crate root also has no generated candidates. All other source folders are in the table.
 
 The arith run used this command from the worktree root:
@@ -81,3 +81,22 @@ About five minutes remain in the session. The iterator oracle test is still runn
 Validation is still waiting on the iterator oracle test. No source changes or new tests were needed for this documentation-only partial result.
 Stopped the separate tools/test.sh full-suite session to avoid duplicate test work. It did not complete. The gate remains active and is still on forsquarefreeint.
 The separate full-suite session exited 130. The gate remains the only active validation session. Format, Clippy, MSRV, and 14 focused tests passed; no green gate result yet.
+
+## Final validation and remaining work
+
+- `tools/test.sh --test mutants_rest`: passed, 14 tests.
+- `tools/test.sh`: interrupted (exit 130); no full-suite result.
+- `tools/gate.sh`: passed (exit 0), including format, Clippy, Rust 1.85,
+  the full test suite, and documentation. It printed `== gate: green`.
+  The gate completed before the attempted stop signal.
+- Coverage was not measured locally. The README number is the CI threshold.
+- Remote host runs were not attempted because this task forbids network access.
+- All module mutation runs and survivor reviews remain unfinished.
+  The arith baseline attempt produced no completed mutant outcomes.
+  The 21-module table is an inventory, not evidence of tested mutants.
+- No score is claimed. Finish the module runs, review each survivor, then update
+  README with the measured score and caught, missed, timeout, and unviable totals.
+
+Stopped before the session deadline. The README section and inventory are saved.
+All sessions started for mutation and validation have been stopped or completed.
+Final correction: the gate completed successfully; its log ends with `== gate: green`. Mutation runs and survivor triage remain unfinished.

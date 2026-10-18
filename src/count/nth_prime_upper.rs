@@ -1,4 +1,4 @@
-use super::nth_prime;
+use super::{nth_prime, prime_count};
 
 /// Largest prime that fits in 64 bits, MPU `constants.h` `MPU_MAX_PRIME`.
 pub(super) const MAX_PRIME: u64 = 18_446_744_073_709_551_557;
@@ -8,7 +8,7 @@ pub(super) const MAX_PRIME_IDX: u64 = 425_656_284_035_217_743;
 /// Return an upper bound on the `n`th prime, with the first prime as index 1.
 ///
 /// Port of MPU 0.75 `prime_counts.c`, `nth_prime_upper`. For `n` below
-/// 15360 this port returns the exact `n`th prime, which is a valid bound.
+/// 15360 this searches the inverse prime-count lower bound.
 /// For larger `n` it uses the Axler and Dusart polynomial bounds with the
 /// same coefficient table as MPU, evaluated in `f64` instead of `long double`.
 ///
@@ -28,8 +28,11 @@ pub fn nth_prime_upper(n: u64) -> Option<u64> {
     if n == MAX_PRIME_IDX {
         return Some(MAX_PRIME);
     }
-    if n < 15360 {
+    if n < 306 {
         return nth_prime(n);
+    }
+    if n < 15_360 {
+        return Some(search_count_bound(n, count_lower));
     }
     // MPU keeps the bound in long double; f64 keeps the same polynomial.
     #[allow(clippy::cast_precision_loss)]
@@ -47,6 +50,39 @@ pub fn nth_prime_upper(n: u64) -> Option<u64> {
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let bound = upper.floor() as u64;
     Some(bound)
+}
+
+/// MPU 0.75 `prime_counts.c::simple_nth_limits` and the binary searches
+/// in `nth_prime_lower` and `nth_prime_upper`.
+#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub(super) fn search_count_bound(n: u64, count: fn(u64) -> u64) -> u64 {
+    let x = n as f64;
+    let log = x.ln();
+    let loglog = log.ln();
+    let a = if n < 228 { 0.6483 } else if n < 948 { 0.8032 }
+        else if n < 2195 { 0.8800 } else if n < 39_017 { 0.9019 } else { 0.9484 };
+    let mut lo = (x * (log + loglog - 1.0 + (loglog - 2.10) / log)) as u64;
+    let mut hi = (x * (log + loglog - a)) as u64;
+    if hi < lo { hi = MAX_PRIME; }
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if count(mid) < n { lo = mid + 1; } else { hi = mid; }
+    }
+    lo
+}
+
+/// MPU 0.75 `prime_counts.c::prime_count_lower`, restricted to the
+/// range used by `nth_prime_upper` (below 180 thousand).
+#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn count_lower(n: u64) -> u64 {
+    if n < 33_000 { return prime_count(n); }
+    let a = if n < 69_720 { 905.0 } else if n < 70_120 { 961.0 }
+        else if n < 88_800 { 918.2 } else { 887.7 };
+    let x = n as f64;
+    let log = x.ln();
+    let log2 = log * log;
+    (x / (log - 1.0 - 1.0 / log - 2.975_666 / log2
+        - 13.024_334 / (log * log2) + a / (log2 * log2))).ceil() as u64
 }
 
 /// Return the `(c, d)` pair of MPU `nth_prime_upper` for the range of `n`.

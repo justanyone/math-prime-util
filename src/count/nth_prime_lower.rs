@@ -1,11 +1,11 @@
-use super::nth_prime;
+use super::{nth_prime, prime_count};
 use super::nth_prime_upper::{MAX_PRIME, MAX_PRIME_IDX};
 
 /// Return a lower bound on the `n`th prime, with the first prime as index 1.
 ///
 /// Port of MPU 0.75 `prime_counts.c`, `nth_prime_lower`. For `n` below
-/// 2,000,000 this port returns the exact `n`th prime, which is a valid
-/// bound. For larger `n` it uses the Axler 2017 Corollary 1.4 bound, with
+/// 2,000,000 this searches the inverse prime-count upper bound.
+/// For larger `n` it uses the Axler 2017 Corollary 1.4 bound, with
 /// the same constants as MPU, evaluated in `f64`.
 ///
 /// Returns `None` for `n = 0`, where MPU returns `undef`, and for `n`
@@ -24,8 +24,11 @@ pub fn nth_prime_lower(n: u64) -> Option<u64> {
     if n == MAX_PRIME_IDX {
         return Some(MAX_PRIME);
     }
-    if n < 2_000_000 {
+    if n < 306 {
         return nth_prime(n);
+    }
+    if n < 2_000_000 {
+        return Some(super::nth_prime_upper::search_count_bound(n, count_upper));
     }
     // MPU keeps the bound in double; the constant changes above 56,000,000.
     let b1 = if n < 56_000_000 { 11.2 } else { 11.508_000_000_02 };
@@ -39,6 +42,26 @@ pub fn nth_prime_lower(n: u64) -> Option<u64> {
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let plower = lower.ceil() as u64;
     Some(plower.min(MAX_PRIME))
+}
+
+/// MPU 0.75 `prime_counts.c::prime_count_upper`, restricted to the
+/// range used by `nth_prime_lower` (below 40 million).
+#[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn count_upper(n: u64) -> u64 {
+    if n < 33_000 {
+        return prime_count(n);
+    }
+    // The C table stores single-precision coefficients before promoting them.
+    let thresholds = [
+        (59_000, 2.48_f32), (355_991, 2.54), (3_550_000, 2.51),
+        (3_560_000, 2.49), (5_000_000, 2.48), (8_000_000, 2.47),
+        (13_000_000, 2.46), (18_000_000, 2.45), (31_000_000, 2.44),
+        (41_000_000, 2.43),
+    ];
+    let a = thresholds.iter().find(|&&(limit, _)| n < limit).unwrap().1;
+    let x = n as f64;
+    let log = x.ln();
+    (x / log * (1.0 + 1.0 / log + f64::from(a) / (log * log))).floor() as u64
 }
 
 #[cfg(test)]

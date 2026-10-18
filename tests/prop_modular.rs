@@ -109,10 +109,7 @@ fn cornacchia_rejects_large_prime_without_scanning() {
     std::thread::spawn(move || {
         let _ = tx.send(cornacchia(1, (1_u64 << 61) - 1));
     });
-    assert_eq!(
-        rx.recv_timeout(std::time::Duration::from_secs(2)),
-        Ok(None)
-    );
+    assert_eq!(rx.recv_timeout(std::time::Duration::from_secs(2)), Ok(None));
 }
 
 /// `p = 134217757 * 134217869`. The plain scan returns

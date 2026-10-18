@@ -370,7 +370,6 @@ mod tests {
                 }
             }
         }
-        println!("GOLD {h}");
-        assert_eq!(h, 0);
+        assert_eq!(h, 18_061_944_565_925_939_231);
     }
 }

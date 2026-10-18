@@ -183,7 +183,9 @@ impl Int for BigUint {
         if let Ok(n) = u128::try_from(self) {
             return n.is_prime();
         }
-        for p in [2_u8, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53] {
+        for p in [
+            2_u8, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
+        ] {
             if self % p == zero() {
                 return 0;
             }
@@ -204,10 +206,18 @@ impl Int for BigUint {
         let mut factors = Vec::new();
         while let Some(mut n) = pending.pop() {
             if let Ok(native) = u128::try_from(&n) {
-                factors.extend(native.factor().map_err(Self::from)?.into_iter().map(Self::from));
+                factors.extend(
+                    native
+                        .factor()
+                        .map_err(Self::from)?
+                        .into_iter()
+                        .map(Self::from),
+                );
                 continue;
             }
-            for p in [2_u8, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53] {
+            for p in [
+                2_u8, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
+            ] {
                 while &n % p == zero() {
                     factors.push(Self::from(p));
                     n /= p;
@@ -323,11 +333,17 @@ mod tests {
     fn arbitrary_precision_arithmetic_and_factors() {
         let p = mersenne(521);
         assert_eq!(p.factor(), Ok(vec![p.clone()]));
-        assert_eq!((&p * 6_u8).factor(), Ok(vec![BigUint::from(2_u8), BigUint::from(3_u8), p.clone()]));
+        assert_eq!(
+            (&p * 6_u8).factor(),
+            Ok(vec![BigUint::from(2_u8), BigUint::from(3_u8), p.clone()])
+        );
         let q = mersenne(127);
         assert_eq!((&q * &q).factor(), Ok(vec![q.clone(), q.clone()]));
         assert_eq!((&q * 101_u8).factor(), Ok(vec![BigUint::from(101_u8), q]));
-        assert_eq!((one() << 140_usize).factor(), Ok(vec![BigUint::from(2_u8); 140]));
+        assert_eq!(
+            (one() << 140_usize).factor(),
+            Ok(vec![BigUint::from(2_u8); 140])
+        );
         assert_eq!(zero().factor(), Ok(vec![zero()]));
         assert_eq!(one().factor(), Ok(vec![]));
         assert_eq!(p.powmod(&zero(), &one()), Some(zero()));
@@ -351,13 +367,22 @@ mod tests {
     #[test]
     fn next_prime_crosses_native_ranges() {
         for n in [0_u8, 1, 2, 3, 4, 5, 6, 7, 14] {
-            assert_eq!(BigUint::from(n).next_prime(), u64::from(n).next_prime().map(BigUint::from));
+            assert_eq!(
+                BigUint::from(n).next_prime(),
+                u64::from(n).next_prime().map(BigUint::from)
+            );
         }
         let boundary = BigUint::from(u128::MAX);
         // First prime after 2^128 is 2^128 + 51.
         assert_eq!(boundary.next_prime(), Some((one() << 128_usize) + 51_u8));
-        assert_eq!((boundary + 1_u8).next_prime(), Some((one() << 128_usize) + 51_u8));
-        assert_eq!(BigUint::from(u64::MAX).next_prime(), u128::from(u64::MAX).next_prime().map(BigUint::from));
+        assert_eq!(
+            (boundary + 1_u8).next_prime(),
+            Some((one() << 128_usize) + 51_u8)
+        );
+        assert_eq!(
+            BigUint::from(u64::MAX).next_prime(),
+            u128::from(u64::MAX).next_prime().map(BigUint::from)
+        );
     }
 
     proptest! {

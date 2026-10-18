@@ -232,8 +232,17 @@ mod generic {
                 let result = evaluate(&args, function);
                 #[cfg(feature = "bigint")]
                 {
-                    let big_args = args.iter().copied().map(num_bigint::BigUint::from).collect::<Vec<_>>();
-                    assert_eq!(evaluate(&big_args, function), result, "BigUint {family}:{}", case.line);
+                    let big_args = args
+                        .iter()
+                        .copied()
+                        .map(num_bigint::BigUint::from)
+                        .collect::<Vec<_>>();
+                    assert_eq!(
+                        evaluate(&big_args, function),
+                        result,
+                        "BigUint {family}:{}",
+                        case.line
+                    );
                 }
                 // The sieve oracle uses the bounded native next_prime API.
                 if function == "next_prime" && case.result.is_none() {

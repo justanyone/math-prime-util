@@ -18,3 +18,4 @@ Kept explicit named inputs and removed large unnamed API row groups. No Perl ora
 Validated report links and each retained table value against the committed fixtures. Corrected iterator and random test names. The gate is still running.
 Review complete for documentation scope. No state, concurrency, validation, or duplicate-launch code was changed. Existing area tests cover repeat calls and threads.
 Added the exact malformed random and iterator inputs from their comments. All six focused targets passed offline; the full gate is waiting on count fixtures.
+The full gate passed the long count fixture and has reached iterator tests. The required final tools/test.sh run is also running offline.

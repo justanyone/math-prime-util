@@ -91,6 +91,18 @@ harness = false
 [[bench]]
 name = "vec"
 harness = false
+[[bench]]
+name = "bits_pos"
+harness = false
+
+[[bench]]
+name = "iter"
+harness = false
+
+[[bench]]
+name = "misc_gap"
+harness = false
+
 
 # Tests sieve and count over large ranges: unoptimised builds make the gate take tens of minutes. Overflow checks and debug assertions stay on.
 [profile.dev]

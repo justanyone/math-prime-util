@@ -285,14 +285,19 @@ impl Int for BigUint {
                 return Some(Self::from(p));
             }
         }
-        let mut n = self + 1_u8;
-        if !n.bit(0) {
-            n += 1_u8;
+        const ADVANCE: [u8; 30] = [
+            1, 6, 5, 4, 3, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 6, 5,
+            4, 3, 2, 1, 2,
+        ];
+        let mut n = self.clone();
+        loop {
+            // The remainder is at most 29 on every supported architecture.
+            let residue = usize::try_from(&n % 30_u8).unwrap_or_default();
+            n += ADVANCE[residue];
+            if &n % 7_u8 != zero() && n.is_prime() != 0 {
+                return Some(n);
+            }
         }
-        while n.is_prime() == 0 {
-            n += 2_u8;
-        }
-        Some(n)
     }
 }
 

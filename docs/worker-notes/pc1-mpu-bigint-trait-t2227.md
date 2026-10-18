@@ -7,3 +7,4 @@ Implementing an optional num-bigint backend with native-range delegation, extra-
 Added the feature and BigUint implementation; next add native-agreement and >128-bit tests, then resolve local build availability.
 Focused test could not resolve num-bigint offline. A worktree-local fetch also failed because index.crates.io DNS is unavailable; no external files were changed.
 Added >128-bit primality/factoring and modular tests, property checks against native backends, and BigUint replay of existing fixtures. Formatting completed; tests and gate remain blocked by the unavailable num-bigint package.
+Final review: gate reached clippy after passing fmt, then stopped at dependency resolution. Required MSRV, test, docs, and coverage execution cannot run without num-bigint/num-integer in the local cache.

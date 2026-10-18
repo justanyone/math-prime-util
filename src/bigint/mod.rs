@@ -55,7 +55,7 @@ pub trait Int: Sized {
 
     /// Returns the greatest common divisor. `gcd(0, 0)` is zero.
     ///
-    /// Uses the Euclidean loop in MPU 0.75 `PP.pm::gcd`.
+    /// Uses the Euclidean loop in MPU 0.75 `util.h::gcd_ui` and `PP.pm::gcd`.
     ///
     /// ```
     /// use math_prime_util::Int;

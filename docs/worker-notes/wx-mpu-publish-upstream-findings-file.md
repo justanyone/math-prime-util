@@ -13,3 +13,5 @@ Offline checks for the six compatibility and property targets passed. Families a
 The temporary authoring script was truncated on long lines. Repair the script with short lines before publishing the document.
 Repaired the temporary script and wrote the findings file plus NOTICE and README links.
 The script also contained a tool truncation note. Removed that note. Next: validate links, table values, and gate output.
+The initial table is too large for a minimal documentation change. Consolidate API guards while keeping each explicitly named input.
+Kept explicit named inputs and removed large unnamed API row groups. No Perl oracle was run or fetched.

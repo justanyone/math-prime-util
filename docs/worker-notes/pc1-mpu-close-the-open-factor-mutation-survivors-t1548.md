@@ -10,3 +10,5 @@ Run focused factor tests and the required gate, recording remaining validation l
 - Added explicit C-budget assertions at 45, 46 and 64 bits, plus four consecutive retry attempts. Independent modular calculation corrected the real fallback expectation to factor 31.
 - Mutant listing confirms the remaining named operators now occur in dispatcher_with_brent (multiply to add), retry_brent (add-assign to subtract-assign), and HOLF cutoff (right shift to left shift). No mutation run is claimed yet.
 - First focused run: 73 passed, one failed because its binary predated the corrected Brent factor expectation (31). Corrected source is on disk; rerunning the focused suite. The new HOLF and dispatcher tests passed.
+- Validation continues: gate is compiling clippy dependencies; no lint errors reported. Public function checklist already covers these implementations, so STATUS.md remains unchanged.
+- Started the single required tools/test.sh whole-suite run after finishing source edits. Gate and tests use Cargo locking; no mutated build shares this target directory.

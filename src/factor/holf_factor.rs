@@ -66,3 +66,22 @@ fn split(n: u64, mut rounds: u64) -> u64 {
     }
     n
 }
+
+#[cfg(test)]
+mod tests {
+    use super::holf_factor;
+
+    #[test]
+    fn thirty_multiplier_needs_two_rounds() {
+        // Above MAX>>8, C factor.c::holf_factor uses 30, not 60.
+        // 60*n = 3_000_000_092^2 - 2^2, so multiplier 60 would
+        // incorrectly split this in the first round instead of the second.
+        let n = 150_000_009_200_000_141;
+        assert_eq!(holf_factor(n, Some(0)), vec![n]);
+        assert_eq!(holf_factor(n, Some(1)), vec![n]);
+        assert_eq!(
+            holf_factor(n, Some(2)),
+            vec![100_000_003, 1_500_000_047]
+        );
+    }
+}

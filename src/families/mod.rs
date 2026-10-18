@@ -122,6 +122,14 @@ pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
 
+mod almost_primes;
+pub use almost_primes::almost_primes;
+mod almost_prime_count;
+pub use almost_prime_count::almost_prime_count;
+mod almost_prime_count_approx;
+pub use almost_prime_count_approx::almost_prime_count_approx;
+mod almost_prime_count_lower;
+pub use almost_prime_count_lower::almost_prime_count_lower;
 mod nth_almost_prime_upper;
 pub use nth_almost_prime_upper::nth_almost_prime_upper;
 mod omega_primes;

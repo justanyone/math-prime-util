@@ -13,3 +13,4 @@ The full gate passed count compatibility and continues through integration tests
 The gate is waiting on the existing forsquarefreeint integration test, which has exceeded 60 seconds. No failures; source and focused regressions are complete.
 About five minutes remain. Full gate is still in the unrelated forsquarefreeint test; running offline warning-free documentation separately to record that check.
 Offline all-feature documentation built with warnings denied. Running the count doctests while the full gate continues on forsquarefreeint.
+All 11 matching count doctests passed. Documentation, fmt, clippy and MSRV passed offline; full gate is still waiting on forsquarefreeint.

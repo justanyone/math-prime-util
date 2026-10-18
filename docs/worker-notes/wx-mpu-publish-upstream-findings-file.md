@@ -16,3 +16,5 @@ The script also contained a tool truncation note. Removed that note. Next: valid
 The initial table is too large for a minimal documentation change. Consolidate API guards while keeping each explicitly named input.
 Kept explicit named inputs and removed large unnamed API row groups. No Perl oracle was run or fetched.
 Validated report links and each retained table value against the committed fixtures. Corrected iterator and random test names. The gate is still running.
+Review complete for documentation scope. No state, concurrency, validation, or duplicate-launch code was changed. Existing area tests cover repeat calls and threads.
+Added the exact malformed random and iterator inputs from their comments. All six focused targets passed offline; the full gate is waiting on count fixtures.

@@ -206,7 +206,7 @@ for these cases instead of skipping all checks.
 | `rootmod` | `9 -2 101` | `34` | `roots::compat_rootmod` |
 | `allrootmod` | `9 -2 101` | `34 67` | `roots::compat_allrootmod` |
 | `ramanujan_tau` | `-5` | `0` | `ramanujan_tau` |
-| `trial_factor` | `18446744073709551616 10foo` | `ERROR` | `native` |
+| `trial_factor` | `18446744073709551616 10foo` | `ERROR` | `trial_factor_oracle` |
 | `forprimes` | `abc` | `ERROR` | `forprimes` |
 | `fordivisors` | `abc` | `ERROR` | `fordivisors` |
 | `prime_iterator` | `18446744073709551557` | `18446744073709551557 18446744073709551629 18446744073709551653 18446744073709551667 18446744073709551697 18446744073709551709 18446744073709551757 18446744073709551923 18446744073709551947 18446744073709552009 18446744073709552109 18446744073709552157 18446744073709552213 18446744073709552253 18446744073709552267 18446744073709552333 18446744073709552357 18446744073709552361 18446744073709552373 18446744073709552421 18446744073709552423 18446744073709552501 18446744073709552541 18446744073709552577 18446744073709552597 18446744073709552613 18446744073709552621 18446744073709552697 18446744073709552729 18446744073709552859 18446744073709552901 18446744073709552957 18446744073709552969 18446744073709553023 18446744073709553029 18446744073709553033 18446744073709553099 18446744073709553137 18446744073709553171 18446744073709553291 18446744073709553401 18446744073709553411 18446744073709553447 18446744073709553501 18446744073709553533 18446744073709553543 18446744073709553561 18446744073709553597 18446744073709553653 18446744073709553681` | `prime_iterator` |
@@ -252,6 +252,16 @@ the order. The Perl wrapper can use fallback code in these cases.
 
 ### Other native API limits
 
+The random test comment names `random_prime` inputs `-3`, `(2, -4)`,
+`(2, a)`, `a`, and `undef`. The native API cannot express these inputs.
+The test is `random_prime_oracle` in
+[compat_random.rs](../tests/compat_random.rs).
+Iterator comments name invalid inputs `-2`, `abc`, and `4.5`.
+Their Perl result is an error. Tests in
+[compat_iter.rs](../tests/compat_iter.rs) use the iterator name as the test name.
+`prime_iterator_object` checks the object rows.
+
+
 The compatibility tests also exclude inputs outside their integer types.
 This includes signed modular residues, bigint factors and digit operations,
 and results above the native range. The tests retain the Perl fixture values.
@@ -260,7 +270,11 @@ See [compat_digits.rs](../tests/compat_digits.rs), helper `predicate_oracle`,
 and [compat_modular.rs](../tests/compat_modular.rs), helpers `unsigned` and
 `unsigned_args`.
 
-## Checked areas
+## Checked areas: no new defect found
+
+Offline validation passed for `compat_families`, `compat_rational`,
+`compat_combinat`, `prop_families`, `prop_rational`, and `prop_combinat`.
+
 
 The check uses committed fixtures and independent Rust properties.
 It does not regenerate the Perl oracle. It does not prove all possible inputs.

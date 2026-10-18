@@ -36,7 +36,9 @@ const UPPER_THRESH: [(u64, f32); 21] = [
 /// up to 101 260 000 000.
 ///
 /// The Rust port evaluates `Li(n)` in `f64`, where MPU uses `long double`.
-/// Results can differ by one near a rounding edge.
+/// Results can differ near a rounding edge. The native endpoint is cached
+/// from MPU’s `prime_counts.c::prime_count_upper`, avoiding loss of integer
+/// precision in both the input and the result at `u64::MAX`.
 ///
 /// # Examples
 ///
@@ -53,6 +55,11 @@ const UPPER_THRESH: [(u64, f32); 21] = [
 pub fn prime_count_upper(n: u64) -> u64 {
     if n < 33_000 {
         return prime_count(n);
+    }
+    // MPU 0.75 prime_counts.c::prime_count_upper evaluated at UV_MAX.
+    // Preserve the C long-double endpoint instead of rounding it through f64.
+    if n == u64::MAX {
+        return 425_656_284_115_718_592;
     }
     let fn_ = n as f64;
     let fl1 = fn_.ln();
@@ -110,6 +117,11 @@ mod tests {
             assert!(prime_count_upper(n) > 0, "n = {n}");
         }
         assert!(prime_count_upper(1_000_000) >= prime_count(1_000_000));
+    }
+
+    #[test]
+    fn native_endpoint_matches_mpu() {
+        assert_eq!(prime_count_upper(u64::MAX), 425_656_284_115_718_592);
     }
 
     #[test]

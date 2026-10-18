@@ -70,6 +70,10 @@ sub gen_families {
   }
   $fx->('nth_almost_prime', 2, $_) for 1..40;
   $fx->('nth_almost_prime', 3, $_) for 1..40;
+  # Exercise the generic k >= 5 search, including reduction boundaries.
+  for my $k (5..9) {
+    $fx->('nth_almost_prime', $k, $_) for 8, 40, 150, 1000, 10000;
+  }
 
   # ---- omega primes (t/11-omegaprimes.t)
   my @omax = (0, 113, 76, 240, 1326, 11130);

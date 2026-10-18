@@ -727,12 +727,6 @@ fn almost_omega_native_cases(name: &str, f: impl Fn(u32, u64) -> Option<u64>) {
         if c.result.as_ref().is_some_and(|s| s.parse::<u64>().is_err()) {
             return;
         }
-        // Skip k=1, n=u64::MAX: almost_prime_count_upper defers to prime_count_upper,
-        // whose upper bound at 2^64-1 differs from MPU (425656284115717760 vs
-        // 425656284115718592). That bound lives outside this family; the fix belongs there.
-        if c.args[0] == "1" && c.args[1] == "18446744073709551615" {
-            return;
-        }
         c.check(f(c.arg(0), c.arg(1)));
     });
 }

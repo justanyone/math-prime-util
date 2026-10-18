@@ -109,7 +109,12 @@ pub fn nth_almost_prime(k: u32, n: u64) -> Option<u64> {
         return Some(interpolate_approx(k, n));
     }
     let lo = super::nth_almost_prime_lower(k, n)?;
-    let mut hi = inverse(lo, 0, n, |x| exact_count(k, x));
+    // MPU almost_primes.c::nth_almost_prime_upper, after the reductions above.
+    let upper = inverse(5_u64 << k, 0, n, |x| {
+        super::almost_prime_count_upper::bounds(k, x).0
+    })
+    .min(max_nth(k));
+    let mut hi = inverse(lo, upper, n, |x| exact_count(k, x));
     while !crate::is_almost_prime(u64::from(k), hi) {
         hi -= 1;
     }

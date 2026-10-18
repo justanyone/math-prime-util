@@ -728,6 +728,121 @@ fn all_binary_exponents_are_perfect_powers() {
     }
 }
 
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn almost_count_matches_list(k in 0_u64..12, n in 0_u64..3000) {
+        let list = almost_primes(k, 0, n);
+        prop_assert_eq!(almost_prime_count(k,n), list.len() as u64);
+        prop_assert!(list.windows(2).all(|w| w[0] < w[1]));
+        prop_assert!(list.iter().all(|&v| is_almost_prime(k,v)));
+        prop_assert!(almost_prime_count_lower(k,n) <= almost_prime_count(k,n));
+    }
+    #[test]
+    fn almost_counts_partition(n in 1_u64..2000) {
+        prop_assert_eq!((0..=n.ilog2()+1).map(|k| almost_prime_count(u64::from(k),n)).sum::<u64>(), n);
+    }
+}
+
+#[test]
+fn almost_edges_and_parallel_calls() {
+    assert_eq!(almost_primes(64, 0, u64::MAX), Vec::<u64>::new());
+    assert_eq!(almost_primes(3, 100, 50), Vec::<u64>::new());
+    assert_eq!(almost_primes(0, 0, u64::MAX), vec![1]);
+    assert_eq!(
+        almost_primes(63, 0, u64::MAX),
+        vec![1_u64 << 63, 3_u64 << 62]
+    );
+    for k in [64, 65, u64::MAX] {
+        assert_eq!(almost_prime_count(k, u64::MAX), 0);
+        assert_eq!(almost_prime_count_lower(k, u64::MAX), 0);
+        assert_eq!(almost_prime_count_approx(k, u64::MAX), 0);
+    }
+    for handle in (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                let list = almost_primes(4, 0, 10000);
+                assert_eq!(almost_prime_count(4, 10000), list.len() as u64);
+                (
+                    almost_prime_count_approx(4, 10000),
+                    almost_prime_count_lower(4, 10000),
+                )
+            })
+        })
+        .collect::<Vec<_>>()
+    {
+        assert_eq!(
+            handle.join().unwrap(),
+            (
+                almost_prime_count_approx(4, 10000),
+                almost_prime_count_lower(4, 10000)
+            )
+        );
+    }
+}
+
+#[test]
+fn almost_high_ranges_and_fit_boundaries() {
+    for (k, lo, hi) in [
+        (3, 1_000_000_000_000, 1_000_000_000_010),
+        (4, 1_000_000_000_000, 1_000_000_000_100),
+        (30, 1_000_000_000_000, 1_000_000_000_100),
+        (3, 1_000_000_000_000, 1_000_000_262_150),
+    ] {
+        let list = almost_primes(k, lo, hi);
+        assert!(list.windows(2).all(|w| w[0] < w[1]));
+        // Factor independently at both ends of a sieve window.
+        for n in (lo..=lo + 50.min(hi - lo)).chain(hi - 50.min(hi - lo)..=hi) {
+            assert_eq!(list.binary_search(&n).is_ok(), is_almost_prime(k, n));
+        }
+    }
+    for n in [
+        102,
+        638,
+        639,
+        1544,
+        1545,
+        1926,
+        1927,
+        1928,
+        486_586,
+        486_587,
+        500_194,
+        500_195,
+        1_913_680,
+        1_913_681,
+        22_347_532,
+        22_347_533,
+        295_000_000,
+        295_000_001,
+        3_184_393_786,
+        3_184_393_787,
+        4_200_000_000,
+        4_200_000_001,
+        70_700_000_000,
+        70_700_000_001,
+        1_360_000_000_000,
+        1_360_000_000_001,
+        41_000_000_000_000,
+        41_000_000_000_001,
+        920_000_000_000_000,
+        920_000_000_000_001,
+        u64::MAX,
+    ] {
+        let lower = almost_prime_count_lower(3, n);
+        assert!(almost_prime_count_approx(3, n) >= lower);
+    }
+    for k in 0..64 {
+        let n = 1_u64 << k;
+        assert_eq!(almost_prime_count(k, n), 1);
+        assert_eq!(almost_prime_count_lower(k, n), 1);
+        assert_eq!(almost_prime_count_approx(k, n), 1);
+    }
+    assert_eq!(almost_prime_count(1, u64::MAX), 425_656_284_035_217_743);
+    assert_eq!(almost_prime_count(2, u64::MAX), 1_701_748_900_850_019_777);
+    assert_eq!(almost_prime_count(3, u64::MAX), 3_167_597_434_038_354_478);
+}
+
 mod almost_omega_f03 {
     use math_prime_util::{
         is_almost_prime, is_omega_prime, nth_almost_prime_upper, nth_omega_prime,
@@ -797,4 +912,56 @@ mod almost_omega_f03 {
             }
         });
     }
+}
+
+/// Input checks, a second call, and parallel calls for the powerfree sums.
+/// A bad `k`, a repeated call, or a second thread must not change the result.
+#[test]
+fn powerfree_validation_repeat_and_threads() {
+    for k in [0, 1] {
+        assert_eq!(powerfree_sum(0, k), 0, "k={k} n=0");
+        assert_eq!(powerfree_sum(8, k), 1, "k={k} n=8");
+        assert_eq!(powerfree_part(0, k), 0, "k={k} part 0");
+        assert_eq!(powerfree_part(1, k), 1, "k={k} part 1");
+        assert_eq!(powerfree_part(8, k), 0, "k={k} part 8");
+        assert_eq!(powerfree_part_sum(0, k), 0, "k={k} part sum 0");
+        assert_eq!(powerfree_part_sum(1, k), 1, "k={k} part sum 1");
+        assert_eq!(powerfree_part_sum(8, k), 1, "k={k} part sum 8");
+    }
+    assert_eq!(powerfree_part(1_024, 64), 1_024);
+    assert_eq!(powerfree_part(1_024, 100), 1_024);
+    assert_eq!(powerfree_part(1_024, 3), 2);
+    assert_eq!(powerfree_sum(0, 5), 0);
+    assert_eq!(powerfree_part(0, 5), 0);
+    assert_eq!(powerfree_part_sum(0, 5), 0);
+
+    let n = 300_u64;
+    let k = 2_u32;
+    let by_filter: u128 = (1..=n)
+        .filter(|&i| is_powerfree(i, k))
+        .map(u128::from)
+        .sum();
+    let by_parts: u128 = (1..=n).map(|i| u128::from(powerfree_part(i, k))).sum();
+    let first_sum = powerfree_sum(n, k);
+    let first_part = powerfree_part(720, k);
+    let first_part_sum = powerfree_part_sum(n, k);
+    assert_eq!(first_sum, by_filter);
+    assert_eq!(first_part_sum, by_parts);
+    // A second call uses no cache, so the result stays the same.
+    assert_eq!(powerfree_sum(n, k), first_sum);
+    assert_eq!(powerfree_part(720, k), first_part);
+    assert_eq!(powerfree_part_sum(n, k), first_part_sum);
+
+    let expected_part = powerfree_part(720, k);
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(powerfree_sum(n, k), by_filter);
+                    assert_eq!(powerfree_part(720, k), expected_part);
+                    assert_eq!(powerfree_part_sum(n, k), by_parts);
+                }
+            });
+        }
+    });
 }

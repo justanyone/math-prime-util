@@ -12,11 +12,11 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `aliquot_sum`
 - [x] `allrootmod`
 - [x] `allsqrtmod`
-- [ ] `almost_prime_count`
-- [ ] `almost_prime_count_approx`
-- [ ] `almost_prime_count_lower`
+- [x] `almost_prime_count`
+- [x] `almost_prime_count_approx`
+- [x] `almost_prime_count_lower`
 - [ ] `almost_prime_count_upper`
-- [ ] `almost_primes`
+- [x] `almost_primes`
 - [x] `bell_number`
 - [x] `bernfrac`
 - [x] `bernreal`

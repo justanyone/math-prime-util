@@ -18,6 +18,27 @@ use math_prime_util::{
     ramanujan_prime_count, ramanujan_prime_count_approx, ramanujan_prime_count_lower,
     ramanujan_primes,
 };
+fn bench_almost(c: &mut Criterion) {
+    c.bench_function("almost_primes", |b| {
+        b.iter(|| math_prime_util::almost_primes(4, 0, black_box(100_000)));
+    });
+    for (name, f) in [
+        (
+            "almost_prime_count",
+            math_prime_util::almost_prime_count as fn(u64, u64) -> u64,
+        ),
+        (
+            "almost_prime_count_approx",
+            math_prime_util::almost_prime_count_approx,
+        ),
+        (
+            "almost_prime_count_lower",
+            math_prime_util::almost_prime_count_lower,
+        ),
+    ] {
+        c.bench_function(name, |b| b.iter(|| f(4, black_box(100_000))));
+    }
+}
 fn bench_almost_omega(c: &mut Criterion) {
     c.bench_function("nth_almost_prime_upper", |b| {
         b.iter(|| math_prime_util::nth_almost_prime_upper(4, black_box(5678)));
@@ -199,6 +220,18 @@ fn bench_prime_power_counts(c: &mut Criterion) {
         b.iter(|| prime_power_count_upper(black_box(100_000_000)));
     });
 }
+fn bench_powerfree(c: &mut Criterion) {
+    c.bench_function("powerfree_sum", |b| {
+        b.iter(|| math_prime_util::powerfree_sum(black_box(1_000_000), 2));
+    });
+    c.bench_function("powerfree_part", |b| {
+        b.iter(|| math_prime_util::powerfree_part(black_box(720_720), 2));
+    });
+    c.bench_function("powerfree_part_sum", |b| {
+        b.iter(|| math_prime_util::powerfree_part_sum(black_box(10_000), 2));
+    });
+}
+
 fn bench_perfect_powers(c: &mut Criterion) {
     let mut group = c.benchmark_group("perfect_powers");
     for n in [1_000_003, 4_294_967_296, 1 << 63, u64::MAX] {
@@ -219,6 +252,7 @@ fn bench_perfect_powers(c: &mut Criterion) {
 }
 criterion_group!(
     benches,
+    bench_almost,
     bench_almost_omega,
     bench_families,
     bench_ramanujan,
@@ -226,6 +260,7 @@ criterion_group!(
     bench_squares,
     bench_pp_f05,
     bench_prime_power_counts,
-    bench_perfect_powers
+    bench_perfect_powers,
+    bench_powerfree
 );
 criterion_main!(benches);

@@ -8,3 +8,5 @@ Run focused factor tests and the required gate, recording remaining validation l
 - Required gate started after formatting. Focused factor suite still running; mutation outcomes from the earlier factory run are not present locally.
 - Recovered prior notes from Git history: no report identifies the unnamed survivors. Prior claimed HOLF witness was withdrawn, so this run will verify the actual shifted code rather than rely on the construction alone.
 - Added explicit C-budget assertions at 45, 46 and 64 bits, plus four consecutive retry attempts. Independent modular calculation corrected the real fallback expectation to factor 31.
+- Mutant listing confirms the remaining named operators now occur in dispatcher_with_brent (multiply to add), retry_brent (add-assign to subtract-assign), and HOLF cutoff (right shift to left shift). No mutation run is claimed yet.
+- First focused run: 73 passed, one failed because its binary predated the corrected Brent factor expectation (31). Corrected source is on disk; rerunning the focused suite. The new HOLF and dispatcher tests passed.

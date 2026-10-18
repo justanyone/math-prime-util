@@ -4,3 +4,4 @@ Add focused BigUint tests, then run the required test wrapper and full gate.
 Do not mark the task READY; leave all changes on disk for the launcher.
 Inspected native trait implementations and confirmed num-bigint is absent from the standard cache; checking local packages before adding the feature.
 Implementing an optional num-bigint backend with native-range delegation, extra-strong BPSW, modular powers, Euclidean gcd, and bounded Brent factoring.
+Added the feature and BigUint implementation; next add native-agreement and >128-bit tests, then resolve local build availability.

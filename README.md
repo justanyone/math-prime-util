@@ -19,6 +19,23 @@ phases and [STATUS.md](STATUS.md) for the per-function checklist (428 names).
   against MPU's pure-Perl implementation and other Rust crates, a 95 % line
   coverage gate, mutation testing, and Miri on any `unsafe`.
 
+## Testing
+
+Run `tools/test.sh` for the test suite. Tests use committed MPU oracle data.
+The checkout has **273,025 data rows in 17 TSV fixture files**.
+This count excludes blank lines and comments in `tests/fixtures/*.tsv`.
+Default tests do not need Perl.
+
+CI requires **at least 95% line coverage**. It uses
+`cargo llvm-cov --all-features --fail-under-lines 95`.
+Run `tools/gate.sh` for format, lint, MSRV, test, and documentation checks.
+The local gate does not measure coverage.
+
+The **whole-crate mutation score is not yet available**.
+A score needs completed module runs and a reviewed survivor list.
+See the [mutation run notes](docs/worker-notes/wx-mpu-whole-crate-mutation-score-and-readm.md)
+for this checkout's results and limits.
+
 ## Branches
 
 Work lands on a numbered integration branch (`dev-001`, `dev-002`, and so on). Small task branches are cut from it

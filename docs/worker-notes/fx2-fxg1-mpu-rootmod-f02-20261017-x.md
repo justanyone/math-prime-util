@@ -5,6 +5,8 @@ Will read the reviewer note (2 Open findings) and PLAN.md §§5–8, then fix ea
 Why: the task is a fix pass on open review findings, not new API surface. Keep the diff minimal. Decline a finding only with a reason.
 
 Next: open the review note and the relevant source once the findings name the functions.
+
+Restored `util.c::cornacchia` prime Kronecker rejection plus `corn_all` for `p >= 2^53`. Put `znlog` / `factorialmod` / `binomialmod` oracles and the old property tests back beside the rootmod tests. Next: `mw-test` on the modular tests.
 - 2026-10-18T03:26:10Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:27:10Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:28:10Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.

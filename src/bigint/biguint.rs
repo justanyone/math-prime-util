@@ -280,15 +280,15 @@ impl Int for BigUint {
     /// assert_eq!(BigUint::from(14_u8).next_prime(), Some(BigUint::from(17_u8)));
     /// ```
     fn next_prime(&self) -> Option<Self> {
+        const ADVANCE: [u8; 30] = [
+            1, 6, 5, 4, 3, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1,
+            2,
+        ];
         if let Ok(n) = u64::try_from(self) {
             if let Some(p) = n.next_prime() {
                 return Some(Self::from(p));
             }
         }
-        const ADVANCE: [u8; 30] = [
-            1, 6, 5, 4, 3, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 6, 5,
-            4, 3, 2, 1, 2,
-        ];
         let mut n = self.clone();
         loop {
             // The remainder is at most 29 on every supported architecture.
@@ -361,6 +361,9 @@ mod tests {
         assert_eq!(p.gcd(&zero()), p);
         assert_eq!(brent(&BigUint::from(101_u8), 0), None);
         assert_eq!(brent(&BigUint::from(101_u8), 100), None);
+        // Neither factor is within the bounded Brent search's reach.
+        let hard_composite = mersenne(521) * mersenne(607);
+        assert_eq!(hard_composite.factor(), Err(hard_composite));
         for n in [9_u32, 15, 25, 49, 77, 101 * 103] {
             let n = BigUint::from(n);
             let f = brent(&n, 10_000).unwrap();
@@ -407,6 +410,18 @@ mod tests {
         fn wide_modular_powers(a: u128, b in 1_u128..=u128::MAX, e in 0_u128..128) {
             prop_assert_eq!(BigUint::from(a).powmod(&BigUint::from(e), &BigUint::from(b)),
                 a.powmod(&e, &b).map(BigUint::from));
+        }
+
+        #[test]
+        fn unbounded_gcd_and_power_laws(a in 1_u64..=u64::MAX, b in 1_u64..=u64::MAX, e in 0_u8..32) {
+            let scale = one() << 192_usize;
+            let big_a = &scale * a;
+            let big_b = &scale * b;
+            prop_assert_eq!(big_a.gcd(&big_b), &scale * a.gcd(&b));
+            let modulus = &scale + 123_u8;
+            let x = big_a.powmod(&BigUint::from(e), &modulus).unwrap();
+            let y = big_a.powmod(&BigUint::from(e + 1), &modulus).unwrap();
+            prop_assert_eq!(y, (x * big_a) % modulus);
         }
     }
 }

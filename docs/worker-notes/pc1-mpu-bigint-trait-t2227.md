@@ -8,3 +8,5 @@ Added the feature and BigUint implementation; next add native-agreement and >128
 Focused test could not resolve num-bigint offline. A worktree-local fetch also failed because index.crates.io DNS is unavailable; no external files were changed.
 Added >128-bit primality/factoring and modular tests, property checks against native backends, and BigUint replay of existing fixtures. Formatting completed; tests and gate remain blocked by the unavailable num-bigint package.
 Final review: gate reached clippy after passing fmt, then stopped at dependency resolution. Required MSRV, test, docs, and coverage execution cannot run without num-bigint/num-integer in the local cache.
+Completed the wheel candidate search, unsplit-factor failure case, and unbounded arithmetic properties. Final whole-suite wrapper and gate were attempted; both stop on missing offline num-bigint. Cargo.lock cannot be resolved here for the same reason.
+Stopped with BigUint backend and tests written, fmt and whitespace checks passing. Dependency resolution/Cargo.lock and full gate remain blocked by missing num-bigint and unavailable crates.io DNS; readiness was not changed.

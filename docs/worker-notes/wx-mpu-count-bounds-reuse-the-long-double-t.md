@@ -8,3 +8,4 @@ Verified exact x87 constants with decimal arithmetic; added ties-to-even, endpoi
 Offline clippy passed with all targets and features; the gate is building MSRV. Focused compatibility tests are still running. STATUS already marks all three functions complete.
 MSRV build passed offline. Focused tests and the full gate are compiling; no test failure has been reported yet.
 Focused compat_count finished: 12 passed, no skips for count bounds or approximation. The new binary64 rounding unit test also passed in the gate.
+All focused checks passed. Waiting for the full offline gate; no further source changes are needed.

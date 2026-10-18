@@ -30,6 +30,28 @@ fn compat_count_prime_count_approx() {
     });
 }
 
+#[test]
+fn count_bounds_repeated_and_concurrent() {
+    // These endpoint values differ on the old f64 paths. Interleave the
+    // exact and estimate paths to check that calls do not share state.
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(prime_count_lower(u64::MAX), 425_656_283_922_083_342);
+                    assert_eq!(prime_count_upper(u64::MAX), 425_656_284_115_718_592);
+                    assert_eq!(prime_count_approx(u64::MAX), 425_656_284_014_012_123);
+                    for f in [prime_count_lower, prime_count_upper, prime_count_approx] {
+                        assert_eq!(f(0), 0);
+                        assert_eq!(f(1), 0);
+                        assert_eq!(f(2), 1);
+                    }
+                }
+            });
+        }
+    });
+}
+
 /// `nth_prime_*` rows with `n` above `MPU_MAX_PRIME_IDX`
 /// (`425_656_284_035_217_743`): MPU's XS hands them to its bigint Perl code,
 /// and the `n`th prime is above `u64::MAX`, so the Rust functions return

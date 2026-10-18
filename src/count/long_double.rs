@@ -515,6 +515,23 @@ mod tests {
     }
 
     #[test]
+    fn binary64_rounding() {
+        let one = 1_u64 << 63;
+        for (sig, want) in [
+            (one, one),
+            (one + 0x3ff, one),
+            (one + 0x400, one),
+            (one + 0x401, one + 0x800),
+            (one + 0xc00, one + 0x1000),
+        ] {
+            assert_eq!(bits(Ld::new(0, sig).round_binary64()), (0, want));
+        }
+        assert_eq!(Ld::ZERO.round_binary64(), Ld::ZERO);
+        assert_eq!(bits(Ld::new(0, u64::MAX).round_binary64()), (1, one));
+        assert_eq!((-ld(1.5)).round_binary64(), -ld(1.5));
+    }
+
+    #[test]
     fn floor_and_ceil() {
         assert_eq!(ld(2.5).floor_u64(), 2);
         assert_eq!(ld(2.5).ceil_u64(), 3);

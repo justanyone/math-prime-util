@@ -15,7 +15,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `almost_prime_count`
 - [x] `almost_prime_count_approx`
 - [x] `almost_prime_count_lower`
-- [ ] `almost_prime_count_upper`
+- [x] `almost_prime_count_upper`
 - [x] `almost_primes`
 - [x] `bell_number`
 - [x] `bernfrac`
@@ -48,7 +48,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `consecutive_integer_lcm`
 - [x] `contfrac`
 - [x] `convergents`
-- [ ] `cornacchia`
+- [x] `cornacchia`
 - [x] `crootint`
 - [x] `csrand`
 - [x] `dedekind_psi`
@@ -56,7 +56,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `divint`
 - [x] `divisors`
 - [x] `divisor_sum`
-- [ ] `divmod`
+- [x] `divmod`
 - [x] `divrem`
 - [x] `drand`
 - [x] `ecm_factor`
@@ -138,7 +138,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `is_gaussian_prime`
 - [x] `is_happy`
 - [x] `is_harshad`
-- [ ] `is_higgs_prime`
+- [-] `is_higgs_prime` — not in Math::Prime::Util 0.75 (no source, no fixture; the Phase 0 list was wrong)
 - [x] `is_lucas_pseudoprime`
 - [x] `is_lucky`
 - [x] `is_mersenne_prime`
@@ -222,9 +222,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `next_prime`
 - [x] `next_prime_power`
 - [x] `next_stern_brocot`
-- [ ] `nth_almost_prime`
-- [ ] `nth_almost_prime_approx`
-- [ ] `nth_almost_prime_lower`
+- [x] `nth_almost_prime`
+- [x] `nth_almost_prime_approx`
+- [x] `nth_almost_prime_lower`
 - [x] `nth_almost_prime_upper`
 - [x] `nth_calkin_wilf`
 - [x] `nth_lucky`
@@ -239,13 +239,13 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_powerfree`
 - [x] `nth_powerful`
 - [x] `nth_prime`
-- [ ] `nth_prime_approx`
-- [ ] `nth_prime_lower`
+- [x] `nth_prime_approx`
+- [x] `nth_prime_lower`
 - [x] `nth_prime_power`
 - [x] `nth_prime_power_approx`
 - [x] `nth_prime_power_lower`
 - [x] `nth_prime_power_upper`
-- [ ] `nth_prime_upper`
+- [x] `nth_prime_upper`
 - [x] `nth_ramanujan_prime`
 - [x] `nth_ramanujan_prime_approx`
 - [x] `nth_ramanujan_prime_lower`

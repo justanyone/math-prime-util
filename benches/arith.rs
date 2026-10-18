@@ -2,9 +2,10 @@
 //! Benchmarks for the totient, Moebius, divisor-sum and residue-ring functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    abundance, aliquot_sum, carmichael_lambda, chinese2, divisor_sum, euler_phi, euler_phi_range,
-    inverse_sigma0, inverse_sigma0_count, is_primitive_root, jordan_totient, mertens, moebius,
-    moebius_range, ramanujan_tau, sumtotient, znorder, znprimroot,
+    abundance, aliquot_sum, carmichael_lambda, chinese2, dedekind_psi, divisor_sum, euler_phi,
+    euler_phi_range, inverse_sigma0, inverse_sigma0_count, inverse_totient, is_primitive_root,
+    is_totient, jordan_totient, mertens, moebius, moebius_range, ramanujan_tau, sumtotient,
+    znorder, znprimroot,
 };
 fn bench_arith(c: &mut Criterion) {
     c.bench_function("arith/sopfr", |b| {
@@ -46,6 +47,13 @@ fn bench_arith(c: &mut Criterion) {
         b.iter(|| math_prime_util::exp_mangoldt(black_box(11_u64.pow(18))));
     });
     c.bench_function("sumtotient", |b| b.iter(|| sumtotient(black_box(100_000))));
+    c.bench_function("dedekind_psi", |b| {
+        b.iter(|| dedekind_psi(black_box(360_360)));
+    });
+    c.bench_function("inverse_totient", |b| {
+        b.iter(|| inverse_totient(black_box(720_720)));
+    });
+    c.bench_function("is_totient", |b| b.iter(|| is_totient(black_box(720_720))));
     c.bench_function("arith/divisor_sum", |b| {
         b.iter(|| divisor_sum(black_box(360_360), 2));
     });

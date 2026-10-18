@@ -143,6 +143,11 @@ fn check(name: &str) {
                 tuples(collected(|f| math_prime_util::forsetproduct(&sets, f)), ",")
             }
             "prime_iterator" | "prime_iterator_object_iterate" => {
+                // Skipped rows, named here. The `u64` API cannot take them:
+                // - args `-2`, `abc`, and `4.5` (MPU dies in `_validate_integer_nonneg`)
+                // - arg `100000000000000000000` (above `u64::MAX`)
+                // - args `18446744073709551557` and `18446744073709551615`
+                //   (the oracle keeps going with primes above `u64::MAX`)
                 let start = if c.args.is_empty() {
                     0
                 } else {
@@ -152,7 +157,6 @@ fn check(name: &str) {
                     start
                 };
                 let expected = c.result.as_deref().unwrap().split_whitespace().count();
-                // Native iterators stop at u64::MAX. MPU switches to bigint here.
                 if c.result
                     .as_deref()
                     .unwrap()
@@ -161,10 +165,12 @@ fn check(name: &str) {
                 {
                     continue;
                 }
-                joined(
-                    math_prime_util::prime_iterator_object(start).take(expected),
-                    " ",
-                )
+                let iter = if name == "prime_iterator" {
+                    math_prime_util::prime_iterator(start)
+                } else {
+                    math_prime_util::prime_iterator_object(start)
+                };
+                joined(iter.take(expected), " ")
             }
             "forsemiprimes" | "foralmostprimes" | "forfactored" | "forsquarefree"
             | "forsquarefreeint" => {
@@ -260,9 +266,84 @@ oracle!(
 );
 #[test]
 fn prime_iterator_object() {
-    // prime_iterator_object fixtures stringify Perl memory addresses. Compare
-    // the corresponding prime_iterator_object_iterate value fixtures instead.
+    // Rows named `prime_iterator_object` stringify Perl addresses
+    // (`Math::Prime::Util::PrimeIterator=SCALAR(...)` or `=REF(...)`).
+    // They are not prime lists. Value rows are `prime_iterator_object_iterate`.
+    // Skipped error rows, same args on every iterator name: `-2`, `abc`, `4.5`.
+    for c in common::load("iter")
+        .into_iter()
+        .filter(|c| c.func == "prime_iterator_object")
+    {
+        if c.error {
+            assert!(
+                matches!(c.args.as_slice(), [a] if a == "-2" || a == "abc" || a == "4.5"),
+                "line {}: unnamed prime_iterator_object error {:?}",
+                c.line,
+                c.args
+            );
+            continue;
+        }
+        let text = c.result.as_deref().unwrap();
+        assert!(
+            text.contains("PrimeIterator="),
+            "line {}: expected an address string",
+            c.line
+        );
+    }
     check("prime_iterator_object_iterate");
+}
+#[test]
+fn prime_iterator_nested_streams_are_independent() {
+    // `prime_iterator_nested3`: three nested cursors must not share a buffer.
+    let case = common::load("iter")
+        .into_iter()
+        .find(|c| c.func == "prime_iterator_nested3")
+        .expect("fixture row");
+    let mut out = Vec::new();
+    let outer = math_prime_util::prime_iterator(0);
+    for a in outer {
+        if a > 10 {
+            break;
+        }
+        let middle = math_prime_util::prime_iterator(10 * a);
+        for b in middle {
+            if b > 10 * a + 10 {
+                break;
+            }
+            let inner = math_prime_util::prime_iterator(b);
+            for c in inner {
+                if c > b + 10 {
+                    break;
+                }
+                out.push(c);
+            }
+        }
+    }
+    assert_eq!(joined(out, " "), case.result.unwrap());
+}
+#[test]
+fn lastfor_error_rows() {
+    // `lastfor_outside_loop` and `lastfor_after_callback_die`: MPU croaks when
+    // `forcount == 0` (`XS.xs`, `lastfor`). Rust `lastfor` is a `Break` value
+    // and has no loop stack, so those two rows have no Rust failure to raise.
+    let mut seen_outside = false;
+    let mut seen_after_die = false;
+    for c in common::load("iter")
+        .into_iter()
+        .filter(|c| c.func.starts_with("lastfor_"))
+    {
+        if c.error {
+            match c.func.as_str() {
+                "lastfor_outside_loop" => seen_outside = true,
+                "lastfor_after_callback_die" => seen_after_die = true,
+                other => panic!("unnamed lastfor error row {other}"),
+            }
+            continue;
+        }
+        // Value rows are covered by the loop tests; only named rows are checked here.
+        assert!(c.result.is_some(), "{}", c.func);
+    }
+    assert!(seen_outside && seen_after_die);
 }
 #[test]
 fn lastfor() {

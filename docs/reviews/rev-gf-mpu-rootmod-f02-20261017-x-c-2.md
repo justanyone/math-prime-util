@@ -4,3 +4,5 @@ Verdict: FAIL
 2. tests/compat_modular.rs:1 — Open. Replacing this file removes the existing `znlog`, `factorialmod`, and `binomialmod` oracle tests. Likewise, tests/prop_modular.rs:5 replaces their recurrence, Pascal, logarithm, zero-modulus, repeat-call, and concurrency tests, plus the Pisano first-period property. Future regressions in these existing exports now pass these suites without the previous checks. Preserve the existing tests alongside the new tests.
 
 The stopped run is not complete against its acceptance criteria: the diff itself demonstrates the open algorithm and regression-coverage requirements above. No earlier review findings were supplied, so there are no earlier fixes to validate with failing-before tests. The checkout is the base; local test results cannot certify the candidate.
+
+Validation: `tools/test.sh tests/compat_modular.rs` passed all eight base tests, including the three deleted oracle tests. `tools/gate.sh` stopped at Clippy float-comparison errors in base `tests/mutants_rest.rs:86,119,121,123`; it did not print `== gate: green`. Neither result is a candidate execution result.

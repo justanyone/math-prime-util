@@ -20,7 +20,7 @@ pub use ramanujan_sum::ramanujan_sum;
 mod valuation;
 pub use valuation::valuation;
 
-use crate::{gcd, invmod, is_power, is_prime, is_square, powmod, rootint, sqrtint};
+use crate::{gcd, invmod, is_power, is_prime, is_square, powmod};
 
 fn factors(mut n: u64) -> Vec<(u64, u32)> {
     fn split(n: u64, out: &mut Vec<u64>) {

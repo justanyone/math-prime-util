@@ -79,9 +79,6 @@ mod tests {
         let n = 150_000_009_200_000_141;
         assert_eq!(holf_factor(n, Some(0)), vec![n]);
         assert_eq!(holf_factor(n, Some(1)), vec![n]);
-        assert_eq!(
-            holf_factor(n, Some(2)),
-            vec![100_000_003, 1_500_000_047]
-        );
+        assert_eq!(holf_factor(n, Some(2)), vec![100_000_003, 1_500_000_047]);
     }
 }

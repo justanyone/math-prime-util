@@ -4,3 +4,5 @@ Add deterministic regression tests for observable survivors and document equival
 Run focused factor tests and the required gate, recording remaining validation limits.
 - Inspection: three named survivors lack observable edge cases; no mutation outcome artifact is present in the checkout. Preparing short-budget HOLF and deterministic retry regressions.
 - Added the missing HOLF 30-multiplier case and injectable private Brent attempts to test dispatcher budgets and retry sequencing deterministically; focused factor tests are running.
+- HOLF case constructed algebraically: 60*n is a difference of squares, while the first 30*n iteration misses. This distinguishes the exact open cutoff mutation.
+- Required gate started after formatting. Focused factor suite still running; mutation outcomes from the earlier factory run are not present locally.

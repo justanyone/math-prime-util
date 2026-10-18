@@ -122,10 +122,7 @@ fn dispatcher_with_brent(
         }
     }
     if start <= 2 {
-        if let Some(f) = one_factor(
-            n,
-            &attempt(n, Some(rounds.saturating_mul(2)), Some(3)),
-        ) {
+        if let Some(f) = one_factor(n, &attempt(n, Some(rounds.saturating_mul(2)), Some(3))) {
             return Some(f);
         }
     }
@@ -272,7 +269,11 @@ mod tests {
                 let got = super::dispatcher_with_brent(n, 1, |input, budget, a| {
                     assert_eq!(input, n);
                     calls.push((budget, a));
-                    if calls.len() == success { vec![2, n / 2] } else { vec![n] }
+                    if calls.len() == success {
+                        vec![2, n / 2]
+                    } else {
+                        vec![n]
+                    }
                 });
                 assert_eq!(got, Some(2));
                 assert_eq!(calls[0], (Some(rounds), Some(1)));

@@ -304,6 +304,11 @@ All 18 relative links in this report resolve to files in this checkout.
 This checks the report's transcription and links; it does not establish the
 missing draft's findings or verify a corrected mathematical result.
 
+The continuation reran the six focused compatibility and property test
+targets listed above with `tools/test.sh`; they passed. Formatting, clippy
+with warnings denied, and the Rust 1.85.0 MSRV build also passed. Full-suite
+and documentation validation are still pending; no green gate is claimed.
+
 ## Remaining work
 
 Recover the external draft. Add one entry for each of its eleven findings.

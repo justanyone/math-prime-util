@@ -7,3 +7,4 @@ Why: the task is a fix pass on open review findings, not new API surface. Keep t
 Next: open the review note and the relevant source once the findings name the functions.
 - 2026-10-18T03:26:10Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
 - 2026-10-18T03:27:10Z launcher: no commit for 60 s; 152 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.
+- 2026-10-18T03:28:10Z launcher: no commit for 60 s; 212 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md.

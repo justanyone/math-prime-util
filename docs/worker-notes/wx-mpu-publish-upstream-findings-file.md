@@ -15,3 +15,4 @@ Repaired the temporary script and wrote the findings file plus NOTICE and README
 The script also contained a tool truncation note. Removed that note. Next: validate links, table values, and gate output.
 The initial table is too large for a minimal documentation change. Consolidate API guards while keeping each explicitly named input.
 Kept explicit named inputs and removed large unnamed API row groups. No Perl oracle was run or fetched.
+Validated report links and each retained table value against the committed fixtures. Corrected iterator and random test names. The gate is still running.

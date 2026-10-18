@@ -28,3 +28,4 @@ Corrected the prime_factors equivalence note: <= is equivalent because pending v
 Final fmt and clippy pass. Final gate is on the MSRV build. Mutants have copied the source and are building; no results are counted yet.
 Validation continues offline. The original gate reports a long-running forsquarefreeint test; no failure has been reported. Retry and dispatcher survivors remain explicitly open.
 Mutation results confirm dispatcher and fallback mutations remain missed. The first snapshot predates the HOLF test; rerunning that one mutation against the final source using cached dependencies.
+The small-input mutations time out on the private factor tests, which catches their nontermination. The superseded gate was stopped; the final gate and sole tools/test.sh whole-suite run continue.

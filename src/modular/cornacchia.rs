@@ -110,11 +110,10 @@ pub fn cornacchia(d: u64, p: u64) -> Option<(u64, u64)> {
         return corn_one(root, d, p);
     }
     // `(p >> 31) >> 22` in the C source: `p >= 2^53`.
-    if p >= 1_u64 << 53
-        && kronecker_uu(neg_d, p) != -1
-        && let Some(solution) = corn_all(neg_d, d, p)
-    {
-        return Some(solution);
+    if p >= 1_u64 << 53 && kronecker_uu(neg_d, p) != -1 {
+        if let Some(solution) = corn_all(neg_d, d, p) {
+            return Some(solution);
+        }
     }
     let lim_u = sqrtint(p / d);
     for u in 0..=lim_u {
@@ -180,8 +179,7 @@ mod tests {
     /// `(132396848, 22033973)`. `corn_all` returns the other representation.
     #[test]
     fn large_composite_uses_square_root_path() {
-        let p = 13_421_7757_u64 * 134_217_869;
-        assert_eq!(p, 18_014_421_326_499_833);
+        let p = 18_014_421_326_499_833_u64;
         assert_eq!(cornacchia(1, p), Some((114_145_427, 70_606_252)));
     }
 

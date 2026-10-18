@@ -101,6 +101,34 @@ proptest! {
     }
 }
 
+/// Without the prime Kronecker rejection, `2^61 - 1` walks about `2^30.5`
+/// candidates. The assertion times out on that scan.
+#[test]
+fn cornacchia_rejects_large_prime_without_scanning() {
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let _ = tx.send(cornacchia(1, (1_u64 << 61) - 1));
+    });
+    assert_eq!(
+        rx.recv_timeout(std::time::Duration::from_secs(2)),
+        Ok(None)
+    );
+}
+
+/// `p = 134217757 * 134217869`. The plain scan returns
+/// `(132396848, 22033973)`; MPU `corn_all` returns the other pair.
+#[test]
+fn cornacchia_large_composite_matches_root_path() {
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let _ = tx.send(cornacchia(1, 18_014_421_326_499_833));
+    });
+    assert_eq!(
+        rx.recv_timeout(std::time::Duration::from_secs(2)),
+        Ok(Some((114_145_427, 70_606_252)))
+    );
+}
+
 mod roots {
     //! Algebraic, exhaustive, and concurrency tests for modular roots.
     use math_prime_util::{allrootmod, allsqrtmod, powmod, rootmod, sqrtmod};

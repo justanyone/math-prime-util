@@ -22,22 +22,24 @@ per-function checklist and [PLAN.md](PLAN.md) for the phases. Ongoing work lands
 
 ## Testing
 
-Run `tools/test.sh` for the test suite. Tests use committed MPU oracle data.
-The checkout has **273,025 data rows in 17 TSV fixture files**.
-This count excludes blank lines and comments in `tests/fixtures/*.tsv`.
-Default tests do not need Perl.
+`tools/test.sh` runs the suite; `tools/gate.sh` adds fmt, clippy, MSRV and
+doc checks. The tests need no Perl: the oracle is committed as
+**273,025 rows in 17 fixture files** (`tests/fixtures/*.tsv`, recorded from
+MPU 0.75; `grep -vh '^#' tests/fixtures/*.tsv | grep -c .`). Where MPU is
+wrong the port asserts the correct value and skips the row; see
+[docs/upstream-findings.md](docs/upstream-findings.md).
 
-CI requires **at least 95% line coverage**. It uses
-`cargo llvm-cov --all-features --fail-under-lines 95`.
-Run `tools/gate.sh` for format, lint, MSRV, test, and documentation checks.
-The local gate does not measure coverage.
+CI gates every pull request on **95 % line coverage**
+(`cargo llvm-cov --all-features --fail-under-lines 95`).
 
-The **whole-crate mutation score is not yet available**.
-Cargo-mutants 27.1.0 found **21,988 candidates in 21 modules** with all features.
-This is an inventory, not a completed mutation run.
-A score needs completed module runs and a reviewed survivor list.
-See the [mutation run notes](docs/worker-notes/wx-mpu-whole-crate-mutation-score-and-readm.md)
-for this checkout's results and limits.
+Mutation testing uses cargo-mutants 27.1.0: **22,282 candidates** in
+22 modules. The `factor` module has a full run (840 mutants, 76 %
+killed before survivor closure; the 56 remaining sites were re-run on
+2026-10-18 with 45 killed and 11 documented as equivalent or unreachable).
+The other modules have no measured score yet: a sampled run (one shard
+per module) is prepared but was stopped by host memory pressure on
+2026-10-18 before any mutant was tested. The nightly workflow runs the whole
+crate. Details and the survivor triage: [docs/mutation-testing.md](docs/mutation-testing.md).
 
 ## Branches
 

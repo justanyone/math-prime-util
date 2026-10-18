@@ -20,3 +20,5 @@ Run focused factor tests and the required gate, recording remaining validation l
 - Integration suites are progressing without reported failures; gate is beyond library tests. Waiting for docs and the final green marker.
 - Open acceptance item: the original roughly 35-survivor report is absent; unnamed mutants cannot be individually classified. The new named-case tests pass, but a fresh mutation run has not been performed.
 - Validation heartbeat: factor oracle integration tests report passes, including HOLF; whole-suite commands are still active.
+- About five minutes remain in the worker budget. All source changes are complete; focused tests, fmt, clippy and MSRV pass. Awaiting full-suite and gate completion; unnamed survivor classification remains open.
+- Gate has reached the existing long-running forsquarefreeint integration test; it reports over 60 seconds, with no failure. Waiting within the remaining budget rather than changing test behavior.

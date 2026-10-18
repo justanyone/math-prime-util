@@ -15,7 +15,7 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `almost_prime_count`
 - [x] `almost_prime_count_approx`
 - [x] `almost_prime_count_lower`
-- [ ] `almost_prime_count_upper`
+- [x] `almost_prime_count_upper`
 - [x] `almost_primes`
 - [x] `bell_number`
 - [x] `bernfrac`
@@ -222,9 +222,9 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `next_prime`
 - [x] `next_prime_power`
 - [x] `next_stern_brocot`
-- [ ] `nth_almost_prime`
-- [ ] `nth_almost_prime_approx`
-- [ ] `nth_almost_prime_lower`
+- [x] `nth_almost_prime`
+- [x] `nth_almost_prime_approx`
+- [x] `nth_almost_prime_lower`
 - [x] `nth_almost_prime_upper`
 - [x] `nth_calkin_wilf`
 - [x] `nth_lucky`

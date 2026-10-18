@@ -1128,3 +1128,66 @@ fn powerful_parallel_repeat_calls() {
         thread.join().unwrap();
     }
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(64))]
+    #[test]
+    fn almost_omega_bounds(k in 1_u32..9, n in 1_u64..150) {
+        let value=nth_almost_prime(k,n).unwrap();
+        prop_assert!(is_almost_prime(u64::from(k),value));
+        prop_assert!(nth_almost_prime_lower(k,n).unwrap()<=value);
+        prop_assert!(almost_prime_count_upper(k,value)>=n);
+        prop_assert!(nth_almost_prime_approx(k,n).is_some());
+        prop_assert!(nth_almost_prime(k,n+1).unwrap()>value);
+    }
+}
+#[test]
+fn almost_omega_edges_and_parallel_calls() {
+    for k in [0, 1, 2, 3, 63, 64, u32::MAX] {
+        assert_eq!(nth_almost_prime(k, 0), None);
+        assert_eq!(nth_almost_prime_lower(k, 0), None);
+        assert_eq!(nth_almost_prime_approx(k, 0), None);
+        assert_eq!(almost_prime_count_upper(k, 0), 0);
+    }
+    for k in [64, u32::MAX] {
+        assert_eq!(nth_almost_prime(k, 1), None);
+        assert_eq!(nth_almost_prime_lower(k, 1), None);
+        assert_eq!(nth_almost_prime_approx(k, 1), None);
+    }
+    assert_eq!(nth_almost_prime(0, 2), None);
+    assert_eq!(nth_almost_prime(63, 2), Some(3_u64 << 62));
+    let handles: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert_eq!(nth_almost_prime(3, 40), Some(171));
+                    assert_eq!(nth_almost_prime_approx(3, 456), Some(1805));
+                    assert_eq!(nth_almost_prime_lower(3, 456), Some(1471));
+                }
+            })
+        })
+        .collect();
+    for h in handles {
+        h.join().unwrap();
+    }
+}
+
+#[test]
+fn nth_almost_prime_generic_search_has_exact_rank() {
+    // Enumerate independently of the count interpolation. n=150 exceeds all
+    // FIRST_3 thresholds for k=5..9, so every call takes the generic search.
+    for k in 5..=9 {
+        let mut rank = 0;
+        for value in (1_u64 << k).. {
+            if is_almost_prime(u64::from(k), value) {
+                rank += 1;
+                if [8, 40, 150].contains(&rank) {
+                    assert_eq!(nth_almost_prime(k, rank), Some(value));
+                }
+                if rank == 150 {
+                    break;
+                }
+            }
+        }
+    }
+}

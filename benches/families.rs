@@ -262,11 +262,35 @@ fn bench_perfect_powers(c: &mut Criterion) {
     }
     group.finish();
 }
+fn bench_nth_almost_prime(c: &mut Criterion) {
+    c.bench_function("almost_prime_count_upper", |b| {
+        b.iter(|| math_prime_util::almost_prime_count_upper(5, black_box(1_000_000)));
+    });
+    for (name, f) in [
+        (
+            "nth_almost_prime",
+            math_prime_util::nth_almost_prime as fn(u32, u64) -> Option<u64>,
+        ),
+        (
+            "nth_almost_prime_lower",
+            math_prime_util::nth_almost_prime_lower,
+        ),
+        (
+            "nth_almost_prime_approx",
+            math_prime_util::nth_almost_prime_approx,
+        ),
+    ] {
+        c.bench_function(name, |b| {
+            b.iter(|| f(3, black_box(1000)));
+        });
+    }
+}
 criterion_group!(
     benches,
     bench_almost,
     bench_almost_omega,
     bench_families,
+    bench_nth_almost_prime,
     bench_ramanujan,
     bench_goldbach_misc,
     bench_squares,

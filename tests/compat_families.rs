@@ -943,3 +943,40 @@ fn merge_keeps_almost_and_omega_exports() {
     let upper = nth_almost_prime_upper(2, almost.len() as u64);
     assert!(upper.is_some_and(|bound| bound >= *almost.last().unwrap()));
 }
+
+fn almost_omega_native_cases(name: &str, f: impl Fn(u32, u64) -> Option<u64>) {
+    each("families", name, |c| {
+        // Skip bigint input n (above u64::MAX); the Rust API is native only.
+        if c.args[1].parse::<u64>().is_err() {
+            return;
+        }
+
+        // Skip negative k (-2): the native Rust API uses u32.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        // Skip bigint results (k=63,100,150): this API returns native u64.
+        if c.result.as_ref().is_some_and(|s| s.parse::<u64>().is_err()) {
+            return;
+        }
+        c.check(f(c.arg(0), c.arg(1)));
+    });
+}
+#[test]
+fn almost_prime_count_upper_oracle() {
+    almost_omega_native_cases("almost_prime_count_upper", |k, n| {
+        Some(almost_prime_count_upper(k, n))
+    });
+}
+#[test]
+fn nth_almost_prime_oracle() {
+    almost_omega_native_cases("nth_almost_prime", nth_almost_prime);
+}
+#[test]
+fn nth_almost_prime_approx_oracle() {
+    almost_omega_native_cases("nth_almost_prime_approx", nth_almost_prime_approx);
+}
+#[test]
+fn nth_almost_prime_lower_oracle() {
+    almost_omega_native_cases("nth_almost_prime_lower", nth_almost_prime_lower);
+}

@@ -156,3 +156,11 @@ pub use powerfree_count::powerfree_count;
 
 mod nth_powerfree;
 pub use nth_powerfree::nth_powerfree;
+mod almost_prime_count_upper;
+pub use almost_prime_count_upper::almost_prime_count_upper;
+mod nth_almost_prime;
+pub use nth_almost_prime::nth_almost_prime;
+mod nth_almost_prime_approx;
+pub use nth_almost_prime_approx::nth_almost_prime_approx;
+mod nth_almost_prime_lower;
+pub use nth_almost_prime_lower::nth_almost_prime_lower;

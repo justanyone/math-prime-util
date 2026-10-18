@@ -100,4 +100,21 @@ mod tests {
         assert_eq!(split(1009, true), vec![1009]);
         assert_eq!(split(1009, false), vec![1009]);
     }
+
+    #[test]
+    fn exact_results_across_sizes_and_trial() {
+        use crate::factor::test_support::{fold, wide_inputs};
+        let mut h = 0;
+        for n in wide_inputs() {
+            for do_trial in [true, false] {
+                let got = split(n, do_trial);
+                assert_eq!(got.iter().product::<u64>(), n, "split({n},{do_trial})");
+                for f in got {
+                    h = fold(h, f);
+                }
+                h = fold(h, 1);
+            }
+        }
+        assert_eq!(h, 7_218_862_803_161_328_452);
+    }
 }

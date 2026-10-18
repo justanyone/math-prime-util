@@ -161,6 +161,28 @@ mod tests {
     }
 
     #[test]
+    fn exact_factor_lists() {
+        use super::sorted_factors;
+        use crate::factor::test_support::{fold, wide_inputs};
+        assert_eq!(
+            sorted_factors(2 * 3 * 5 * 7 * 11 * 11),
+            vec![2, 3, 5, 7, 11, 11]
+        );
+        assert_eq!(sorted_factors(30), vec![2, 3, 5]);
+        assert_eq!(sorted_factors(2_u64.pow(40)), vec![2; 40]);
+        let mut h = 0;
+        for n in wide_inputs() {
+            let got = sorted_factors(n);
+            assert_eq!(got.iter().product::<u64>(), n);
+            assert!(got.windows(2).all(|w| w[0] <= w[1]));
+            for f in got {
+                h = fold(h, f);
+            }
+        }
+        assert_eq!(h, 17_437_758_225_689_774_338);
+    }
+
+    #[test]
     fn rho_exact_results() {
         use crate::factor::test_support::{fold_opt, inputs};
         let mut h = 0;

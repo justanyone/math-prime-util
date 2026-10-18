@@ -80,3 +80,39 @@ pub(super) fn extra_inputs() -> Vec<u64> {
     out.dedup();
     out
 }
+
+/// Wider inputs than `inputs()`: semiprimes of many size ratios (some below
+/// 2^36, some above, some straddling the Lehman cutoff 8,796,393,022,207),
+/// prime squares and cubes, and numbers with factors below and above 2011.
+pub(super) fn wide_inputs() -> Vec<u64> {
+    let mut out = Vec::new();
+    for bp in (5_u32..=31).step_by(2) {
+        for bq in (bp..=62 - bp).step_by(3) {
+            for k in [0_u64, 5] {
+                let p = next_prime((1 << bp) + 37 * k).expect("below 2^63");
+                let q = next_prime((1 << bq) + 101 * k + 1).expect("below 2^63");
+                if let Some(n) = p.checked_mul(q) {
+                    out.push(n);
+                }
+            }
+        }
+    }
+    let p = next_prime(2_000_000).expect("small");
+    let mut q = 8_796_393_022_207 / p - 40;
+    for _ in 0..24 {
+        q = next_prime(q).expect("small");
+        out.push(p * q);
+        q += 1;
+    }
+    for p in [53_u64, 101, 1009, 2003, 2017, 40_009, 1_000_003] {
+        out.push(p * p);
+        if let Some(n) = (p * p).checked_mul(p) {
+            out.push(n);
+        }
+        out.push(p * next_prime(p + 2).expect("small") * next_prime(p * 7).expect("small"));
+    }
+    out.retain(|&n| n > 2000);
+    out.sort_unstable();
+    out.dedup();
+    out
+}

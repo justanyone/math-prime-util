@@ -4,3 +4,4 @@ Finish count properties and benchmarks, then run focused tests and the required 
 Keep STATUS limited to completed function ticks; do not mark the task READY.
 Initial inspection: small-index bounds incorrectly use exact primes instead of MPU binary searches; checking existing real-number helpers before repair.
 Ported the small-index inverse count searches, preserving MPU float coefficient promotion; next verify fixtures and numerical precision limits.
+Focused compat rerun confirms small-index repairs; remaining failures are large long-double rounding and Perl bigint dispatch outside native bounds. Added inversion/approximation properties and Criterion bound workloads.

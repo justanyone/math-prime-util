@@ -53,8 +53,11 @@ sub gen_count {
                 '425656284035217743', '425656284035217744', '425656284035217745');
   push @bounds, 7..60;
   for my $n (@bounds) {
-    emit($fh, 'nth_prime_lower',  [$n], sub { nth_prime_lower("$n") });
-    emit($fh, 'nth_prime_upper',  [$n], sub { nth_prime_upper("$n") });
+    # The Rust native bounds return None above MPU_MAX_PRIME_IDX;
+    # MPU's Perl dispatcher switches to bigint algorithms there.
+    my $native = Math::BigInt->new("$n") <= Math::BigInt->new('425656284035217743');
+    emit($fh, 'nth_prime_lower',  [$n], sub { $native ? nth_prime_lower("$n") : undef });
+    emit($fh, 'nth_prime_upper',  [$n], sub { $native ? nth_prime_upper("$n") : undef });
     emit($fh, 'nth_prime_approx', [$n], sub { nth_prime_approx("$n") });
   }
   # left out: nth_prime of indices above 10^9 (nth_prime(425656284035217744) takes over 10 s).

@@ -135,7 +135,7 @@ fn step(x: u64, add: u64, n: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use super::is_sum_of_squares;
+    use super::{is_sum_of_squares, step};
     use crate::is_prime;
 
     #[test]
@@ -171,6 +171,21 @@ mod tests {
         assert!(!is_sum_of_squares(p * q, 2));
         assert!(is_sum_of_squares(p * p, 2));
         assert!(is_sum_of_squares(53, 2));
+    }
+
+    #[test]
+    fn rho_step_is_a_square_plus_add_mod_n() {
+        assert_eq!(step(10, 3, 1_000_003), 103);
+        assert_eq!(step(0, 5, 11), 5);
+        assert_eq!(step(7, 1, 10), 0);
+        assert_eq!(step(3, 2, 1_000), 11);
+        // The square needs 128 bits before the reduction.
+        let n = u64::MAX - 58;
+        let x = n - 1;
+        assert_eq!(
+            u128::from(step(x, 9, n)),
+            (u128::from(x) * u128::from(x) + 9) % u128::from(n)
+        );
     }
 
     #[test]

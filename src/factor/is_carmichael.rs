@@ -154,4 +154,21 @@ mod tests {
             [3, 5, 17, 257, 641, 65_537, 6_700_417]
         );
     }
+
+    #[test]
+    fn brent_exact_results_and_zero() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        assert_eq!(prime_factors(0), [] as [u64; 0]);
+        let mut h = 0;
+        for n in inputs() {
+            for a in [1, 2, 3] {
+                let got = brent(n, a);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "brent({n},{a})");
+                }
+                h = fold_opt(h, got);
+            }
+        }
+        assert_eq!(h, 17_845_267_593_057_780_728);
+    }
 }

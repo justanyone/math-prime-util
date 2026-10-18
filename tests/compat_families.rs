@@ -788,7 +788,6 @@ fn perfect_power_count_oracle() {
     });
 }
 
-<<<<<<< HEAD
 fn almost_omega_native_cases(name: &str, f: impl Fn(u32, u64) -> Option<u64>) {
     each("families", name, |c| {
         // Skip bigint input n (above u64::MAX); the Rust API is native only.
@@ -824,7 +823,7 @@ fn nth_almost_prime_approx_oracle() {
 #[test]
 fn nth_almost_prime_lower_oracle() {
     almost_omega_native_cases("nth_almost_prime_lower", nth_almost_prime_lower);
-=======
+}
 mod almost_omega_f03 {
     use super::common;
     use math_prime_util::{
@@ -894,5 +893,4 @@ mod almost_omega_f03 {
             case.check((!result.is_empty()).then_some(text));
         }
     }
->>>>>>> origin/dev-001
 }

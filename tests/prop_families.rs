@@ -728,7 +728,6 @@ fn all_binary_exponents_are_perfect_powers() {
     }
 }
 
-<<<<<<< HEAD
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
@@ -790,7 +789,7 @@ fn nth_almost_prime_generic_search_has_exact_rank() {
             }
         }
     }
-=======
+}
 mod almost_omega_f03 {
     use math_prime_util::{
         is_almost_prime, is_omega_prime, nth_almost_prime_upper, nth_omega_prime,
@@ -860,5 +859,4 @@ mod almost_omega_f03 {
             }
         });
     }
->>>>>>> origin/dev-001
 }

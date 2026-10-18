@@ -117,7 +117,6 @@ mod prev_perfect_power;
 pub use prev_perfect_power::prev_perfect_power;
 mod perfect_power_count;
 pub use perfect_power_count::perfect_power_count;
-<<<<<<< HEAD
 mod almost_prime_count_upper;
 pub use almost_prime_count_upper::almost_prime_count_upper;
 mod nth_almost_prime;
@@ -126,7 +125,6 @@ mod nth_almost_prime_approx;
 pub use nth_almost_prime_approx::nth_almost_prime_approx;
 mod nth_almost_prime_lower;
 pub use nth_almost_prime_lower::nth_almost_prime_lower;
-=======
 
 mod nth_almost_prime_upper;
 pub use nth_almost_prime_upper::nth_almost_prime_upper;
@@ -136,4 +134,3 @@ mod omega_prime_count;
 pub use omega_prime_count::omega_prime_count;
 mod nth_omega_prime;
 pub use nth_omega_prime::nth_omega_prime;
->>>>>>> origin/dev-001

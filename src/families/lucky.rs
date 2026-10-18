@@ -685,4 +685,158 @@ mod tests {
             assert_eq!(inverse(0, 10000, n, |x| Some(x / 3)), first);
         }
     }
+
+    // Reference: the textbook lucky sieve on odd numbers.
+    fn naive_lucky(n: u64) -> Vec<u64> {
+        let mut v: Vec<u64> = (1..=n).step_by(2).collect();
+        let mut i = 1;
+        while i < v.len() {
+            let step = v[i] as usize;
+            if step > v.len() {
+                break;
+            }
+            let mut keep = Vec::with_capacity(v.len());
+            for (j, &x) in v.iter().enumerate() {
+                if (j + 1) % step != 0 {
+                    keep.push(x);
+                }
+            }
+            v = keep;
+            i += 1;
+        }
+        v
+    }
+
+    fn list_1m() -> &'static [u64] {
+        static LIST: std::sync::OnceLock<Vec<u64>> = std::sync::OnceLock::new();
+        LIST.get_or_init(|| naive_lucky(1_000_000))
+    }
+
+    #[test]
+    fn lucky_numbers_match_textbook_sieve() {
+        assert_eq!(lucky_numbers(10, 3), Vec::<u64>::new());
+        assert_eq!(lucky_numbers(0, 100), naive_lucky(100));
+        assert_eq!(lucky_numbers(1, 5000), naive_lucky(5000));
+        // Above 240000 the bit sieve path is used.
+        let big = naive_lucky(260_000);
+        assert_eq!(lucky_numbers(250_000, 260_000), {
+            big.iter()
+                .copied()
+                .filter(|&x| x >= 250_000)
+                .collect::<Vec<_>>()
+        });
+        assert_eq!(lucky_numbers(1, 260_000), big);
+    }
+
+    #[test]
+    fn count_and_nth_agree_with_the_list() {
+        let list = list_1m();
+        for n in [
+            0u64, 1, 2, 47, 48, 49, 100, 1000, 4096, 65_537, 299_999, 300_000,
+        ] {
+            let want = list.iter().filter(|&&x| x <= n).count() as u64;
+            assert_eq!(lucky_count(n), want, "count {n}");
+        }
+        assert_eq!(nth_lucky(0), None);
+        for k in [1usize, 5, 48, 49, 50, 500, 5000, 20_000, list.len()] {
+            assert_eq!(nth_lucky(k as u64), Some(list[k - 1]), "nth {k}");
+        }
+    }
+
+    #[test]
+    fn is_lucky_matches_membership() {
+        let list = list_1m();
+        let set: std::collections::HashSet<u64> = list.iter().copied().collect();
+        for n in 0..3000 {
+            assert_eq!(is_lucky(n), set.contains(&n), "{n}");
+        }
+        for &n in list.iter().rev().take(60) {
+            assert!(is_lucky(n), "{n}");
+        }
+        for n in (990_000..1_000_000).step_by(7) {
+            assert_eq!(is_lucky(n), set.contains(&n), "{n}");
+        }
+    }
+
+    #[test]
+    fn bounds_bracket_the_exact_count_and_nth() {
+        let list = list_1m();
+        for n in [48u64, 100, 1000, 8999, 9000, 10_000, 100_000, 999_999] {
+            let exact = list.iter().filter(|&&x| x <= n).count() as u64;
+            let (lo, hi) = (lucky_count_lower(n), lucky_count_upper(n));
+            assert!(lo <= exact && exact <= hi, "{n}: {lo} {exact} {hi}");
+            let approx = lucky_count_approx(n);
+            assert!(approx.abs_diff(exact) * 50 <= exact + 50, "{n}: {approx}");
+        }
+        for k in [49u64, 100, 122, 123, 1000, 4097, 8200, 8201, 50_000, 70_000] {
+            let exact = list[(k - 1) as usize];
+            assert_eq!(nth_lucky(k), Some(exact));
+            let (lo, hi) = (nth_lucky_lower(k).unwrap(), nth_lucky_upper(k).unwrap());
+            assert!(lo <= exact && exact <= hi, "{k}: {lo} {exact} {hi}");
+            assert!(nth_lucky_approx(k).unwrap().abs_diff(exact) * 10 <= exact);
+        }
+        assert_eq!(nth_lucky_lower(0), None);
+        assert_eq!(nth_lucky_upper(0), None);
+        assert_eq!(nth_lucky_approx(0), None);
+        assert_eq!(nth_lucky_lower(5), Some(13));
+    }
+
+    #[test]
+    fn approximations_cover_every_correction_band() {
+        let mut last = 0;
+        for n in [
+            49u64,
+            255,
+            256,
+            2047,
+            2048,
+            16_383,
+            16_384,
+            65_536,
+            65_537,
+            1_048_575,
+            1_048_576,
+            67_108_864,
+            4_294_967_296,
+            68_719_476_736,
+            1_099_511_627_776,
+        ] {
+            let v = nth_lucky_approx(n).unwrap();
+            assert!(v > last, "{n}");
+            assert!(nth_lucky_lower(n).unwrap() <= v && v <= nth_lucky_upper(n).unwrap() + 1);
+            last = v;
+        }
+        // Large-n count bounds go through the interpolation search.
+        for n in [40_000_000u64, 1_000_000_000, 1_000_000_000_000] {
+            let (lo, ap, hi) = (
+                lucky_count_lower(n),
+                lucky_count_approx(n),
+                lucky_count_upper(n),
+            );
+            assert!(lo <= ap && ap <= hi, "{n}: {lo} {ap} {hi}");
+        }
+        assert!(lucky_count_upper(39_999_999) > 0);
+    }
+
+    #[test]
+    fn inverse_search_on_nonlinear_functions() {
+        // The result brackets n: it is a crossing point of the monotone function.
+        fn crossing(f: fn(u64) -> Option<u64>, r: u64, n: u64) -> bool {
+            let v = |x: u64| f(x).unwrap();
+            (v(r) <= n && v(r + 1) > n) || (v(r) >= n && (r == 0 || v(r - 1) < n))
+        }
+        let square: fn(u64) -> Option<u64> = |x| Some(x * x / 7);
+        let root: fn(u64) -> Option<u64> = |x| Some(((x as f64).sqrt() * 5.0) as u64);
+        let flat: fn(u64) -> Option<u64> = |x| Some(x / 50);
+        for n in (1..400u64).chain([1000, 5000, 77_777]) {
+            let r = inverse(0, 1_000_000, n, square);
+            assert!(crossing(square, r, n), "square {n} {r}");
+            let r = inverse(0, 1_000_000_000_000, n, root);
+            assert!(crossing(root, r, n), "root {n} {r}");
+            let r = inverse(0, 100_000_000, n, flat);
+            assert!(crossing(flat, r, n), "flat {n} {r}");
+        }
+        // A function that always fails reads as zero.
+        assert_eq!(inverse(0, 10, 3, |_| None), 10);
+    }
 }

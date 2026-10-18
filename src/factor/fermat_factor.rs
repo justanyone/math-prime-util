@@ -1,0 +1,100 @@
+use crate::{gcd, is_prime, sqrtint};
+
+/// Tries Fermat's difference of squares method.
+///
+/// Port of `factor.c::fermat_factor` and the `XS.xs` factor wrapper in MPU 0.75.
+/// `None` uses 64 million rounds. A failed attempt retains the cofactor.
+/// The returned factors can be composite. Zero returns `[0]`; one returns `[]`.
+///
+/// ```
+/// use math_prime_util::fermat_factor;
+/// assert_eq!(fermat_factor(91, None), vec![7, 13]);
+/// ```
+pub fn fermat_factor(n: u64, rounds: Option<u64>) -> Vec<u64> {
+    attempt(n, |n| split(n, rounds.unwrap_or(64_000_000)))
+}
+
+fn split(n: u64, mut rounds: u64) -> u64 {
+    let root = sqrtint(n);
+    let mut x = i128::from(2 * root + 1);
+    let mut y = 1;
+    let mut r = -i128::from(n - root * root);
+    while r != 0 {
+        if rounds == 0 {
+            return n;
+        }
+        rounds -= 1;
+        r += x;
+        x += 2;
+        loop {
+            r -= y;
+            y += 2;
+            if r <= 0 {
+                break;
+            }
+        }
+    }
+    u64::try_from((x - y) / 2).unwrap_or(n)
+}
+
+// The common public wrapper in XS.xs, not a recursive prime factorization.
+pub(super) fn attempt(n: u64, method: impl FnOnce(u64) -> u64) -> Vec<u64> {
+    attempt_list(n, |n| pair(n, method(n)))
+}
+
+pub(super) fn pair(n: u64, f: u64) -> Vec<u64> {
+    let f = gcd(n, f);
+    if f > 1 && f < n {
+        vec![f.min(n / f), f.max(n / f)]
+    } else {
+        vec![n]
+    }
+}
+
+pub(super) fn attempt_list(mut n: u64, method: impl FnOnce(u64) -> Vec<u64>) -> Vec<u64> {
+    if n == 0 {
+        return vec![0];
+    }
+    let mut result = Vec::new();
+    for p in [2, 3, 5] {
+        while n % p == 0 {
+            result.push(p);
+            n /= p;
+        }
+    }
+    if n > 1 {
+        if is_prime(n) != 0 {
+            result.push(n);
+        } else {
+            result.extend(method(n));
+        }
+    }
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{pair, split};
+
+    #[test]
+    fn pair_requires_a_proper_divisor() {
+        assert_eq!(pair(15, 1), [15]);
+        assert_eq!(pair(15, 15), [15]);
+        assert_eq!(pair(15, 0), [15]);
+        assert_eq!(pair(15, 3), [3, 5]);
+        assert_eq!(pair(15, 5), [3, 5]);
+        assert_eq!(pair(15, 30), [15]);
+        assert_eq!(pair(30, 12), [5, 6]);
+        assert_eq!(pair(2, 1), [2]);
+    }
+
+    #[test]
+    fn split_returns_the_difference_of_squares_half() {
+        // 91 = 10^2 - 3^2 = (10 - 3)(10 + 3).
+        assert_eq!(split(91, 1000), 7);
+        // 143 = 12^2 - 1^2 = 11 * 13.
+        assert_eq!(split(143, 1000), 11);
+        // Round limit: 0 rounds stops before the first step.
+        assert_eq!(split(91, 0), 91);
+    }
+}

@@ -3,6 +3,11 @@ use crate::int::{gcd, is_square, mont::Mont};
 use crate::lucas::lucas_sequence;
 use crate::modular::{addmod_u, mulmod_u, powmod_u};
 
+mod extras;
+mod perrin;
+pub use extras::*;
+pub use perrin::*;
+
 fn jacobi(mut a: u64, mut n: u64) -> i8 {
     let mut sign = 1;
     while a != 0 {
@@ -367,7 +372,7 @@ pub fn is_bpsw_prime(n: u64) -> u8 {
 ///
 /// Port of MPU `util.c`, `is_prime`, for the unsigned 64-bit range. The
 /// result follows `is_prob_prime`, which gives the deterministic answer for
-/// every `u64`.
+/// every `u64`. Inputs above 64 bits use [`is_prime_u128`](crate::is_prime_u128).
 ///
 /// ```
 /// use math_prime_util::is_prime;
@@ -532,4 +537,214 @@ pub fn is_mersenne_prime(p: u64) -> Option<bool> {
     } else {
         None
     }
+}
+
+/// Tests the default Frobenius congruence.
+///
+/// Port of MPU `primality.c`, `is_frobenius_pseudoprime`.
+///
+/// # Panics
+/// Panics if parameter selection exceeds the native C bound.
+///
+/// ```
+/// assert!(math_prime_util::is_frobenius_pseudoprime(101));
+/// ```
+pub fn is_frobenius_pseudoprime(n: u64) -> bool {
+    if n < 11 {
+        return matches!(n, 2 | 3 | 5 | 7);
+    }
+    if n % 2 == 0 || n == u64::MAX {
+        return false;
+    }
+    let mut p = -1;
+    loop {
+        p += 2;
+        if p == 3 {
+            p = 5;
+        }
+        let d = frobenius_discriminant(p, 2);
+        let k = signed_jacobi(d, n);
+        if p == 10_001 && is_square(n) {
+            return false;
+        }
+        if k != 1 {
+            return k != 0 && is_frobenius_pseudoprime_pq(n, p, 2);
+        }
+    }
+}
+
+fn frobenius_discriminant(p: i64, q: i64) -> i64 {
+    const MAX: u64 = 3_037_000_497;
+    assert!(
+        p.unsigned_abs() <= MAX && q.unsigned_abs() <= MAX,
+        "Frobenius P,Q out of range"
+    );
+    p * p - 4 * q
+}
+
+/// Tests the Frobenius congruence with parameters P and Q.
+///
+/// Port of MPU `primality.c`, `is_frobenius_pseudoprime_pq`.
+///
+/// # Panics
+/// Panics if either parameter has magnitude above 3,037,000,497 or the
+/// discriminant is a nonnegative square, after the small-input checks.
+///
+/// ```
+/// assert!(math_prime_util::is_frobenius_pseudoprime_pq(101, 1, -1));
+/// ```
+pub fn is_frobenius_pseudoprime_pq(n: u64, p: i64, q: i64) -> bool {
+    if n < 4 {
+        return matches!(n, 2 | 3);
+    }
+    if n % 2 == 0 || n == u64::MAX {
+        return false;
+    }
+    let d = frobenius_discriminant(p, q);
+    assert!(
+        d < 0 || !is_square(d.unsigned_abs()),
+        "invalid Frobenius P,Q"
+    );
+    for value in [q.unsigned_abs(), d.unsigned_abs()] {
+        let g = gcd(n, value);
+        if g != 1 {
+            return g == n && is_prob_prime(n) != 0;
+        }
+    }
+    let k = signed_jacobi(d, n);
+    if k == 0 {
+        return false;
+    }
+    let qu = q.unsigned_abs() % n;
+    let qu = if q < 0 && qu != 0 { n - qu } else { qu };
+    let expected = if k == 1 { 2 } else { addmod_u(qu, qu, n) };
+    let index = if k == 1 { n - 1 } else { n + 1 };
+    let (u, v, _) = lucas_sequence(n, p, q, index);
+    u == 0 && v == expected
+}
+
+/// Tests the Frobenius congruence with Khashin's parameter selection.
+///
+/// Port of MPU `primality.c`, `is_frobenius_khashin_pseudoprime`.
+///
+/// ```
+/// assert!(math_prime_util::is_frobenius_khashin_pseudoprime(101));
+/// ```
+pub fn is_frobenius_khashin_pseudoprime(n: u64) -> bool {
+    if n < 7 {
+        return matches!(n, 2 | 3 | 5);
+    }
+    if n % 2 == 0 || n == u64::MAX || is_square(n) {
+        return false;
+    }
+    let mut k = 2;
+    let mut c = 1;
+    if n % 4 == 3 {
+        c = n - 1;
+    } else if n % 8 == 5 {
+        c = 2;
+    } else {
+        loop {
+            c += 2;
+            if c == 9 || (c >= 15 && [3, 5, 7, 11, 13].iter().any(|p| c % p == 0)) {
+                continue;
+            }
+            k = jacobi(c, n);
+            if k != 1 {
+                break;
+            }
+        }
+    }
+    if k == 0 || (k == 2 && n % 3 == 0) {
+        return false;
+    }
+    let m = Mont::new(n);
+    let c = m.to_mont(c);
+    let expected = if k == 2 {
+        addmod_u(m.one, m.one, n)
+    } else {
+        m.one
+    };
+    let (mut a, mut b) = (expected, m.one);
+    let (mut ra, mut rb) = (a, b);
+    let mut d = n - 1;
+    while d != 0 {
+        if d & 1 != 0 {
+            let ta = ra;
+            ra = addmod_u(m.mul(ta, a), m.mul(m.mul(rb, b), c), n);
+            rb = addmod_u(m.mul(rb, a), m.mul(ta, b), n);
+        }
+        d >>= 1;
+        if d != 0 {
+            let t = m.mul(m.sqr(b), c);
+            b = m.mul(b, a);
+            b = addmod_u(b, b, n);
+            a = addmod_u(m.sqr(a), t, n);
+        }
+    }
+    ra == expected && rb == n - m.one
+}
+
+/// Tests the Frobenius congruence with Underwood's parameter selection.
+///
+/// Port of MPU `primality.c`, `is_frobenius_underwood_pseudoprime`.
+///
+/// # Panics
+/// Panics if no parameter is found below 1,000,000.
+///
+/// ```
+/// assert!(math_prime_util::is_frobenius_underwood_pseudoprime(101));
+/// ```
+pub fn is_frobenius_underwood_pseudoprime(n: u64) -> bool {
+    if n < 7 {
+        return matches!(n, 2 | 3 | 5);
+    }
+    if n % 2 == 0 || n == u64::MAX {
+        return false;
+    }
+    let mut x = 0_i64;
+    loop {
+        if !matches!(x, 2 | 4 | 7 | 8 | 10 | 14 | 16 | 18) {
+            assert!(x <= 999_999, "Underwood parameter search failed");
+            let j = signed_jacobi(x * x - 4, n);
+            if j == -1 {
+                break;
+            }
+            if j == 0 || (x == 20 && is_square(n)) {
+                return false;
+            }
+        }
+        x += 1;
+    }
+    let x = x.unsigned_abs();
+    let g = gcd(n, mulmod_u((x + 4) % n, (2 * x + 5) % n, n));
+    if g != 1 && g != n {
+        return false;
+    }
+    let m = Mont::new(n);
+    let x = m.to_mont(x % n);
+    let two = addmod_u(m.one, m.one, n);
+    let multiplier = addmod_u(x, two, n);
+    let expected = addmod_u(addmod_u(x, x, n), m.to_mont(5), n);
+    let (mut a, mut b) = (m.one, two);
+    let np1 = n + 1;
+    for bit in (0..np1.ilog2()).rev() {
+        let t = if x == 0 {
+            addmod_u(b, b, n)
+        } else {
+            addmod_u(m.mul(a, x), addmod_u(b, b, n), n)
+        };
+        b = m.mul(sub(b, a, n), addmod_u(b, a, n));
+        a = m.mul(a, t);
+        if (np1 >> bit) & 1 != 0 {
+            let t = b;
+            b = sub(addmod_u(b, b, n), a, n);
+            a = if x == 0 {
+                addmod_u(addmod_u(a, a, n), t, n)
+            } else {
+                addmod_u(m.mul(a, multiplier), t, n)
+            };
+        }
+    }
+    a == 0 && b == expected
 }

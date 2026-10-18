@@ -332,3 +332,162 @@ pub fn urandomr(low: u64, high: u64) -> Option<u64> {
         low + urandomm(width + 1)
     })
 }
+
+mod random_maurer_prime_with_cert;
+pub use random_maurer_prime_with_cert::random_maurer_prime_with_cert;
+mod random_shawe_taylor_prime;
+pub use random_shawe_taylor_prime::random_shawe_taylor_prime;
+mod random_shawe_taylor_prime_with_cert;
+pub use random_shawe_taylor_prime_with_cert::random_shawe_taylor_prime_with_cert;
+mod random_semiprime;
+pub use random_semiprime::random_semiprime;
+
+mod random_maurer_prime;
+mod random_proven_prime;
+mod random_proven_prime_with_cert;
+mod random_strong_prime;
+pub use random_maurer_prime::random_maurer_prime;
+pub use random_proven_prime::random_proven_prime;
+pub use random_proven_prime_with_cert::random_proven_prime_with_cert;
+pub use random_strong_prime::random_strong_prime;
+
+mod random_unrestricted_semiprime;
+pub use random_unrestricted_semiprime::random_unrestricted_semiprime;
+mod random_factored_integer;
+pub use random_factored_integer::random_factored_integer;
+mod randperm;
+pub use randperm::randperm;
+mod shuffle;
+pub use shuffle::shuffle;
+mod random_prime;
+pub use random_prime::random_prime;
+mod random_ndigit_prime;
+pub use random_ndigit_prime::random_ndigit_prime;
+mod random_nbit_prime;
+pub use random_nbit_prime::random_nbit_prime;
+mod random_safe_prime;
+pub use random_safe_prime::random_safe_prime;
+mod vecsample;
+pub use vecsample::vecsample;
+mod miller_rabin_random;
+pub use miller_rabin_random::miller_rabin_random;
+
+#[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn seeding_is_deterministic_and_streams_compose() {
+        srand(15);
+        let a = (irand32(), irand(), irand64(), random_bytes(5));
+        srand(15);
+        assert_eq!(a, (irand32(), irand(), irand64(), random_bytes(5)));
+        // irand64 is two consecutive 32-bit words, high word first.
+        srand(15);
+        let hi = u64::from(irand32());
+        let lo = u64::from(irand32());
+        srand(15);
+        assert_eq!(irand64(), (hi << 32) | lo);
+        // Different seeds differ.
+        srand(16);
+        assert_ne!(irand64(), (hi << 32) | lo);
+        csrand(b"abc");
+        let x = random_bytes(16);
+        csrand(b"abc");
+        assert_eq!(random_bytes(16), x);
+    }
+
+    #[test]
+    fn byte_stream_crosses_refill_boundaries() {
+        srand(7);
+        let whole = random_bytes(3000);
+        srand(7);
+        let mut parts = Vec::new();
+        for len in [1usize, 1023, 1, 0, 1500, 475] {
+            parts.extend(random_bytes(len));
+        }
+        assert_eq!(parts.len(), 3000);
+        assert_eq!(whole, parts);
+        assert_eq!(random_bytes(0), Vec::<u8>::new());
+    }
+
+    #[test]
+    fn floats_are_scaled_unit_values() {
+        srand(1);
+        for _ in 0..200 {
+            let u = drand(1.0);
+            assert!((0.0..1.0).contains(&u));
+            let z = drand(0.0);
+            assert!((0.0..1.0).contains(&z));
+            let s = rand(250.0);
+            assert!((0.0..250.0).contains(&s));
+        }
+    }
+
+    #[test]
+    fn bounded_integers_stay_in_range() {
+        srand(99);
+        assert_eq!(urandomm(1), 0);
+        for m in [
+            2u64,
+            3,
+            10,
+            1000,
+            u64::from(u32::MAX),
+            1 << 32,
+            (1 << 32) + 1,
+            u64::MAX,
+        ] {
+            for _ in 0..50 {
+                assert!(urandomm(m) < m, "{m}");
+            }
+        }
+        let mut seen = [false; 7];
+        for _ in 0..500 {
+            seen[urandomm(7) as usize] = true;
+        }
+        assert!(seen.iter().all(|&b| b));
+        assert_eq!(urandomb(0), 0);
+        for bits in [1u32, 8, 32, 33, 63, 64] {
+            for _ in 0..50 {
+                let v = urandomb(bits);
+                assert!(bits == 64 || v < 1 << bits, "{bits}");
+            }
+        }
+        assert_eq!(urandomr(5, 4), None);
+        assert_eq!(urandomr(9, 9), Some(9));
+        for _ in 0..50 {
+            assert!((3..=8).contains(&urandomr(3, 8).unwrap()));
+            assert!(urandomr(0, u64::MAX).is_some());
+            assert!(urandomr(u64::MAX - 3, u64::MAX).unwrap() >= u64::MAX - 3);
+        }
+    }
+
+    #[test]
+    fn entropy_comes_from_the_os() {
+        assert_eq!(entropy_bytes(0).unwrap(), Vec::<u8>::new());
+        let a = entropy_bytes(32).unwrap();
+        let b = entropy_bytes(32).unwrap();
+        assert_eq!((a.len(), b.len()), (32, 32));
+        assert_ne!(a, b);
+    }
+
+    #[test]
+    #[should_panic(expected = "too many bits")]
+    fn urandomb_rejects_wide_requests() {
+        urandomb(65);
+    }
+
+    #[test]
+    #[should_panic(expected = "modulus must be positive")]
+    fn urandomm_rejects_zero() {
+        urandomm(0);
+    }
+
+    #[test]
+    #[should_panic(expected = "exceeds MPU limit")]
+    fn random_bytes_rejects_huge_requests() {
+        random_bytes(2_147_483_647);
+    }
+}

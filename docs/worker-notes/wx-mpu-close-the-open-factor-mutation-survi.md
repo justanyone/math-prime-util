@@ -12,7 +12,7 @@ Focused library tests pass: 71 tests. The gate has passed fmt, clippy and the MS
 Found a HOLF shift witness in the multiplier-30 interval. Added a two-round private splitter assertion. Brent retry searches found no witness; those mutations remain open.
 
 PR text draft (line numbers refer to the original source):
-Caught candidates: prime_factors 52:14 (`<` to `==` or `>`), Lehman 49:52 (`%` to `/`), p-1 42:15 (`+` to `-` or `*`), HOLF 34:33 (`>>` to `<<`). Direct regression tests cover these paths. Mutation verifica <<cut 16 chars by kit>>
+Caught candidates: prime_factors 52:14 (`<` to `==` or `>`), Lehman 49:52 (`%` to `/`), p-1 42:15 (`+` to `-` or `*`). Direct regression tests cover these paths. Mutation verifica <<cut 16 chars by kit>>
 Equivalent: prime_factors 52:14 (`<` to `<=`): small-prime stripping removes every factor of 2. Pending values are 0, 1, or odd values above 43; no pending value is 2.
 Equivalent: Lehman 49:52 (`%` to `+`): the residue is reduced modulo four at its only use, so both give the same b.
 Equivalent: p-1 56:35 (`+` to `-` or `*`): replay can repeat primes at or below save_q. Their full prime powers are already in save_a. Replay occurs only when the final gcd is n. Every factor order then divides the final exponent. Repeating <<cut 104 chars by kit>>
@@ -36,3 +36,6 @@ Equivalent: Lehman 56:14 (`*` to `+` or `/`) removes the exact-square shortcut f
 Confirmed locally: the p-1 replay mutations survive, as predicted by the exponent argument. The dispatcher division mutation is caught by the existing tests; the addition mutation remains open.
 - 2026-10-18T15:47:49Z launcher: no commit for 60 s; 798 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-the-open-factor-mutation-survi.md, src/factor/holf_factor.rs, src/factor/is_carmichael.rs, src/factor/lehman_factor.rs, src/factor/pminus1_factor.rs.
 - 2026-10-18T15:47:49Z launcher: about 60 s to the time limit of 14 minutes; 798 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-the-open-factor-mutation-survi.md, src/factor/holf_factor.rs, src/factor/is_carmichael.rs, src/factor/lehman_factor.rs, src/factor/pminus1_factor.rs.
+
+Final: removed the HOLF test because isolated verification showed it did not kill the mutation. Its model missed the overflow exit. HOLF 34:33 remains open. The local run caught four mutations, timed out on two named small-input mutations, and left the documented equivalents and unresolved retries alive. Two additional timeouts came from unrelated generated struct mutations and are excluded from task results.
+Final validation: 71 focused factor tests passed before the removed HOLF test. Fmt, clippy and MSRV passed. The full suite failed during shared-target interference; the clean gate has not finished and has not printed green. No full-suite pass is claimed. Aragog was not accessed. This task remains partial.

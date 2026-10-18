@@ -32,6 +32,8 @@ Run `tools/gate.sh` for format, lint, MSRV, test, and documentation checks.
 The local gate does not measure coverage.
 
 The **whole-crate mutation score is not yet available**.
+Cargo-mutants 27.1.0 found **21,988 candidates in 21 modules** with all features.
+This is an inventory, not a completed mutation run.
 A score needs completed module runs and a reviewed survivor list.
 See the [mutation run notes](docs/worker-notes/wx-mpu-whole-crate-mutation-score-and-readm.md)
 for this checkout's results and limits.

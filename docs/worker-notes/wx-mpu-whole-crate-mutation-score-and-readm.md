@@ -39,3 +39,4 @@ Cargo-mutants 27.1.0, all features, 2026-10-18. These are candidates, not tested
 Total: 21988 candidates. No whole-crate score can be computed from this inventory.
 Focused validation passed: tools/test.sh --test mutants_rest (14 tests). The gate is still running.
 The focused regression suite passed all 14 tests. The whole-crate inventory is being collected. The gate and arith baseline share the worktree target directory, so Cargo may serialize their builds.
+Inventory complete: 21988 candidates in 21 modules. README distinguishes candidate totals from a mutation score. There are no completed mutant outcomes yet, so survivor triage cannot start.

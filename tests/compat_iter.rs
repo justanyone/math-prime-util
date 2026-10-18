@@ -332,6 +332,7 @@ fn lastfor_row(func: &str, args: &[String]) -> String {
     use math_prime_util::{lastfor, PartitionOptions};
     let cont = ControlFlow::<()>::Continue(());
     let num = |i: usize| -> u64 { args[i].parse().expect("numeric fixture arg") };
+    let unum = |i: usize| -> usize { args[i].parse().expect("numeric fixture arg") };
     match func {
         "lastfor_forprimes_forprimes"
         | "lastfor_forprimes_forcomposites"
@@ -393,7 +394,7 @@ fn lastfor_row(func: &str, args: &[String]) -> String {
         }
         "lastfor_forcomb_sum11" => {
             let mut c = 0u64;
-            let _ = math_prime_util::forcomb(num(0) as usize, Some(num(1) as usize), |v| {
+            let _ = math_prime_util::forcomb(unum(0), Some(unum(1)), |v| {
                 if v.iter().sum::<usize>() > 11 {
                     return lastfor();
                 }
@@ -412,9 +413,9 @@ fn lastfor_row(func: &str, args: &[String]) -> String {
                 cont
             };
             let _ = if func == "lastfor_forperm_pos3_is5" {
-                math_prime_util::forperm(num(0) as usize, f)
+                math_prime_util::forperm(unum(0), f)
             } else {
-                math_prime_util::forderange(num(0) as usize, f)
+                math_prime_util::forderange(unum(0), f)
             };
             t.to_string()
         }

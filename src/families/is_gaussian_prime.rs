@@ -178,7 +178,99 @@ fn modpow(mut base: Wide, mut exp: Wide, m: Wide) -> Wide {
 
 #[cfg(test)]
 mod tests {
-    use super::is_gaussian_prime;
+    use super::{Wide, decrement, is_gaussian_prime, split_even};
+
+    #[test]
+    fn wide_shift_carries_the_high_word() {
+        let n = Wide { hi: 1, lo: 0b10 };
+        assert_eq!(
+            n.shr1(),
+            Wide {
+                hi: 0,
+                lo: (1 << 127) | 1
+            }
+        );
+        let n = Wide {
+            hi: 1,
+            lo: u128::MAX,
+        };
+        assert_eq!(
+            n.shr1(),
+            Wide {
+                hi: 0,
+                lo: u128::MAX
+            }
+        );
+        let n = Wide { hi: 0, lo: 5 };
+        assert_eq!(n.shr1(), Wide { hi: 0, lo: 2 });
+        let n = Wide { hi: 3, lo: 0 };
+        assert_eq!(
+            n.shr1(),
+            Wide {
+                hi: 1,
+                lo: 1 << 127
+            }
+        );
+    }
+
+    #[test]
+    fn wide_add_carries_into_the_high_word() {
+        let a = Wide {
+            hi: 0,
+            lo: u128::MAX,
+        };
+        let b = Wide { hi: 0, lo: 2 };
+        assert_eq!(a.add(b), Wide { hi: 1, lo: 1 });
+        let c = Wide { hi: 1, lo: 7 };
+        let d = Wide { hi: 2, lo: 9 };
+        assert_eq!(c.add(d), Wide { hi: 3, lo: 16 });
+        assert_eq!(c.add(c), Wide { hi: 2, lo: 14 });
+        let e = Wide {
+            hi: 1,
+            lo: u128::MAX,
+        };
+        assert_eq!(e.add(d), Wide { hi: 4, lo: 8 });
+    }
+
+    #[test]
+    fn decrement_borrows_across_the_words() {
+        assert_eq!(
+            decrement(Wide { hi: 1, lo: 0 }),
+            Wide {
+                hi: 0,
+                lo: u128::MAX
+            }
+        );
+        assert_eq!(decrement(Wide { hi: 1, lo: 9 }), Wide { hi: 1, lo: 8 });
+        assert_eq!(decrement(Wide { hi: 0, lo: 1 }), Wide { hi: 0, lo: 0 });
+    }
+
+    #[test]
+    fn split_even_strips_every_factor_of_two() {
+        assert_eq!(
+            split_even(Wide { hi: 0, lo: 12 }),
+            (Wide { hi: 0, lo: 3 }, 2)
+        );
+        assert_eq!(
+            split_even(Wide { hi: 0, lo: 7 }),
+            (Wide { hi: 0, lo: 7 }, 0)
+        );
+        assert_eq!(
+            split_even(Wide { hi: 0, lo: 1 }),
+            (Wide { hi: 0, lo: 1 }, 0)
+        );
+        assert_eq!(
+            split_even(Wide {
+                hi: 0,
+                lo: 1 << 100
+            }),
+            (Wide { hi: 0, lo: 1 }, 100)
+        );
+        assert_eq!(
+            split_even(Wide { hi: 1, lo: 0 }),
+            (Wide { hi: 0, lo: 1 }, 128)
+        );
+    }
 
     #[test]
     fn small_axis_and_norm_cases() {

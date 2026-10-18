@@ -43,6 +43,8 @@ mod prime_omega;
 mod prime_signature;
 mod smooth_count;
 mod squfof_factor;
+#[cfg(test)]
+mod test_support;
 pub use cheb_factor::cheb_factor;
 pub use ecm::ecm_factor;
 pub use fermat_factor::fermat_factor;

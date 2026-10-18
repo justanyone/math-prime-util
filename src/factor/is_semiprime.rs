@@ -180,4 +180,20 @@ mod tests {
         assert!(f > 1 && f < n && n % f == 0);
         assert_eq!(factors(n), [1_000_003, 1_000_033]);
     }
+
+    #[test]
+    fn rho_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let mut h = 0;
+        for n in inputs() {
+            for a in [1, 3, 5, 7] {
+                let got = rho(n, a);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "rho({n},{a})");
+                }
+                h = fold_opt(h, got);
+            }
+        }
+        assert_eq!(h, 14_561_977_967_123_951_357);
+    }
 }

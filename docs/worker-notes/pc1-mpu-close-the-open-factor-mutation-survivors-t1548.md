@@ -7,3 +7,4 @@ Run focused factor tests and the required gate, recording remaining validation l
 - HOLF case constructed algebraically: 60*n is a difference of squares, while the first 30*n iteration misses. This distinguishes the exact open cutoff mutation.
 - Required gate started after formatting. Focused factor suite still running; mutation outcomes from the earlier factory run are not present locally.
 - Recovered prior notes from Git history: no report identifies the unnamed survivors. Prior claimed HOLF witness was withdrawn, so this run will verify the actual shifted code rather than rely on the construction alone.
+- Added explicit C-budget assertions at 45, 46 and 64 bits, plus four consecutive retry attempts. Independent modular calculation corrected the real fallback expectation to factor 31.

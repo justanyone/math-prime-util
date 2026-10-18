@@ -256,7 +256,7 @@ mod tests {
         });
         assert_eq!(factor, 13);
         assert_eq!(parameters, [7, 9, 11, 13]);
-        assert_eq!(super::retry_brent(403, brent), 13);
+        assert_eq!(super::retry_brent(403, brent), 31);
     }
 
     #[test]

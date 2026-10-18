@@ -330,7 +330,7 @@ fn prime_iterator_nested_streams_are_independent() {
 // failure to raise and are checked only as named error rows.
 #[allow(clippy::too_many_lines)] // Keep the scenario dispatcher together.
 fn lastfor_row(func: &str, args: &[String]) -> String {
-    use math_prime_util::{lastfor, PartitionOptions};
+    use math_prime_util::{PartitionOptions, lastfor};
     let cont = ControlFlow::<()>::Continue(());
     let num = |i: usize| -> u64 { args[i].parse().expect("numeric fixture arg") };
     let unum = |i: usize| -> usize { args[i].parse().expect("numeric fixture arg") };
@@ -445,11 +445,7 @@ fn lastfor_row(func: &str, args: &[String]) -> String {
                     ps.push(c);
                     cont
                 });
-                if stop {
-                    lastfor()
-                } else {
-                    cont
-                }
+                if stop { lastfor() } else { cont }
             });
             joined(ps, " ")
         }
@@ -457,11 +453,7 @@ fn lastfor_row(func: &str, args: &[String]) -> String {
             let mut t = 0;
             let _ = math_prime_util::forcomposites(0..=num(0), |n| {
                 t = n;
-                if n > 2000 {
-                    lastfor()
-                } else {
-                    cont
-                }
+                if n > 2000 { lastfor() } else { cont }
             });
             t.to_string()
         }

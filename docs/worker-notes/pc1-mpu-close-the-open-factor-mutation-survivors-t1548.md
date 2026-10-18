@@ -12,3 +12,5 @@ Run focused factor tests and the required gate, recording remaining validation l
 - First focused run: 73 passed, one failed because its binary predated the corrected Brent factor expectation (31). Corrected source is on disk; rerunning the focused suite. The new HOLF and dispatcher tests passed.
 - Validation continues: gate is compiling clippy dependencies; no lint errors reported. Public function checklist already covers these implementations, so STATUS.md remains unchanged.
 - Started the single required tools/test.sh whole-suite run after finishing source edits. Gate and tests use Cargo locking; no mutated build shares this target directory.
+- Gate fmt and clippy passed; gate advanced to the MSRV build. Waiting for focused and full-suite results before recording final validation status.
+- Focused validation passed: tools/test.sh --lib factor reports 74 passed, 0 failed. Three new regressions cover HOLF round sensitivity, dispatcher budgets and retry sequencing; unnamed survivors remain unclassified without their report.

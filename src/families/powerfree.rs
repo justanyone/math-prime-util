@@ -1,6 +1,5 @@
 //! Powerfree integers, from MPU 0.75 `powerfree.c`.
 #![allow(clippy::cast_possible_truncation)] // Sieve indices are bounded by native roots.
-use super::powerful::factor_exponents;
 use crate::rootint;
 
 pub(super) fn mobius(limit: u64) -> Vec<i8> {
@@ -62,79 +61,4 @@ pub(super) fn squarefree_count(n: u64) -> u64 {
     }
     u64::try_from(sum + mx_sum - i128::from(big_i - 1) * i128::from(mertens[d as usize]))
         .expect("count fits u64")
-}
-
-fn triangular(n: u64) -> u128 {
-    u128::from(n) * (u128::from(n) + 1) / 2
-}
-
-/// Sum positive `k`-powerfree integers up to `n` with wide arithmetic.
-/// Port of `powerfree.c` / `powerfree_sum`.
-/// ```
-/// assert_eq!(math_prime_util::powerfree_sum(10, 2), 34);
-/// ```
-pub fn powerfree_sum(n: u64, k: u32) -> u128 {
-    if k < 2 {
-        return u128::from(n >= 1);
-    }
-    let mu = mobius(rootint(n, k));
-    let mut sum = triangular(n);
-    let mut subtract = 0;
-    for (i, &m) in mu.iter().enumerate().skip(2) {
-        if m != 0 {
-            let ik = (i as u64).pow(k);
-            let term = u128::from(ik) * triangular(n / ik);
-            if m > 0 {
-                sum += term;
-            } else {
-                subtract += term;
-            }
-        }
-    }
-    sum - subtract
-}
-
-/// Remove all complete `k`th powers from `n`.
-/// Port of `powerfree.c` / `powerfree_part`.
-/// ```
-/// assert_eq!(math_prime_util::powerfree_part(48, 2), 3);
-/// ```
-pub fn powerfree_part(n: u64, k: u32) -> u64 {
-    if k < 2 || n <= 1 {
-        return u64::from(n == 1);
-    }
-    if k >= 64 {
-        return n;
-    }
-    factor_exponents(n)
-        .iter()
-        .map(|&(p, e)| p.pow(e % k))
-        .product()
-}
-
-/// Sum the powerfree parts of positive integers up to `n`.
-/// Port of `powerfree.c` / `powerfree_part_sum` and `fprod`.
-/// ```
-/// assert_eq!(math_prime_util::powerfree_part_sum(10, 2), 38);
-/// ```
-pub fn powerfree_part_sum(n: u64, k: u32) -> u128 {
-    if k < 2 || n <= 1 {
-        return u128::from(n >= 1);
-    }
-    let mut sum = triangular(n);
-    let mut subtract = 0;
-    for j in 2..=rootint(n, k) {
-        let factors = factor_exponents(j);
-        let product: u128 = factors
-            .iter()
-            .map(|&(p, _)| u128::from(p.pow(k)) - 1)
-            .product();
-        let term = product * triangular(n / j.pow(k));
-        if factors.len() % 2 == 0 {
-            sum += term;
-        } else {
-            subtract += term;
-        }
-    }
-    sum - subtract
 }

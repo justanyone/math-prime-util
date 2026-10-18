@@ -171,6 +171,84 @@ fn nonresidues_and_parallel_calls() {
     });
 }
 
+proptest! {
+    #[test]
+    fn fundamental_matches_shape(n in -4_000_i64..4_000) {
+        let r = n.rem_euclid(16);
+        let m = n.unsigned_abs();
+        let square_free = |x: u64| x != 0 && moebius(x) != 0;
+        let expect = if r == 8 || r == 12 {
+            square_free(m >> 2)
+        } else if r % 4 == 1 {
+            square_free(m)
+        } else {
+            false
+        };
+        prop_assert_eq!(is_fundamental(n), expect);
+        prop_assert_eq!(is_fundamental(n), is_fundamental(n));
+    }
+    #[test]
+    fn least_nonresidue(n in 3_u64..800) {
+        if let Some(a) = qnr(n) {
+            prop_assert!(is_prime(a) != 0);
+            prop_assert!(!is_qr(a, n));
+            for b in 1..a {
+                prop_assert!(is_qr(b, n));
+            }
+            prop_assert_eq!(qnr(n), Some(a));
+        }
+    }
+}
+
+#[test]
+fn prime_residue_matches_kronecker() {
+    // Odd primes. `is_qr` agrees with the Kronecker symbol on this set.
+    let primes = [
+        3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+    ];
+    for p in primes {
+        for a in 0..120_u64 {
+            let symbol = kronecker(i64::try_from(a).unwrap(), i64::try_from(p).unwrap());
+            assert_eq!(is_qr(a, p), symbol != -1, "a={a} p={p}");
+        }
+    }
+}
+
+#[test]
+fn residue_edges_repeat_and_races() {
+    assert_eq!(qnr(0), None);
+    assert_eq!(qnr(1), Some(1));
+    assert_eq!(qnr(2), Some(2));
+    assert!(!is_qr(0, 0));
+    assert!(!is_qr(1, 0));
+    assert!(!is_qr(2, 0));
+    assert!(!is_fundamental(0));
+    assert!(!is_fundamental(i64::MIN));
+    assert!(is_fundamental(-4));
+    assert!(!is_fundamental(4));
+    let samples = [1_u64, 2, 4, 6, 7, 8, 9, 15, 16, 105, 10_007];
+    for &n in &samples {
+        assert_eq!(qnr(n), qnr(n));
+        assert_eq!(is_qr(0, n), is_qr(0, n));
+        assert_eq!(is_qr(2, n), is_qr(2, n));
+    }
+    let expected_qnr = qnr(10_007);
+    let expected_qr = is_qr(10, 10_007);
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                assert_eq!(qnr(0), None);
+                assert_eq!(qnr(10_007), expected_qnr);
+                assert!(!is_qr(1, 0));
+                assert_eq!(is_qr(10, 10_007), expected_qr);
+                assert!(!is_fundamental(i64::MIN));
+                assert!(is_fundamental(-4));
+                assert_eq!(is_fundamental(12), is_fundamental(12));
+            });
+        }
+    });
+}
+
 #[test]
 fn jordan_totient_power_of_two_boundary() {
     // Regression: 2^64 overflowed u64 before the subtraction; the result u64::MAX is representable.
@@ -194,6 +272,43 @@ proptest! {
 
 proptest! {
     #[test]
+    fn crt_shared_moduli(x in any::<u64>(), m in 1_u64..1000, n in 1_u64..1000) {
+        let input = [(x % m, m), (x % n, n), (x % m, m)];
+        let result = chinese2(&input).unwrap();
+        let modulus = m / gcd(m, n) * n;
+        prop_assert_eq!(result, (x % modulus, modulus));
+        prop_assert_eq!(input[0], (x % m, m));
+    }
+
+    #[test]
+    fn order_divides_group_exponent(a in any::<u64>(), n in 2_u64..5000) {
+        let order = znorder(a, n);
+        prop_assert_eq!(order.is_some(), gcd(a, n) == 1);
+        if let Some(order) = order {
+            prop_assert_eq!(carmichael_lambda(n) % order, 0);
+            prop_assert_eq!(powmod(a, order, n), Some(1));
+        }
+    }
+
+    #[test]
+    fn arithmetic_summatory_differences(n in 1_u64..10_000) {
+        prop_assert_eq!(mertens(n) - mertens(n - 1), i64::from(moebius(n)));
+        prop_assert_eq!(sumliouville(n) - sumliouville(n - 1), i64::from(liouville(n)));
+    }
+
+    #[test]
+    fn mangoldt_prime_powers(n in 0_u64..100_000) {
+        let base = exp_mangoldt(n);
+        let exponent = is_prime_power(n);
+        if exponent == 0 {
+            prop_assert_eq!(base, 1);
+        } else {
+            prop_assert_ne!(is_prime(base), 0);
+            prop_assert_eq!(base.checked_pow(exponent), Some(n));
+        }
+    }
+
+    #[test]
     fn prime_factor_sums_add(a in 1_u64..10000, b in 1_u64..10000) {
         prop_assert_eq!(sopfr(a * b), sopfr(a) + sopfr(b));
         if gcd(a, b) == 1 {
@@ -216,6 +331,87 @@ proptest! {
     #[test]
     fn kronecker_denominator_product(a in -1000_i64..1000, m in -1000_i64..1000, n in -1000_i64..1000) {
         prop_assert_eq!(kronecker(a, m * n), kronecker(a, m) * kronecker(a, n));
+    }
+}
+
+#[test]
+fn residue_ring_exhaustive() {
+    for n in 1..150 {
+        let mut least_root = None;
+        for a in 0..n {
+            let expected_order = if n == 1 {
+                Some(1)
+            } else {
+                (1..=euler_phi(n)).find(|&k| powmod(a, k, n) == Some(1))
+            };
+            assert_eq!(znorder(a, n), expected_order, "order({a}, {n})");
+            let primitive = expected_order == Some(euler_phi(n));
+            assert_eq!(is_primitive_root(a, n), Some(primitive), "root({a}, {n})");
+            if primitive && least_root.is_none() {
+                least_root = Some(a);
+            }
+            assert_eq!(is_primitive_root(a + n, n), Some(primitive));
+        }
+        assert_eq!(znprimroot(n), least_root, "least root({n})");
+    }
+}
+
+#[test]
+fn summatory_table_and_sieve_boundaries() {
+    let (mut m, mut l) = (0, 0);
+    for n in 0..=1_025 {
+        if n > 0 {
+            m += i64::from(moebius(n));
+            l += i64::from(liouville(n));
+        }
+        assert_eq!(mertens(n), m, "M({n})");
+        assert_eq!(sumliouville(n), l, "L({n})");
+    }
+    assert_eq!(liouville(0), -1);
+    assert_eq!(liouville(1_u64 << 63), -1);
+    assert_eq!(liouville(1_u64 << 62), 1);
+    for n in [0, 1, 12, 36, u64::MAX] {
+        assert_eq!(exp_mangoldt(n), 1);
+    }
+    for (n, p) in [
+        (1_u64 << 63, 2),
+        (3_u64.pow(40), 3),
+        (11_u64.pow(18), 11),
+        (18_446_744_073_709_551_557, 18_446_744_073_709_551_557),
+    ] {
+        assert_eq!(exp_mangoldt(n), p);
+    }
+}
+
+#[test]
+fn crt_native_bounds() {
+    let high = 1_u64 << 63;
+    assert_eq!(chinese2(&[(7, high)]), Some((7, high)));
+    assert_eq!(chinese2(&[(7, high), (7, high)]), None);
+    assert_eq!(chinese2(&[(0, high), (0, 2)]), None);
+    assert_eq!(chinese2(&[(0, high), (0, 3)]), None);
+    assert_eq!(chinese2(&[(0, high), (0, 1)]), None);
+    assert_eq!(chinese2(&[(7, high - 1), (1, 2)]), Some((7, u64::MAX - 1)));
+    assert_eq!(chinese2(&[(0, 2), (0, 0)]), None);
+    assert_eq!(chinese2(&[(u64::MAX, 1), (4, 5)]), Some((4, 5)));
+}
+
+#[test]
+fn liouville_concurrent_repeated_calls() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(sumliouville(100), -2);
+                    assert_eq!(sumliouville(0), 0);
+                    assert_eq!(liouville(1), 1);
+                    assert_eq!(exp_mangoldt(121), 11);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
     }
 }
 
@@ -275,16 +471,131 @@ fn kronecker_signed_boundaries_and_concurrent_calls() {
     ] {
         assert_eq!(kronecker(a, b), expected);
     }
+}
+
+#[test]
+fn residue_ring_repeated_parallel_inputs() {
     let threads: Vec<_> = (0..4)
         .map(|_| {
             std::thread::spawn(|| {
                 for _ in 0..3 {
+                    assert_eq!(chinese2(&[(5, 12), (17, 18), (5, 12)]), Some((17, 36)));
+                    assert_eq!(znorder(2, 27), Some(18));
+                    assert_eq!(znprimroot(54), Some(5));
+                    assert_eq!(is_primitive_root(5, 54), Some(true));
+                    assert_eq!(znorder(0, 0), None);
+                    assert_eq!(znorder(0, 2), None);
+                    assert_eq!(znprimroot(0), None);
+                    assert_eq!(is_primitive_root(0, 0), None);
                     assert_eq!(sopfr(360), 17);
                     assert_eq!(sopf(360), 10);
                     let inputs = [(5, 12), (17, 18), (5, 12)];
                     assert_eq!(chinese(&inputs), Some(17));
                     assert_eq!(inputs, [(5, 12), (17, 18), (5, 12)]);
                     assert_eq!(kronecker(-7, 19), -1);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+proptest! {
+    #[test]
+    fn valuation_is_exact_power(n in 1_u64..50_000, k in 2_u64..300) {
+        let v = valuation(n, k).unwrap();
+        let mut rest = n;
+        for _ in 0..v {
+            prop_assert_eq!(rest % k, 0);
+            rest /= k;
+        }
+        prop_assert!(rest % k != 0);
+        // A second call uses no saved state.
+        prop_assert_eq!(valuation(n, k), Some(v));
+        if k == 2 {
+            prop_assert_eq!(v, u64::from(n.trailing_zeros()));
+        }
+    }
+
+    #[test]
+    fn valuation_adds_over_products(a in 1_u64..2_000, b in 1_u64..2_000, k in 2_u64..40) {
+        prop_assume!(is_prime(k) != 0);
+        let prod = a * b;
+        let va = valuation(a, k).unwrap();
+        let vb = valuation(b, k).unwrap();
+        prop_assert_eq!(valuation(prod, k), Some(va + vb));
+    }
+
+    #[test]
+    fn ramanujan_sum_depends_on_gcd(k in 1_u64..400, n in 1_u64..400) {
+        if gcd(k, n) == 1 {
+            prop_assert_eq!(ramanujan_sum(k, n), i64::from(moebius(k)));
+        }
+        prop_assert_eq!(ramanujan_sum(k, n), ramanujan_sum(k, gcd(k, n)));
+        let sum = (1..=k)
+            .filter(|d| k % d == 0)
+            .map(|d| ramanujan_sum(d, n))
+            .sum::<i64>();
+        let expect = if n % k == 0 { i64::try_from(k).unwrap() } else { 0 };
+        prop_assert_eq!(sum, expect);
+    }
+
+    #[test]
+    fn ramanujan_sum_multiplicative(a in 1_u64..60, b in 1_u64..60, n in 1_u64..120) {
+        if gcd(a, b) == 1 {
+            prop_assert_eq!(
+                ramanujan_sum(a * b, n),
+                ramanujan_sum(a, n) * ramanujan_sum(b, n)
+            );
+        }
+    }
+}
+
+#[test]
+fn valuation_rejects_bad_base_and_stays_pure() {
+    for k in [0, 1] {
+        assert!(std::panic::catch_unwind(|| valuation(12, k)).is_err());
+    }
+    // A rejected call must not change a later call.
+    assert_eq!(valuation(12, 2), Some(2));
+    assert_eq!(valuation(12, 2), Some(2));
+    assert_eq!(valuation(0, 9), None);
+    assert_eq!(valuation(1, 9), Some(0));
+    assert_eq!(valuation(1_u64 << 63, 2), Some(63));
+    assert_eq!(valuation(1_u64 << 62, 4), Some(31));
+    assert_eq!(valuation(u64::MAX, u64::MAX), Some(1));
+    assert_eq!(valuation(1000, 10), Some(3));
+    assert_eq!(valuation(96552, 6), Some(3));
+}
+
+#[test]
+fn ramanujan_sum_edges_and_repeat() {
+    assert_eq!(ramanujan_sum(0, 0), 0);
+    assert_eq!(ramanujan_sum(1, 1), 1);
+    assert_eq!(ramanujan_sum(12, 36), 4);
+    assert_eq!(ramanujan_sum(12, 36), ramanujan_sum(12, 36));
+    // g = 12 has a square factor, so the sum is zero.
+    assert_eq!(ramanujan_sum(12, 1), 0);
+    let p = next_prime(1_u64 << 63).unwrap();
+    assert_ne!(is_prime(p), 0);
+    assert_eq!(
+        ramanujan_sum(p, p),
+        i64::from_ne_bytes((p - 1).to_ne_bytes())
+    );
+}
+
+#[test]
+fn valuation_and_ramanujan_sum_concurrent() {
+    let threads: Vec<_> = (1_u64..=4)
+        .map(|n| {
+            std::thread::spawn(move || {
+                for _ in 0..3 {
+                    assert_eq!(valuation(72, 3), Some(2));
+                    assert_eq!(valuation(1_u64 << 40, 2), Some(40));
+                    assert_eq!(ramanujan_sum(12, 36), 4);
+                    assert_eq!(ramanujan_sum(n, 1), i64::from(moebius(n)));
                 }
             })
         })

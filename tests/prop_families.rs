@@ -582,6 +582,28 @@ proptest! {
     }
 }
 
+proptest! {
+    #[test]
+    fn count_bounds_are_exact(n in any::<u64>()) {
+        let count = perfect_power_count_approx(n);
+        prop_assert_eq!(perfect_power_count_lower(n), count);
+        prop_assert_eq!(perfect_power_count_upper(n), count);
+        if n > 0 {
+            let previous = perfect_power_count_approx(n - 1);
+            let increment = u64::from(n == 1 || is_power_exp(n) > 1);
+            prop_assert_eq!(count, previous + increment);
+        }
+    }
+
+    #[test]
+    fn nth_and_count_are_inverses(n in 1u64..=4_297_615_581) {
+        let power = nth_perfect_power(n).unwrap();
+        prop_assert_eq!(perfect_power_count_approx(power), n);
+        prop_assert_eq!(perfect_power_count_approx(power - 1), n - 1);
+        prop_assert!(power == 1 || is_power_exp(power) > 1);
+    }
+}
+
 #[test]
 fn small_values_match_enumeration() {
     let powers: Vec<u64> = (0u64..=1000)
@@ -615,6 +637,22 @@ fn native_boundaries_and_repeat_calls() {
         assert_eq!(perfect_power_count(u64::MAX), 4_297_615_581);
         assert!(is_perfect_power(largest));
         assert!(!is_perfect_power(u64::MAX));
+    }
+}
+
+#[test]
+fn exhaustive_small_powers() {
+    let mut count = 0;
+    for n in 0..=10_000_u64 {
+        if n == 1
+            || (n > 1
+                && (2..=n.ilog2())
+                    .any(|k| (2..=100).any(|base: u64| base.checked_pow(k) == Some(n))))
+        {
+            count += 1;
+            assert_eq!(nth_perfect_power(count), Some(n));
+        }
+        assert_eq!(perfect_power_count_approx(n), count);
     }
 }
 
@@ -664,6 +702,22 @@ fn large_estimates_and_concurrent_calls() {
         }
     });
 }
+
+#[test]
+fn repeated_and_concurrent_calls_agree() {
+    let expected: Vec<_> = (0..100).map(nth_perfect_power).collect();
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            let expected = &expected;
+            scope.spawn(move || {
+                for (n, &power) in (0u64..).zip(expected) {
+                    assert_eq!(nth_perfect_power(n), power);
+                }
+            });
+        }
+    });
+}
+
 #[test]
 fn all_binary_exponents_are_perfect_powers() {
     for k in 2..=63 {
@@ -837,4 +891,56 @@ mod almost_omega_f03 {
             }
         });
     }
+}
+
+/// Input checks, a second call, and parallel calls for the powerfree sums.
+/// A bad `k`, a repeated call, or a second thread must not change the result.
+#[test]
+fn powerfree_validation_repeat_and_threads() {
+    for k in [0, 1] {
+        assert_eq!(powerfree_sum(0, k), 0, "k={k} n=0");
+        assert_eq!(powerfree_sum(8, k), 1, "k={k} n=8");
+        assert_eq!(powerfree_part(0, k), 0, "k={k} part 0");
+        assert_eq!(powerfree_part(1, k), 1, "k={k} part 1");
+        assert_eq!(powerfree_part(8, k), 0, "k={k} part 8");
+        assert_eq!(powerfree_part_sum(0, k), 0, "k={k} part sum 0");
+        assert_eq!(powerfree_part_sum(1, k), 1, "k={k} part sum 1");
+        assert_eq!(powerfree_part_sum(8, k), 1, "k={k} part sum 8");
+    }
+    assert_eq!(powerfree_part(1_024, 64), 1_024);
+    assert_eq!(powerfree_part(1_024, 100), 1_024);
+    assert_eq!(powerfree_part(1_024, 3), 2);
+    assert_eq!(powerfree_sum(0, 5), 0);
+    assert_eq!(powerfree_part(0, 5), 0);
+    assert_eq!(powerfree_part_sum(0, 5), 0);
+
+    let n = 300_u64;
+    let k = 2_u32;
+    let by_filter: u128 = (1..=n)
+        .filter(|&i| is_powerfree(i, k))
+        .map(u128::from)
+        .sum();
+    let by_parts: u128 = (1..=n).map(|i| u128::from(powerfree_part(i, k))).sum();
+    let first_sum = powerfree_sum(n, k);
+    let first_part = powerfree_part(720, k);
+    let first_part_sum = powerfree_part_sum(n, k);
+    assert_eq!(first_sum, by_filter);
+    assert_eq!(first_part_sum, by_parts);
+    // A second call uses no cache, so the result stays the same.
+    assert_eq!(powerfree_sum(n, k), first_sum);
+    assert_eq!(powerfree_part(720, k), first_part);
+    assert_eq!(powerfree_part_sum(n, k), first_part_sum);
+
+    let expected_part = powerfree_part(720, k);
+    std::thread::scope(|scope| {
+        for _ in 0..4 {
+            scope.spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(powerfree_sum(n, k), by_filter);
+                    assert_eq!(powerfree_part(720, k), expected_part);
+                    assert_eq!(powerfree_part_sum(n, k), by_parts);
+                }
+            });
+        }
+    });
 }

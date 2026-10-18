@@ -231,12 +231,13 @@ pub fn is_aks_prime(n: u64) -> bool {
 mod tests {
     use super::*;
     #[test]
+    #[allow(clippy::float_cmp)] // The out-of-range log is the sentinel -f64::MAX.
     fn polynomial_congruence() {
         assert!(test_anr(2, 101, 7));
         assert!(!test_anr(2, 15, 7));
         assert!(test_anr(102, 101, 7));
         assert_eq!(multiply(&[0, 1], &[0, 1], 7), vec![1, 0]);
-        assert_eq!(log_binomial(1, 2), -f64::MAX);
+        assert_eq!(log_binomial(1, 2).to_bits(), (-f64::MAX).to_bits());
     }
 }
 

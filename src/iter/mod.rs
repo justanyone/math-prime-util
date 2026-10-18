@@ -1,6 +1,23 @@
 //! Stateful loops from MPU 0.75 `XS.xs` and `lib/Math/Prime/Util/PP.pm`.
+mod forsquarefreeint;
+pub use forsquarefreeint::{SquarefreeIntegersIn, forsquarefreeint, squarefree_integers_in};
+mod forsquarefree;
+pub use forsquarefree::{SquarefreeIn, forsquarefree, squarefree_in};
+mod forfactored;
+pub use forfactored::{FactoredIn, factored_in, forfactored};
+mod foralmostprimes;
+pub use foralmostprimes::{AlmostPrimesIn, almost_primes_in, foralmostprimes};
 
-use std::ops::{ControlFlow, RangeInclusive};
+use std::ops::ControlFlow;
+
+mod forprimes;
+pub use forprimes::forprimes;
+mod forcomposites;
+pub use forcomposites::{CompositesIn, composites_in, forcomposites};
+mod foroddcomposites;
+pub use foroddcomposites::{foroddcomposites, odd_composites_in};
+mod forsemiprimes;
+pub use forsemiprimes::{SemiprimesIn, forsemiprimes, semiprimes_in};
 
 pub use crate::sieve::{PrimesIn, primes_in};
 
@@ -15,21 +32,6 @@ fn run<I: Iterator, B>(mut iter: I, f: impl FnMut(I::Item) -> ControlFlow<B>) ->
 /// ```
 pub fn lastfor() -> ControlFlow<()> {
     ControlFlow::Break(())
-}
-
-/// Visit primes in an inclusive range. See `XS.xs`, `forprimes`.
-/// ```
-/// use math_prime_util::forprimes;
-/// use std::ops::ControlFlow;
-/// let mut sum = 0;
-/// let _: ControlFlow<()> = forprimes(0..=7, |p| { sum += p; ControlFlow::Continue(()) });
-/// assert_eq!(sum, 17);
-/// ```
-pub fn forprimes<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(primes_in(range), f)
 }
 
 /// Create an iterator at the first prime at least `start`.
@@ -84,35 +86,6 @@ impl Iterator for PrimeIterator {
         self.cursor = Some(next);
         Some(next)
     }
-}
-
-/// Composite range state. See `XS.xs`, `foroddcomposites`.
-#[derive(Debug, Clone)]
-pub struct CompositesIn {
-    range: RangeInclusive<u64>,
-    odd: bool,
-}
-impl Iterator for CompositesIn {
-    type Item = u64;
-    fn next(&mut self) -> Option<u64> {
-        self.range
-            .find(|&n| n >= 4 && (!self.odd || n % 2 == 1) && crate::is_prime(n) == 0)
-    }
-}
-
-/// Iterate over composites. See `XS.xs`, `forcomposites`.
-/// ```
-/// assert_eq!(math_prime_util::composites_in(0..=9).collect::<Vec<_>>(), [4,6,8,9]);
-/// ```
-pub fn composites_in(range: RangeInclusive<u64>) -> CompositesIn {
-    CompositesIn { range, odd: false }
-}
-/// Iterate over odd composites. See `XS.xs`, `foroddcomposites`.
-/// ```
-/// assert_eq!(math_prime_util::odd_composites_in(0..=15).collect::<Vec<_>>(), [9,15]);
-/// ```
-pub fn odd_composites_in(range: RangeInclusive<u64>) -> CompositesIn {
-    CompositesIn { range, odd: true }
 }
 
 /// Bounds for parts and lengths. See `XS.xs`, `forpart`.
@@ -281,32 +254,6 @@ pub fn combinations_of(n: usize, k: Option<usize>) -> CombinationsOf {
     }
 }
 
-/// Visit each value. See `XS.xs`, `forcomposites`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let result = math_prime_util::forcomposites(0..=20, |_| ControlFlow::Break(()));
-/// assert!(result.is_break());
-/// ```
-pub fn forcomposites<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(composites_in(range), f)
-}
-
-/// Visit each value. See `XS.xs`, `foroddcomposites`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let result = math_prime_util::foroddcomposites(0..=20, |_| ControlFlow::Break(()));
-/// assert!(result.is_break());
-/// ```
-pub fn foroddcomposites<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(odd_composites_in(range), f)
-}
-
 /// Visit each sum. See `XS.xs`, `forpart`.
 /// # Panics
 /// Panics for a size that cannot be represented or allocated.
@@ -372,106 +319,6 @@ fn factor_pairs(mut n: u64) -> Vec<(u64, u32)> {
     out
 }
 
-/// Count the prime factors of `n` with multiplicity. See `XS.xs`, `foralmostprimes`.
-fn big_omega(n: u64) -> u32 {
-    factor_pairs(n).iter().map(|&(_, e)| e).sum()
-}
-
-/// Iterator over the integers in a range that have exactly `k` prime factors,
-/// counted with multiplicity. See `XS.xs`, `foralmostprimes`.
-#[derive(Debug, Clone)]
-pub struct AlmostPrimesIn {
-    k: u32,
-    range: RangeInclusive<u64>,
-}
-
-impl Iterator for AlmostPrimesIn {
-    type Item = u64;
-
-    fn next(&mut self) -> Option<u64> {
-        if self.k == 0 {
-            return None;
-        }
-        let k = self.k;
-        self.range.find(move |&n| n >= 2 && big_omega(n) == k)
-    }
-}
-
-/// Iterate over the semiprimes in an inclusive range. See `XS.xs`, `forsemiprimes`.
-/// ```
-/// assert_eq!(math_prime_util::semiprimes_in(0..=12).collect::<Vec<_>>(), [4, 6, 9, 10]);
-/// ```
-#[must_use]
-pub fn semiprimes_in(range: RangeInclusive<u64>) -> AlmostPrimesIn {
-    AlmostPrimesIn { k: 2, range }
-}
-
-/// Iterate over the almost primes with `k` factors in an inclusive range.
-/// See `XS.xs`, `foralmostprimes`.
-/// ```
-/// assert_eq!(math_prime_util::almost_primes_in(3, 0..=30).collect::<Vec<_>>(), [8, 12, 18, 20, 27, 28, 30]);
-/// ```
-#[must_use]
-pub fn almost_primes_in(k: u32, range: RangeInclusive<u64>) -> AlmostPrimesIn {
-    AlmostPrimesIn { k, range }
-}
-
-/// Iterator over `(n, factors)` for each `n` in a range, where `factors` are the
-/// `(prime, exponent)` pairs of `n`. See `XS.xs`, `forfactored`.
-#[derive(Debug, Clone)]
-pub struct FactoredIn {
-    range: RangeInclusive<u64>,
-}
-
-impl Iterator for FactoredIn {
-    type Item = (u64, Vec<(u64, u32)>);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.range.find(|&n| n > 0).map(|n| (n, factor_pairs(n)))
-    }
-}
-
-/// Iterate over `(n, factors)` for each `n` in a range. `0` is not visited.
-/// See `XS.xs`, `forfactored`.
-/// ```
-/// let v: Vec<_> = math_prime_util::factored_in(1..=4).collect();
-/// assert_eq!(v[3], (4, vec![(2, 2)]));
-/// ```
-#[must_use]
-pub fn factored_in(range: RangeInclusive<u64>) -> FactoredIn {
-    FactoredIn { range }
-}
-
-/// Iterator over the squarefree `n` in a range, with their factors. See `XS.xs`, `forfactored`.
-#[derive(Debug, Clone)]
-pub struct SquarefreeIn {
-    range: RangeInclusive<u64>,
-}
-
-impl Iterator for SquarefreeIn {
-    type Item = (u64, Vec<(u64, u32)>);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.range.find_map(|n| {
-            if n == 0 {
-                return None;
-            }
-            let factors = factor_pairs(n);
-            factors.iter().all(|&(_, e)| e == 1).then_some((n, factors))
-        })
-    }
-}
-
-/// Iterate over the squarefree integers in a range. See `XS.xs`, `forsquarefree`.
-/// ```
-/// let v: Vec<_> = math_prime_util::squarefree_in(1..=10).map(|(n, _)| n).collect();
-/// assert_eq!(v, [1, 2, 3, 5, 6, 7, 10]);
-/// ```
-#[must_use]
-pub fn squarefree_in(range: RangeInclusive<u64>) -> SquarefreeIn {
-    SquarefreeIn { range }
-}
-
 /// Iterator over the divisors of `n` in ascending order. See `XS.xs`, `fordivisors`.
 #[derive(Debug, Clone)]
 pub struct DivisorsOf {
@@ -511,91 +358,6 @@ pub fn divisors_of(n: u64) -> DivisorsOf {
     DivisorsOf {
         divisors: divisors.into_iter(),
     }
-}
-
-/// Visit each semiprime in an inclusive range. See `XS.xs`, `forsemiprimes`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let mut count = 0;
-/// let _: ControlFlow<()> = math_prime_util::forsemiprimes(0..=100, |_| {
-///     count += 1;
-///     ControlFlow::Continue(())
-/// });
-/// assert_eq!(count, 34);
-/// ```
-pub fn forsemiprimes<B>(
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(semiprimes_in(range), f)
-}
-
-/// Visit each almost prime with `k` factors in an inclusive range. See `XS.xs`, `foralmostprimes`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let result = math_prime_util::foralmostprimes(2, 0..=100, |n| {
-///     if n > 10 { ControlFlow::Break(n) } else { ControlFlow::Continue(()) }
-/// });
-/// assert_eq!(result, ControlFlow::Break(14));
-/// ```
-pub fn foralmostprimes<B>(
-    k: u32,
-    range: RangeInclusive<u64>,
-    f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(almost_primes_in(k, range), f)
-}
-
-/// Visit `n` and its factors for each `n` in an inclusive range. See `XS.xs`, `forfactored`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let mut seen = Vec::new();
-/// let _: ControlFlow<()> = math_prime_util::forfactored(12..=12, |n, f| {
-///     seen.push((n, f));
-///     ControlFlow::Continue(())
-/// });
-/// assert_eq!(seen, [(12, vec![(2, 2), (3, 1)])]);
-/// ```
-pub fn forfactored<B>(
-    range: RangeInclusive<u64>,
-    mut f: impl FnMut(u64, Vec<(u64, u32)>) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(factored_in(range), |(n, factors)| f(n, factors))
-}
-
-/// Visit `n` and its factors for each squarefree `n` in an inclusive range.
-/// See `XS.xs`, `forsquarefree`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let mut count = 0;
-/// let _: ControlFlow<()> = math_prime_util::forsquarefree(1..=10, |_, _| {
-///     count += 1;
-///     ControlFlow::Continue(())
-/// });
-/// assert_eq!(count, 7);
-/// ```
-pub fn forsquarefree<B>(
-    range: RangeInclusive<u64>,
-    mut f: impl FnMut(u64, Vec<(u64, u32)>) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(squarefree_in(range), |(n, factors)| f(n, factors))
-}
-
-/// Visit each squarefree integer in an inclusive range. See `XS.xs`, `forsquarefreeint`.
-/// ```
-/// use std::ops::ControlFlow;
-/// let mut sum = 0;
-/// let _: ControlFlow<()> = math_prime_util::forsquarefreeint(1..=10, |n| {
-///     sum += n;
-///     ControlFlow::Continue(())
-/// });
-/// assert_eq!(sum, 34);
-/// ```
-pub fn forsquarefreeint<B>(
-    range: RangeInclusive<u64>,
-    mut f: impl FnMut(u64) -> ControlFlow<B>,
-) -> ControlFlow<B> {
-    run(squarefree_in(range), |(n, _)| f(n))
 }
 
 /// Visit each divisor of `n` in ascending order. See `XS.xs`, `fordivisors`.

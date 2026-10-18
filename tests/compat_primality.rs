@@ -207,3 +207,67 @@ fn is_delicate_prime_oracle() {
         }
     });
 }
+
+#[test]
+fn verify_prime_native_bls15() {
+    // MPU PrimalityProving.pm::_verify_bls15, with V_7(-1, 2) = 13.
+    let header = "[MPU - Primality Certificate]\nVersion 1.0\nProof for:\nN 13\n";
+    let proof = "Type BLS15\nN 13\nQ 7\nLP -1\nLQ 2\n";
+    assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(true));
+    for proof in [
+        "Type BLS15\nN 13\nQ 2\nLP 1\nLQ -1",
+        "Type BLS15\nN 13\nQ 5\nLP 1\nLQ -1",
+        "Type BLS15\nN 13\nQ 7\nLP 2\nLQ 1",
+        "Type BLS15\nN 13\nQ 7\nLP 1\nLQ 1",
+    ] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    }
+    assert!(verify_prime(&format!("{header}Type BLS15\nN 13\nQ 7\nLP 1")).is_err());
+}
+
+#[test]
+fn verify_prime_field_validation() {
+    let header = "[MPU - Primality Certificate]\nProof for:\nn\t101\n";
+    assert_eq!(
+        verify_prime(&format!("{header}Type Small\nn 101")),
+        Ok(true)
+    );
+    let header = "[MPU - Primality Certificate]\nProof for:\nN 101\n";
+    // MPU requires Q indices to arrive in order, even when all values are valid.
+    for proof in [
+        "Type BLS5\nN 101\nQ[2] 5\nQ[1] 2\n----",
+        "Type Lucas\nN 101\nQ[2] 5\nQ[1] 2\nA 2",
+        "Type BLS5\nN 101\nA[1] 2\nQ[1] 5\n----",
+        "Type BLS5\nN 101\nQ[1] -5\n----",
+    ] {
+        assert!(
+            verify_prime(&format!("{header}{proof}")).is_err(),
+            "{proof}"
+        );
+    }
+}
+
+#[test]
+fn verify_prime_bls15_native_boundaries() {
+    let header = "[MPU - Primality Certificate]\nProof for:\nN 13\nType BLS15\n";
+    for proof in [
+        "N 2\nQ 7\nLP -1\nLQ 2",
+        "N 14\nQ 7\nLP -1\nLQ 2",
+        "N 17\nQ 9\nLP -1\nLQ 2",
+        "N 101\nQ 3\nLP -1\nLQ 2",
+        "N 13\nQ 7\nLP 1\nLQ -1",
+    ] {
+        assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    }
+    // Residues larger than i64::MAX are centered before the Lucas call.
+    let proof = "N 18446744073709551565\nQ 9223372036854775783\nLP 18446744073709551564\nLQ 2";
+    assert_eq!(verify_prime(&format!("{header}{proof}")), Ok(false));
+    for proof in [
+        "Q 7\nLP -1\nLQ 2\nA 2",
+        "N -13\nQ 7\nLP -1\nLQ 2",
+        "N 13\nQ 7\nLP -18446744073709551616\nLQ 2",
+        "N 13\nQ 7\nLP 18446744073709551616\nLQ 2",
+    ] {
+        assert!(verify_prime(&format!("{header}{proof}")).is_err());
+    }
+}

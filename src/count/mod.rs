@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use crate::{primes, rootint, sqrtint};
 
+mod long_double;
 mod nth_prime_approx;
 mod nth_prime_lower;
 mod nth_prime_upper;

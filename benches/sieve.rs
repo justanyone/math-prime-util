@@ -2,10 +2,7 @@
 //! Benchmarks for the segmented sieve. Compare with `perl tools/bench_vs_perl.pl sieve`.
 
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
-use math_prime_util::{
-    next_prime, nth_prime_approx, nth_prime_lower, nth_prime_upper, prev_prime, primes,
-    sieve_range, sum_primes,
-};
+use math_prime_util::{next_prime, prev_prime, primes, sieve_range, sum_primes};
 
 fn bench_sieve(c: &mut Criterion) {
     let mut g = c.benchmark_group("sieve");
@@ -29,17 +26,6 @@ fn bench_sieve(c: &mut Criterion) {
     g.bench_function("next_prime_near_2_63", |b| {
         b.iter(|| next_prime(black_box(9_223_372_036_854_775_807)));
     });
-    for &n in &[1_000_u64, 10_000, 1_000_000, 100_000_000] {
-        g.bench_with_input(BenchmarkId::new("nth_prime_lower", n), &n, |b, &n| {
-            b.iter(|| nth_prime_lower(black_box(n)));
-        });
-        g.bench_with_input(BenchmarkId::new("nth_prime_upper", n), &n, |b, &n| {
-            b.iter(|| nth_prime_upper(black_box(n)));
-        });
-        g.bench_with_input(BenchmarkId::new("nth_prime_approx", n), &n, |b, &n| {
-            b.iter(|| nth_prime_approx(black_box(n)));
-        });
-    }
     g.finish();
 }
 

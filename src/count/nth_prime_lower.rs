@@ -1,18 +1,29 @@
-use super::nth_prime_upper::{MAX_PRIME, MAX_PRIME_IDX};
-use super::{nth_prime, prime_count};
+use super::long_double::Ld;
+use super::nth_prime_upper::{
+    MAX_PRIME, MAX_PRIME_IDX, NPRIMES_SMALL, search_count_bound, simple_nth_limits,
+};
+use super::{nth_prime, prime_count_upper};
 
 /// Return a lower bound on the `n`th prime, with the first prime as index 1.
 ///
-/// Port of MPU 0.75 `prime_counts.c`, `nth_prime_lower`. For `n` below
-/// 2,000,000 this searches the inverse prime-count upper bound.
-/// For larger `n` it uses the Axler 2017 Corollary 1.4 bound, with
-/// the same constants as MPU, evaluated in `f64`.
+/// Port of MPU 0.75 `prime_counts.c`, `nth_prime_lower`. Below index 306 the
+/// result is the exact prime. Below 2,000,000 it is the smallest `x` with
+/// [`prime_count_upper`]`(x) >= n`, a binary search. From 2,000,000 up it is
+/// the Axler 2017 Corollary 1.4 bound
+/// `n (ln n + ln ln n - 1 + (ln ln n - 2) / ln n - (ln² ln n - 6 ln ln n + b) / (2 ln² n))`
+/// with `b = 11.2` below 56,000,000 and `b = 11.508` from there, evaluated in
+/// `double` as MPU does. The bound is not monotone in `n` where `b` changes
+/// or the method changes, exactly as in MPU.
 ///
-/// Returns `None` for `n = 0`, where MPU returns `undef`, and for `n`
-/// above the largest prime index that fits in 64 bits.
+/// Returns `None` for `n = 0`, where MPU returns `undef`, and for `n` above
+/// `425_656_284_035_217_743`, the index of the largest 64-bit prime, where
+/// the `n`th prime does not fit in a `u64` (MPU answers those with bigints).
+///
+/// # Examples
 ///
 /// ```
 /// use math_prime_util::nth_prime_lower;
+/// assert_eq!(nth_prime_lower(10_000), Some(104_540));
 /// assert!(nth_prime_lower(1_000_000).unwrap() <= 15_485_863);
 /// assert_eq!(nth_prime_lower(0), None);
 /// ```
@@ -21,61 +32,37 @@ pub fn nth_prime_lower(n: u64) -> Option<u64> {
     if n == 0 || n > MAX_PRIME_IDX {
         return None;
     }
+    if n < NPRIMES_SMALL {
+        return nth_prime(n);
+    }
     if n == MAX_PRIME_IDX {
         return Some(MAX_PRIME);
     }
-    if n < 306 {
-        return nth_prime(n);
-    }
-    if n < 2_000_000 {
-        return Some(super::nth_prime_upper::search_count_bound(n, count_upper));
-    }
-    // MPU keeps the bound in double; the constant changes above 56,000,000.
-    let b1 = if n < 56_000_000 {
-        11.2
-    } else {
-        11.508_000_000_02
-    };
     #[allow(clippy::cast_precision_loss)]
     let fnn = n as f64;
     let flogn = fnn.ln();
     let flog2n = flogn.ln();
+    if n < 2_000_000 {
+        // MPU passes its `double` values to the `long double` limits.
+        let (lo, hi) = simple_nth_limits(
+            n,
+            Ld::from_f64(fnn),
+            Ld::from_f64(flogn),
+            Ld::from_f64(flog2n),
+        );
+        return Some(search_count_bound(lo, hi, n, prime_count_upper));
+    }
+    let b1 = if n < 56_000_000 {
+        11.200
+    } else {
+        11.508_000_000_02
+    };
     let lower = fnn
-        * (flogn + flog2n - 1.0 + ((flog2n - 2.0) / flogn)
+        * (flogn + flog2n - 1.0 + ((flog2n - 2.00) / flogn)
             - ((flog2n * flog2n - 6.0 * flog2n + b1) / (2.0 * flogn * flogn)));
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let plower = lower.ceil() as u64;
     Some(plower.min(MAX_PRIME))
-}
-
-/// MPU 0.75 `prime_counts.c::prime_count_upper`, restricted to the
-/// range used by `nth_prime_lower` (below 40 million).
-#[allow(
-    clippy::cast_precision_loss,
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
-)]
-fn count_upper(n: u64) -> u64 {
-    if n < 33_000 {
-        return prime_count(n);
-    }
-    // The C table stores single-precision coefficients before promoting them.
-    let thresholds = [
-        (59_000, 2.48_f32),
-        (355_991, 2.54),
-        (3_550_000, 2.51),
-        (3_560_000, 2.49),
-        (5_000_000, 2.48),
-        (8_000_000, 2.47),
-        (13_000_000, 2.46),
-        (18_000_000, 2.45),
-        (31_000_000, 2.44),
-        (41_000_000, 2.43),
-    ];
-    let a = thresholds.iter().find(|&&(limit, _)| n < limit).unwrap().1;
-    let x = n as f64;
-    let log = x.ln();
-    (x / log * (1.0 + 1.0 / log + f64::from(a) / (log * log))).floor() as u64
 }
 
 #[cfg(test)]
@@ -86,48 +73,39 @@ mod tests {
     fn small_is_exact() {
         assert_eq!(nth_prime_lower(1), Some(2));
         assert_eq!(nth_prime_lower(100), Some(541));
+        assert_eq!(nth_prime_lower(305), Some(2011));
         assert_eq!(nth_prime_lower(0), None);
     }
 
     #[test]
-    fn large_bound_holds() {
-        assert!(nth_prime_lower(2_000_000).unwrap() <= 32_452_843);
-        assert!(nth_prime_lower(1_000_000_000).unwrap() <= 22_801_763_489);
-        assert!(nth_prime_lower(1_000_000_000).unwrap() > 1_000_000_000);
-    }
-
-    #[test]
-    fn inverse_count_regressions() {
-        // MPU 0.75 oracle cases: these bounds differ from the exact prime.
+    fn search_range_values() {
+        // MPU 0.75 values (C `nth_prime_lower` on x86-64).
+        assert_eq!(nth_prime_lower(306), Some(2017));
+        assert_eq!(nth_prime_lower(999), Some(7_907));
         assert_eq!(nth_prime_lower(7_919), Some(80_725));
-        assert_eq!(nth_prime_lower(10_000), Some(104_540));
-        assert_eq!(nth_prime_lower(100_000), Some(1_298_980));
-        assert_eq!(nth_prime_lower(1_000_000), Some(15_481_618));
-        for n in [306, 947, 948, 2_194, 2_195, 39_016, 39_017, 1_999_999] {
-            let bound = nth_prime_lower(n).unwrap();
-            assert!(count_upper(bound) >= n);
-            assert!(count_upper(bound - 1) < n);
-        }
+        assert_eq!(nth_prime_lower(1_999_999), Some(32_450_549));
     }
 
     #[test]
-    fn count_upper_coefficient_ranges() {
-        assert_eq!(count_upper(100), 25);
-        for n in [
-            33_000, 59_000, 355_991, 3_550_000, 3_560_000, 5_000_000, 8_000_000, 13_000_000,
-            18_000_000, 31_000_000,
-        ] {
-            assert!(count_upper(n) >= prime_count(n));
-        }
-        assert!(
-            nth_prime_lower(56_000_000).unwrap()
-                < super::super::nth_prime_upper(56_000_000).unwrap()
+    fn formula_values() {
+        // MPU 0.75 values; the bound drops where the method or `b` changes.
+        assert_eq!(nth_prime_lower(2_000_000), Some(32_448_866));
+        assert_eq!(nth_prime_lower(55_999_999), Some(1_107_023_901));
+        assert_eq!(nth_prime_lower(56_000_000), Some(1_106_996_828));
+        assert_eq!(
+            nth_prime_lower(400_000_000_000_000_000),
+            Some(17_309_348_184_244_834_304)
         );
     }
 
     #[test]
     fn limits() {
+        assert_eq!(
+            nth_prime_lower(MAX_PRIME_IDX - 1),
+            Some(18_446_686_113_192_781_824)
+        );
         assert_eq!(nth_prime_lower(MAX_PRIME_IDX), Some(MAX_PRIME));
         assert_eq!(nth_prime_lower(MAX_PRIME_IDX + 1), None);
+        assert_eq!(nth_prime_lower(u64::MAX), None);
     }
 }

@@ -663,6 +663,102 @@ fn valuation_and_ramanujan_sum_concurrent() {
 
 proptest! {
     #[test]
+    fn totient_range_sieves(lo in 0_u64..10_000, width in 0_u64..300) {
+        let hi = lo + width;
+        prop_assert_eq!(euler_phi_range(lo, hi), (lo..=hi).map(euler_phi).collect::<Vec<_>>());
+        prop_assert_eq!(moebius_range(lo, hi), (lo..=hi).map(moebius).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn jordan_divisor_identity(n in 1_u64..500, k in 1_u32..5) {
+        let sum: u64 = (1..=n).filter(|d| n % d == 0)
+            .map(|d| jordan_totient(u64::from(k), d).unwrap()).sum();
+        prop_assert_eq!(sum, n.pow(k));
+    }
+
+    #[test]
+    fn lambda_annihilates_units(a in 1_u64..1000, n in 2_u64..1000) {
+        if gcd(a, n) == 1 {
+            prop_assert_eq!(powmod(a, carmichael_lambda(n), n), Some(1));
+        }
+    }
+}
+
+#[test]
+fn totient_native_boundaries() {
+    assert_eq!(jordan_totient(64, 2), Some(u64::MAX));
+    assert_eq!(jordan_totient(65, 2), None);
+    assert_eq!(jordan_totient(u64::MAX, 3), None);
+    assert_eq!(jordan_totient(64, 4), None);
+    assert_eq!(jordan_totient(2, u64::MAX), None);
+    assert_eq!(jordan_totient(0, 2), Some(0));
+    assert_eq!(jordan_totient(u64::MAX, 1), Some(1));
+    assert_eq!(jordan_totient(128, 3), None);
+    for n in 0..256 {
+        let ds: Vec<_> = (1..=n).filter(|d| n % d == 0).collect();
+        assert_eq!(ds.iter().map(|&d| euler_phi(d)).sum::<u64>(), n);
+        if n > 0 {
+            assert_eq!(
+                ds.iter().map(|&d| i64::from(moebius(d))).sum::<i64>(),
+                i64::from(n == 1)
+            );
+        }
+    }
+    for e in 3..64 {
+        assert_eq!(carmichael_lambda(1 << e), 1 << (e - 2));
+    }
+    for (lo, hi) in [
+        (0, 16),
+        (0, 17),
+        (1, 262_149),
+        (100_000_000_000_000, 100_000_000_000_100),
+        (33_554_433, 33_554_443),
+        (10_000, 10_300),
+    ] {
+        assert_eq!(
+            euler_phi_range(lo, hi),
+            (lo..=hi).map(euler_phi).collect::<Vec<_>>()
+        );
+        assert_eq!(
+            moebius_range(lo, hi),
+            (lo..=hi).map(moebius).collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
+fn totient_calls_are_independent() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..2 {
+                    assert_eq!(
+                        euler_phi_range(0, 1000),
+                        (0..=1000).map(euler_phi).collect::<Vec<_>>()
+                    );
+                    assert_eq!(
+                        moebius_range(0, 1000),
+                        (0..=1000).map(moebius).collect::<Vec<_>>()
+                    );
+                    assert_eq!(jordan_totient(3, 12), Some(1456));
+                    assert_eq!(carmichael_lambda(360), 12);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}
+
+#[test]
+#[should_panic(expected = "invalid or oversized range")]
+fn oversized_totient_range() {
+    euler_phi_range(0, u64::MAX);
+}
+
+proptest! {
+    #[test]
     fn totient_slice_identities(n in 1_u64..20_000) {
         prop_assert_eq!(sumtotient(n).unwrap() - sumtotient(n - 1).unwrap(), euler_phi(n));
         let inverse = inverse_totient(n);

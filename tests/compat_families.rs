@@ -155,7 +155,8 @@ fn is_powerful_oracle() {
         .into_iter()
         .filter(|c| c.func == "is_powerful")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed n (including -8 and -16..=-1), bigint n above u64::MAX,
+        // and k above u32::MAX. These inputs have no native unsigned API value.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -178,7 +179,8 @@ fn powerful_numbers_oracle() {
         .into_iter()
         .filter(|c| c.func == "powerful_numbers")
     {
-        // Skip signed and bigint inputs; the API takes native unsigned integers.
+        // Skip powerful_numbers(1, 121, -1): k has no unsigned API value.
+        // Also skip inputs above u64::MAX if oracle cases add them.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -211,7 +213,8 @@ fn powerful_count_oracle() {
         .into_iter()
         .filter(|c| c.func == "powerful_count")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed n (including -8 and -16..=-1), bigint n above u64::MAX,
+        // and k above u32::MAX. These inputs have no native unsigned API value.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -234,7 +237,8 @@ fn sumpowerful_oracle() {
         .into_iter()
         .filter(|c| c.func == "sumpowerful")
     {
-        // Skip signed inputs, k outside u32, and bigint inputs/results: native API only.
+        // Skip signed n (including -8 and -16..=-1), bigint n above u64::MAX,
+        // and k above u32::MAX. These inputs have no native unsigned API value.
         if c.args.iter().any(|a| a.parse::<u64>().is_err()) {
             continue;
         }
@@ -938,4 +942,41 @@ fn merge_keeps_almost_and_omega_exports() {
     assert_eq!(nth_omega_prime(1, 1), omega.first().copied());
     let upper = nth_almost_prime_upper(2, almost.len() as u64);
     assert!(upper.is_some_and(|bound| bound >= *almost.last().unwrap()));
+}
+
+fn almost_omega_native_cases(name: &str, f: impl Fn(u32, u64) -> Option<u64>) {
+    each("families", name, |c| {
+        // Skip bigint input n (above u64::MAX); the Rust API is native only.
+        if c.args[1].parse::<u64>().is_err() {
+            return;
+        }
+
+        // Skip negative k (-2): the native Rust API uses u32.
+        if c.args[0].starts_with('-') {
+            return;
+        }
+        // Skip bigint results (k=63,100,150): this API returns native u64.
+        if c.result.as_ref().is_some_and(|s| s.parse::<u64>().is_err()) {
+            return;
+        }
+        c.check(f(c.arg(0), c.arg(1)));
+    });
+}
+#[test]
+fn almost_prime_count_upper_oracle() {
+    almost_omega_native_cases("almost_prime_count_upper", |k, n| {
+        Some(almost_prime_count_upper(k, n))
+    });
+}
+#[test]
+fn nth_almost_prime_oracle() {
+    almost_omega_native_cases("nth_almost_prime", nth_almost_prime);
+}
+#[test]
+fn nth_almost_prime_approx_oracle() {
+    almost_omega_native_cases("nth_almost_prime_approx", nth_almost_prime_approx);
+}
+#[test]
+fn nth_almost_prime_lower_oracle() {
+    almost_omega_native_cases("nth_almost_prime_lower", nth_almost_prime_lower);
 }

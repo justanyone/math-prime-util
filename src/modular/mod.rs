@@ -286,3 +286,8 @@ mod rootmod;
 pub use rootmod::rootmod;
 mod allrootmod;
 pub use allrootmod::allrootmod;
+
+mod cornacchia;
+mod divmod;
+pub use cornacchia::cornacchia;
+pub use divmod::divmod;

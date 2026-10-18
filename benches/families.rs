@@ -227,8 +227,20 @@ fn bench_powerfree(c: &mut Criterion) {
     c.bench_function("powerfree_part", |b| {
         b.iter(|| math_prime_util::powerfree_part(black_box(720_720), 2));
     });
+    c.bench_function("is_powerful", |b| {
+        b.iter(|| math_prime_util::is_powerful(black_box(999_966_000_289), 2));
+    });
     c.bench_function("powerfree_part_sum", |b| {
         b.iter(|| math_prime_util::powerfree_part_sum(black_box(10_000), 2));
+    });
+    c.bench_function("is_powerfree", |b| {
+        b.iter(|| math_prime_util::is_powerfree(black_box(1_000_000_007), 3));
+    });
+    c.bench_function("nth_powerful", |b| {
+        b.iter(|| math_prime_util::nth_powerful(black_box(10_000), 2));
+    });
+    c.bench_function("nth_powerfree", |b| {
+        b.iter(|| math_prime_util::nth_powerfree(black_box(100_000), 3));
     });
 }
 
@@ -250,11 +262,35 @@ fn bench_perfect_powers(c: &mut Criterion) {
     }
     group.finish();
 }
+fn bench_nth_almost_prime(c: &mut Criterion) {
+    c.bench_function("almost_prime_count_upper", |b| {
+        b.iter(|| math_prime_util::almost_prime_count_upper(5, black_box(1_000_000)));
+    });
+    for (name, f) in [
+        (
+            "nth_almost_prime",
+            math_prime_util::nth_almost_prime as fn(u32, u64) -> Option<u64>,
+        ),
+        (
+            "nth_almost_prime_lower",
+            math_prime_util::nth_almost_prime_lower,
+        ),
+        (
+            "nth_almost_prime_approx",
+            math_prime_util::nth_almost_prime_approx,
+        ),
+    ] {
+        c.bench_function(name, |b| {
+            b.iter(|| f(3, black_box(1000)));
+        });
+    }
+}
 criterion_group!(
     benches,
     bench_almost,
     bench_almost_omega,
     bench_families,
+    bench_nth_almost_prime,
     bench_ramanujan,
     bench_goldbach_misc,
     bench_squares,

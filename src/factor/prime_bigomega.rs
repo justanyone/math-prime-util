@@ -159,4 +159,42 @@ mod tests {
         assert_eq!(exponents(1_000_003_u64.pow(3)), vec![3]);
         assert_eq!(exponents(2_u64.pow(2) * 3_u64.pow(5) * 7), vec![2, 5, 1]);
     }
+
+    #[test]
+    fn exact_factor_lists() {
+        use super::sorted_factors;
+        use crate::factor::test_support::{fold, wide_inputs};
+        assert_eq!(
+            sorted_factors(2 * 3 * 5 * 7 * 11 * 11),
+            vec![2, 3, 5, 7, 11, 11]
+        );
+        assert_eq!(sorted_factors(30), vec![2, 3, 5]);
+        assert_eq!(sorted_factors(2_u64.pow(40)), vec![2; 40]);
+        let mut h = 0;
+        for n in wide_inputs() {
+            let got = sorted_factors(n);
+            assert_eq!(got.iter().product::<u64>(), n);
+            assert!(got.windows(2).all(|w| w[0] <= w[1]));
+            for f in got {
+                h = fold(h, f);
+            }
+        }
+        assert_eq!(h, 17_437_758_225_689_774_338);
+    }
+
+    #[test]
+    fn rho_exact_results() {
+        use crate::factor::test_support::{fold_opt, inputs};
+        let mut h = 0;
+        for n in inputs() {
+            for seed in [7, 9, 11] {
+                let got = rho(n, seed);
+                if let Some(f) = got {
+                    assert!(f > 1 && f < n && n % f == 0, "rho({n},{seed})");
+                }
+                h = fold_opt(h, got);
+            }
+        }
+        assert_eq!(h, 11_760_351_284_532_846_272);
+    }
 }

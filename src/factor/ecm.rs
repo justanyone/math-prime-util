@@ -112,6 +112,10 @@ fn stage2(q: Point, a24: u64, c: Mont, b1: u64, b2: u64) -> u64 {
     // These lengths fit usize on all supported 64-bit targets.
     let d = usize::try_from(d).expect("ECM table too large");
     let windows = usize::try_from(windows).expect("ECM table too large");
+    // `factor.c` returns before building the tables when `B2` is too small for `D`.
+    if windows == 0 {
+        return 0;
+    }
     let mut nq = vec![Point::default(); 2 * d + 1];
     nq[1] = q;
     for i in 2..nq.len() {
@@ -135,13 +139,19 @@ fn stage2(q: Point, a24: u64, c: Mont, b1: u64, b2: u64) -> u64 {
         Ok(x) => x,
         Err(f) => return f,
     };
+    // One sieve for every window. `lo` increases with `m`, so the cursor only moves forward.
+    let stage2_primes = primes(b1.saturating_add(1).max(2), b2);
+    let mut prime_at = 0;
     let mut product = c.one;
     let mut m = 1_u64;
     for x in sx {
         let hi = m.saturating_add(d as u64).min(b2);
         let lo = m.saturating_sub(d as u64).max(b1.saturating_add(1)).max(2);
         if lo <= hi {
-            for p in primes(lo, hi) {
+            while prime_at < stage2_primes.len() && stage2_primes[prime_at] < lo {
+                prime_at += 1;
+            }
+            for &p in stage2_primes[prime_at..].iter().take_while(|&&p| p <= hi) {
                 if p == m {
                     continue;
                 }
@@ -338,6 +348,7 @@ mod tests {
         }
         assert_eq!(stage2(p, a, c, 10, 10), 0);
         assert_eq!(stage2(p, a, c, 0, 1), 0);
+        assert_eq!(stage2(p, a, c, 1, 2), 0);
         let _ = stage2(p, a, c, 2, 100);
     }
 

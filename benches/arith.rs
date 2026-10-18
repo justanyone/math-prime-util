@@ -2,10 +2,24 @@
 //! Benchmarks for the totient, Moebius, divisor-sum and residue-ring functions.
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use math_prime_util::{
-    divisor_sum, euler_phi, euler_phi_range, inverse_sigma0, inverse_sigma0_count, mertens,
-    moebius, sumtotient, znorder, znprimroot,
+    abundance, aliquot_sum, carmichael_lambda, chinese2, dedekind_psi, divisor_sum, euler_phi,
+    euler_phi_range, inverse_sigma0, inverse_sigma0_count, inverse_totient, is_primitive_root,
+    is_totient, jordan_totient, mertens, moebius, moebius_range, ramanujan_tau, sumtotient,
+    znorder, znprimroot,
 };
 fn bench_arith(c: &mut Criterion) {
+    c.bench_function("arith/sopfr", |b| {
+        b.iter(|| math_prime_util::sopfr(black_box(360_360)));
+    });
+    c.bench_function("arith/sopf", |b| {
+        b.iter(|| math_prime_util::sopf(black_box(360_360)));
+    });
+    c.bench_function("arith/kronecker", |b| {
+        b.iter(|| math_prime_util::kronecker(black_box(-7), black_box(1_000_000_007)));
+    });
+    c.bench_function("arith/chinese", |b| {
+        b.iter(|| math_prime_util::chinese(black_box(&[(2, 3), (3, 5), (2, 7)])));
+    });
     c.bench_function("euler_phi", |b| {
         b.iter(|| euler_phi(black_box(1_000_000_007)));
     });
@@ -13,10 +27,50 @@ fn bench_arith(c: &mut Criterion) {
     c.bench_function("totient_range", |b| {
         b.iter(|| euler_phi_range(0, black_box(10_000)));
     });
+    c.bench_function("jordan_totient", |b| {
+        b.iter(|| jordan_totient(black_box(2), black_box(360_360)));
+    });
+    c.bench_function("carmichael_lambda", |b| {
+        b.iter(|| carmichael_lambda(black_box(360_360)));
+    });
+    c.bench_function("moebius_range", |b| {
+        b.iter(|| moebius_range(0, black_box(10_000)));
+    });
     c.bench_function("mertens", |b| b.iter(|| mertens(black_box(100_000))));
+    c.bench_function("liouville", |b| {
+        b.iter(|| math_prime_util::liouville(black_box(1_000_000_007)));
+    });
+    c.bench_function("sumliouville", |b| {
+        b.iter(|| math_prime_util::sumliouville(black_box(100_000)));
+    });
+    c.bench_function("exp_mangoldt", |b| {
+        b.iter(|| math_prime_util::exp_mangoldt(black_box(11_u64.pow(18))));
+    });
     c.bench_function("sumtotient", |b| b.iter(|| sumtotient(black_box(100_000))));
+    c.bench_function("dedekind_psi", |b| {
+        b.iter(|| dedekind_psi(black_box(360_360)));
+    });
+    c.bench_function("inverse_totient", |b| {
+        b.iter(|| inverse_totient(black_box(720_720)));
+    });
+    c.bench_function("is_totient", |b| b.iter(|| is_totient(black_box(720_720))));
     c.bench_function("arith/divisor_sum", |b| {
         b.iter(|| divisor_sum(black_box(360_360), 2));
+    });
+    c.bench_function("arith/aliquot_sum", |b| {
+        b.iter(|| aliquot_sum(black_box(360_360)));
+    });
+    c.bench_function("arith/abundance", |b| {
+        b.iter(|| abundance(black_box(360_360)));
+    });
+    c.bench_function("arith/ramanujan_tau", |b| {
+        b.iter(|| ramanujan_tau(black_box(1000)));
+    });
+    c.bench_function("arith/chinese2", |b| {
+        b.iter(|| chinese2(black_box(&[(2, 3), (3, 5), (2, 7)])));
+    });
+    c.bench_function("arith/is_primitive_root", |b| {
+        b.iter(|| is_primitive_root(black_box(2), 1_000_003));
     });
     c.bench_function("arith/znorder", |b| {
         b.iter(|| znorder(black_box(2), 1_000_003));
@@ -24,11 +78,26 @@ fn bench_arith(c: &mut Criterion) {
     c.bench_function("arith/znprimroot", |b| {
         b.iter(|| znprimroot(black_box(1_000_003)));
     });
+    c.bench_function("arith/qnr", |b| {
+        b.iter(|| math_prime_util::qnr(black_box(1_000_003)));
+    });
+    c.bench_function("arith/is_qr", |b| {
+        b.iter(|| math_prime_util::is_qr(black_box(10), black_box(1_000_003)));
+    });
+    c.bench_function("arith/is_fundamental", |b| {
+        b.iter(|| math_prime_util::is_fundamental(black_box(-10_007)));
+    });
     c.bench_function("arith/inverse_sigma0", |b| {
         b.iter(|| inverse_sigma0(black_box(12), 1, 1_000_000));
     });
     c.bench_function("arith/inverse_sigma0_count", |b| {
         b.iter(|| inverse_sigma0_count(black_box(48), 1, 1_000_000));
+    });
+    c.bench_function("arith/ramanujan_sum", |b| {
+        b.iter(|| math_prime_util::ramanujan_sum(black_box(12), black_box(360_360)));
+    });
+    c.bench_function("arith/valuation", |b| {
+        b.iter(|| math_prime_util::valuation(black_box(1_u64 << 62), black_box(4)));
     });
 }
 criterion_group!(benches, bench_arith);

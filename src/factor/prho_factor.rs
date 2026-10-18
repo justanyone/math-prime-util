@@ -109,4 +109,49 @@ mod tests {
         assert_eq!(rho(7, 4096), vec![7]);
         assert_eq!(rho(49, 64), vec![7, 7]);
     }
+
+    #[test]
+    fn dispatch_strips_small_primes_only() {
+        use super::dispatch;
+        assert_eq!(dispatch(30, |_| unreachable!()), vec![2, 3, 5]);
+        assert_eq!(dispatch(1, |_| unreachable!()), Vec::<u64>::new());
+        assert_eq!(dispatch(0, |_| unreachable!()), vec![0]);
+        assert_eq!(dispatch(7, |_| unreachable!()), vec![7]);
+        assert_eq!(dispatch(49, |n| vec![n]), vec![49]);
+    }
+
+    #[test]
+    fn rho_retries_dense_small_range() {
+        use crate::factor::test_support::fold;
+        let mut h = 0;
+        for n in (49_u64..40_000).step_by(2).map(|k| k + 1) {
+            if n % 3 == 0 || n % 5 == 0 || crate::is_prime(n) != 0 {
+                continue;
+            }
+            let got = rho(n, 20_000);
+            assert_eq!(got.iter().product::<u64>(), n);
+            for f in got {
+                h = fold(h, f);
+            }
+            h = fold(h, 1);
+        }
+        assert_eq!(h, 1_099_433_996_886_111_019);
+    }
+
+    #[test]
+    fn rho_exact_results() {
+        use crate::factor::test_support::{fold, inputs};
+        let mut h = 0;
+        for n in inputs() {
+            for rounds in [64, 200, 4_000, 100_000] {
+                let got = rho(n, rounds);
+                assert_eq!(got.iter().product::<u64>(), n);
+                for f in got {
+                    h = fold(h, f);
+                }
+                h = fold(h, 1);
+            }
+        }
+        assert_eq!(h, 12_464_662_942_918_696_722);
+    }
 }

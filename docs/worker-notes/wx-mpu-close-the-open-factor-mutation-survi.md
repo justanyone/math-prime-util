@@ -27,3 +27,4 @@ HOLF regression passes. Stopped a slow target-copy mutation attempt and restarte
 Corrected the prime_factors equivalence note: <= is equivalent because pending values cannot be 2; == is caught by input 0. About five minutes remain; finishing validation and recording unresolved items.
 Final fmt and clippy pass. Final gate is on the MSRV build. Mutants have copied the source and are building; no results are counted yet.
 Validation continues offline. The original gate reports a long-running forsquarefreeint test; no failure has been reported. Retry and dispatcher survivors remain explicitly open.
+Mutation results confirm dispatcher and fallback mutations remain missed. The first snapshot predates the HOLF test; rerunning that one mutation against the final source using cached dependencies.

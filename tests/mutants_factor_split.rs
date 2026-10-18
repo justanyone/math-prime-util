@@ -238,6 +238,5 @@ fn holf_factor_top_band_dense() {
             }
         }
     }
-    println!("GOLD {h}");
-    assert_eq!(h, 0);
+    assert_eq!(h, 10_085_694_696_620_290_804);
 }

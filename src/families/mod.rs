@@ -76,7 +76,14 @@ mod powerfree_part;
 pub use powerfree_part::powerfree_part;
 mod powerfree_part_sum;
 pub use powerfree_part_sum::powerfree_part_sum;
-pub use powerful::{is_powerful, powerful_count, powerful_numbers, sumpowerful};
+mod is_powerful;
+pub use is_powerful::is_powerful;
+mod powerful_numbers;
+pub use powerful_numbers::powerful_numbers;
+mod powerful_count;
+pub use powerful_count::powerful_count;
+mod sumpowerful;
+pub use sumpowerful::sumpowerful;
 
 mod nth_twin_prime_approx;
 pub use nth_twin_prime_approx::nth_twin_prime_approx;

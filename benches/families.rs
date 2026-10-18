@@ -227,6 +227,9 @@ fn bench_powerfree(c: &mut Criterion) {
     c.bench_function("powerfree_part", |b| {
         b.iter(|| math_prime_util::powerfree_part(black_box(720_720), 2));
     });
+    c.bench_function("is_powerful", |b| {
+        b.iter(|| math_prime_util::is_powerful(black_box(999_966_000_289), 2));
+    });
     c.bench_function("powerfree_part_sum", |b| {
         b.iter(|| math_prime_util::powerfree_part_sum(black_box(10_000), 2));
     });

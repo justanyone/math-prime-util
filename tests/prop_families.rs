@@ -1031,3 +1031,100 @@ fn powerfree_queries_are_independent_across_threads() {
         handle.join().unwrap();
     }
 }
+
+// Compare against factor exponents without using the powerful implementation.
+fn powerful_by_trial_division(mut n: u64, k: u32) -> bool {
+    if n == 0 {
+        return false;
+    }
+    let mut p = 2;
+    while p <= n / p {
+        let mut exponent = 0;
+        while n % p == 0 {
+            n /= p;
+            exponent += 1;
+        }
+        if exponent > 0 && exponent < k {
+            return false;
+        }
+        p += 1;
+    }
+    n == 1 || k <= 1
+}
+
+#[test]
+fn powerful_factor_exponents_and_prefixes() {
+    for k in 0..=8 {
+        let mut count = 0;
+        let mut sum = 0_u128;
+        for n in 0..=512 {
+            let expected = powerful_by_trial_division(n, k);
+            assert_eq!(is_powerful(n, k), expected, "n={n}, k={k}");
+            count += u64::from(expected);
+            sum += if expected { u128::from(n) } else { 0 };
+            assert_eq!(powerful_count(n, k), count, "n={n}, k={k}");
+            assert_eq!(sumpowerful(n, k), sum, "n={n}, k={k}");
+        }
+    }
+}
+
+#[test]
+fn powerful_range_thresholds_and_native_edges() {
+    for lo in [1, 499_999, 500_000, 399_999_999, 400_000_000] {
+        for k in [2, 3, 4] {
+            let hi = lo + 2500;
+            let expected: Vec<_> = (lo..=hi).filter(|&n| is_powerful(n, k)).collect();
+            let values = powerful_numbers(lo, hi, k);
+            assert_eq!(values, expected);
+            assert!(values.windows(2).all(|pair| pair[0] < pair[1]));
+            assert_eq!(
+                powerful_count(hi, k) - powerful_count(lo - 1, k),
+                values.len() as u64
+            );
+        }
+    }
+    assert_eq!(
+        powerful_numbers(u64::MAX - 1, u64::MAX, 1),
+        vec![u64::MAX - 1, u64::MAX]
+    );
+    assert_eq!(
+        powerful_numbers(u64::MAX - 1, u64::MAX, 2),
+        Vec::<u64>::new()
+    );
+    for k in [63, 64, u32::MAX] {
+        let expected = if k == 63 {
+            vec![1, 1_u64 << 63]
+        } else {
+            vec![1]
+        };
+        assert_eq!(powerful_numbers(0, u64::MAX, k), expected);
+        assert_eq!(powerful_count(u64::MAX, k), expected.len() as u64);
+        assert_eq!(
+            sumpowerful(u64::MAX, k),
+            expected.iter().map(|&n| u128::from(n)).sum::<u128>()
+        );
+    }
+    assert_eq!(
+        sumpowerful(u64::MAX, 1),
+        u128::from(u64::MAX) * (u128::from(u64::MAX) + 1) / 2
+    );
+}
+
+#[test]
+fn powerful_parallel_repeat_calls() {
+    let threads: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                for _ in 0..3 {
+                    assert!(is_powerful(72, 2));
+                    assert_eq!(powerful_numbers(1, 100, 3), vec![1, 8, 16, 27, 32, 64, 81]);
+                    assert_eq!(powerful_count(100, 3), 7);
+                    assert_eq!(sumpowerful(100, 3), 229);
+                }
+            })
+        })
+        .collect();
+    for thread in threads {
+        thread.join().unwrap();
+    }
+}

@@ -11,3 +11,4 @@ Focused compat_count finished: 12 passed, no skips for count bounds or approxima
 All focused checks passed. Waiting for the full offline gate; no further source changes are needed.
 The full gate passed count compatibility and continues through integration tests. Diff whitespace checks passed; the launcher has snapshotted the source changes.
 The gate is waiting on the existing forsquarefreeint integration test, which has exceeded 60 seconds. No failures; source and focused regressions are complete.
+About five minutes remain. Full gate is still in the unrelated forsquarefreeint test; running offline warning-free documentation separately to record that check.

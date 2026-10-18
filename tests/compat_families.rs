@@ -921,3 +921,21 @@ mod almost_omega_f03 {
             case.check((!result.is_empty()).then_some(text));
         }
     }
+}
+
+/// Both sides of the `origin/dev-001` merge stay callable.
+///
+/// Removing either the almost-prime exports or the omega-prime exports
+/// makes this test fail to compile.
+#[test]
+fn merge_keeps_almost_and_omega_exports() {
+    let almost = almost_primes(2, 1, 30);
+    assert_eq!(almost_prime_count(2, 30), almost.len() as u64);
+    assert!(almost_prime_count_lower(2, 30) <= almost.len() as u64);
+    assert!(almost_prime_count_approx(2, 30) >= almost_prime_count_lower(2, 30));
+    let omega = omega_primes(1, 1, 30);
+    assert_eq!(omega_prime_count(1, 30), omega.len() as u64);
+    assert_eq!(nth_omega_prime(1, 1), omega.first().copied());
+    let upper = nth_almost_prime_upper(2, almost.len() as u64);
+    assert!(upper.is_some_and(|bound| bound >= *almost.last().unwrap()));
+}

@@ -354,4 +354,23 @@ mod tests {
             )
         );
     }
+
+    #[test]
+    fn brent_small_composites_golden() {
+        use crate::factor::test_support::{extra_inputs, fold_opt};
+        let mut h = 0;
+        for n in extra_inputs().into_iter().filter(|&n| n < 20_000) {
+            for a in 1..=12 {
+                for rounds in [60, 2_000] {
+                    let got = brent(n, rounds, a);
+                    if let Some(f) = got {
+                        assert!(f > 1 && f < n && n % f == 0, "brent({n},{rounds},{a})");
+                    }
+                    h = fold_opt(h, got);
+                }
+            }
+        }
+        println!("GOLD {h}");
+        assert_eq!(h, 0);
+    }
 }

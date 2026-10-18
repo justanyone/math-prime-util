@@ -156,3 +156,65 @@ fn holf_factor_exact_oracle() {
         }
     }
 }
+
+fn omega_naive(mut n: u64) -> u64 {
+    let mut k = 0;
+    let mut p = 2;
+    while p * p <= n {
+        while n % p == 0 {
+            n /= p;
+            k += 1;
+        }
+        p += 1;
+    }
+    k + u64::from(n > 1)
+}
+
+#[test]
+fn almost_prime_exhaustive_range() {
+    for n in 1..=200_000_u64 {
+        let w = omega_naive(n);
+        for k in 0..=19 {
+            assert_eq!(is_almost_prime(k, n), k == w, "almost_prime({k},{n})");
+        }
+    }
+}
+
+fn fold(hash: u64, x: u64) -> u64 {
+    (hash ^ x.rotate_left(17)).wrapping_mul(0x0000_0100_0000_01b3) ^ (hash >> 29)
+}
+
+/// Semiprimes and prime squares in every multiplier band of `holf_factor`
+/// (2^51, 2^53, 2^54, 2^56, 2^58 and above), with short and long round limits.
+fn holf_inputs() -> Vec<u64> {
+    let mut out: Vec<u64> = (9..30_000_u64).step_by(2).collect();
+    for bits in 40_u32..=63 {
+        for k in 0..4_u64 {
+            let p = next_prime((1_u64 << (bits / 2 - 1)) + 40 * k).expect("below 2^64");
+            let q =
+                next_prime((1_u64 << (bits - bits / 2 - 1)) + 1_000 * k + 3).expect("below 2^64");
+            out.extend(p.checked_mul(q));
+            out.extend(p.checked_mul(p));
+            let r = next_prime(q + 100_000).expect("below 2^64");
+            out.extend(p.checked_mul(r));
+        }
+    }
+    out
+}
+
+#[test]
+fn holf_factor_exact_results_across_bands() {
+    let mut h = 0;
+    for n in holf_inputs() {
+        for r in [1_u64, 3, 40, 2_000, 100_000] {
+            let got = holf_factor(n, Some(r));
+            assert_eq!(got.iter().product::<u64>(), n, "holf({n},{r})");
+            for f in got {
+                h = fold(h, f);
+            }
+            h = fold(h, 0);
+        }
+    }
+    println!("GOLD {h}");
+    assert_eq!(h, 0);
+}

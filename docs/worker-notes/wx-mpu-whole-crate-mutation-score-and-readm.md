@@ -14,7 +14,7 @@ Cargo-mutants 27.1.0, all features, 2026-10-18. These are candidates, not tested
 
 | Module | Candidates | Run status | Survivor triage |
 |---|---:|---|---|
-| arith | 1662 | Baseline started | Pending |
+| arith | 1662 | Interrupted during baseline (exit 130) | No outcomes; pending |
 | bits | 20 | Not run | Pending |
 | bits_pos | 48 | Not run | Pending |
 | combinat | 1234 | Not run | Pending |
@@ -70,3 +70,5 @@ and a regression test or a reason why its behavior is equivalent.
 A timeout is unresolved evidence, not a caught mutant.
 No production code changed, so this task adds no state or concurrency paths.
 The full offline suite has been requested once through tools/test.sh. The notes now include the exact mutation command and score formula. Completed module runs and survivor triage remain pending.
+
+The arith run was interrupted through its own session after roughly four minutes with no completed baseline or mutant outcomes. The full 21988-candidate run cannot fit this session. No timeout or survivor result is claimed. Format and Clippy passed; MSRV and full tests are still running.

@@ -29,3 +29,4 @@ Restored `util.c::cornacchia` prime Kronecker rejection plus `corn_all` for `p >
 - 2026-10-18T03:44:57Z launcher: no commit for 60 s; 1218 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md, src/modular/cornacchia.rs, tests/compat_modular.rs, tests/prop_modular.rs.
 - 2026-10-18T03:45:57Z launcher: no commit for 60 s; 1279 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md, src/modular/cornacchia.rs, tests/compat_modular.rs, tests/prop_modular.rs.
 - 2026-10-18T03:48:29Z launcher: no commit for 60 s; 1430 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md, src/modular/cornacchia.rs, tests/compat_modular.rs, tests/prop_modular.rs.
+- 2026-10-18T03:49:29Z launcher: no commit for 60 s; 1490 s elapsed. Files changed so far: docs/worker-notes/fx2-fxg1-mpu-rootmod-f02-20261017-x.md, src/modular/cornacchia.rs, tests/compat_modular.rs, tests/prop_modular.rs.

@@ -14,7 +14,8 @@ pub fn divisors(n: u64, max: Option<u64>) -> Vec<u64> {
     if n == 0 || max == 0 {
         return Vec::new();
     }
-    if n == 1 || max == 1 {
+    // `max <= n`, so `n == 1` implies `max == 1` here.
+    if max == 1 {
         return vec![1];
     }
     let mut result = vec![1];

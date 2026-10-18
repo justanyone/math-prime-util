@@ -3,6 +3,7 @@
 mod common;
 use math_prime_util::iter::*;
 use std::fmt::Display;
+use std::ops::ControlFlow;
 
 fn joined<T: Display>(values: impl IntoIterator<Item = T>, sep: &str) -> String {
     values
@@ -24,6 +25,21 @@ fn tuples<T: Display>(values: impl Iterator<Item = Vec<T>>, sep: &str) -> String
         })
         .collect::<Vec<_>>()
         .join(" ")
+}
+// Exercise the closure API, including lastfor at the oracle's output cap.
+fn collected<T>(
+    visit: impl FnOnce(&mut dyn FnMut(Vec<T>) -> ControlFlow<()>) -> ControlFlow<()>,
+) -> impl Iterator<Item = Vec<T>> {
+    let mut values = Vec::new();
+    let _ = visit(&mut |value| {
+        values.push(value);
+        if values.len() == 2000 {
+            ControlFlow::Break(())
+        } else {
+            ControlFlow::Continue(())
+        }
+    });
+    values.into_iter()
 }
 /// Parse `hi` or `lo hi` as an inclusive range. Bigint bounds return `None` (skipped).
 fn parse_range(args: &[String]) -> Option<std::ops::RangeInclusive<u64>> {
@@ -99,16 +115,19 @@ fn check(name: &str) {
                 combinations_of(c.arg(0), c.args.get(1).map(|s| s.parse().unwrap())),
                 ",",
             ),
-            "forperm" => tuples(permutations_of(c.arg(0)), ","),
-            "forderange" => tuples(derangements_of(c.arg(0)), ","),
-            "formultiperm" => tuples(multipermutations_of(&c.args), ","),
+            "forperm" => tuples(collected(|f| math_prime_util::forperm(c.arg(0), f)), ","),
+            "forderange" => tuples(collected(|f| math_prime_util::forderange(c.arg(0), f)), ","),
+            "formultiperm" => tuples(
+                collected(|f| math_prime_util::formultiperm(&c.args, f)),
+                ",",
+            ),
             "forsetproduct" => {
                 let sets = if c.args.is_empty() {
                     Vec::new()
                 } else {
                     c.args.split(|v| v == "|").map(<[String]>::to_vec).collect()
                 };
-                tuples(set_product(&sets), ",")
+                tuples(collected(|f| math_prime_util::forsetproduct(&sets, f)), ",")
             }
             "prime_iterator" | "prime_iterator_object_iterate" => {
                 let start = if c.args.is_empty() {
@@ -150,15 +169,31 @@ fn check(name: &str) {
                 };
                 match name {
                     "forsemiprimes" => joined(semiprimes_in(range), " "),
-                    "foralmostprimes" => joined(almost_primes_in(k, range), " "),
-                    "forfactored" => {
-                        joined(factored_in(range).map(|(n, f)| format_factored(n, &f)), " ")
+                    "foralmostprimes" | "forfactored" | "forsquarefree" | "forsquarefreeint" => {
+                        let mut values = Vec::new();
+                        let mut save = |v| {
+                            values.push(v);
+                            if values.len() == 2000 {
+                                std::ops::ControlFlow::Break(())
+                            } else {
+                                std::ops::ControlFlow::Continue(())
+                            }
+                        };
+                        let _ = match name {
+                            "foralmostprimes" => {
+                                math_prime_util::foralmostprimes(k, range, |n| save(n.to_string()))
+                            }
+                            "forfactored" => math_prime_util::forfactored(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            "forsquarefree" => math_prime_util::forsquarefree(range, |n, f| {
+                                save(format_factored(n, &f))
+                            }),
+                            _ => math_prime_util::forsquarefreeint(range, |n| save(n.to_string())),
+                        };
+                        values.join(" ")
                     }
-                    "forsquarefree" => joined(
-                        squarefree_in(range).map(|(n, f)| format_factored(n, &f)),
-                        " ",
-                    ),
-                    _ => joined(squarefree_in(range).map(|(n, _)| n), " "),
+                    _ => unreachable!(),
                 }
             }
             "fordivisors" => {

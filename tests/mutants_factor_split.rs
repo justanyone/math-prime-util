@@ -215,6 +215,5 @@ fn holf_factor_exact_results_across_bands() {
             h = fold(h, 0);
         }
     }
-    println!("GOLD {h}");
-    assert_eq!(h, 0);
+    assert_eq!(h, 10_344_991_621_845_703_262);
 }

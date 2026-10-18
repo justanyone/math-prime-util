@@ -12,3 +12,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Gate printed == gate: green (fmt, clippy, MSRV, tests, docs). Independent exact-rank tests for k=5..9 pass. Ticked the four implemented family functions; task remains unmarked READY. Rerun gate after the final test addition and run the requ <<cut 25 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 1 bytes)
+Final validation is running with no further implementation changes planned. The native-limit C result is cached explicitly; other existing f64 rounding skips remain outside this endpoint fix. No dependencies or build tooling were added.

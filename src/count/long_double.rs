@@ -230,18 +230,15 @@ impl Ld {
     }
 
     /// Rounds the 256-bit value `(hi, lo) * 2^e` to 64 bits, to nearest with
-    /// ties to even.
+    /// ties to even. `hi` must be below `2^127`.
     fn round_wide(neg: bool, hi: u128, lo: u128, e: i32) -> Self {
         if hi == 0 {
             return Self::round(neg, lo, e, false);
         }
-        // Keep the top 128 bits; the rest only decide ties.
+        // Keep the top 128 bits; the rest only decide ties. 1 <= s <= 127.
         let s = 128 - hi.leading_zeros();
-        let (m, sticky) = if s == 128 {
-            (hi, lo != 0)
-        } else {
-            ((hi << (128 - s)) | (lo >> s), lo & ((1 << s) - 1) != 0)
-        };
+        let m = (hi << (128 - s)) | (lo >> s);
+        let sticky = lo & ((1 << s) - 1) != 0;
         #[allow(clippy::cast_possible_wrap)]
         Self::round(neg, m, e + s as i32, sticky)
     }
@@ -552,7 +549,11 @@ mod tests {
         assert_eq!(bits(sticky), (0, (1 << 63) + 1));
         // Far apart: the small term only sets the sticky bit.
         assert_eq!(one + Ld::new(-300, 1 << 63), one);
-        assert_eq!(bits(one - Ld::new(-300, 1 << 63)), (-1, u64::MAX));
+        assert_eq!(one - Ld::new(-300, 1 << 63), one);
+        // Below 1 the step is 2^-64: 1 - 2^-65 ties to 1, a little more
+        // goes down.
+        assert_eq!(one - Ld::new(-65, 1 << 63), one);
+        assert_eq!(bits(one - Ld::new(-65, (1 << 63) + 1)), (-1, u64::MAX));
         // A carry out of the significand.
         let max = Ld::new(0, u64::MAX);
         assert_eq!(bits(max + Ld::new(-64, 1 << 63)), (1, 1 << 63));
@@ -568,6 +569,7 @@ mod tests {
         assert!(ld(-1.0) < Ld::ZERO);
         assert!(Ld::ZERO < ld(1e-300));
         assert!(ld(3.0) > ld(2.0));
+        assert!(ld(2.0).abs() > Ld::ZERO);
         assert_eq!(-Ld::ZERO, Ld::ZERO);
         assert_eq!(ld(-4.0).abs(), ld(4.0));
     }
@@ -598,6 +600,9 @@ mod tests {
         }
         assert!(ld(0.5).ln().neg);
         assert_eq!(Ld::ONE.ln(), Ld::ZERO);
+        // Next to 1, ln(1 + 2^-63) is 2^-63 to far below its last bit.
+        let tiny = Ld::new(0, (1 << 63) + 1).ln();
+        assert!((tiny - Ld::EPSILON).abs() < Ld::new(-100, 1 << 63));
     }
 
     #[test]

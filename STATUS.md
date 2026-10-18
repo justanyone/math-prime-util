@@ -239,13 +239,13 @@ Columns: `[ ]` todo, `[x]` done, `[-]` not applicable in Rust (note why).
 - [x] `nth_powerfree`
 - [x] `nth_powerful`
 - [x] `nth_prime`
-- [ ] `nth_prime_approx`
-- [ ] `nth_prime_lower`
+- [x] `nth_prime_approx`
+- [x] `nth_prime_lower`
 - [x] `nth_prime_power`
 - [x] `nth_prime_power_approx`
 - [x] `nth_prime_power_lower`
 - [x] `nth_prime_power_upper`
-- [ ] `nth_prime_upper`
+- [x] `nth_prime_upper`
 - [x] `nth_ramanujan_prime`
 - [x] `nth_ramanujan_prime_approx`
 - [x] `nth_ramanujan_prime_lower`

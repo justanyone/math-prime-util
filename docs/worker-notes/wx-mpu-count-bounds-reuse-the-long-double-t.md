@@ -10,3 +10,4 @@ MSRV build passed offline. Focused tests and the full gate are compiling; no tes
 Focused compat_count finished: 12 passed, no skips for count bounds or approximation. The new binary64 rounding unit test also passed in the gate.
 All focused checks passed. Waiting for the full offline gate; no further source changes are needed.
 The full gate passed count compatibility and continues through integration tests. Diff whitespace checks passed; the launcher has snapshotted the source changes.
+The gate is waiting on the existing forsquarefreeint integration test, which has exceeded 60 seconds. No failures; source and focused regressions are complete.

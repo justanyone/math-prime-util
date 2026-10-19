@@ -604,8 +604,10 @@ pub fn set_is_proper_intersection<T: Ord + Clone>(a: &[T], b: &[T]) -> bool {
 /// ```
 pub fn setbinop<T: Ord + Clone>(a: &[T], b: &[T], mut f: impl FnMut(&T, &T) -> T) -> Vec<T> {
     let mut out = BTreeSet::new();
-    for x in a {
-        for y in b {
+    let a = toset(a);
+    let b = toset(b);
+    for x in &a {
+        for y in &b {
             out.insert(f(x, y));
         }
     }

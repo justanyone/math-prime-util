@@ -12,8 +12,8 @@ fn signed(a: &[i64]) -> Vec<BigInt> {
 proptest! {
     #[test]
     fn bigint_sets_native_parity(
-        a in prop::collection::vec(0_i64..10000, 0..20),
-        b in prop::collection::vec(0_i64..10000, 0..20),
+        a in prop::collection::vec(prop_oneof![0_i64..32, 0_i64..=i64::MAX / 2], 0..20),
+        b in prop::collection::vec(prop_oneof![0_i64..32, 0_i64..=i64::MAX / 2], 0..20),
     ) {
         let aa = big(&a);
         let bb = big(&b);
@@ -110,4 +110,16 @@ fn signed_edges_and_repeated_calls() {
     for thread in threads {
         thread.join().expect("independent call");
     }
+}
+
+#[test]
+fn pair_callback_runs_once_per_distinct_pair() {
+    let a = big(&[2, 1, 2]);
+    let mut calls = 0;
+    let result = wide::setbinop(&a, &a, |x, y| {
+        calls += 1;
+        x + y
+    });
+    assert_eq!(calls, 4);
+    assert_eq!(result, big(&[2, 3, 4]));
 }

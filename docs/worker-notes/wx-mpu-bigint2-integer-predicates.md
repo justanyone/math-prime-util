@@ -24,3 +24,7 @@ Coverage tooling is unavailable: cargo llvm-cov is not installed, and llvm-tools
 Review: predicates hold no persistent state, locks, paths, or launch state; repeated and concurrent calls share only immutable inputs. Native signatures and dependencies are unchanged.
 
 All four clippy feature sets passed with -D warnings. Gate is building MSRV 1.85 offline; focused tests have already passed. No measured coverage is claimed.
+
+MSRV 1.85 passed. Started the one final whole-suite tools/test.sh run; gate is now compiling its full test suite. Final two-name exclusions are documented for the launcher commit.
+
+Final review found no oracle disagreements and no input-validation panics. The generator is deterministic, and normal Rust tests replay committed fixtures without invoking Perl.

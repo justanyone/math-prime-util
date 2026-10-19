@@ -39,8 +39,6 @@ fn bigint_families_oracle() {
             "prev_perfect_power" => prev_perfect_power(&a).map(|n| n.to_string()),
             "next_chen_prime" => Some(next_chen_prime(&a).unwrap().to_string()),
             "minimal_goldbach_pair" => minimal_goldbach_pair(&a).map(|p| p.to_string()),
-            "goldbach_pairs" => list(goldbach_pairs(&a)),
-            "powerful_numbers" => list(powerful_numbers(&a, &b(), c.arg(2)).unwrap()),
             "print_primes" => {
                 let mut out = Vec::new();
                 print_primes(&a, &b(), &mut out).unwrap();

@@ -1,6 +1,12 @@
 //! Prime families in short intervals of arbitrary precision.
 //!
 //! Factor-based lists return the unresolved cofactor if factoring fails.
+//!
+//! These MPU names stay native (`u64` only) because MPU's own pure-Perl path
+//! is impractical for inputs past 2^64: `is_lucky`, `lucky_numbers`,
+//! `is_ramanujan_prime`, `ramanujan_primes` (they sieve or scan every value up
+//! to the argument), `goldbach_pairs` (it tests every prime from n/2 to n), and
+//! `powerful_numbers` (it generates every powerful number up to the high end).
 use num_bigint::BigUint;
 use std::io::{self, Write};
 
@@ -312,62 +318,4 @@ pub fn next_chen_prime(n: &BigUint) -> Result<BigUint, BigUint> {
         }
         p = primality::next_prime(&p);
     }
-}
-
-/// Return the smaller primes of the Goldbach pairs of `n`. Port of MPU
-/// `goldbach.c::goldbach_pairs`, by ascending prime trials. The order ascends.
-/// ```
-/// use math_prime_util::bigint::families::goldbach_pairs;
-/// let got = goldbach_pairs(&22_u8.into());
-/// assert_eq!(got, vec![3_u8.into(), 5_u8.into(), 11_u8.into()]);
-/// ```
-#[must_use]
-pub fn goldbach_pairs(n: &BigUint) -> Vec<BigUint> {
-    let four = BigUint::from(4_u8);
-    if *n < four {
-        return Vec::new();
-    }
-    if n % 2_u8 != BigUint::from(0_u8) || *n == four {
-        let q = n - 2_u8;
-        return if primality::is_prob_prime(&q) != 0 {
-            vec![2_u8.into()]
-        } else {
-            Vec::new()
-        };
-    }
-    let half = n >> 1_usize;
-    let mut pairs = Vec::new();
-    let mut p = BigUint::from(2_u8);
-    while p <= half {
-        if primality::is_prob_prime(&(n - &p)) != 0 {
-            pairs.push(p.clone());
-        }
-        p = primality::next_prime(&p);
-    }
-    pairs
-}
-
-/// Return the `k`-powerful integers in the inclusive interval. Port of MPU
-/// `powerful.c::powerful_numbers_range`, by factoring each candidate.
-/// # Errors
-/// Return an unresolved cofactor if factoring fails.
-/// ```
-/// use math_prime_util::bigint::families::powerful_numbers;
-/// let got = powerful_numbers(&1_u8.into(), &10_u8.into(), 2).unwrap();
-/// assert_eq!(got.len(), 4);
-/// ```
-pub fn powerful_numbers(low: &BigUint, high: &BigUint, k: u32) -> Result<Vec<BigUint>, BigUint> {
-    let low = low.max(&BigUint::from(1_u8)).clone();
-    scan(&low, high, |n| {
-        let f = factor::factor(n)?;
-        let mut i = 0;
-        while i < f.len() {
-            let run = f[i..].iter().take_while(|p| **p == f[i]).count();
-            if (run as u64) < u64::from(k) {
-                return Ok(false);
-            }
-            i += run;
-        }
-        Ok(true)
-    })
 }

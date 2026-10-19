@@ -151,6 +151,11 @@ Counts: confirmed 4, probable 4, API difference or documentation only 7.
   smaller count.
 - Test that skips the row: `combinatorics_oracle` in
   `tests/compat_bigint_arith.rs` asserts the falling-factorial value instead.
+  `binomialmod` (PP) reduces `Mbinomial($n, $k)` and dies the same way for
+  every bigint `n` with `k >= 100`: the `binomialmod` rows of
+  `bigint_modular.tsv` with `k = 200`, `k = 3000` and `k = n - 3` are
+  `ERROR`; `factorial_binomial_oracle` in `tests/compat_bigint_modular.rs`
+  asserts the exact binomial reduced mod `m` for them.
 - Status: probable (reachable in 0.75 with a current Math::BigInt; the
   failing call lives in Math::BigInt, the missing reflection in MPU).
 

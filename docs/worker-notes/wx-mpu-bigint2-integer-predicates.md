@@ -18,3 +18,5 @@ Added generator and tests for all 15 ports. Offline oracle uses vendored PP beca
 Oracle generated 2679 rows offline from vendored MPU 0.75. Required test and gate wrappers are running on the available wowbagger host; designated-host reruns remain necessary. No network or git writes were used.
 
 Focused tests passed: 2679 oracle rows, 32 native-agreement property cases, and large boundary cases. No PP discrepancies were found. Exclusions for launcher commit message: is_congruent_number has general quadratic-form enumeration beyond practical bigint sizes; is_pillai scans factorial residues up to n, which is impractical above 2^64.
+
+Coverage tooling is unavailable: cargo llvm-cov is not installed, and llvm-tools is absent. Followed the C totient base case rather than the extra PP bound guard. Final coverage measurement remains for factory CI.

@@ -48,7 +48,7 @@ pub fn is_omega_prime(k: &BigUint, n: &BigUint) -> Result<bool, BigUint> {
 
 /// Test for exactly two prime factors, with multiplicity.
 ///
-/// Port of MPU 0.75 `semi_primes.c::is_semiprime`.
+/// Port of MPU 0.75 `util.c::is_semiprime`.
 ///
 /// # Errors
 /// Returns the cofactor that could not be split.
@@ -168,7 +168,7 @@ pub fn is_prime_power(n: &BigUint) -> u32 {
     }
 }
 
-/// Test the integer predicate.
+/// Test whether all prime exponents are less than `k`.
 ///
 /// Port of MPU 0.75 `powerfree.c::is_powerfree`.
 ///
@@ -189,7 +189,7 @@ pub fn is_powerfree(n: &BigUint, k: &BigUint) -> Result<bool, BigUint> {
         .all(|(_, e)| BigUint::from(*e) < *k))
 }
 
-/// Test the integer predicate.
+/// Test whether all prime exponents are at least `k`.
 ///
 /// Port of MPU 0.75 `powerful.c::is_powerful`.
 ///
@@ -261,7 +261,7 @@ pub fn is_rough(n: &BigUint, k: &BigUint) -> Result<bool, BigUint> {
     Ok(factor::factor_exp(n)?.iter().all(|(p, _)| p >= k))
 }
 
-/// Test the integer predicate.
+/// Test whether all prime factors are at most `k`. Zero is smooth.
 ///
 /// Port of MPU 0.75 `util.c::is_smooth`.
 ///
@@ -335,7 +335,7 @@ pub fn is_totient(n: &BigUint) -> Result<bool, BigUint> {
 
 // MPU 0.75 totients.c::_totpred. Each recursion reduces n and the bound.
 fn totpred(n: &BigUint, maxd: &BigUint) -> Result<bool, BigUint> {
-    if *maxd <= big(1) || n.bit(0) {
+    if n.bit(0) {
         return Ok(false);
     }
     if (n & (n - 1_u8)) == big(0) {

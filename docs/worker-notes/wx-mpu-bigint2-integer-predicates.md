@@ -8,3 +8,5 @@ Read native signatures and C factor criteria; implement practical factor predica
 Host is wowbagger, not the requested aragog/wonko. Build-host constraint may block execution; oracle must stay offline.
 
 Implemented 15 predicates, including inverse-totient recursion. All integer arguments use BigUint; factor errors remain explicit. STATUS entries were already checked.
+
+Source generation needed correction after command text truncation. Corrected the two generated declarations; next add fixtures and tests.

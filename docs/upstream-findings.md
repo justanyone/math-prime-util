@@ -330,7 +330,7 @@ areas left open there were checked today as follows.
   (PP writes BLS5 and Small blocks only; Lucas, BLS3, Pocklington, BLS15,
   ECPP and ECPP3 blocks come from hand-built certificates), and every
   `verify_prime` row replays, including the tampered and malformed texts.
-  The 3 `ERROR` rows are entry 15. `compat_bigint_proving` and
+  The 3 `ERROR` rows are entry 18. `compat_bigint_proving` and
   `prop_bigint_proving` pass.
 - Earlier pass (unchanged): int (`sqrtint`, `rootint`, `powint`, `is_square`,
   `logint`, `gcd`, `lcm`, `binomial`, `valuation`, `divint` family); arith

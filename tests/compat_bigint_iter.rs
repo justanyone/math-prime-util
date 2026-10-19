@@ -63,11 +63,27 @@ fn forsquarefree_rows() {
 
 #[test]
 fn forfactored_rows() {
-    replay("forfactored", |c| {
-        forfactored(&big(c, 0), &big(c, 1))
-            .unwrap()
-            .into_iter()
-            .flatten()
-            .collect()
+    let mut handled = 0;
+    common::each(FAMILY, "forfactored", |c| {
+        let (lo, hi) = (big(c, 0), big(c, 1));
+        let rows = forfactored(&lo, &hi).unwrap();
+        let mut n = lo.clone();
+        let text: Vec<String> = rows
+            .iter()
+            .map(|f| {
+                let one = format!(
+                    "{n}:{}",
+                    f.iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<_>>()
+                        .join(",")
+                );
+                n += 1_u8;
+                one
+            })
+            .collect();
+        c.check((!text.is_empty()).then(|| text.join(" ")));
+        handled += 1;
     });
+    assert!(handled > 0, "no forfactored rows in {FAMILY}");
 }

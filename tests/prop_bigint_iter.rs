@@ -1,3 +1,4 @@
+//! Each big integer range iterator equals the native one on the u64 range, plus edge cases.
 #![cfg(feature = "bigint")]
 use math_prime_util::bigint::iter::*;
 use num_bigint::BigUint;
@@ -49,4 +50,20 @@ fn divisors_match_native() {
             .collect();
         assert_eq!(strs(&got), want, "n={n}");
     }
+}
+#[test]
+fn empty_and_degenerate_ranges() {
+    let (a, b) = (BigUint::from(9_u8), BigUint::from(3_u8));
+    assert_eq!(forsemiprimes(&a, &b).unwrap().len(), 0);
+    assert_eq!(forfactored(&a, &b).unwrap().len(), 0);
+    assert_eq!(
+        foralmostprimes(0, &BigUint::from(0_u8), &a).unwrap().len(),
+        0
+    );
+    assert_eq!(fordivisors(&BigUint::from(0_u8)).unwrap().len(), 0);
+    let zero = BigUint::from(0_u8);
+    assert_eq!(
+        strs(&forsquarefree(&zero, &BigUint::from(2_u8)).unwrap()),
+        ["1", "2"]
+    );
 }

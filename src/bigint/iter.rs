@@ -14,8 +14,12 @@ fn range(lo: &BigUint, hi: &BigUint, minimum: u64) -> impl Iterator<Item = BigUi
 
 /// Return divisors of `n` in ascending order.
 ///
-/// Port of MPU 0.75 `XS.xs::fordivisors`, using `PP.pm::divisors` for BigInt.
+/// Port of MPU 0.75 `XS.xs::fordivisors`, using `PP.pm::divisors` for `BigInt`.
 /// Zero has no divisors.
+///
+/// # Errors
+/// Returns the first cofactor the factoring recipe could not split.
+///
 /// ```
 /// use math_prime_util::bigint::iter::fordivisors;
 /// use num_bigint::BigUint;
@@ -28,6 +32,10 @@ pub fn fordivisors(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
 /// Return values in an inclusive range with exactly `k` prime factors, counted with multiplicity.
 ///
 /// Port of MPU 0.75 `XS.xs::foralmostprimes` and `PP.pm::foralmostprimes`.
+///
+/// # Errors
+/// Returns the first cofactor the factoring recipe could not split.
+///
 /// ```
 /// use math_prime_util::bigint::iter::foralmostprimes;
 /// use num_bigint::BigUint;
@@ -50,6 +58,10 @@ pub fn foralmostprimes(k: u64, lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint
 /// Return semiprimes in an inclusive range.
 ///
 /// Port of MPU 0.75 `XS.xs::forsemiprimes`, using `PP.pm::is_semiprime`.
+///
+/// # Errors
+/// Returns the first cofactor the factoring recipe could not split.
+///
 /// ```
 /// use math_prime_util::bigint::iter::forsemiprimes;
 /// use num_bigint::BigUint;
@@ -63,6 +75,10 @@ pub fn forsemiprimes(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint
 ///
 /// Port of MPU 0.75 `XS.xs::forfactored` (alias `forsquarefree`) using
 /// `PP.pm::is_square_free`.
+///
+/// # Errors
+/// Returns the first cofactor the factoring recipe could not split.
+///
 /// ```
 /// use math_prime_util::bigint::iter::forsquarefree;
 /// use num_bigint::BigUint;
@@ -81,6 +97,10 @@ pub fn forsquarefree(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint
 /// Return factorizations for values in an inclusive range.
 ///
 /// Port of MPU 0.75 `XS.xs::forfactored`, using `PP.pm::factor`.
+///
+/// # Errors
+/// Returns the first cofactor the factoring recipe could not split.
+///
 /// ```
 /// use math_prime_util::bigint::iter::forfactored;
 /// use num_bigint::BigUint;
@@ -97,6 +117,10 @@ pub fn forfactored(lo: &BigUint, hi: &BigUint) -> Result<Vec<Vec<BigUint>>, BigU
 /// Return square-free integers in an inclusive range.
 ///
 /// Port of MPU 0.75 `XS.xs::forsquarefreeint`, using `PP.pm::is_square_free`.
+///
+/// # Errors
+/// Returns the first cofactor the factoring recipe could not split.
+///
 /// ```
 /// use math_prime_util::bigint::iter::forsquarefreeint;
 /// use num_bigint::BigUint;

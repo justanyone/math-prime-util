@@ -131,6 +131,7 @@ resolution on a concrete `Integer`, so write `Int::gcd(&a, &b)` and `Int::next_p
 The compat tests replay every unsigned fixture row of the families primality, factor, modular, int and sieve
 through the trait on each backend and compare with the native path; `benches/bigint.rs` compares the two
 arbitrary precision backends on a 200-digit `is_prime` and a 60-digit `factor`.
+
 The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, binomials) and
 `bigint::primality` (the pseudoprime tests, BPSW, `lucas_sequence`, `next_prime`, `prev_prime`,
 `is_mersenne_prime`), `bigint::factor` (`factor`, `factor_exp`, `trial_factor`, `prho_factor`,
@@ -141,6 +142,15 @@ The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, 
 inputs against them.
 `bigint::counts` continues the counts, bounds and estimates, the `n`th prime, the prime stream, `forprimes` and
 `is_polygonal` past `u64::MAX` (family `bigint_counts`); the native functions keep returning `None` there.
+
+`bigint::proving` proves primality above 2^64: `is_provable_prime`, `is_provable_prime_with_cert`,
+`prime_certificate` and `verify_prime` on `&BigUint`, the BLS75 n-1 proof of `PrimalityProving.pm`, and an
+ECPP downrun (Atkin-Morain with the Hilbert class polynomials of the 250 discriminants of class number at most six,
+`tools/class_polynomials.py`) where pure Perl MPU gives up, so proofs to 200 digits complete. `Certificate` and `Proof` hold a certificate as a value, print and parse
+the MPU text format (every type MPU's `verify_prime` reads, ECPP and the Primo forms included), and derive
+`Serialize` and `Deserialize` with the cargo feature `serde` (integers as decimal strings). `is_aks_prime` is
+the pure Perl AKS. The family `bigint_proving` replays MPU's proofs and verifications, and the replay test runs
+`Math::Prime::Util::verify_prime` on this crate's certificates when a Perl with the vendored MPU tree loads.
 
 [`Int`]: src/bigint/mod.rs
 

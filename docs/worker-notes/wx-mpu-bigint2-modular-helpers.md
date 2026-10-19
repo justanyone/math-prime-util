@@ -11,3 +11,5 @@ About five minutes remain. Verification on aragog/wonko is unavailable from this
 Focused tests are compiling; gate waits on the build lock. is_qr now tests root existence without enumerating roots.
 The first focused build found a factor API tuple mismatch and a closure lifetime error; both are fixed.
 Offline verification is running locally on wowbagger because the named build hosts cannot be reached under this task's no-SSH rule. This does not satisfy the requested host check.
+All eleven functions have docs and runnable examples. STATUS already checks every task name, so it needs no edit.
+The focused test process still holds the build lock. No gate-green or coverage result is available yet.

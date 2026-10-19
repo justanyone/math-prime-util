@@ -109,9 +109,10 @@ proptest! {
     #[test]
     fn identities_on_large_primes(x in 2_u64..=u64::MAX, y in 2_u64..=u64::MAX, shift in 1_u64..200, k in 3_u64..12) {
         // Two primes above 2^64 and a value below their product.
-        let p = next_prime(&(big(x) << shift));
-        let q = next_prime(&((big(y) << shift) + 1_u8));
-        let a = (big(x) << (shift + 60)) % &p + 2_u8;
+        let p = next_prime(&(big(x) << (shift + 64)));
+        let candidate = next_prime(&((big(y) << (shift + 64)) + 1_u8));
+        let q = next_prime(&candidate.max(p.clone()));
+        let a = (big(x) << (shift + 60)) % (&p - 1_u8) + 1_u8;
         // sqrtmod squares back.
         let square = &a * &a % &p;
         let r = sqrtmod(&square, &p).unwrap();

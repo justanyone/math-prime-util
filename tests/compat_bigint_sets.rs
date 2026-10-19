@@ -48,7 +48,7 @@ fn bigint_sets_oracle() {
         let a = values(args[0]);
         let b = args.get(1).map_or_else(Vec::new, |s| values(s));
         let expected = parts[2];
-        // docs/upstream-findings.md entry 20: pure Perl gives undefined
+        // docs/upstream-findings.md entry 21: pure Perl gives undefined
         // results when these functions get an argument that is not a sorted
         // set (a duplicate or unsorted element); the port sorts and
         // de-duplicates, so those rows are skipped.

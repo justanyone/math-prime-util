@@ -348,7 +348,7 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
     port's C-method results as valid splits and equal to the oracle where
     both sides split.
 
-20. `setinsert`, `setinvert`, `setcontains` and `set_is_proper_intersection`
+21. `setinsert`, `setinvert`, `setcontains` and `set_is_proper_intersection`
     (PP) assume their set arguments are sorted and unique and give
     undefined results otherwise (for example `setinsert` of the unsorted list
     `2^100+3,0,2^100,2^100+3,1` into the empty set returns 5 and an unsorted

@@ -65,8 +65,12 @@ proptest! {
     fn chinese_agrees_with_native(a: u64, n in 1_u64..=u64::from(u32::MAX), b: u64, m in 1_u64..=u64::from(u32::MAX), c: u64, l in 0_u64..1000) {
         let pairs = [(a, n), (b, m), (c, l)];
         let bigs: Vec<(BigUint, BigUint)> = pairs.iter().map(|&(x, y)| big_pair(x, y)).collect();
-        // The native path returns None when the combined modulus overflows.
-        let fits = n.checked_mul(m).and_then(|v| v.checked_mul(l.max(1))).is_some();
+        // The native path answers in full only while the combined modulus stays below 2^63 (util.c's signed path).
+        // Above it, util.c::_simple_chinese needs coprime moduli and refuses a modulus of 1, so native may return None.
+        let fits = n
+            .checked_mul(m)
+            .and_then(|v| v.checked_mul(l.max(1)))
+            .is_some_and(|v| v <= u64::MAX >> 1);
         for len in 0..=3 {
             let expected = math_prime_util::chinese(&pairs[..len]).map(big);
             if fits || len < 3 {
@@ -103,15 +107,38 @@ proptest! {
     }
 }
 
+fn large_prime_inputs(x: u64, y: u64, shift: u64) -> (BigUint, BigUint, BigUint) {
+    let p = next_prime(&(big(x) << (shift + 64)));
+    let candidate = next_prime(&((big(y) << (shift + 64)) + 1_u8));
+    let q = next_prime(&candidate.max(p.clone()));
+    let a = (big(x) << (shift + 60)) % (&p - 1_u8) + 1_u8;
+    (p, q, a)
+}
+
+#[test]
+fn large_prime_inputs_keep_identity_preconditions() {
+    // Small and equal seeds must still give distinct bigint primes and a unit.
+    for (x, y) in [(2, 2), (2, 3), (3, 2)] {
+        let (p, q, a) = large_prime_inputs(x, y, 1);
+        assert!(p.bits() > 64 && q > p);
+        assert!(a > big(0) && a < p);
+        let inverse = invmod(&a, &p).unwrap();
+        assert_eq!(&a * inverse % &p, big(1));
+        let value = &a * &q + 1_u8;
+        assert_eq!(
+            chinese(&[(&value % &p, p.clone()), (&value % &q, q)]),
+            Some(value)
+        );
+    }
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(24))]
 
     #[test]
     fn identities_on_large_primes(x in 2_u64..=u64::MAX, y in 2_u64..=u64::MAX, shift in 1_u64..200, k in 3_u64..12) {
         // Two primes above 2^64 and a value below their product.
-        let p = next_prime(&(big(x) << shift));
-        let q = next_prime(&((big(y) << shift) + 1_u8));
-        let a = (big(x) << (shift + 60)) % &p + 2_u8;
+        let (p, q, a) = large_prime_inputs(x, y, shift);
         // sqrtmod squares back.
         let square = &a * &a % &p;
         let r = sqrtmod(&square, &p).unwrap();

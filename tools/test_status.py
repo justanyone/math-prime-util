@@ -22,14 +22,16 @@ class StatusGeneratorTest(unittest.TestCase):
             script = root / "tools_status.py"
             source = script.read_text().replace(
                 'ROOT = Path(__file__).resolve().parent.parent', f'ROOT = Path({str(root)!r})'
-            ).replace('"Requires a native machine word": {"rand_bits", "urandomr", "urandomm"}',
-                      '"test group": {"test_only_name"}')
+            ).replace('\nif __name__ == "__main__":',
+                      '\nNATIVE_ONLY = [("test group", NO, "why", "test_only_name")]\nif __name__ == "__main__":')
             script.write_text(source)
             run = subprocess.run(["python3", "-I", str(script)], text=True, capture_output=True, check=False)
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertEqual(run.stdout.count("warning:"), 1)
             self.assertIn("[x] `test_only_name`", (root / "STATUS.md").read_text())
-            self.assertNotIn("test_only_name", (root / "docs" / "bigint-coverage.md").read_text())
+            doc = (root / "docs" / "bigint-coverage.md").read_text()
+            self.assertIn("| `test_only_name` |", doc)
+            self.assertNotIn("test group", doc)
             current = subprocess.run(["python3", "-I", str(script), "--check"], capture_output=True)
             self.assertEqual(current.returncode, 0)
             (root / "docs" / "bigint-coverage.md").write_text("stale\n")

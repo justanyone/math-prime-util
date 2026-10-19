@@ -1,2 +1,3 @@
 Plan: run tools/gate.sh, fix issues, record reasons for the 15 unported names.
 - 2026-10-19T17:05:21Z launcher: no commit for 62 s; 92 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-bigint2-family-exact-counts-and-sums-t1203.md.
+- tools/gate.sh denied by permission system again (also with no pipe); tools/test.sh bigint_family_counts ran with no failures. Unported 15 names (nth_*, lucky_count, twin_prime_count, prime_power_count, ramanujan_prime_count, goldbach_pair_count, nth_twin_prime): reference algorithms need sieves/tables growing with n, no exact big-integer algorithm to port. STATUS.md already all [x].

@@ -20,3 +20,4 @@ Gate has passed the count tests and is replaying factor fixtures. Full-suite exe
 Gate reached iterator fixtures with no failures. Focused bigint tests, all clippy configurations, and MSRV remain passed.
 Existing forsquarefreeint integration test has run over 60 seconds; no failures reported. Continuing the required full gate.
 No new failure; full gate is still in the existing iterator suite. All task code and fixture tests are complete.
+Full gate remains blocked on runtime of existing forsquarefreeint tests, not a test failure. Required green marker has not appeared yet.

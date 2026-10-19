@@ -1423,6 +1423,113 @@ pub(super) fn group(factors: Vec<BigUint>) -> Vec<(BigUint, u32)> {
     grouped
 }
 
+/// Tries Fermat's difference of squares method.
+/// Port of MPU 0.75 `factor.c::fermat_factor` and `PP.pm::_factor_fermat`.
+/// `None` uses 64 million rounds. A failed attempt keeps the cofactor.
+///
+/// ```
+/// use math_prime_util::bigint::factor::fermat_factor;
+/// assert_eq!(fermat_factor(&91_u8.into(), Some(10)), vec![7_u8.into(), 13_u8.into()]);
+/// ```
+#[must_use]
+pub fn fermat_factor(n: &BigUint, rounds: Option<u64>) -> Vec<BigUint> {
+    if let Ok(native) = u64::try_from(n) {
+        return crate::fermat_factor(native, rounds)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
+    }
+    method(n, |m| {
+        let mut a = sqrtint(m);
+        if &a * &a == *m {
+            return Some(a);
+        }
+        a += 1_u8;
+        for _ in 0..rounds.unwrap_or(64_000_000) {
+            let b2 = &a * &a - m;
+            let b = sqrtint(&b2);
+            if &b * &b == b2 {
+                return Some(a - b);
+            }
+            a += 1_u8;
+        }
+        None
+    })
+}
+
+/// Tries Chebyshev factoring with a prime power ladder.
+/// Port of MPU 0.75 `factor.c::cheb_factor` and `PP.pm::_factor_cheb`.
+/// Zero selects the default bound or the initial value 72.
+///
+/// ```
+/// use math_prime_util::bigint::factor::cheb_factor;
+/// assert_eq!(cheb_factor(&403_u16.into(), 0, 0), vec![13_u8.into(), 31_u8.into()]);
+/// ```
+#[must_use]
+pub fn cheb_factor(n: &BigUint, bound: u64, init_x: u64) -> Vec<BigUint> {
+    method(n, |m| {
+        let default_bound = 8_u64.saturating_mul((m.bits() - 1).saturating_pow(2));
+        let bound = if bound == 0 { default_bound } else { bound };
+        let bound = u64::try_from(sqrtint(m)).map_or(bound, |root| bound.min(root));
+        let mut x = big(if init_x == 0 { 72 } else { init_x }) % m;
+        let inverse = (m + 1_u8) >> 1;
+        for p in crate::primes_in(2..=bound) {
+            let mut power = p;
+            while power <= bound / p {
+                power *= p;
+            }
+            let (_, v, _) = super::primality::lucas_sequence(
+                m,
+                &num_bigint::BigInt::from((2_u8 * &x) % m),
+                &num_bigint::BigInt::from(1),
+                &big(power),
+            );
+            x = (v * &inverse) % m;
+            let f = gcd(&if x.bits() == 0 { m - 1_u8 } else { &x - 1_u8 }, m);
+            if f != one() {
+                return Some(f);
+            }
+        }
+        None
+    })
+}
+
+/// Tries Lehman's method, with the input cutoff used by MPU's C code.
+/// Port of MPU 0.75 `factor.c::lehman_factor` and its `XS.xs` wrapper.
+/// Above 8,796,393,022,207, only trial division runs. It defaults to true.
+/// This follows C; `PP.pm::lehman_factor` substitutes Pollard-Brent instead.
+///
+/// ```
+/// use math_prime_util::bigint::factor::lehman_factor;
+/// assert_eq!(lehman_factor(&91_u8.into(), None), vec![7_u8.into(), 13_u8.into()]);
+/// ```
+#[must_use]
+pub fn lehman_factor(n: &BigUint, do_trial: Option<bool>) -> Vec<BigUint> {
+    if let Ok(native) = u64::try_from(n) {
+        return crate::lehman_factor(native, do_trial)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
+    }
+    method(n, |m| {
+        if let Ok(native) = u64::try_from(m) {
+            return crate::lehman_factor(native, do_trial)
+                .into_iter()
+                .find(|&f| f > 1 && f < native)
+                .map(BigUint::from);
+        }
+        // For this range, FirstCut is capped at 65535. The C prime table
+        // ends at 2011, then the input cutoff returns the unsplit cofactor.
+        if do_trial.unwrap_or(true) {
+            for p in crate::primes_in(7..=2011) {
+                if (m % p).bits() == 0 {
+                    return Some(big(p));
+                }
+            }
+        }
+        None
+    })
+}
 #[cfg(test)]
 mod tests {
     use super::*;

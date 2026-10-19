@@ -26,6 +26,9 @@ pub mod divisors;
 pub mod factor;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod family_counts;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod functions;
 #[cfg(feature = "gmp")]
 mod gmp;
@@ -44,6 +47,9 @@ pub mod proving;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod rational;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod sets;
 
 /// The shared number theory surface for unsigned integers.
 ///

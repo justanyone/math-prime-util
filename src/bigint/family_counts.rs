@@ -4,7 +4,41 @@
 //! Keep range forms short. Factor failures return the unresolved cofactor.
 use super::{arith::rootint, divisors};
 use num_bigint::{BigInt, BigUint};
-use num_traits::{One, Zero};
+
+/// Local zero and one helpers: `num-traits` is not a direct dependency.
+trait Zero {
+    fn zero() -> Self;
+    fn is_zero(&self) -> bool;
+}
+
+/// Local one helper.
+trait One {
+    fn one() -> Self;
+}
+
+impl Zero for BigInt {
+    fn zero() -> Self {
+        Self::from(0_u8)
+    }
+    fn is_zero(&self) -> bool {
+        *self == Self::from(0_u8)
+    }
+}
+
+impl Zero for BigUint {
+    fn zero() -> Self {
+        Self::from(0_u8)
+    }
+    fn is_zero(&self) -> bool {
+        *self == Self::from(0_u8)
+    }
+}
+
+impl One for BigInt {
+    fn one() -> Self {
+        Self::from(1_u8)
+    }
+}
 
 /// Count positive perfect powers at most `n`. Include one once.
 ///

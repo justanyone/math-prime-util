@@ -398,6 +398,15 @@ proptest! {
         }).collect();
         prop_assert_eq!(squarefree_integers_in(lo..=lo + len).collect::<Vec<_>>(), expected);
     }
+    #[test]
+    fn squarefree_short_ranges_match_predicate(offset in 0_u64..100_000, len in 0_u64..64) {
+        let hi = u64::MAX - offset;
+        let lo = hi - len;
+        let expected: Vec<_> = (lo..=hi)
+            .filter(|&n| math_prime_util::is_square_free(n))
+            .collect();
+        prop_assert_eq!(squarefree_integers_in(lo..=hi).collect::<Vec<_>>(), expected);
+    }
 }
 
 #[test]

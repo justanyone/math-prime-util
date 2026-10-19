@@ -18,6 +18,24 @@ fn render(a: &[BigInt]) -> String {
         .collect::<Vec<_>>()
         .join(" ")
 }
+fn is_set(a: &[BigInt]) -> bool {
+    a.windows(2).all(|w| w[0] < w[1])
+}
+/// Insert, remove or invert `b` in the set of `a` and render `delta;list`.
+fn mutate(name: &str, a: &[BigInt], b: &[BigInt]) -> String {
+    let mut a = toset(a);
+    let delta = match name {
+        "setinsert" => setinsert(&mut a, b),
+        "setremove" => setremove(&mut a, b),
+        _ => setinvert(&mut a, b),
+    };
+    let list = a
+        .iter()
+        .map(ToString::to_string)
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("{delta};{list}")
+}
 #[test]
 fn bigint_sets_oracle() {
     let mut rows = 0;
@@ -30,6 +48,18 @@ fn bigint_sets_oracle() {
         let a = values(args[0]);
         let b = args.get(1).map_or_else(Vec::new, |s| values(s));
         let expected = parts[2];
+        // docs/upstream-findings.md entry 20: pure Perl gives undefined
+        // results when these functions get an argument that is not a sorted
+        // set (a duplicate or unsorted element); the port sorts and
+        // de-duplicates, so those rows are skipped.
+        if matches!(
+            parts[0],
+            "setinsert" | "setinvert" | "setcontains" | "set_is_proper_intersection"
+        ) && !(is_set(&a) && is_set(&b))
+        {
+            rows += 1;
+            continue;
+        }
         let got = match parts[0] {
             "toset" => render(&toset(&a)),
             "vecuniq" => render(&vecuniq(&a)),
@@ -85,36 +115,7 @@ fn bigint_sets_oracle() {
                 }
                 vecpmex(&a).to_string()
             }
-            "setinsert" => {
-                let mut a = toset(&a);
-                let delta = setinsert(&mut a, &b);
-                let list = a
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-                    .join(",");
-                format!("{delta};{list}")
-            }
-            "setremove" => {
-                let mut a = toset(&a);
-                let delta = setremove(&mut a, &b);
-                let list = a
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-                    .join(",");
-                format!("{delta};{list}")
-            }
-            "setinvert" => {
-                let mut a = toset(&a);
-                let delta = setinvert(&mut a, &b);
-                let list = a
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-                    .join(",");
-                format!("{delta};{list}")
-            }
+            "setinsert" | "setremove" | "setinvert" => mutate(parts[0], &a, &b),
             "setbinop" => render(&setbinop(&a, &b, |x, y| x + y)),
             "vecfreq" => vecfreq(&a)
                 .iter()

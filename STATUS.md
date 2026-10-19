@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 276 yes, 64 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -19,9 +19,9 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `allrootmod` · bigint: no, modular helpers
 - [x] `allsqrtmod` · bigint: yes, `bigint::modular`
 - [x] `almost_prime_count` · bigint: yes, `bigint::family_counts`
-- [x] `almost_prime_count_approx` · bigint: no, prime families, counts and sums
-- [x] `almost_prime_count_lower` · bigint: no, prime families, counts and sums
-- [x] `almost_prime_count_upper` · bigint: no, prime families, counts and sums
+- [x] `almost_prime_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `almost_prime_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `almost_prime_count_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `almost_primes` · bigint: no, prime families, counts and sums
 - [x] `bell_number` · bigint: yes, `bigint::combinat`
 - [x] `bernfrac` · bigint: yes, `bigint::combinat`
@@ -112,7 +112,7 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `hclassno` · bigint: no, functions of one integer
 - [x] `holf_factor` · bigint: yes, `bigint::factor`
 - [x] `integer_complexity` · bigint: no, functions of one integer
-- [x] `inverse_li` · bigint: no, prime families, counts and sums
+- [x] `inverse_li` · bigint: yes, `bigint::family_bounds`
 - [x] `inverse_li_nv` · bigint: n.a., real functions
 - [x] `inverse_sigma0` · bigint: no, functions of one integer
 - [x] `inverse_sigma0_count` · bigint: no, functions of one integer
@@ -202,9 +202,9 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `lucasv` · bigint: yes, `bigint::sequences`
 - [x] `lucasvmod` · bigint: yes, `bigint::modular`
 - [x] `lucky_count` · bigint: no, prime families, counts and sums
-- [x] `lucky_count_approx` · bigint: no, prime families, counts and sums
-- [x] `lucky_count_lower` · bigint: no, prime families, counts and sums
-- [x] `lucky_count_upper` · bigint: no, prime families, counts and sums
+- [x] `lucky_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `lucky_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `lucky_count_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `lucky_numbers` · bigint: no, prime families, counts and sums
 - [x] `mertens` · bigint: yes, `bigint::family_counts`
 - [x] `miller_rabin_random` · bigint: yes, `bigint::random`
@@ -229,39 +229,39 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `next_prime_power` · bigint: no, prime families, counts and sums
 - [x] `next_stern_brocot` · bigint: yes, `bigint::rational`
 - [x] `nth_almost_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_almost_prime_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_almost_prime_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_almost_prime_upper` · bigint: no, prime families, counts and sums
+- [x] `nth_almost_prime_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_almost_prime_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_almost_prime_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_calkin_wilf` · bigint: yes, `bigint::rational`
 - [x] `nth_lucky` · bigint: no, prime families, counts and sums
-- [x] `nth_lucky_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_lucky_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_lucky_upper` · bigint: no, prime families, counts and sums
+- [x] `nth_lucky_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_lucky_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_lucky_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_omega_prime` · bigint: no, prime families, counts and sums
 - [x] `nth_perfect_power` · bigint: yes, `bigint::family_counts`
-- [x] `nth_perfect_power_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_perfect_power_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_perfect_power_upper` · bigint: no, prime families, counts and sums
+- [x] `nth_perfect_power_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_perfect_power_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_perfect_power_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_powerfree` · bigint: yes, `bigint::family_counts`
 - [x] `nth_powerful` · bigint: no, prime families, counts and sums
 - [x] `nth_prime` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_approx` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_lower` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_power` · bigint: no, prime families, counts and sums
-- [x] `nth_prime_power_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_prime_power_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_prime_power_upper` · bigint: no, prime families, counts and sums
+- [x] `nth_prime_power_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_prime_power_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_prime_power_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_prime_upper` · bigint: yes, `bigint::counts`
 - [x] `nth_ramanujan_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_ramanujan_prime_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_ramanujan_prime_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_ramanujan_prime_upper` · bigint: no, prime families, counts and sums
+- [x] `nth_ramanujan_prime_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_ramanujan_prime_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_ramanujan_prime_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_semiprime` · bigint: no, prime families, counts and sums
-- [x] `nth_semiprime_approx` · bigint: no, prime families, counts and sums
+- [x] `nth_semiprime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_stern_brocot` · bigint: yes, `bigint::rational`
 - [x] `nth_stern_diatomic` · bigint: yes, `bigint::rational`
 - [x] `nth_twin_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_twin_prime_approx` · bigint: no, prime families, counts and sums
+- [x] `nth_twin_prime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `numtoperm` · bigint: yes, `bigint::combinat`
 - [x] `omega_prime_count` · bigint: yes, `bigint::family_counts`
 - [x] `omega_primes` · bigint: no, prime families, counts and sums
@@ -269,9 +269,9 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `partitionsq` · bigint: yes, `bigint::combinat`
 - [x] `pbrent_factor` · bigint: yes, `bigint::factor`
 - [x] `perfect_power_count` · bigint: yes, `bigint::family_counts`
-- [x] `perfect_power_count_approx` · bigint: no, prime families, counts and sums
-- [x] `perfect_power_count_lower` · bigint: no, prime families, counts and sums
-- [x] `perfect_power_count_upper` · bigint: no, prime families, counts and sums
+- [x] `perfect_power_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `perfect_power_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `perfect_power_count_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `permtonum` · bigint: yes, `bigint::combinat`
 - [x] `Pi` · bigint: n.a., already any size
 - [x] `pisano_period` · bigint: no, modular helpers
@@ -303,9 +303,9 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `prime_memfree` · bigint: n.a., configuration
 - [x] `prime_omega` · bigint: yes, `bigint::divisors`
 - [x] `prime_power_count` · bigint: yes, `bigint::family_counts`
-- [x] `prime_power_count_approx` · bigint: no, prime families, counts and sums
-- [x] `prime_power_count_lower` · bigint: no, prime families, counts and sums
-- [x] `prime_power_count_upper` · bigint: no, prime families, counts and sums
+- [x] `prime_power_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `prime_power_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `prime_power_count_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `prime_powers` · bigint: no, prime families, counts and sums
 - [x] `prime_precalc` · bigint: n.a., configuration
 - [x] `primes` · bigint: no, prime families, counts and sums
@@ -315,9 +315,9 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `print_primes` · bigint: no, prime families, counts and sums
 - [x] `qnr` · bigint: no, modular helpers
 - [x] `ramanujan_prime_count` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_prime_count_approx` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_prime_count_lower` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_prime_count_upper` · bigint: no, prime families, counts and sums
+- [x] `ramanujan_prime_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `ramanujan_prime_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `ramanujan_prime_count_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `ramanujan_primes` · bigint: no, prime families, counts and sums
 - [x] `ramanujan_sum` · bigint: yes, `bigint::functions`
 - [x] `ramanujan_tau` · bigint: yes, `bigint::combinat`
@@ -350,7 +350,7 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `rough_count` · bigint: yes, `bigint::family_counts`
 - [x] `rshiftint` · bigint: n.a., integer operators
 - [x] `semiprime_count` · bigint: yes, `bigint::family_counts`
-- [x] `semiprime_count_approx` · bigint: no, prime families, counts and sums
+- [x] `semiprime_count_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `semi_primes` · bigint: no, prime families, counts and sums
 - [x] `setbinop` · bigint: yes, `bigint::sets`
 - [x] `setcontains` · bigint: yes, `bigint::sets`
@@ -401,7 +401,7 @@ BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `tozeckendorf` · bigint: yes, `bigint::digits`
 - [x] `trial_factor` · bigint: yes, `bigint::factor`
 - [x] `twin_prime_count` · bigint: yes, `bigint::family_counts`
-- [x] `twin_prime_count_approx` · bigint: no, prime families, counts and sums
+- [x] `twin_prime_count_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `twin_primes` · bigint: no, prime families, counts and sums
 - [x] `urandomb` · bigint: yes, `bigint::random`
 - [x] `urandomm` · bigint: yes, `bigint::random`

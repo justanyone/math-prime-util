@@ -21,3 +21,4 @@ Bigint all-target clippy is clean with -D warnings. Gate default clippy passed a
 Explicit focused run passed: all 198 oracle rows and all five property/boundary tests. Native agreement took 48 seconds. Gate passed default and bigint clippy and is now checking GMP; no oracle correction or upstream finding was needed.
 Gate passed every clippy feature set (default, bigint, gmp, all-features) and has reached the Rust 1.85 MSRV build. Focused tests remain green. Waiting for full-suite and gate completion.
 Generator now explicitly disables XS and GMP dispatch as well as calling PP directly. Regenerated the same fixture family offline. No Rust changes after focused validation.
+MSRV build is compiling the crate successfully so far; all four gate lint configurations passed. Explicit PP dispatch regeneration succeeded. Full suite and gate are still pending; coverage tool remains unavailable.

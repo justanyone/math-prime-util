@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 276 yes, 64 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -81,22 +81,22 @@ BigUint field: 276 yes, 64 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `fermat_factor` · bigint: yes, `bigint::factor`
 - [x] `fibonacci` · bigint: yes, `bigint::sequences`
 - [x] `floor_sum` · bigint: yes, `bigint::sequences`
-- [x] `foralmostprimes` · bigint: no, range iterators
+- [x] `foralmostprimes` · bigint: yes, `bigint::iter`
 - [x] `forcomb` · bigint: n.a., combinatorial enumeration
 - [x] `forcomp` · bigint: n.a., combinatorial enumeration
 - [x] `forcomposites` · bigint: yes, `bigint::counts`
 - [x] `forderange` · bigint: n.a., combinatorial enumeration
-- [x] `fordivisors` · bigint: no, range iterators
-- [x] `forfactored` · bigint: no, range iterators
+- [x] `fordivisors` · bigint: yes, `bigint::iter`
+- [x] `forfactored` · bigint: yes, `bigint::iter`
 - [x] `formultiperm` · bigint: n.a., generic over the element type
 - [x] `foroddcomposites` · bigint: yes, `bigint::counts`
 - [x] `forpart` · bigint: n.a., combinatorial enumeration
 - [x] `forperm` · bigint: n.a., combinatorial enumeration
 - [x] `forprimes` · bigint: yes, `bigint::counts`
-- [x] `forsemiprimes` · bigint: no, range iterators
+- [x] `forsemiprimes` · bigint: yes, `bigint::iter`
 - [x] `forsetproduct` · bigint: n.a., generic over the element type
-- [x] `forsquarefree` · bigint: no, range iterators
-- [x] `forsquarefreeint` · bigint: no, range iterators
+- [x] `forsquarefree` · bigint: yes, `bigint::iter`
+- [x] `forsquarefreeint` · bigint: yes, `bigint::iter`
 - [x] `frobenius_number` · bigint: yes, `bigint::sequences`
 - [x] `from_contfrac` · bigint: yes, `bigint::rational`
 - [x] `fromdigits` · bigint: yes, `bigint::digits`

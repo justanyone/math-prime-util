@@ -405,7 +405,7 @@ proptest! {
         let expected: Vec<_> = (lo..=hi)
             .filter(|&n| math_prime_util::is_square_free(n))
             .collect();
-        prop_assert_eq!(squarefree_integers_in(lo..=hi).collect::<Vec<_>>(), expected);
+        prop_assert_eq!(squarefree_integers_in(lo..=hi).collect::<Vec<_>>(), expected.clone());
         let mut visited = Vec::new();
         let _: ControlFlow<()> = forsquarefreeint(lo..=hi, |n| {
             visited.push(n);

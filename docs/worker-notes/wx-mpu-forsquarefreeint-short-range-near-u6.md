@@ -7,3 +7,4 @@ The edge property passes. I added a bounded segmented prime sieve because `prime
 I noticed the edge property covered the iterator but not the callback API; I added the callback comparison too. The gate is still running against the earlier test compile, so I will rerun the focused property after it finishes.
 About five minutes remain in the session. The gate has passed formatting, clippy across features, and MSRV; its full test stage is active. I will verify the final edge property and inspect the final diff when it returns.
 - 2026-10-19T15:45:56Z launcher: no commit for 61 s; 273 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-forsquarefreeint-short-range-near-u6.md, src/iter/forsquarefreeint.rs, tests/prop_iter.rs.
+The final short-range property now checks both `squarefree_integers_in` and `forsquarefreeint`; its focused run passes. The compat fixture and full gate passed, including docs. No cross-platform run was available in this checkout.

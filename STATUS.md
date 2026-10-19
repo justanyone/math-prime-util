@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 241 yes, 99 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -51,7 +51,7 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `chinese` · bigint: yes, `bigint::modular`
 - [x] `chinese2` · bigint: no, modular helpers
 - [x] `cmpint` · bigint: n.a., integer operators
-- [x] `consecutive_integer_lcm` · bigint: no, growing results
+- [x] `consecutive_integer_lcm` · bigint: yes, `bigint::sequences`
 - [x] `contfrac` · bigint: yes, `bigint::rational`
 - [x] `convergents` · bigint: yes, `bigint::rational`
 - [x] `cornacchia` · bigint: no, modular helpers
@@ -79,8 +79,8 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `farey_rank` · bigint: no, rationals
 - [x] `fdivrem` · bigint: n.a., integer operators
 - [x] `fermat_factor` · bigint: yes, `bigint::factor`
-- [x] `fibonacci` · bigint: no, growing results
-- [x] `floor_sum` · bigint: no, growing results
+- [x] `fibonacci` · bigint: yes, `bigint::sequences`
+- [x] `floor_sum` · bigint: yes, `bigint::sequences`
 - [x] `foralmostprimes` · bigint: no, range iterators
 - [x] `forcomb` · bigint: n.a., combinatorial enumeration
 - [x] `forcomp` · bigint: n.a., combinatorial enumeration
@@ -97,7 +97,7 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `forsetproduct` · bigint: n.a., generic over the element type
 - [x] `forsquarefree` · bigint: no, range iterators
 - [x] `forsquarefreeint` · bigint: no, range iterators
-- [x] `frobenius_number` · bigint: no, growing results
+- [x] `frobenius_number` · bigint: yes, `bigint::sequences`
 - [x] `from_contfrac` · bigint: yes, `bigint::rational`
 - [x] `fromdigits` · bigint: yes, `bigint::digits`
 - [x] `fromzeckendorf` · bigint: yes, `bigint::digits`
@@ -193,13 +193,13 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `LogarithmicIntegral` · bigint: n.a., real functions
 - [x] `logint` · bigint: yes, `bigint::arith`
 - [x] `lshiftint` · bigint: n.a., integer operators
-- [x] `lucas_number` · bigint: no, growing results
+- [x] `lucas_number` · bigint: yes, `bigint::sequences`
 - [x] `lucas_sequence` · bigint: yes, `bigint::primality`
-- [x] `lucasu` · bigint: no, growing results
+- [x] `lucasu` · bigint: yes, `bigint::sequences`
 - [x] `lucasumod` · bigint: yes, `bigint::modular`
-- [x] `lucasuv` · bigint: no, growing results
+- [x] `lucasuv` · bigint: yes, `bigint::sequences`
 - [x] `lucasuvmod` · bigint: no, modular helpers
-- [x] `lucasv` · bigint: no, growing results
+- [x] `lucasv` · bigint: yes, `bigint::sequences`
 - [x] `lucasvmod` · bigint: yes, `bigint::modular`
 - [x] `lucky_count` · bigint: no, prime families, counts and sums
 - [x] `lucky_count_approx` · bigint: no, prime families, counts and sums
@@ -207,7 +207,7 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `lucky_count_upper` · bigint: no, prime families, counts and sums
 - [x] `lucky_numbers` · bigint: no, prime families, counts and sums
 - [x] `mertens` · bigint: yes, `bigint::family_counts`
-- [x] `miller_rabin_random` · bigint: no, random big integers
+- [x] `miller_rabin_random` · bigint: yes, `bigint::random`
 - [x] `minimal_goldbach_pair` · bigint: no, prime families, counts and sums
 - [x] `modint` · bigint: n.a., integer operators
 - [x] `moebius` · bigint: yes, `bigint::divisors`
@@ -276,14 +276,14 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `Pi` · bigint: n.a., already any size
 - [x] `pisano_period` · bigint: no, modular helpers
 - [x] `pminus1_factor` · bigint: yes, `bigint::factor`
-- [x] `pn_primorial` · bigint: no, growing results
+- [x] `pn_primorial` · bigint: yes, `bigint::sequences`
 - [x] `powerfree_count` · bigint: yes, `bigint::family_counts`
 - [x] `powerfree_part` · bigint: yes, `bigint::functions`
 - [x] `powerfree_part_sum` · bigint: yes, `bigint::family_counts`
 - [x] `powerfree_sum` · bigint: yes, `bigint::family_counts`
 - [x] `powerful_count` · bigint: yes, `bigint::family_counts`
 - [x] `powerful_numbers` · bigint: no, prime families, counts and sums
-- [x] `powersum` · bigint: no, growing results
+- [x] `powersum` · bigint: yes, `bigint::sequences`
 - [x] `powint` · bigint: n.a., integer operators
 - [x] `powmod` · bigint: yes, `bigint::arith`
 - [x] `pplus1_factor` · bigint: yes, `bigint::factor`
@@ -311,7 +311,7 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `primes` · bigint: no, prime families, counts and sums
 - [x] `prime_set_config` · bigint: n.a., configuration
 - [x] `prime_signature` · bigint: yes, `bigint::functions`
-- [x] `primorial` · bigint: no, growing results
+- [x] `primorial` · bigint: yes, `bigint::sequences`
 - [x] `print_primes` · bigint: no, prime families, counts and sums
 - [x] `qnr` · bigint: no, modular helpers
 - [x] `ramanujan_prime_count` · bigint: no, prime families, counts and sums
@@ -323,20 +323,20 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `ramanujan_tau` · bigint: yes, `bigint::combinat`
 - [x] `rand` · bigint: n.a., generator state
 - [x] `random_bytes` · bigint: n.a., generator state
-- [x] `random_factored_integer` · bigint: no, random big integers
+- [x] `random_factored_integer` · bigint: yes, `bigint::random`
 - [x] `random_maurer_prime` · bigint: no, random big integers
 - [x] `random_maurer_prime_with_cert` · bigint: no, random big integers
-- [x] `random_nbit_prime` · bigint: no, random big integers
-- [x] `random_ndigit_prime` · bigint: no, random big integers
-- [x] `random_prime` · bigint: no, random big integers
+- [x] `random_nbit_prime` · bigint: yes, `bigint::random`
+- [x] `random_ndigit_prime` · bigint: yes, `bigint::random`
+- [x] `random_prime` · bigint: yes, `bigint::random`
 - [x] `random_proven_prime` · bigint: no, random big integers
 - [x] `random_proven_prime_with_cert` · bigint: no, random big integers
-- [x] `random_safe_prime` · bigint: no, random big integers
-- [x] `random_semiprime` · bigint: no, random big integers
+- [x] `random_safe_prime` · bigint: yes, `bigint::random`
+- [x] `random_semiprime` · bigint: yes, `bigint::random`
 - [x] `random_shawe_taylor_prime` · bigint: no, random big integers
 - [x] `random_shawe_taylor_prime_with_cert` · bigint: no, random big integers
-- [x] `random_strong_prime` · bigint: no, random big integers
-- [x] `random_unrestricted_semiprime` · bigint: no, random big integers
+- [x] `random_strong_prime` · bigint: yes, `bigint::random`
+- [x] `random_unrestricted_semiprime` · bigint: yes, `bigint::random`
 - [x] `randperm` · bigint: n.a., generator state
 - [x] `rashiftint` · bigint: n.a., integer operators
 - [x] `remove_factors` · bigint: yes, `bigint::functions`
@@ -403,9 +403,9 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `twin_prime_count` · bigint: yes, `bigint::family_counts`
 - [x] `twin_prime_count_approx` · bigint: no, prime families, counts and sums
 - [x] `twin_primes` · bigint: no, prime families, counts and sums
-- [x] `urandomb` · bigint: no, random big integers
-- [x] `urandomm` · bigint: no, random big integers
-- [x] `urandomr` · bigint: no, random big integers
+- [x] `urandomb` · bigint: yes, `bigint::random`
+- [x] `urandomm` · bigint: yes, `bigint::random`
+- [x] `urandomr` · bigint: yes, `bigint::random`
 - [x] `valuation` · bigint: yes, `bigint::arith`
 - [x] `vecall` · bigint: n.a., generic over the element type
 - [x] `vecany` · bigint: n.a., generic over the element type
@@ -421,8 +421,8 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `vecnotall` · bigint: n.a., generic over the element type
 - [x] `vecpairwise` · bigint: n.a., generic over the element type
 - [x] `vecpmex` · bigint: yes, `bigint::sets`
-- [x] `vecprefixsum` · bigint: no, growing results
-- [x] `vecprod` · bigint: no, growing results
+- [x] `vecprefixsum` · bigint: yes, `bigint::sequences`
+- [x] `vecprod` · bigint: yes, `bigint::sequences`
 - [x] `vecreduce` · bigint: n.a., generic over the element type
 - [x] `vecrsort` · bigint: yes, `bigint::sets`
 - [x] `vecrsorti` · bigint: yes, `bigint::sets`
@@ -431,7 +431,7 @@ BigUint field: 215 yes, 125 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs
 - [x] `vecslide` · bigint: n.a., generic over the element type
 - [x] `vecsort` · bigint: yes, `bigint::sets`
 - [x] `vecsorti` · bigint: yes, `bigint::sets`
-- [x] `vecsum` · bigint: no, growing results
+- [x] `vecsum` · bigint: yes, `bigint::sequences`
 - [x] `vecuniq` · bigint: yes, `bigint::sets`
 - [x] `vecwindow` · bigint: n.a., generic over the element type
 - [x] `verify_prime` · bigint: yes, `bigint::proving`

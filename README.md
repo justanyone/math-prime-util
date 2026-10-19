@@ -70,7 +70,7 @@ The phases are described in `PLAN.md` section 6.
 - [x] Milestone 8: random primes and the random number generator ported (done 2026-10-19)
 - [x] Milestone 9: primality proving, real functions and the bigint backend ported (done 2026-10-19)
 - [x] Milestone 10: big integers: `BigUint` forms behind the `bigint` feature, every name audited (done 2026-10-19)
-- [ ] Release 1.0.0 published on crates.io
+- [x] Release 1.0.0 published on crates.io (2026-10-18)
 
 ## Installation and requirements
 

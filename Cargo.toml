@@ -10,7 +10,6 @@ documentation = "https://docs.rs/math-prime-util"
 readme = "README.md"
 keywords = ["prime", "number-theory", "factoring", "sieve", "primality"]
 categories = ["mathematics", "algorithms"]
-publish = false
 exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 
 [dependencies]

@@ -140,7 +140,7 @@ mod tests {
     fn sorted_factors_edges_and_small_primes() {
         // factor.c: 0 factors as [0], 1 as [], a prime as itself.
         assert_eq!(sorted_factors(0), [0]);
-        assert_eq!(sorted_factors(1), []);
+        assert_eq!(sorted_factors(1), [] as [u64; 0]);
         for p in [2_u64, 3, 5, 7, 11, 13, 419, 421, 431, 65_537] {
             assert_eq!(sorted_factors(p), [p], "{p}");
             assert_eq!(sorted_factors(p * p), [p, p], "{p}^2");

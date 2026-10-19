@@ -59,7 +59,7 @@ The phases are described in `PLAN.md` section 6.
 - [x] Milestone 2: factoring and number theory ported and benchmarked against Perl (done 2026-10-17)
 - [ ] Release 0.1.0 published on crates.io
 - [ ] Milestone 3: prime counting, nth prime and prime sums ported
-- [ ] Milestone 4: prime families ported
+- [x] Milestone 4: prime families ported (done 2026-10-19)
 - [ ] Milestone 5: digits, rationals, combinatorics and inverse sigma ported
 - [ ] Milestone 6: vector and set operations ported
 - [ ] Milestone 7: iterators and the for-family ported

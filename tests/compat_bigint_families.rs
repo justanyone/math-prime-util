@@ -1,10 +1,20 @@
+//! Replay the pure-Perl bigint family oracle.
 #![cfg(feature = "bigint")]
 mod common;
 use math_prime_util::bigint::families::*;
 use num_bigint::BigUint;
 
 fn list(v: Vec<BigUint>) -> Option<String> {
-    if v.is_empty() { None } else { Some(v.iter().map(ToString::to_string).collect::<Vec<_>>().join(" ")) }
+    if v.is_empty() {
+        None
+    } else {
+        Some(
+            v.iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(" "),
+        )
+    }
 }
 
 #[test]
@@ -27,7 +37,7 @@ fn bigint_families_oracle() {
             "next_perfect_power" => Some(next_perfect_power(&a).to_string()),
             "prev_perfect_power" => prev_perfect_power(&a).map(|n| n.to_string()),
             "next_chen_prime" => Some(next_chen_prime(&a).unwrap().to_string()),
-            "minimal_goldbach_pair" => minimal_goldbach_pair(&a).map(|(p, _)| p.to_string()),
+            "minimal_goldbach_pair" => minimal_goldbach_pair(&a).map(|p| p.to_string()),
             "print_primes" => {
                 let mut out = Vec::new();
                 print_primes(&a, &b(), &mut out).unwrap();

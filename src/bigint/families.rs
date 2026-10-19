@@ -6,11 +6,17 @@ use std::io::{self, Write};
 
 use super::{arith, factor, primality};
 
-fn scan(low: &BigUint, high: &BigUint, mut keep: impl FnMut(&BigUint) -> Result<bool, BigUint>) -> Result<Vec<BigUint>, BigUint> {
+fn scan(
+    low: &BigUint,
+    high: &BigUint,
+    mut keep: impl FnMut(&BigUint) -> Result<bool, BigUint>,
+) -> Result<Vec<BigUint>, BigUint> {
     let mut out = Vec::new();
     let mut n = low.clone();
     while n <= *high {
-        if keep(&n)? { out.push(n.clone()); }
+        if keep(&n)? {
+            out.push(n.clone());
+        }
         n += 1_u8;
     }
     Ok(out)
@@ -25,13 +31,22 @@ fn scan(low: &BigUint, high: &BigUint, mut keep: impl FnMut(&BigUint) -> Result<
 #[must_use]
 pub fn primes(low: &BigUint, high: &BigUint) -> Vec<BigUint> {
     let mut out = Vec::new();
-    if high < &BigUint::from(2_u8) || low > high { return out; }
-    let mut p = if low <= &BigUint::from(2_u8) { 2_u8.into() } else { primality::next_prime(&(low - 1_u8)) };
-    while p <= *high { out.push(p.clone()); p = primality::next_prime(&p); }
+    if high < &BigUint::from(2_u8) || low > high {
+        return out;
+    }
+    let mut p = if low <= &BigUint::from(2_u8) {
+        2_u8.into()
+    } else {
+        primality::next_prime(&(low - 1_u8))
+    };
+    while p <= *high {
+        out.push(p.clone());
+        p = primality::next_prime(&p);
+    }
     out
 }
 
-/// Write one prime per line. Port of MPU `sieve.c::print_primes`.
+/// Write one prime per line. Port of MPU `util.c::print_primes`.
 /// # Errors
 /// Return the writer error if output fails.
 /// ```
@@ -41,7 +56,9 @@ pub fn primes(low: &BigUint, high: &BigUint) -> Vec<BigUint> {
 /// assert_eq!(out, b"2\n3\n");
 /// ```
 pub fn print_primes(low: &BigUint, high: &BigUint, mut writer: impl Write) -> io::Result<()> {
-    for p in primes(low, high) { writeln!(writer, "{p}")?; }
+    for p in primes(low, high) {
+        writeln!(writer, "{p}")?;
+    }
     Ok(())
 }
 
@@ -53,7 +70,10 @@ pub fn print_primes(low: &BigUint, high: &BigUint, mut writer: impl Write) -> io
 /// ```
 #[must_use]
 pub fn twin_primes(low: &BigUint, high: &BigUint) -> Vec<BigUint> {
-    primes(low, high).into_iter().filter(|p| primality::is_prob_prime(&(p + 2_u8)) != 0).collect()
+    primes(low, high)
+        .into_iter()
+        .filter(|p| primality::is_prob_prime(&(p + 2_u8)) != 0)
+        .collect()
 }
 
 /// Return prime cluster starts. Port of MPU `sieve.c::sieve_prime_cluster`.
@@ -65,8 +85,18 @@ pub fn twin_primes(low: &BigUint, high: &BigUint) -> Vec<BigUint> {
 /// ```
 #[must_use]
 pub fn sieve_prime_cluster(low: &BigUint, high: &BigUint, offsets: &[u64]) -> Vec<BigUint> {
-    assert!(offsets.iter().all(|x| x % 2 == 0) && offsets.windows(2).all(|w| w[0] < w[1]), "offsets must be even and increasing");
-    primes(low, high).into_iter().filter(|p| offsets.iter().all(|&d| primality::is_prob_prime(&(p + d)) != 0)).collect()
+    assert!(
+        offsets.iter().all(|x| x % 2 == 0) && offsets.windows(2).all(|w| w[0] < w[1]),
+        "offsets must be even and increasing"
+    );
+    primes(low, high)
+        .into_iter()
+        .filter(|p| {
+            offsets
+                .iter()
+                .all(|&d| primality::is_prob_prime(&(p + d)) != 0)
+        })
+        .collect()
 }
 
 /// Return offsets with no prime divisor at most `depth`, except the prime itself.
@@ -81,7 +111,12 @@ pub fn sieve_range(low: &BigUint, high: &BigUint, depth: &BigUint) -> Vec<BigUin
     let mut out = Vec::new();
     let mut n = low.clone().max(2_u8.into());
     while n <= *high {
-        if divisors.iter().all(|p| n == *p || &n % p != BigUint::from(0_u8)) { out.push(&n - low); }
+        if divisors
+            .iter()
+            .all(|p| n == *p || &n % p != BigUint::from(0_u8))
+        {
+            out.push(&n - low);
+        }
         n += 1_u8;
     }
     out
@@ -97,7 +132,9 @@ pub fn sieve_range(low: &BigUint, high: &BigUint, depth: &BigUint) -> Vec<BigUin
 /// ```
 pub fn almost_primes(k: u64, low: &BigUint, high: &BigUint) -> Result<Vec<BigUint>, BigUint> {
     scan(low, high, |n| {
-        if *n == BigUint::from(0_u8) { return Ok(false); }
+        if *n == BigUint::from(0_u8) {
+            return Ok(false);
+        }
         Ok(factor::factor(n)?.len() as u64 == k)
     })
 }
@@ -109,7 +146,9 @@ pub fn almost_primes(k: u64, low: &BigUint, high: &BigUint) -> Result<Vec<BigUin
 /// use math_prime_util::bigint::families::semi_primes;
 /// assert_eq!(semi_primes(&4_u8.into(), &6_u8.into()).unwrap().len(), 2);
 /// ```
-pub fn semi_primes(low: &BigUint, high: &BigUint) -> Result<Vec<BigUint>, BigUint> { almost_primes(2, low, high) }
+pub fn semi_primes(low: &BigUint, high: &BigUint) -> Result<Vec<BigUint>, BigUint> {
+    almost_primes(2, low, high)
+}
 
 /// Return numbers with `k` distinct prime factors.
 /// Port of MPU `omega_primes.c::omega_primes`, trial path.
@@ -121,13 +160,15 @@ pub fn semi_primes(low: &BigUint, high: &BigUint) -> Result<Vec<BigUint>, BigUin
 /// ```
 pub fn omega_primes(k: u32, low: &BigUint, high: &BigUint) -> Result<Vec<BigUint>, BigUint> {
     scan(low, high, |n| {
-        if *n == BigUint::from(0_u8) { return Ok(false); }
+        if *n == BigUint::from(0_u8) {
+            return Ok(false);
+        }
         Ok(factor::factor_exp(n)?.len() as u64 == u64::from(k))
     })
 }
 
 /// Return numbers whose prime exponents are at least `k`.
-/// Port of MPU `powerful.c::powerful_numbers`, with trial factor tests.
+/// Port of MPU `powerful.c::powerful_numbers_range`, with trial factor tests.
 /// # Errors
 /// Return an unresolved cofactor if factoring fails.
 /// ```
@@ -136,14 +177,20 @@ pub fn omega_primes(k: u32, low: &BigUint, high: &BigUint) -> Result<Vec<BigUint
 /// ```
 pub fn powerful_numbers(low: &BigUint, high: &BigUint, k: u32) -> Result<Vec<BigUint>, BigUint> {
     scan(low, high, |n| {
-        if *n == BigUint::from(0_u8) { return Ok(false); }
-        if k <= 1 { return Ok(true); }
+        if *n == BigUint::from(0_u8) {
+            return Ok(false);
+        }
+        if k <= 1 {
+            return Ok(true);
+        }
         Ok(factor::factor_exp(n)?.iter().all(|(_, e)| *e >= k))
     })
 }
 
 fn prime_power(n: &BigUint) -> bool {
-    if primality::is_prob_prime(n) != 0 { return true; }
+    if primality::is_prob_prime(n) != 0 {
+        return true;
+    }
     let e = arith::is_power_exp(n);
     e > 1 && primality::is_prob_prime(&arith::rootint(n, e)) != 0
 }
@@ -158,7 +205,12 @@ fn prime_power(n: &BigUint) -> bool {
 pub fn prime_powers(low: &BigUint, high: &BigUint) -> Vec<BigUint> {
     let mut out = Vec::new();
     let mut n = low.clone();
-    while n <= *high { if prime_power(&n) { out.push(n.clone()); } n += 1_u8; }
+    while n <= *high {
+        if prime_power(&n) {
+            out.push(n.clone());
+        }
+        n += 1_u8;
+    }
     out
 }
 
@@ -171,7 +223,9 @@ pub fn prime_powers(low: &BigUint, high: &BigUint) -> Vec<BigUint> {
 #[must_use]
 pub fn next_prime_power(n: &BigUint) -> BigUint {
     let mut n = n + 1_u8;
-    while !prime_power(&n) { n += 1_u8; }
+    while !prime_power(&n) {
+        n += 1_u8;
+    }
     n
 }
 
@@ -183,9 +237,13 @@ pub fn next_prime_power(n: &BigUint) -> BigUint {
 /// ```
 #[must_use]
 pub fn prev_prime_power(n: &BigUint) -> Option<BigUint> {
-    if n <= &2_u8.into() { return None; }
+    if n <= &2_u8.into() {
+        return None;
+    }
     let mut n = n - 1_u8;
-    while !prime_power(&n) { n -= 1_u8; }
+    while !prime_power(&n) {
+        n -= 1_u8;
+    }
     Some(n)
 }
 
@@ -197,8 +255,12 @@ pub fn prev_prime_power(n: &BigUint) -> Option<BigUint> {
 /// ```
 #[must_use]
 pub fn next_perfect_power(n: &BigUint) -> BigUint {
-    if n == &0_u8.into() { return 1_u8.into(); }
-    if n == &1_u8.into() { return 4_u8.into(); }
+    if n == &0_u8.into() {
+        return 1_u8.into();
+    }
+    if n == &1_u8.into() {
+        return 4_u8.into();
+    }
     let mut best = (arith::rootint(n, 2) + 1_u8).pow(2);
     for k in 3..=u32::try_from(n.bits()).unwrap_or(u32::MAX) {
         best = best.min((arith::rootint(n, k) + 1_u8).pow(k));
@@ -214,11 +276,17 @@ pub fn next_perfect_power(n: &BigUint) -> BigUint {
 /// ```
 #[must_use]
 pub fn prev_perfect_power(n: &BigUint) -> Option<BigUint> {
-    if n == &0_u8.into() { return None; }
-    if n <= &4_u8.into() { return Some(BigUint::from(u8::from(n > &1_u8.into()))); }
+    if n == &0_u8.into() {
+        return None;
+    }
+    if n <= &4_u8.into() {
+        return Some(BigUint::from(u8::from(n > &1_u8.into())));
+    }
     let m = n - 1_u8;
     let mut best = BigUint::from(1_u8);
-    for k in 2..=u32::try_from(m.bits()).unwrap_or(u32::MAX) { best = best.max(arith::rootint(&m, k).pow(k)); }
+    for k in 2..=u32::try_from(m.bits()).unwrap_or(u32::MAX) {
+        best = best.max(arith::rootint(&m, k).pow(k));
+    }
     Some(best)
 }
 
@@ -226,25 +294,29 @@ pub fn prev_perfect_power(n: &BigUint) -> Option<BigUint> {
 /// `goldbach.c::minimal_goldbach_pair`, by ascending prime trials.
 /// ```
 /// use math_prime_util::bigint::families::minimal_goldbach_pair;
-/// assert_eq!(minimal_goldbach_pair(&10_u8.into()), Some((3_u8.into(), 7_u8.into())));
+/// assert_eq!(minimal_goldbach_pair(&10_u8.into()), Some(3_u8.into()));
 /// ```
 #[must_use]
-pub fn minimal_goldbach_pair(n: &BigUint) -> Option<(BigUint, BigUint)> {
-    if n < &4_u8.into() { return None; }
+pub fn minimal_goldbach_pair(n: &BigUint) -> Option<BigUint> {
+    if n < &4_u8.into() {
+        return None;
+    }
     if n % 2_u8 != BigUint::from(0_u8) {
         let q = n - 2_u8;
-        return (primality::is_prob_prime(&q) != 0).then(|| (2_u8.into(), q));
+        return (primality::is_prob_prime(&q) != 0).then(|| 2_u8.into());
     }
     let mut p = BigUint::from(2_u8);
-    while &p <= &(n >> 1_usize) {
+    while p <= (n >> 1_usize) {
         let q = n - &p;
-        if primality::is_prob_prime(&q) != 0 { return Some((p, q)); }
+        if primality::is_prob_prime(&q) != 0 {
+            return Some(p);
+        }
         p = primality::next_prime(&p);
     }
     None
 }
 
-/// Return the next Chen prime. Port of MPU `util.c::next_chen_prime`.
+/// Return the next Chen prime. Port of MPU `almost_primes.c::next_chen_prime`.
 /// # Errors
 /// Return an unresolved cofactor if factoring fails.
 /// ```
@@ -255,7 +327,9 @@ pub fn next_chen_prime(n: &BigUint) -> Result<BigUint, BigUint> {
     let mut p = primality::next_prime(n);
     loop {
         let q = &p + 2_u8;
-        if primality::is_prob_prime(&q) != 0 || factor::factor(&q)?.len() == 2 { return Ok(p); }
+        if primality::is_prob_prime(&q) != 0 || factor::factor(&q)?.len() == 2 {
+            return Ok(p);
+        }
         p = primality::next_prime(&p);
     }
 }

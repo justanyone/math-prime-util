@@ -177,3 +177,101 @@ pub fn pisano_period(n: &BigUint) -> BigUint {
     while fibonacci(&(&r - 1u8), n) != one() { r += &k; }
     r
 }
+
+fn bounded_count(n: &BigUint) -> u64 {
+    assert!(*n <= big(600_000_000), "Maximum returned roots exceeded");
+    n.iter_u64_digits().next().unwrap_or(0)
+}
+
+fn prime_roots(a: &BigUint, k: &BigUint, p: &BigUint) -> Vec<BigUint> {
+    let a = a % p;
+    if *p == two() || is_zero(&a) { return vec![a]; }
+    let Some(r) = rootmod(&a, k, p) else { return vec![]; };
+    let g = gcd(k, &(p - 1u8));
+    if is_one(&g) { return vec![r]; }
+    let count = bounded_count(&g);
+    let mut candidate = two();
+    let z = loop {
+        let z = pow(&candidate, &((p - 1u8) / &g), p);
+        if !is_one(&z) { break z; }
+        candidate += 1u8;
+    };
+    let mut roots = Vec::new();
+    let mut next = r;
+    for _ in 0..count { roots.push(next.clone()); next = mul(&next, &z, p); }
+    roots
+}
+
+// rootmod.c::_allrootmod_prime_power, with k prime.
+fn prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Vec<BigUint> {
+    if *k == two() { return roots_pk(a, p, e); }
+    if e == 1 { return prime_roots(a, k, p); }
+    let n = p.pow(e);
+    if is_zero(&(a % &n)) {
+        let t = (big(u64::from(e - 1)) / k + 1u8).iter_u32_digits().next().unwrap_or(0);
+        return (0..bounded_count(&p.pow(e - t))).map(|i| big(i) * p.pow(t)).collect();
+    }
+    if *k < big(u64::from(e)) {
+        let k32 = k.iter_u32_digits().next().unwrap_or(0);
+        let pk = p.pow(k32);
+        if is_zero(&(a % &pk)) {
+            let roots = prime_power(&(a / pk), k, p, e - k32);
+            let copies = bounded_count(&p.pow(k32 - 1));
+            bounded_count(&(big(roots.len() as u64) * copies));
+            return roots.iter().flat_map(|r| (0..copies).map(|j| r * p + big(j) * p.pow(e - k32 + 1))).collect();
+        }
+    }
+    if is_zero(&(a % p)) { return vec![]; }
+    let np = if k == p { &n * p } else { n.clone() };
+    let ered = e.div_ceil(2) + u32::from(*p == two() && e >= 5);
+    let mut result = Vec::new();
+    for s in prime_power(a, k, p, ered) {
+        let t = pow(&s, &(k - 1u8), &np);
+        let r = add(&s, &divide(&sub(a, &mul(&t, &s, &np), &np), &mul(k, &t, &np), &n), &n);
+        if k != p { result.push(r); }
+        else if pow(&r, k, &n) == a % &n {
+            let count = bounded_count(k);
+            bounded_count(&(big(result.len() as u64) + k));
+            for i in 0..count { result.push(mul(&r, &add(&mul(&big(i), &(&n / p), &n), &one(), &n), &n)); }
+        }
+    }
+    result.sort_unstable(); result.dedup(); result
+}
+
+/// Return all `k`th roots modulo `n` in ascending order.
+/// Port of `reference/mpu/rootmod.c::allrootmod` and `_allrootmod_prime_power`.
+/// The modulus and exponent must be factorable.
+/// # Panics
+/// Panics if the result exceeds MPU's limit of 600 million roots.
+/// ```
+/// use math_prime_util::bigint::modular::allrootmod;
+/// assert_eq!(allrootmod(&13u8.into(), &6u8.into(), &107u8.into()), vec![24u8.into(), 83u8.into()]);
+/// ```
+pub fn allrootmod(a: &BigUint, k: &BigUint, n: &BigUint) -> Vec<BigUint> {
+    if is_zero(n) { return vec![]; }
+    let a = a % n;
+    if is_one(n) { return vec![zero()]; }
+    if is_zero(k) { return if is_one(&a) { (0..bounded_count(n)).map(big).collect() } else { vec![] }; }
+    if *n == two() || is_one(k) { return vec![a]; }
+    if *k == two() { return allsqrtmod(&a, n); }
+    let factors = factor_exp(n);
+    let mut roots = vec![a];
+    for prime in factor::factor(k) {
+        let mut next = Vec::new();
+        for r in roots {
+            let (mut rs, mut modulus) = (vec![zero()], one());
+            for (p, e) in &factors {
+                let pe = p.pow(*e);
+                let more = prime_power(&r, &prime, p, *e);
+                bounded_count(&(big(rs.len() as u64) * big(more.len() as u64)));
+                rs = super::combine(&rs, &modulus, &more, &pe);
+                modulus *= pe;
+            }
+            bounded_count(&big((next.len() + rs.len()) as u64));
+            next.extend(rs);
+        }
+        roots = next;
+        if roots.is_empty() { break; }
+    }
+    roots.sort_unstable(); roots.dedup(); roots
+}

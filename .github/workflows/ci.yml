@@ -113,6 +113,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
       - run: sudo apt-get install -y libgmp-dev
       - name: Benchmark merge base and head on this runner
@@ -122,8 +124,8 @@ jobs:
           base=$(git merge-base origin/main "$GITHUB_SHA")
           mkdir -p "$RUNNER_TEMP/base"
           git archive "$base" | tar -x -C "$RUNNER_TEMP/base"
-          cp -a target "$RUNNER_TEMP/base/" 2>/dev/null || true
-          (cd "$RUNNER_TEMP/base" && cargo bench --all-features -- --save-baseline base)
+          # Same target dir, so criterion finds the saved baseline.
+          (cd "$RUNNER_TEMP/base" && CARGO_TARGET_DIR="$GITHUB_WORKSPACE/target" cargo bench --all-features -- --save-baseline base)
           cargo bench --all-features -- --baseline base
           python3 - <<'PY'
           import json

@@ -779,12 +779,12 @@ fn totient_slice_boundaries_and_independent_calls() {
     assert_eq!(dedekind_psi(0), Some(0));
     assert_eq!(dedekind_psi(1_u64 << 63), Some(3_u64 << 62));
     assert_eq!(dedekind_psi(u64::MAX), None);
-    assert_eq!(inverse_totient(0), []);
+    assert_eq!(inverse_totient(0), [] as [u64; 0]);
     assert_eq!(inverse_totient(1), [1, 2]);
-    assert_eq!(inverse_totient(3), []);
+    assert_eq!(inverse_totient(3), [] as [u64; 0]);
     assert_eq!(inverse_totient(10), [11, 22]);
-    assert_eq!(inverse_totient(14), []);
-    assert_eq!(inverse_totient(u64::MAX), []);
+    assert_eq!(inverse_totient(14), [] as [u64; 0]);
+    assert_eq!(inverse_totient(u64::MAX), [] as [u64; 0]);
     assert!(!is_totient(0));
     assert!(is_totient(1));
     assert!(!is_totient(u64::MAX));

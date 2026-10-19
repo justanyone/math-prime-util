@@ -16,9 +16,13 @@ exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 [dependencies]
 getrandom = { version = "0.3", features = ["std"] }
 num-bigint = { version = "0.4", optional = true }
+# GMP backend: links the installed GMP (libgmp-dev); never builds GMP from source.
+rug = { version = "1", default-features = false, features = ["integer", "rand"], optional = true }
+gmp-mpfr-sys = { version = "1", default-features = false, features = ["use-system-libs"], optional = true }
 
 [features]
 bigint = ["dep:num-bigint"]
+gmp = ["dep:rug", "dep:gmp-mpfr-sys"]
 
 [dev-dependencies]
 proptest = "1"
@@ -101,6 +105,10 @@ harness = false
 
 [[bench]]
 name = "misc_gap"
+harness = false
+
+[[bench]]
+name = "bigint"
 harness = false
 
 

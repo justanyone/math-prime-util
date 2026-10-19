@@ -95,3 +95,32 @@ fn bigint_modhelpers_zero_lucas() {
 fn bigint_modhelpers_output_limit() {
     allrootmod(&big(1), &big(0), &big(600_000_001));
 }
+
+#[test]
+fn bigint_modhelpers_full_width_smooth_moduli() {
+    for shift in 0..64 {
+        let n = 1u64 << shift;
+        let m = big(n);
+        assert_eq!(pisano_period(&m), BigUint::from(native::pisano_period(n)));
+        assert_eq!(qnr(&m), native::qnr(n).map(big));
+        for a in [0, 1, 2, 4, 9, u64::MAX] {
+            assert_eq!(is_qr(&big(a), &m), native::is_qr(a, n));
+            for k in [1, 2, 3, 5] {
+                if a == 0 && k > 1 {
+                    continue;
+                }
+                assert_eq!(
+                    allrootmod(&big(a), &big(k), &m),
+                    native::allrootmod(a, k, n)
+                        .into_iter()
+                        .map(big)
+                        .collect::<Vec<_>>()
+                );
+            }
+        }
+        assert_eq!(
+            cornacchia(&m, &m),
+            native::cornacchia(n, n).map(|(x, y)| (big(x), big(y)))
+        );
+    }
+}

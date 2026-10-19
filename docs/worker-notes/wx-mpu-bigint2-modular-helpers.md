@@ -15,3 +15,4 @@ All eleven functions have docs and runnable examples. STATUS already checks ever
 The focused test process still holds the build lock. No gate-green or coverage result is available yet.
 The focused name-filter run completed successfully after the compile fixes. Re-running only the two new test binaries to retain concise evidence; full suite and gate remain running.
 All five new tests pass, including all 51 oracle rows. Clippy default, bigint and GMP pass; all-features is running.
+All clippy feature sets pass. MSRV compilation is running. Added native agreement across every power-of-two modulus in the full u64 range; excluded zero-root lists that exceed MPU's output cap.

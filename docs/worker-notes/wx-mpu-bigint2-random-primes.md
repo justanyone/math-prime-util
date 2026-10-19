@@ -16,3 +16,4 @@ Final lint passed on default, bigint, gmp, and all features. MSRV 1.85 build pas
 Full tests have passed bigint proving and reached count compatibility tests. No test failures observed. Coverage and the requested aragog/wonko host validation remain unavailable in this checkout.
 All authored integration tests and native comparisons pass. Final suite is still in existing count tests; no failures yet. git diff --check is clean.
 All 12 new doctests pass. Strengthened replay to exact seeded equality for digit, strong, and balanced prime rows; focused replay passes. Final gate still waits on existing prime_count_oracle; coverage tooling and aragog/wonko are unavailable. No dependencies added and no git writes performed.
+The full gate passed the existing count tests and progressed to iterator tests. Seeded equality now also passes for strong primes, balanced semiprimes, and decimal primes. Coverage cannot run: neither cargo-llvm-cov nor LLVM tools are installed.

@@ -35,7 +35,7 @@ sub gen_bigint_sets {
       for my $fn (@binary) {
         no strict 'refs';
         emit($fh, $fn, [$aa, $bb], sub {
-          if ($fn eq 'setbinop') { return @{setbinop { $a + $b } \@a, \@b}; }
+          if ($fn eq 'setbinop') { return @{&setbinop(sub { $a + $b }, \@a, \@b)}; }
           if ($fn eq 'setinsert' || $fn eq 'setremove' || $fn eq 'setinvert') {
             my @copy = @{toset(@a)};
             my $delta = &{$fn}(\@copy, \@b);

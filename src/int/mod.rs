@@ -1,8 +1,8 @@
 //! Integer roots, logarithms, powers and gcd on `u64`.
 //!
 //! Ported from MPU's `util.c` and `util.h` (`isqrt`, `icbrt`, `rootint`,
-//! `crootint`, `logint`, `ipowsafe`, `is_power_ret`, `is_perfect_square_ret`,
-//! `gcd_ui`, `lcm_ui`, `gcdext`).
+//! `crootint`, `logint`, `ipowsafe`, `is_power_ret`, `powerof_ret`,
+//! `is_perfect_square_ret`, `gcd_ui`, `lcm_ui`, `gcdext`).
 
 // Used by the primality module (phase 1); unused until then.
 #[allow(dead_code)]
@@ -377,6 +377,9 @@ pub fn is_power_root(n: u64, k: u32) -> Option<u64> {
 /// The largest `k >= 2` such that `n` is a perfect `k`-th power, or `0` if
 /// `n` is not a perfect power. Matches MPU's one-argument `is_power(n)`.
 ///
+/// Port of `powerof_ret` in `util.c`. The search tries every prime up to 61.
+/// A `u64` can hold `2^k` for each of those primes.
+///
 /// `0` and `1` return `0`, as in MPU.
 ///
 /// ```
@@ -396,7 +399,9 @@ pub fn is_power_exp(n: u64) -> u32 {
     loop {
         let mut found = 0u32;
         let lim = m.ilog2();
-        for k in [2u32, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] {
+        for k in [
+            2u32, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+        ] {
             if k > lim {
                 break;
             }
@@ -492,6 +497,17 @@ pub fn gcdext(a: i64, b: i64) -> (i64, i64, i64) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn is_power_exp_prime_exponents_to_61() {
+        for k in 2..=63u32 {
+            assert_eq!(is_power_exp(1u64 << k), k, "2^{k}");
+        }
+        for k in 2..=40u32 {
+            let n = 3u64.pow(k);
+            assert_eq!(is_power_exp(n), k, "3^{k}");
+        }
+    }
 
     #[test]
     fn sqrt_edges() {

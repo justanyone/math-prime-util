@@ -667,11 +667,7 @@ mod tests {
         #[test]
         fn perfect_powers_agree_with_native(root in 2_u64..1000, k in 2_u32..64) {
             let Some(n) = root.checked_pow(k) else { return Ok(()) };
-            // The native `is_power_exp` tests prime exponents up to 37 only, so it
-            // returns 0 for 2^41, 2^43, 2^47, 2^53, 2^59 and 2^61 (MPU gives k).
-            if root != 2 || k <= 37 {
-                prop_assert_eq!(is_power_exp(&big(n)), crate::int::is_power_exp(n));
-            }
+            prop_assert_eq!(is_power_exp(&big(n)), crate::int::is_power_exp(n));
             prop_assert!(is_power(&big(n), k));
             prop_assert_eq!(rootint(&big(n), k), big(root));
             prop_assert_eq!(rootint(&big(n - 1), k), big(root - 1));

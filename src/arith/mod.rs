@@ -460,6 +460,8 @@ mod divisor_sum;
 pub use divisor_sum::divisor_sum;
 mod ramanujan_tau;
 pub use ramanujan_tau::ramanujan_tau;
+#[cfg(feature = "bigint")]
+pub(crate) use ramanujan_tau::{TAU, class_number};
 mod aliquot_sum;
 pub use aliquot_sum::aliquot_sum;
 mod abundance;

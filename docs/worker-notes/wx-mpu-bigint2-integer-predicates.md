@@ -33,3 +33,5 @@ Full-suite compilation is still running. The code and focused fixtures are compl
 
 The full gate suite has started executing tests after compilation. No failing tests have appeared so far; coverage remains unmeasured because the offline host lacks the tools.
 - 2026-10-19T16:02:01Z launcher: no commit for 60 s; 485 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint2-integer-predicates.md, src/bigint/mod.rs, src/bigint/predicates.rs, tests/compat_bigint_predicates.rs, tests/fixtures/bigint_predicates.tsv, tests/prop_bigint_predicates.rs, tools/fixtures/bigint_predicates.pl.
+
+The gate and final suite are still running; no failures have appeared. Focused tests, all clippy feature sets, and MSRV have passed. Coverage and designated-host verification remain external checks.

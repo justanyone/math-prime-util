@@ -12,6 +12,12 @@ mod biguint;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod counts;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod divisors;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod factor;
 #[cfg(feature = "gmp")]
 mod gmp;
 #[cfg(feature = "bigint")]

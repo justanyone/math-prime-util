@@ -12,7 +12,7 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 4, probable 6, API difference or documentation only 7.
+Counts: confirmed 4, probable 6, API difference or documentation only 8.
 
 ## Confirmed
 
@@ -246,6 +246,16 @@ Counts: confirmed 4, probable 6, API difference or documentation only 7.
     composites in `bigint_primality.tsv` (lines 1164, 1180, 1196, 1212, 1228);
     `base_tests_oracle` in `tests/compat_bigint_primality.rs` asserts false
     for an empty oracle value.
+
+17. `squfof_factor`, `pplus1_factor` and `lehman_factor` (PP, `PP.pm`
+    `_stub_factor`) are Pollard-Brent stubs: the method's bound or round
+    count becomes the Brent round count and the named method never runs.
+    Documented in the PP source ("No implementations of these here"), so
+    not a defect; the XS versions run the real methods. `bigint_factor.tsv`
+    records the stub's results (`pplus1_factor` and `squfof_factor` rows);
+    `stub_method_oracle` in `tests/compat_bigint_factor.rs` checks the
+    port's C-method results as valid splits and equal to the oracle where
+    both sides split.
 
 ## Checked, no defect found
 

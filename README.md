@@ -20,6 +20,30 @@ per-function checklist and [PLAN.md](PLAN.md) for the phases. Ongoing work lands
   against MPU's pure-Perl implementation and other Rust crates, a 95 % line
   coverage gate, mutation testing, and Miri on any `unsafe`.
 
+## Testing
+
+`tools/test.sh` runs the suite; `tools/gate.sh` adds fmt, clippy, MSRV and
+doc checks. The tests need no Perl: the oracle is committed as
+**273,025 rows in 17 fixture files** (`tests/fixtures/*.tsv`, recorded from
+MPU 0.75; `grep -vh '^#' tests/fixtures/*.tsv | grep -c .`). Where MPU is
+wrong the port asserts the correct value and skips the row; see
+[docs/upstream-findings.md](docs/upstream-findings.md).
+
+CI gates every pull request on **95 % line coverage**
+(`cargo llvm-cov --all-features --fail-under-lines 95`).
+
+Mutation testing uses cargo-mutants 27.1.0: **22,282 candidates** in
+22 modules. The `factor` module has a full run (840 mutants, 76 %
+killed before survivor closure; the 56 remaining sites were re-run on
+2026-10-18 with 45 killed and 11 documented as equivalent or unreachable).
+The other seven modules with a run (`arith`, `combinat`, `families`,
+`iter`, `modular`, `count`, `random`) are sampled, one shard of about
+twenty mutants each: **144 mutants tested, 121 killed, 13 missed, 10
+unviable** (90 % of the scored sample); every survivor is triaged and the
+one real gap has a test. The nightly workflow runs the whole crate.
+Details and the survivor triage:
+[docs/mutation-testing.md](docs/mutation-testing.md).
+
 ## Branches
 
 Work lands on a numbered integration branch (`dev-001`, `dev-002`, and so on). Small task branches are cut from it

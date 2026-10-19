@@ -264,7 +264,7 @@ pub fn sopfr(n: &BigUint) -> Result<BigUint, BigUint> {
     Ok(factor_exp(n)?.into_iter().map(|(p, e)| p * e).sum())
 }
 
-/// Return the Ramanujan sum c_k(n).
+/// Return the Ramanujan sum `c_k(n)`.
 ///
 /// Port of MPU 0.75 `XS.xs::ramanujan_sum`.
 ///

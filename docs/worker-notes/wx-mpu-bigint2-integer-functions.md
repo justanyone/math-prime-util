@@ -13,3 +13,4 @@ The inverse_sigma exceptions are specific to PP BigInt arguments: ref(k) disable
 Formatting and whitespace checks pass. The first all-features filtered build still owns Cargo lock, so gate and explicit integration-test run are queued.
 Added a genuine 81-bit composite removal factor and checked every inverse-totient result at 2^64 by recomputing its totient.
 Validation is still compiling. Remaining work is gate completion and coverage measurement; no oracle disagreements have been observed yet because replay has not completed.
+Coverage blocker: cargo-llvm-cov is not installed on wonko; no network install attempted. Started an isolated library clippy build to get actionable diagnostics while the all-test build finishes.

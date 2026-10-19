@@ -22,3 +22,4 @@ Explicit focused run passed: all 198 oracle rows and all five property/boundary 
 Gate passed every clippy feature set (default, bigint, gmp, all-features) and has reached the Rust 1.85 MSRV build. Focused tests remain green. Waiting for full-suite and gate completion.
 Generator now explicitly disables XS and GMP dispatch as well as calling PP directly. Regenerated the same fixture family offline. No Rust changes after focused validation.
 MSRV build is compiling the crate successfully so far; all four gate lint configurations passed. Explicit PP dispatch regeneration succeeded. Full suite and gate are still pending; coverage tool remains unavailable.
+Rust 1.85 MSRV build passed. Gate has reached its full all-features test run. The separately requested full suite is also running; neither has reported a failure yet. No further source changes are planned.

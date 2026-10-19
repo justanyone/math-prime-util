@@ -16,3 +16,4 @@ Hand check (probe removed after): tools/gate.sh passed fmt, clippy-default, and 
 
 Next: probe is gone. Run tools/gate.sh and expect `== gate: green`. About 5 minutes of budget may remain after that run starts.
 - 2026-10-19T11:39:52Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-gate-builds-every-ci-feature-set.md.
+- 2026-10-19T11:44:23Z launcher: no commit for 60 s; 362 s elapsed. Files changed so far: .github/workflows/ci.yml, docs/worker-notes/wx-mpu-gate-builds-every-ci-feature-set.md, tools/gate.sh.

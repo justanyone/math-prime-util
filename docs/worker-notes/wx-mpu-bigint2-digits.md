@@ -13,3 +13,4 @@ Fmt and default/bigint/GMP clippy checks passed. Whole-suite validation is compi
 Added u64::MAX-base round trips and extreme exponent checks for conversion boundaries. Full suite and remaining gate steps continue offline.
 All five focused tests now pass, including large bases and exponent boundaries. All four clippy feature sets passed; the gate is building MSRV dependencies.
 Gate MSRV build passed and full tests are executing. No upstream discrepancies appeared in the bigint digit oracle.
+Full test execution continues; no failure has been reported. Coverage >=95% cannot be measured without cargo-llvm-cov, and aragog/wonko are inaccessible under the no-network rule.

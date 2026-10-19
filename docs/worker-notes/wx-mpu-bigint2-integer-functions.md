@@ -4,3 +4,4 @@ Add pure-Perl oracle fixtures and native agreement tests; run offline checks.
 Record impractical functions and any environment blockers here.
 Confirmed host wonko. MPU PP rejects hclassno and integer_complexity above signed native range; retain these as native exceptions.
 Inverse sigma range generation needs prime enumeration or interval factorization across bigint ranges; retain both native forms for this row.
+Implemented 16 additive functions, including sparse inverse totient enumeration. Next add fixtures and native comparisons.

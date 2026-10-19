@@ -1053,21 +1053,39 @@ impl Certificate {
 // ---------------------------------------------------------------------------
 // Proving.
 
-/// The prime factors of `n` found by the base factoring stages, and the
-/// cofactors they could not split. Uses `Int::factor` of `BigUint` (trial
-/// division, square check, Pollard–Brent) until the bigint factoring module
-/// replaces it.
+/// The prime factors of `n` found by bounded factoring stages, and the
+/// cofactors they could not split: the native path below 2^128, then 2, 3,
+/// 5 and 20,000 rounds of Pollard-Brent on each larger composite. The full
+/// `bigint::factor` recipe has no time limit, too slow for every level of a
+/// proof.
 fn partial_factor(n: &BigUint) -> (Vec<BigUint>, Vec<BigUint>) {
-    match n.factor() {
-        Ok(primes) => (primes, vec![]),
-        Err(cofactor) if cofactor == *n => (vec![], vec![n.clone()]),
-        Err(cofactor) => {
-            // The stages split off a composite they cannot factor further.
-            let (primes, mut rest) = partial_factor(&(n / &cofactor));
-            rest.push(cofactor);
-            (primes, rest)
+    let (mut primes, mut rest) = (Vec::new(), Vec::new());
+    let mut stack = vec![n.clone()];
+    while let Some(m) = stack.pop() {
+        if let Ok(v) = u128::try_from(&m) {
+            match crate::factor::factor_u128(v) {
+                Ok(f) => primes.extend(f.into_iter().map(BigUint::from)),
+                Err(c) => {
+                    rest.push(BigUint::from(c));
+                    stack.push(BigUint::from(v / c));
+                }
+            }
+            continue;
+        }
+        let parts = super::factor::pbrent_factor(&m, Some(20_000), None);
+        let split = parts.len() > 1;
+        for f in parts {
+            if is_prob_prime(&f) != 0 {
+                primes.push(f);
+            } else if split {
+                stack.push(f);
+            } else {
+                rest.push(f);
+            }
         }
     }
+    primes.sort_unstable();
+    (primes, rest)
 }
 
 /// Result of a proof attempt: the blocks, or MPU's status for no proof

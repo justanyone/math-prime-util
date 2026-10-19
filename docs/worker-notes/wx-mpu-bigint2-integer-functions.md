@@ -8,3 +8,4 @@ Implemented 16 additive functions, including sparse inverse totient enumeration.
 Added oracle generator, complete row replay, and native agreement properties. Local Perl environment lacks local::lib; use vendored PP source offline rather than bootstrap network.
 Offline PP fixture generation succeeded using reference/mpu/lib. Focused tests and gate compilation are running; all STATUS entries are already checked, so STATUS is unchanged.
 Added inverse-totient odd-input shortcut and a nonempty 2^64 oracle case. Four native exceptions for launcher commit message: hclassno and integer_complexity reject big inputs in PP; inverse_sigma0 and inverse_sigma0_count require impractical enumeration on general bigint ranges.
+Review found no shared state in new library functions. Repeated-call tests cover inverse-totient state isolation; invalid degree and factor tests cover validation. No services or launcher paths touched.

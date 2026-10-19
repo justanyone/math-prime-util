@@ -26,6 +26,11 @@ sub gen_bigint_sets {
           my %f = &{$fn}(@a);
           return join(' ', map { "$_:$f{$_}" } sort { Math::BigInt->new($a) <=> Math::BigInt->new($b) } keys %f);
         }
+        if ($fn eq 'toset') { return @{toset(@a)}; }
+        if ($fn eq 'vecsorti' || $fn eq 'vecrsorti') {
+          my @copy = @a;
+          return @{&{$fn}(\@copy)};
+        }
         return &{$fn}(@a);
       });
     }

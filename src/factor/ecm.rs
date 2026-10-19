@@ -367,7 +367,7 @@ mod tests {
     #[test]
     fn bounds_and_unsuccessful_search() {
         assert_eq!(ecm_factor(0, None, None, None), vec![0]);
-        assert_eq!(ecm_factor(1, None, None, None), vec![]);
+        assert_eq!(ecm_factor(1, None, None, None), [] as [u64; 0]);
         assert_eq!(ecm_factor(91, Some(0), Some(0), Some(0)), vec![91]);
         assert_eq!(
             ecm_factor(91, Some(0), Some(0), Some(1))

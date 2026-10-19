@@ -62,9 +62,9 @@ The phases are described in `PLAN.md` section 6.
 - [x] Milestone 4: prime families ported (done 2026-10-19)
 - [x] Milestone 5: digits, rationals, combinatorics and inverse sigma ported (done 2026-10-19)
 - [x] Milestone 6: vector and set operations ported (done 2026-10-19)
-- [ ] Milestone 7: iterators and the for-family ported
-- [ ] Milestone 8: random primes and the random number generator ported
-- [ ] Milestone 9: primality proving, real functions and the bigint backend ported
+- [x] Milestone 7: iterators and the for-family ported (done 2026-10-19)
+- [x] Milestone 8: random primes and the random number generator ported (done 2026-10-19)
+- [x] Milestone 9: primality proving, real functions and the bigint backend ported (done 2026-10-19)
 - [ ] Release 1.0.0 published on crates.io
 
 ## Installation and requirements
@@ -79,12 +79,14 @@ math-prime-util = "1"
 - Rust 1.85 or newer (edition 2024). Nothing else: the default build is pure Rust and links no system library.
   Its only dependency is `getrandom`.
 - Feature `bigint` adds the pure-Rust `num-bigint` crate for integers beyond 128 bits. No system library.
-- Feature `gmp` (planned, not in this version) will add the `rug` crate, which links GMP. That build needs
-  either the GMP development package at build time (`libgmp-dev` on Debian and Ubuntu, `gmp-devel` on Fedora,
-  `gmp` from Homebrew) or, with rug's bundled source build, a C compiler, `m4` and `make`. Users who do not
-  enable `gmp` never need GMP.
+- Feature `gmp` adds the `rug` crate, which links the installed GMP and makes `rug::Integer` a third
+  `Int` backend. That build needs the GMP development package at build time (`libgmp-dev` on Debian and
+  Ubuntu, `gmp-devel` on Fedora, `gmp` from Homebrew); it never compiles GMP from source, so no C compiler,
+  `m4` or `make` is needed. Users who do not enable `gmp` never need GMP.
 
-To build from a checkout: `cargo build --release`; tests: `cargo test --all-features`.
+Three builds, then: the default (`cargo build`, pure Rust), `--features bigint` (pure Rust, big integers)
+and `--features gmp` (links GMP). To build from a checkout: `cargo build --release`; tests:
+`cargo test --all-features` (needs GMP) or `cargo test --features bigint` (pure Rust).
 
 ## Minimum Rust version
 
@@ -120,8 +122,12 @@ arithmetic the generic algorithms need: `add_int`, `sub_int`, `mul_int`, `divrem
 operations return `None` where a fixed-width type would overflow; `BigUint` never overflows.
 
 Enable the backend with `features = ["bigint"]` on the dependency line; the default build has no dependency on
-`num-bigint`. The compat tests replay every unsigned fixture row of the
-families primality, factor, modular, int and sieve through the trait on each backend and compare with the native path.
+`num-bigint`. Feature `gmp` adds `rug::Integer` as a third backend with the same algorithms over GMP's arithmetic
+(see "Installation and requirements"); GMP's own `gcd` and `next_prime` take `self` by value and win method
+resolution on a concrete `Integer`, so write `Int::gcd(&a, &b)` and `Int::next_prime(&n)` for the trait's forms.
+The compat tests replay every unsigned fixture row of the families primality, factor, modular, int and sieve
+through the trait on each backend and compare with the native path; `benches/bigint.rs` compares the two
+arbitrary precision backends on a 200-digit `is_prime` and a 60-digit `factor`.
 
 [`Int`]: src/bigint/mod.rs
 

@@ -47,6 +47,9 @@ pub mod proving;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod rational;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod sets;
 
 /// The shared number theory surface for unsigned integers.
 ///

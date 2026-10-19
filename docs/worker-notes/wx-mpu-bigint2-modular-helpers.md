@@ -13,3 +13,4 @@ The first focused build found a factor API tuple mismatch and a closure lifetime
 Offline verification is running locally on wowbagger because the named build hosts cannot be reached under this task's no-SSH rule. This does not satisfy the requested host check.
 All eleven functions have docs and runnable examples. STATUS already checks every task name, so it needs no edit.
 The focused test process still holds the build lock. No gate-green or coverage result is available yet.
+The focused name-filter run completed successfully after the compile fixes. Re-running only the two new test binaries to retain concise evidence; full suite and gate remain running.

@@ -28,3 +28,6 @@ Near the session deadline, gate is still in the pre-existing forsquarefreeint te
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)
 - 2026-10-19T16:15:35Z launcher: about 60 s to the time limit of 14 minutes; 788 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint2-rationals.md, src/bigint/mod.rs, src/bigint/rational.rs, tests/compat_bigint_rational.rs, tests/fixtures/bigint_rational.tsv, tests/prop_bigint_rational.rs, tools/fixtures/bigint_rational.pl.
+Stopping with all requested practical code and tests written. Gate/full-suite runs have not completed within the session; 95% coverage and aragog/wonko validation remain unverified. No commits, pushes, dependency changes, or edits outside t <<cut 22 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -2 bytes)

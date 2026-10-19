@@ -119,8 +119,8 @@ fn prime_power_boundaries_and_repeated_calls() {
     assert_eq!(prev_prime_power(0), None);
     assert_eq!(prev_prime_power(1), None);
     assert_eq!(prev_prime_power(2), None);
-    assert_eq!(prime_powers(0, 1), []);
-    assert_eq!(prime_powers(20, 10), []);
+    assert_eq!(prime_powers(0, 1), [] as [u64; 0]);
+    assert_eq!(prime_powers(20, 10), [] as [u64; 0]);
     assert_eq!(prime_powers(10, 20), [11, 13, 16, 17, 19]);
     assert_eq!(prime_powers(0, 10), [2, 3, 4, 5, 7, 8, 9]);
     assert_eq!(prime_powers(0, 2), [2]);
@@ -193,11 +193,11 @@ proptest! {
 
 #[test]
 fn native_and_segment_boundaries() {
-    assert_eq!(twin_primes(11, 10), []);
+    assert_eq!(twin_primes(11, 10), [] as [u64; 0]);
     assert_eq!(twin_primes(11, 11), vec![11]);
     assert_eq!(twin_primes(29, 29), vec![29]);
     assert_eq!(twin_primes(u64::MAX - 844, u64::MAX), vec![u64::MAX - 844]);
-    assert_eq!(twin_primes(u64::MAX, u64::MAX), []);
+    assert_eq!(twin_primes(u64::MAX, u64::MAX), [] as [u64; 0]);
     assert_eq!(nth_twin_prime(u64::MAX), None);
     let pairs = twin_primes(0, 1_000_100);
     assert_eq!(pairs.len() as u64, twin_prime_count(1_000_100));
@@ -322,9 +322,9 @@ proptest! {
 
 #[test]
 fn empty_ranges_and_repeat_calls() {
-    assert_eq!(semi_primes(15, 4), []);
-    assert_eq!(semi_primes(0, 3), []);
-    assert_eq!(semi_primes(u64::MAX, u64::MAX), []);
+    assert_eq!(semi_primes(15, 4), [] as [u64; 0]);
+    assert_eq!(semi_primes(0, 3), [] as [u64; 0]);
+    assert_eq!(semi_primes(u64::MAX, u64::MAX), [] as [u64; 0]);
     let expected = semi_primes(0, 2000);
     let workers: Vec<_> = (0..4)
         .map(|_| std::thread::spawn(|| semi_primes(0, 2000)))

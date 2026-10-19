@@ -1,13 +1,16 @@
 //! Generic unsigned integer operations.
 //!
 //! Use [`Int`] methods to keep the native free functions unambiguous.
-//! The backends are `u64`, `u128`, and, with feature `bigint`, `num_bigint::BigUint`.
+//! The backends are `u64`, `u128`, with feature `bigint` `num_bigint::BigUint`
+//! (pure Rust), and with feature `gmp` `rug::Integer` (links the system GMP).
 
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod arith;
 #[cfg(feature = "bigint")]
 mod biguint;
+#[cfg(feature = "gmp")]
+mod gmp;
 
 /// The shared number theory surface for unsigned integers.
 ///

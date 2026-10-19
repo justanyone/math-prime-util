@@ -110,6 +110,22 @@ mod tests {
     use crate::{is_prime, primes_in};
 
     #[test]
+    fn checkpoints_keep_the_first_batch_divisor() {
+        // Three prime factors let a batch return a composite divisor.
+        // Moving the checkpoint can instead return a different prime.
+        assert_eq!(pminus1(380_052_542_447, 1000, 1000), [17_959, 21_162_233]);
+        assert_eq!(pminus1(103_904_667_173, 149, 149), [1597, 65_062_409]);
+    }
+
+    #[test]
+    fn recovery_starts_after_the_saved_prime() {
+        // Both factors are smooth. The batched gcd is n, so replay must
+        // start after save_q and stop at the first nontrivial gcd.
+        assert_eq!(pminus1(7 * 19, 5, 5), [7, 19]);
+        assert_eq!(pminus1(13 * 31, 5, 5), [13, 31]);
+    }
+
+    #[test]
     fn bounds_and_recovery() {
         assert_eq!(prime_power(2, 32), 32);
         assert_eq!(prime_power(3, 32), 27);

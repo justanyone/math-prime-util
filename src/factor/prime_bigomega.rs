@@ -134,7 +134,28 @@ fn step(x: u64, a: u64, n: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use super::{exponents, rho, step};
+    use super::{exponents, prime_bigomega, rho, sorted_factors, step};
+
+    #[test]
+    fn sorted_factors_edges_and_small_primes() {
+        // factor.c: 0 factors as [0], 1 as [], a prime as itself.
+        assert_eq!(sorted_factors(0), [0]);
+        assert_eq!(sorted_factors(1), []);
+        for p in [2_u64, 3, 5, 7, 11, 13, 419, 421, 431, 65_537] {
+            assert_eq!(sorted_factors(p), [p], "{p}");
+            assert_eq!(sorted_factors(p * p), [p, p], "{p}^2");
+        }
+        assert_eq!(
+            sorted_factors(2 * 3 * 5 * 7 * 11 * 13),
+            [2, 3, 5, 7, 11, 13]
+        );
+        assert_eq!(sorted_factors(431 * 65_537), [431, 65_537]);
+        assert_eq!(prime_bigomega(0), 1);
+        assert_eq!(prime_bigomega(1), 0);
+        assert_eq!(prime_bigomega(2), 1);
+        assert_eq!(prime_bigomega(360), 6);
+        assert_eq!(prime_bigomega(431 * 65_537), 2);
+    }
 
     #[test]
     fn rho_backtracking_and_retry_limit() {

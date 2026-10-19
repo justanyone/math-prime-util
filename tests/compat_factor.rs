@@ -391,11 +391,19 @@ fn is_practical_oracle() {
 #[test]
 fn is_smooth_oracle() {
     each("factor", "is_smooth", |c| {
+        // MPU 0.75 says is_smooth(4294967297, 4294967296) is 0 (fixture line
+        // 24083): its prime cofactor 6700417 is at most k, so the correct
+        // answer is 1. See docs/upstream-findings.md, finding 1.
+        if c.line == 24083 {
+            return;
+        }
         // Signed is_smooth arguments are outside the native u64 API.
         if let (Ok(n), Ok(k)) = (c.args[0].parse::<u64>(), c.args[1].parse::<u64>()) {
             c.check(Some(u8::from(is_smooth(n, k))));
         }
     });
+    assert!(is_smooth(4_294_967_297, 4_294_967_296));
+    assert!(is_smooth(7 * 1_299_709, 1_299_709));
 }
 
 #[test]

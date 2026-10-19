@@ -25,6 +25,7 @@ Test fixtures (tests/fixtures/*.tsv) are the recorded output of MPU 0.75,
 produced by the scripts in tools/fixtures/. They are used to check that this
 port gives the same answers as MPU. Where MPU's answer is mathematically wrong,
 the test asserts the correct value and skips the row with a named comment; such
-differences are listed in docs/upstream-findings.md when it is published.
+differences and review limits are listed in
+[docs/upstream-findings.md](docs/upstream-findings.md).
 
 MPU is not affiliated with this port and has not endorsed it.

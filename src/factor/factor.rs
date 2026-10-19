@@ -97,6 +97,16 @@ fn squfof_stage(n: u64) -> Option<u64> {
 /// Portable `factor_one` chain. `start` skips earlier stages so tests can
 /// reach each arm. Production calls this with `start == 0`.
 fn dispatcher(n: u64, start: u8) -> Option<u64> {
+    dispatcher_with_brent(n, start, super::pbrent_factor)
+}
+
+/// The `reference/mpu/factor.c::factor_one` schedule, with an injectable
+/// Brent attempt so tests can observe budgets even when another stage succeeds.
+fn dispatcher_with_brent(
+    n: u64,
+    start: u8,
+    mut attempt: impl FnMut(u64, Option<u64>, Option<u64>) -> Vec<u64>,
+) -> Option<u64> {
     if start == 0 {
         if let Some(f) = holf_stage(n) {
             return Some(f);
@@ -107,15 +117,12 @@ fn dispatcher(n: u64, start: u8) -> Option<u64> {
     // USE_MONTMATH round schedule in factor_one.
     let rounds = 8_000 + 9_000 * extra;
     if start <= 1 {
-        if let Some(f) = one_factor(n, &super::pbrent_factor(n, Some(rounds), Some(1))) {
+        if let Some(f) = one_factor(n, &attempt(n, Some(rounds), Some(1))) {
             return Some(f);
         }
     }
     if start <= 2 {
-        if let Some(f) = one_factor(
-            n,
-            &super::pbrent_factor(n, Some(rounds.saturating_mul(2)), Some(3)),
-        ) {
+        if let Some(f) = one_factor(n, &attempt(n, Some(rounds.saturating_mul(2)), Some(3))) {
             return Some(f);
         }
     }
@@ -153,9 +160,15 @@ fn split(n: u64) -> u64 {
     }
     // factor_one croaks when every stage misses. Keep searching with the
     // non-Montgomery Brent polynomial so a composite still splits.
+    retry_brent(n, brent)
+}
+
+/// Retry the non-Montgomery `reference/mpu/factor.c::pbrent_factor` port
+/// with successive odd polynomials after the C dispatcher is exhausted.
+fn retry_brent(n: u64, mut attempt: impl FnMut(u64, u64, u64) -> Option<u64>) -> u64 {
     let mut a = 7;
     loop {
-        if let Some(f) = brent(n, 500_000, a) {
+        if let Some(f) = attempt(n, 500_000, a) {
             return f;
         }
         a += 2;
@@ -232,6 +245,44 @@ fn square_add(x: u64, a: u64, n: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::{brent, dispatcher, holf, holf_stage, one_factor, split, squfof_stage};
+
+    #[test]
+    fn fallback_retries_failed_polynomials() {
+        let mut parameters = Vec::new();
+        let factor = super::retry_brent(403, |n, rounds, a| {
+            assert_eq!((n, rounds), (403, 500_000));
+            parameters.push(a);
+            (parameters.len() == 4).then_some(13)
+        });
+        assert_eq!(factor, 13);
+        assert_eq!(parameters, [7, 9, 11, 13]);
+        assert_eq!(super::retry_brent(403, brent), 31);
+    }
+
+    #[test]
+    fn dispatcher_passes_c_round_budgets_to_brent() {
+        // C factor_one: 8000 rounds through 45 bits, then 9000 more per bit.
+        // Return a proper divisor on the selected attempt, before later stages.
+        for (n, rounds) in [(1_u64 << 44, 8_000), (1 << 45, 17_000), (1 << 63, 179_000)] {
+            for success in [1, 2] {
+                let mut calls = Vec::new();
+                let got = super::dispatcher_with_brent(n, 1, |input, budget, a| {
+                    assert_eq!(input, n);
+                    calls.push((budget, a));
+                    if calls.len() == success {
+                        vec![2, n / 2]
+                    } else {
+                        vec![n]
+                    }
+                });
+                assert_eq!(got, Some(2));
+                assert_eq!(calls[0], (Some(rounds), Some(1)));
+                if success == 2 {
+                    assert_eq!(calls[1], (Some(rounds * 2), Some(3)));
+                }
+            }
+        }
+    }
 
     #[test]
     fn split_paths_and_round_limits() {

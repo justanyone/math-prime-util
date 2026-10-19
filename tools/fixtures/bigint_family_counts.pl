@@ -60,7 +60,7 @@ sub gen_bigint_family_counts {
   # Windows of consecutive integers: 2^64 (a power of two, powerful for every
   # k up to 64), 10^20, and a window around p^2 for a prime p, so that a
   # square of a prime and its neighbours are powerful or not as k grows.
-  my $p = next_prime(Math::BigInt->new('8589934592'));
+  my $p = Math::BigInt->new(next_prime(Math::BigInt->new('8589934592')));
   my @windows = (
     [$two64 - 6, $two64 + 6],
     [Math::BigInt->new('100000000000000000000') - 5, Math::BigInt->new('100000000000000000000') + 6],
@@ -72,7 +72,17 @@ sub gen_bigint_family_counts {
     for (my $i = $lo->copy; $i <= $hi; $i++) { push @ints, $i->copy; }
     emit($fh, 'prime_count', [$lo, $hi], sub { prime_count($lo, $hi) });
     emit($fh, 'twin_prime_count', [$lo, $hi], sub { twin_prime_count($lo, $hi) });
-    emit($fh, 'semiprime_count', [$lo, $hi], sub { semiprime_count($lo, $hi) });
+    # PP semiprime_count walks lo..hi with a native `$lo++`; a start below 2^64
+    # that reaches 2^64 turns into a float and every later number fails
+    # is_semiprime (docs/upstream-findings.md entry 20). The row then holds
+    # the sum of is_semiprime over the window, the correct value.
+    {
+      my $direct = eval { semiprime_count($lo->copy, $hi->copy) };
+      my $count = scalar grep { is_semiprime($_) } @ints;
+      print $fh "# upstream finding 20: PP semiprime_count($lo, $hi) = $direct, correct $count\n"
+        if !defined $direct || "$direct" ne "$count";
+      emit($fh, 'semiprime_count', [$lo, $hi], sub { $count });
+    }
     emit($fh, 'sum_primes', [$lo, $hi], sub { my $s = Math::BigInt->new(0); $s += $_ for grep { is_prime($_) } @ints; $s });
     emit($fh, 'prime_power_count', [$lo, $hi], sub { scalar grep { is_prime_power($_) } @ints });
     emit($fh, 'sumtotient', [$lo, $hi], sub { my $s = Math::BigInt->new(0); $s += euler_phi($_) for @ints; $s });

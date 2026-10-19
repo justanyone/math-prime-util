@@ -584,7 +584,7 @@ pub fn nth_powerfree(n: &BigUint, k: u32) -> Result<Option<BigUint>, BigUint> {
     let mut lo = n.clone();
     let mut hi = n * 2_u8;
     while powerfree_count(&hi, k)? < *n {
-        lo = hi.clone();
+        lo.clone_from(&hi);
         hi *= 2_u8;
     }
     while lo < hi {

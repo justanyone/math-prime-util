@@ -396,7 +396,9 @@ pub fn is_power_exp(n: u64) -> u32 {
     loop {
         let mut found = 0u32;
         let lim = m.ilog2();
-        for k in [2u32, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] {
+        for k in [
+            2u32, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+        ] {
             if k > lim {
                 break;
             }
@@ -492,6 +494,17 @@ pub fn gcdext(a: i64, b: i64) -> (i64, i64, i64) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn is_power_exp_prime_exponents_to_61() {
+        for k in 2..=63u32 {
+            assert_eq!(is_power_exp(1u64 << k), k, "2^{k}");
+        }
+        for k in 2..=40u32 {
+            let n = 3u64.pow(k);
+            assert_eq!(is_power_exp(n), k, "3^{k}");
+        }
+    }
 
     #[test]
     fn sqrt_edges() {

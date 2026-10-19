@@ -1,19 +1,23 @@
 //! Functions of an arbitrary precision integer and its factorization.
 //! Factorization errors return the cofactor that could not be split.
-use num_bigint::{BigInt, BigUint};
-use std::collections::BTreeMap;
 use super::arith::{gcd, rootint};
 use super::divisors::{divisor_sum, divisors, euler_phi, moebius};
 use super::factor::factor_exp;
 use super::primality::is_prob_prime;
+use num_bigint::{BigInt, BigUint};
+use std::collections::BTreeMap;
 
 fn pow(n: &BigUint, mut k: u64) -> BigUint {
     let mut result = BigUint::from(1_u8);
     let mut base = n.clone();
     while k != 0 {
-        if k & 1 != 0 { result *= &base; }
+        if k & 1 != 0 {
+            result *= &base;
+        }
         k >>= 1;
-        if k != 0 { base = &base * &base; }
+        if k != 0 {
+            base = &base * &base;
+        }
     }
     result
 }
@@ -32,7 +36,9 @@ fn pow(n: &BigUint, mut k: u64) -> BigUint {
 /// assert_eq!(aliquot_sum(&n).unwrap(), BigUint::from(16_u8));
 /// ```
 pub fn aliquot_sum(n: &BigUint) -> Result<BigUint, BigUint> {
-    if n.bits() == 0 { return Ok(n.clone()); }
+    if n.bits() == 0 {
+        return Ok(n.clone());
+    }
     Ok(divisor_sum(n, 1)? - n)
 }
 
@@ -86,7 +92,9 @@ pub fn crootint(n: &BigUint, k: u32) -> BigUint {
 /// assert_eq!(jordan_totient(2, &n).unwrap(), BigUint::from(96_u8));
 /// ```
 pub fn jordan_totient(k: u64, n: &BigUint) -> Result<BigUint, BigUint> {
-    if k == 0 || *n <= BigUint::from(1_u8) { return Ok(BigUint::from(u8::from(*n == BigUint::from(1_u8)))); }
+    if k == 0 || *n <= BigUint::from(1_u8) {
+        return Ok(BigUint::from(u8::from(*n == BigUint::from(1_u8))));
+    }
     let mut result = BigUint::from(1_u8);
     for (p, e) in factor_exp(n)? {
         let pk = pow(&p, k);
@@ -110,7 +118,11 @@ pub fn jordan_totient(k: u64, n: &BigUint) -> Result<BigUint, BigUint> {
 /// ```
 pub fn dedekind_psi(n: &BigUint) -> Result<BigUint, BigUint> {
     let mut result = n.clone();
-    if n.bits() != 0 { for (p, _) in factor_exp(n)? { result = result / &p * (&p + 1_u8); } }
+    if n.bits() != 0 {
+        for (p, _) in factor_exp(n)? {
+            result = result / &p * (&p + 1_u8);
+        }
+    }
     Ok(result)
 }
 
@@ -128,9 +140,15 @@ pub fn dedekind_psi(n: &BigUint) -> Result<BigUint, BigUint> {
 /// assert_eq!(exp_mangoldt(&n).unwrap(), BigUint::from(1_u8));
 /// ```
 pub fn exp_mangoldt(n: &BigUint) -> Result<BigUint, BigUint> {
-    if *n < BigUint::from(2_u8) { return Ok(BigUint::from(1_u8)); }
+    if *n < BigUint::from(2_u8) {
+        return Ok(BigUint::from(1_u8));
+    }
     let factors = factor_exp(n)?;
-    Ok(if factors.len() == 1 { factors[0].0.clone() } else { BigUint::from(1_u8) })
+    Ok(if factors.len() == 1 {
+        factors[0].0.clone()
+    } else {
+        BigUint::from(1_u8)
+    })
 }
 
 /// Return minus one to the number of prime factors.
@@ -147,7 +165,9 @@ pub fn exp_mangoldt(n: &BigUint) -> Result<BigUint, BigUint> {
 /// assert_eq!(liouville(&n).unwrap(), -1);
 /// ```
 pub fn liouville(n: &BigUint) -> Result<i8, BigUint> {
-    let odd = factor_exp(n)?.iter().fold(false, |odd, (_, e)| odd ^ (e % 2 != 0));
+    let odd = factor_exp(n)?
+        .iter()
+        .fold(false, |odd, (_, e)| odd ^ (e % 2 != 0));
     Ok(if odd { -1 } else { 1 })
 }
 
@@ -165,8 +185,13 @@ pub fn liouville(n: &BigUint) -> Result<i8, BigUint> {
 /// assert_eq!(powerfree_part(&n, 2).unwrap(), BigUint::from(3_u8));
 /// ```
 pub fn powerfree_part(n: &BigUint, k: u32) -> Result<BigUint, BigUint> {
-    if k < 2 || *n <= BigUint::from(1_u8) { return Ok(BigUint::from(u8::from(*n == BigUint::from(1_u8)))); }
-    Ok(factor_exp(n)?.into_iter().map(|(p, e)| p.pow(e % k)).product())
+    if k < 2 || *n <= BigUint::from(1_u8) {
+        return Ok(BigUint::from(u8::from(*n == BigUint::from(1_u8))));
+    }
+    Ok(factor_exp(n)?
+        .into_iter()
+        .map(|(p, e)| p.pow(e % k))
+        .product())
 }
 
 /// Return prime exponents in descending order.
@@ -253,10 +278,14 @@ pub fn sopfr(n: &BigUint) -> Result<BigUint, BigUint> {
 /// assert_eq!(ramanujan_sum(&n, &n).unwrap(), BigInt::from(4));
 /// ```
 pub fn ramanujan_sum(k: &BigUint, n: &BigUint) -> Result<BigInt, BigUint> {
-    if k.bits() == 0 || n.bits() == 0 { return Ok(BigInt::from(0)); }
+    if k.bits() == 0 || n.bits() == 0 {
+        return Ok(BigInt::from(0));
+    }
     let g = k / gcd(k, n);
     let m = moebius(&g)?;
-    if m == 0 { return Ok(BigInt::from(0)); }
+    if m == 0 {
+        return Ok(BigInt::from(0));
+    }
     Ok(BigInt::from(m) * BigInt::from(euler_phi(k)? / euler_phi(&g)?))
 }
 
@@ -274,11 +303,19 @@ pub fn ramanujan_sum(k: &BigUint, n: &BigUint) -> Result<BigInt, BigUint> {
 /// assert_eq!(remove_factors_exp(&n, &BigUint::from(2_u8)), Some((BigUint::from(3_u8), 2)));
 /// ```
 pub fn remove_factors_exp(n: &BigUint, k: &BigUint) -> Option<(BigUint, u64)> {
-    assert!(*k > BigUint::from(1_u8), "remove_factors_exp: k must exceed one");
-    if n.bits() == 0 { return None; }
+    assert!(
+        *k > BigUint::from(1_u8),
+        "remove_factors_exp: k must exceed one"
+    );
+    if n.bits() == 0 {
+        return None;
+    }
     let mut rest = n.clone();
     let mut count = 0;
-    while (&rest % k).bits() == 0 { rest /= k; count += 1; }
+    while (&rest % k).bits() == 0 {
+        rest /= k;
+        count += 1;
+    }
     Some((rest, count))
 }
 
@@ -313,12 +350,16 @@ pub fn remove_factors(n: &BigUint, k: &BigUint) -> Option<BigUint> {
 /// assert_eq!(inverse_totient(&BigUint::from(1_u8)).unwrap(), vec![BigUint::from(1_u8), BigUint::from(2_u8)]);
 /// ```
 pub fn inverse_totient(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
-    if n.bits() == 0 { return Ok(Vec::new()); }
+    if n.bits() == 0 {
+        return Ok(Vec::new());
+    }
     let mut values = BTreeMap::from([(BigUint::from(1_u8), vec![BigUint::from(1_u8)])]);
     // PP.pm::inverse_totient builds sparse lists indexed by totient divisors.
     for d in divisors(n, None)? {
         let p = &d + 1_u8;
-        if is_prob_prime(&p) == 0 { continue; }
+        if is_prob_prime(&p) == 0 {
+            continue;
+        }
         let previous = values.clone();
         let mut dp = d;
         let mut pp = p.clone();
@@ -326,7 +367,10 @@ pub fn inverse_totient(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
             for (v, list) in &previous {
                 let target = v * &dp;
                 if target <= *n && (n % &target).bits() == 0 {
-                    values.entry(target).or_default().extend(list.iter().map(|x| x * &pp));
+                    values
+                        .entry(target)
+                        .or_default()
+                        .extend(list.iter().map(|x| x * &pp));
                 }
             }
             dp *= &p;
@@ -337,4 +381,3 @@ pub fn inverse_totient(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
     result.sort_unstable();
     Ok(result)
 }
-

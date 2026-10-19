@@ -313,3 +313,64 @@ pub fn next_chen_prime(n: &BigUint) -> Result<BigUint, BigUint> {
         p = primality::next_prime(&p);
     }
 }
+
+/// Return the smaller primes of the Goldbach pairs of `n`. Port of MPU
+/// `goldbach.c::goldbach_pairs`, by ascending prime trials. The order is the
+/// native one: primes below 11 ascend, then the rest descend.
+/// ```
+/// use math_prime_util::bigint::families::goldbach_pairs;
+/// let got = goldbach_pairs(&22_u8.into());
+/// assert_eq!(got, vec![3_u8.into(), 5_u8.into(), 11_u8.into()]);
+/// ```
+#[must_use]
+pub fn goldbach_pairs(n: &BigUint) -> Vec<BigUint> {
+    let four = BigUint::from(4_u8);
+    if *n < four {
+        return Vec::new();
+    }
+    if n % 2_u8 != BigUint::from(0_u8) || *n == four {
+        let q = n - 2_u8;
+        return if primality::is_prob_prime(&q) != 0 {
+            vec![2_u8.into()]
+        } else {
+            Vec::new()
+        };
+    }
+    let half = n >> 1_usize;
+    let mut pairs = Vec::new();
+    let mut p = BigUint::from(2_u8);
+    while p <= half {
+        if primality::is_prob_prime(&(n - &p)) != 0 {
+            pairs.push(p.clone());
+        }
+        p = primality::next_prime(&p);
+    }
+    let small = pairs.iter().take_while(|p| **p < 11_u8.into()).count();
+    pairs[small..].reverse();
+    pairs
+}
+
+/// Return the `k`-powerful integers in the inclusive interval. Port of MPU
+/// `powerful.c::powerful_numbers_range`, by factoring each candidate.
+/// # Errors
+/// Return an unresolved cofactor if factoring fails.
+/// ```
+/// use math_prime_util::bigint::families::powerful_numbers;
+/// let got = powerful_numbers(&1_u8.into(), &10_u8.into(), 2).unwrap();
+/// assert_eq!(got.len(), 4);
+/// ```
+pub fn powerful_numbers(low: &BigUint, high: &BigUint, k: u32) -> Result<Vec<BigUint>, BigUint> {
+    let low = low.max(&BigUint::from(1_u8)).clone();
+    scan(&low, high, |n| {
+        let f = factor::factor(n)?;
+        let mut i = 0;
+        while i < f.len() {
+            let run = f[i..].iter().take_while(|p| **p == f[i]).count();
+            if (run as u64) < u64::from(k) {
+                return Ok(false);
+            }
+            i += run;
+        }
+        Ok(true)
+    })
+}

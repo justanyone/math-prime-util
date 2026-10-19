@@ -26,6 +26,8 @@ proptest! {
         prop_assert_eq!(big::prev_perfect_power(&lo),native::prev_perfect_power(n).map(BigUint::from));
         prop_assert_eq!(Some(big::next_chen_prime(&lo).unwrap()),native::next_chen_prime(n).map(BigUint::from));
         prop_assert_eq!(big::minimal_goldbach_pair(&lo),native::minimal_goldbach_pair(n).map(BigUint::from));
+        prop_assert_eq!(big::goldbach_pairs(&lo), values(native::goldbach_pairs(n)));
+        prop_assert_eq!(big::powerful_numbers(&lo,&hi,k).unwrap(), values(native::powerful_numbers(n,n+width,k)));
         let mut a=Vec::new(); let mut b=Vec::new();
         big::print_primes(&lo,&hi,&mut a).unwrap();
         native::print_primes(n,n+width,&mut b).unwrap();
@@ -35,6 +37,10 @@ proptest! {
 
 #[test]
 fn edges_and_repeated_calls() {
+    for n in 0_u8..40 {
+        let b = BigUint::from(n);
+        assert_eq!(big::goldbach_pairs(&b), values(native::goldbach_pairs(u64::from(n))));
+    }
     for n in 0_u8..12 {
         let b = BigUint::from(n);
         assert_eq!(

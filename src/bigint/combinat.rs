@@ -1,6 +1,6 @@
-//! Exact combinatorial products and permutation ranks.
+//! Exact combinatorial numbers, products, permutation ranks, Bernoulli and harmonic fractions, and Ramanujan tau.
 
-use num_bigint::BigUint;
+use num_bigint::{BigInt, BigUint, Sign};
 
 use crate::PermutationError;
 
@@ -349,4 +349,154 @@ fn binomial(n: usize, k: usize) -> BigUint {
         b = b * (n - k + i) / i;
     }
     b
+}
+
+/// Returns the Ramanujan tau value `tau(n)`, or `None` when `n` has a prime
+/// factor above 2^32 or cannot be factored.
+///
+/// Port of MPU 0.75 `PP.pm::ramanujan_tau`: tau is multiplicative, prime
+/// values use the class-number formula and prime powers use the Hecke
+/// recurrence. A prime `p` costs about `p` steps, so a prime factor above
+/// 2^32 is impractical and gives `None`. The value is signed, so it is a
+/// [`BigInt`].
+///
+/// ```
+/// use math_prime_util::bigint::combinat::ramanujan_tau;
+/// use num_bigint::{BigInt, BigUint};
+/// assert_eq!(ramanujan_tau(&BigUint::from(2_u8)), Some(BigInt::from(-24)));
+/// ```
+#[must_use]
+pub fn ramanujan_tau(n: &BigUint) -> Option<BigInt> {
+    if n == &BigUint::ZERO {
+        return Some(BigInt::ZERO);
+    }
+    let primes = if n == &BigUint::from(1_u8) {
+        Vec::new()
+    } else {
+        crate::bigint::factor::factor(n).ok()?
+    };
+    let mut result = BigInt::from(1_u8);
+    let mut i = 0;
+    while i < primes.len() {
+        let mut e = 1;
+        while i + e < primes.len() && primes[i + e] == primes[i] {
+            e += 1;
+        }
+        let p = u64::try_from(&primes[i])
+            .ok()
+            .filter(|&p| p <= TAU_PRIME_LIMIT)?;
+        result *= tau_prime_power(p, e);
+        i += e;
+    }
+    Some(result)
+}
+
+/// Largest prime for which [`ramanujan_tau`] runs its O(p) prime formula.
+const TAU_PRIME_LIMIT: u64 = 1 << 32;
+
+fn tau_prime_power(p: u64, e: usize) -> BigInt {
+    let tp = tau_prime(p);
+    let p11 = BigInt::from(p).pow(11);
+    let (mut previous, mut current) = (BigInt::from(1_u8), tp.clone());
+    for _ in 1..e {
+        let next = &tp * &current - &p11 * &previous;
+        previous = std::mem::replace(&mut current, next);
+    }
+    current
+}
+
+fn tau_prime(p: u64) -> BigInt {
+    if let Some(&value) = crate::arith::TAU.get(usize::try_from(p).unwrap_or(usize::MAX)) {
+        return BigInt::from(value);
+    }
+    let x = BigInt::from(p);
+    let leading = 28 * x.pow(6) - 28 * x.pow(5) - 90 * x.pow(4) - 35 * x.pow(3) - 1;
+    let mut sum = BigInt::ZERO;
+    for t in 1..=crate::sqrtint(p) {
+        let t2 = BigInt::from(t * t);
+        let v = p - t * t;
+        let h = match v % 4 {
+            0 => 2 * crate::arith::class_number(v) + crate::arith::class_number(4 * v),
+            3 => (if v % 8 == 3 { 6 } else { 4 }) * crate::arith::class_number(v),
+            _ => crate::arith::class_number(4 * v),
+        };
+        sum += t2.pow(3) * (4 * &t2 * &t2 - 9 * &x * &t2 + 7 * &x * &x) * h;
+    }
+    leading - 32 * (sum / 3)
+}
+
+/// Returns the Bernoulli number `B(n)` as a reduced fraction, with
+/// `B(1) = +1/2`, or `None` if `n` does not fit a `usize`.
+///
+/// Port of MPU 0.75 `PP.pm::bernfrac`, using exact tangent numbers.
+///
+/// ```
+/// use math_prime_util::bigint::combinat::bernfrac;
+/// use num_bigint::{BigInt, BigUint};
+/// assert_eq!(bernfrac(&12_u8.into()), Some((BigInt::from(-691), BigUint::from(2730_u16))));
+/// ```
+#[must_use]
+pub fn bernfrac(n: &BigUint) -> Option<(BigInt, BigUint)> {
+    let n = to_usize(n)?;
+    let one = BigUint::from(1_u8);
+    if n == 0 {
+        return Some((BigInt::from(1_u8), one));
+    }
+    if n == 1 {
+        return Some((BigInt::from(1_u8), BigUint::from(2_u8)));
+    }
+    if n % 2 == 1 {
+        return Some((BigInt::ZERO, one));
+    }
+    let k = n / 2;
+    // Brent and Harvey: t[j] ends as the j-th tangent number.
+    let mut t = vec![BigUint::ZERO; k + 1];
+    t[1] = BigUint::from(1_u8);
+    for i in 2..=k {
+        t[i] = &t[i - 1] * (i - 1);
+    }
+    for i in 2..=k {
+        for j in i..=k {
+            let v = &t[j - 1] * (j - i) + &t[j] * (j - i + 2);
+            t[j] = v;
+        }
+    }
+    let num = &t[k] * (2 * k);
+    let four_k = &one << (2 * k);
+    let den = &four_k * (&four_k - &one);
+    let g = crate::bigint::arith::gcd(&num, &den);
+    let sign = if k % 2 == 1 { Sign::Plus } else { Sign::Minus };
+    Some((BigInt::from_biguint(sign, num / &g), den / g))
+}
+
+/// Returns the harmonic number `1 + 1/2 + ... + 1/n` as a reduced fraction,
+/// or `None` if `n` does not fit a `usize`.
+///
+/// Port of MPU 0.75 `PP.pm::harmfrac`, with binary splitting.
+///
+/// ```
+/// use math_prime_util::bigint::combinat::harmfrac;
+/// use num_bigint::BigUint;
+/// assert_eq!(harmfrac(&3_u8.into()), Some((BigUint::from(11_u8), BigUint::from(6_u8))));
+/// ```
+#[must_use]
+pub fn harmfrac(n: &BigUint) -> Option<(BigUint, BigUint)> {
+    let n = to_usize(n)?;
+    if n == 0 {
+        return Some((BigUint::ZERO, BigUint::from(1_u8)));
+    }
+    let (p, q) = harmonic_split(1, n + 1);
+    let g = crate::bigint::arith::gcd(&p, &q);
+    Some((p / &g, q / g))
+}
+
+// Sum of 1/i for a <= i < b, as an unreduced fraction.
+fn harmonic_split(a: usize, b: usize) -> (BigUint, BigUint) {
+    if b - a == 1 {
+        return (BigUint::from(1_u8), BigUint::from(a));
+    }
+    let mid = a + (b - a) / 2;
+    let (p, q) = harmonic_split(a, mid);
+    let (r, s) = harmonic_split(mid, b);
+    (&p * &s + r * &q, q * s)
 }

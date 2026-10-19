@@ -34,6 +34,38 @@ fn bigint_combinat_oracle() {
                     c.check(Some(got.unwrap()));
                 }
             }
+            "bell_number" => c.check(combinat::bell_number(&c.arg(0))),
+            "catalan_number" => c.check(combinat::catalan_number(&c.arg(0))),
+            "subfactorial" => c.check(combinat::subfactorial(&c.arg(0))),
+            "fubini" => c.check(combinat::fubini(&c.arg(0))),
+            "partitions" => c.check(combinat::partitions(&c.arg(0))),
+            "partitionsq" => c.check(combinat::partitionsq(&c.arg(0))),
+            "stirling" => {
+                let (n, m, kind): (u64, u64, u64) = (c.arg(0), c.arg(1), c.arg(2));
+                let got = combinat::stirling(&n.into(), &m.into(), kind);
+                // MPU gives the signed first kind; the BigUint form is the magnitude.
+                let negative = kind == 1 && m < n && m > 0 && (n - m) % 2 == 1;
+                let want = c.result.as_deref().map(|r| r.trim_start_matches('-'));
+                assert_eq!(
+                    got.map(|v| v.to_string()).as_deref(),
+                    want,
+                    "line {}",
+                    c.line
+                );
+                assert_eq!(
+                    c.result.as_deref().is_some_and(|r| r.starts_with('-')),
+                    negative
+                );
+            }
+            "bernfrac" => {
+                let (num, den) = combinat::bernfrac(&c.arg(0)).expect("small index");
+                c.check(Some(format!("{num} {den}")));
+            }
+            "harmfrac" => {
+                let (num, den) = combinat::harmfrac(&c.arg(0)).expect("small index");
+                c.check(Some(format!("{num} {den}")));
+            }
+            "ramanujan_tau" => c.check(combinat::ramanujan_tau(&c.arg(0))),
             other => panic!("unhandled fixture function {other}"),
         }
     }

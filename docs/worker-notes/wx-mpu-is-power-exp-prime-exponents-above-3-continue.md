@@ -7,6 +7,7 @@ src/bigint/arith.rs is not in this tree. No proptest skips 41, 43, 47, 53, 59, 6
 Cited powerof_ret. Next: run the is_power tests, then tools/gate.sh.
 tools/test.sh --lib is_power passed (is_power_exp_prime_exponents_to_61 and is_power_brute).
 Gate is running. About 5 minutes remain in the session budget.
+First gate passed fmt, clippy, and MSRV. cargo test was killed during compat_iter (forsquarefreeint). Retrying gate.
 - 2026-10-19T03:20:41Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-is-power-exp-prime-exponents-above-3-continue.md.
 - 2026-10-19T03:21:41Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-is-power-exp-prime-exponents-above-3-continue.md.
 - 2026-10-19T03:22:41Z launcher: no commit for 60 s; 211 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-is-power-exp-prime-exponents-above-3-continue.md.

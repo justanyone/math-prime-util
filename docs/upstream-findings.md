@@ -12,7 +12,7 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 6, probable 6, API difference or documentation only 8.
+Counts: confirmed 7, probable 6, API difference or documentation only 8.
 Entries 15 to 19 are numbered in the order they were found, not by section.
 
 ## Confirmed
@@ -151,6 +151,28 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
   oracle lists.
 - Upstream test: `is_deeply([allsqrtmod(17, "9223372036854775808")], [qw/405959429219100393 4205726589208287511 5017645447646488297 8817412607635675415/], "allsqrtmod 17 mod 2^63");`
 - Status: confirmed (reachable in 0.75; the overflowing line is in MPU).
+
+### 20. `semiprime_count` (PP, `PP.pm`) with a range that starts below 2^64 and reaches 2^64 counts nothing past 2^64 - 1
+
+- Function and input: `semiprime_count(18446744073709551610, 18446744073709551622)`
+  (`bigint_family_counts.tsv`, the first `semiprime_count` row).
+- Perl 0.75 value: `0`.
+- Correct value: `2`. The semiprimes in the range are 18446744073709551617 and
+  18446744073709551619 (`is_semiprime` is true for both).
+- Location: `PP.pm` `sub semiprime_count`, the walk branch (lines 4572 to 4578):
+  `validate_integer_nonneg($lo)` leaves a start that fits in 64 bits as a
+  native integer, and `$lo++` at 2^64 - 1 becomes a floating point number, so
+  every later `Mis_semiprime($lo)` is false. A start of 2^64 or more stays a
+  `Math::BigInt` and counts 2.
+- How verified: PP run today (`MPU_NO_XS=1`, no GMP); starts at 2^64 - 6 to
+  2^64 - 1 give 0, starts at 2^64 and above give 2, 2, 1 and 1 for the shrinking
+  ranges (2^64, 2^64 + 1, 2^64 + 2 and 2^64 + 3 as starts). `almost_prime_count(2, ...)` summed over the same window gives 2.
+- Port: `bigint::family_counts::semiprime_count` walks with `BigUint`.
+- Test that skips the row: the generator `tools/fixtures/bigint_family_counts.pl`
+  writes the correct count of 2 for this row (the fixture comment names this
+  entry), so `replay_bigint_family_counts` asserts the correct value.
+- Upstream test: `is(semiprime_count("18446744073709551610","18446744073709551622"), 2, "semiprime_count across 2^64");`
+- Status: confirmed (reachable in 0.75; the walk branch is in MPU).
 
 ## Probable
 
@@ -325,7 +347,15 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
     `stub_method_oracle` in `tests/compat_bigint_factor.rs` checks the
     port's C-method results as valid splits and equal to the oracle where
     both sides split.
-18. Family bounds above 2^64 (`bigint_family_bounds.tsv`, PP under
+21. `setinsert`, `setinvert`, `setcontains` and `set_is_proper_intersection`
+    (PP) assume their set arguments are sorted and unique and give
+    undefined results otherwise (for example `setinsert` of the unsorted list
+    `2^100+3,0,2^100,2^100+3,1` into the empty set returns 5 and an unsorted
+    list with a duplicate). The port sorts and de-duplicates first. 53 rows
+    of `bigint_sets.tsv` with such an argument are skipped by
+    `bigint_sets_oracle` in `tests/compat_bigint_sets.rs`; the rows with
+    valid sets all replay.
+22. Family bounds above 2^64 (`bigint_family_bounds.tsv`, PP under
     `MPU_NO_GMP=1`). In `PP.pm`: (a) `lucky_count_{approx,lower,upper}`
     above 2^64, `nth_prime_power_*` above about 2^59 and several
     `nth_almost_prime_*` rows die or return `NaN`, because a `Math::BigFloat`

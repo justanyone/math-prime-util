@@ -11,7 +11,13 @@ pub mod arith;
 mod biguint;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod combinat;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod counts;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod digits;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod divisors;
@@ -21,6 +27,12 @@ pub mod factor;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod family_bounds;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod family_counts;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod functions;
 #[cfg(feature = "gmp")]
 mod gmp;
 #[cfg(feature = "bigint")]
@@ -28,10 +40,19 @@ mod gmp;
 pub mod modular;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod predicates;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod primality;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod proving;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod rational;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod sets;
 
 /// The shared number theory surface for unsigned integers.
 ///

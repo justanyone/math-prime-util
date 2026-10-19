@@ -4,3 +4,5 @@ Keep native APIs unchanged and add offline oracle replay and native agreement te
 Record unsupported prefix and nth forms with algorithmic reasons for the launcher commit.
 The host is wowbagger, not an authorized build host; no remote execution is available under the task rules.
 The local Perl environment is absent; use the vendored MPU PP oracle offline instead of the network bootstrap.
+Added the family module with integer-root inclusion/exclusion, phi/psi recurrences, and fallible inclusive range folds.
+Next: generate PP fixtures from vendored sources and add native agreement checks; no network bootstrap will run.

@@ -1,3 +1,4 @@
+//! Native agreement, input checks, and independent seeded streams.
 #![cfg(feature = "bigint")]
 use math_prime_util::{bigint::random as big, *};
 use num_bigint::BigUint;

@@ -6,6 +6,8 @@ use super::primality::{is_prob_prime, is_strong_pseudoprime, next_prime, prev_pr
 
 /// Draws at most `bits` random bits.
 /// Port of `reference/mpu/csprng.c::urandomb` and `PP.pm::urandomb`.
+/// # Panics
+/// Panics if the byte count does not fit in memory.
 /// ```
 /// use math_prime_util::bigint::random::urandomb;
 /// assert!(urandomb(100).bits() <= 100);
@@ -86,15 +88,36 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
             return None;
         }
     }
-    if !lo.bit(0) {
+    if lo == BigUint::from(2_u8) {
+        lo -= 1_u8;
+    } else if !lo.bit(0) {
         lo += 1_u8;
     }
     if !hi.bit(0) {
         hi -= 1_u8;
     }
-    let range = ((&hi - &lo) >> 1_usize) + 1_u8;
+    let mut range = ((&hi - &lo) >> 1_usize) + 1_u8;
+    // RandomPrimes.pm partitions intervals wider than a native parameter.
+    if range > BigUint::from(u64::MAX) {
+        let nbins = ceil_div(&range, &(BigUint::from(1_u8) << 32_usize));
+        let binsize = ceil_div(&range, &nbins);
+        let mut nparts = &range / &binsize;
+        if &nparts * &binsize == range {
+            nparts -= 1_u8;
+        }
+        let part = urandomm(&(&nparts + 1_u8));
+        lo += (&binsize * &part) << 1_usize;
+        range = if part < nparts {
+            binsize
+        } else {
+            range - nparts * binsize
+        };
+    }
     loop {
         let n = &lo + (urandomm(&range) << 1_usize);
+        if n == BigUint::from(1_u8) {
+            return Some(2_u8.into());
+        }
         if is_prob_prime(&n) != 0 {
             return Some(n);
         }
@@ -318,44 +341,44 @@ pub fn random_unrestricted_semiprime(bits: u32) -> Option<BigUint> {
         return crate::random_unrestricted_semiprime(bits).map(BigUint::from);
     }
     const WEIGHTS: &[(u32, f64)] = &[
-        (2, 1.91218397452243),
-        (3, 1.33954826555021),
-        (5, 0.854756717114822),
-        (7, 0.635492301836862),
-        (11, 0.426616792046787),
-        (13, 0.368193843118344),
-        (17, 0.290512701603111),
-        (19, 0.263359264658156),
-        (23, 0.222406328935102),
-        (29, 0.181229250520242),
-        (31, 0.170874199059434),
-        (37, 0.146112155735473),
-        (41, 0.133427839963585),
-        (43, 0.127929010905662),
-        (47, 0.118254609086782),
-        (53, 0.106316418106489),
-        (59, 0.0966989675438643),
-        (61, 0.0938833658008547),
-        (67, 0.0864151823151671),
-        (71, 0.0820822953188297),
-        (73, 0.0800964416340746),
-        (79, 0.0747060914833344),
-        (83, 0.0714973706654851),
-        (89, 0.0672115468436284),
-        (97, 0.0622818892486191),
-        (101, 0.0600855891549939),
-        (103, 0.0590613570015407),
-        (107, 0.0570921135626976),
-        (109, 0.0561691667641485),
-        (113, 0.0544330141081874),
-        (127, 0.0490620204315701),
+        (2, 1.912_183_974_522_43),
+        (3, 1.339_548_265_550_21),
+        (5, 0.854_756_717_114_822),
+        (7, 0.635_492_301_836_862),
+        (11, 0.426_616_792_046_787),
+        (13, 0.368_193_843_118_344),
+        (17, 0.290_512_701_603_111),
+        (19, 0.263_359_264_658_156),
+        (23, 0.222_406_328_935_102),
+        (29, 0.181_229_250_520_242),
+        (31, 0.170_874_199_059_434),
+        (37, 0.146_112_155_735_473),
+        (41, 0.133_427_839_963_585),
+        (43, 0.127_929_010_905_662),
+        (47, 0.118_254_609_086_782),
+        (53, 0.106_316_418_106_489),
+        (59, 0.096_698_967_543_864_3),
+        (61, 0.093_883_365_800_854_7),
+        (67, 0.086_415_182_315_167_1),
+        (71, 0.082_082_295_318_829_7),
+        (73, 0.080_096_441_634_074_6),
+        (79, 0.074_706_091_483_334_4),
+        (83, 0.071_497_370_665_485_1),
+        (89, 0.067_211_546_843_628_4),
+        (97, 0.062_281_889_248_619_1),
+        (101, 0.060_085_589_154_993_9),
+        (103, 0.059_061_357_001_540_7),
+        (107, 0.057_092_113_562_697_6),
+        (109, 0.056_169_166_764_148_5),
+        (113, 0.054_433_014_108_187_4),
+        (127, 0.049_062_020_431_570_1),
     ];
     let min = BigUint::from(1_u8) << (bits - 1);
     let max = (&min << 1_usize) - 1_u8;
     let mut r = crate::drand(1.0);
     let mut selected = None;
     for &(p, weight) in WEIGHTS {
-        let probability = weight / f64::from(bits) + 0.19556 / f64::from(p);
+        let probability = weight / f64::from(bits) + 0.195_56 / f64::from(p);
         if r <= probability {
             selected = Some(BigUint::from(p));
             break;

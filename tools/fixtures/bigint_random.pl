@@ -19,7 +19,7 @@ sub gen_bigint_random {
     csrand($seed);
     emit($fh, 'random_prime', [$n, $b+1000], sub { Math::Prime::Util::PP::random_prime($b, $b+1000) });
     csrand($seed);
-    emit($fh, 'random_factored_integer', [$n], sub { Math::Prime::Util::PP::random_factored_integer($b) });
+    emit($fh, 'random_factored_integer', [$n], sub { my ($r, $f) = Math::Prime::Util::PP::random_factored_integer($b); ($r, @$f) });
     csrand($seed);
     emit($fh, 'miller_rabin_random', [$n, 5], sub { Math::Prime::Util::PP::miller_rabin_random($b,5) });
   }

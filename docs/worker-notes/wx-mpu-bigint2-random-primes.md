@@ -7,3 +7,5 @@ Large factor sampling may be impractical in pure Perl; record measured limits an
 Read PP sampling and Gordon algorithms. STATUS already ticks all twelve native names; no status edits needed. Host is wowbagger, not requested aragog or wonko; only local offline checks are possible.
 Implemented eleven bigint APIs, including Gordon strong primes and Kalai factored sampling. Local oracle bootstrap is absent; checking vendored PP without network next.
 Added all twelve APIs and fixture/property files. First focused offline test is running; oracle uses vendored MPU with MPU_NO_XS=1 because local::lib is unavailable.
+First focused run found a fixture generator array reference encoding issue; fixed the generator to flatten factors and regenerated, never edited TSV. Added missing test module docs.
+About five minutes remain. Focused replay exposed a PP safe-prime oracle error. Investigating the oracle exception; lint gate is running after formatting and fixture fixes.

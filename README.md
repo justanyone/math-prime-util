@@ -6,13 +6,16 @@ number-theory toolbox around them (totients, Möbius, modular roots and logs,
 Lucas sequences, continued fractions, combinatorics, random primes, and more).
 
 Status: **version 1.0.0.** All 428 exported names of MPU 0.75 are ported, except
-`is_higgs_prime`, which does not exist in 0.75. See [STATUS.md](STATUS.md) for the
-per-function checklist and [PLAN.md](PLAN.md) for the phases. Ongoing work lands on `dev-002`.
+`is_higgs_prime`, which does not exist in 0.75. With the cargo feature `bigint`, 82 of them also
+take `BigUint` (see [What works with and without `bigint`](#what-works-with-and-without-bigint)).
+See [STATUS.md](STATUS.md) for the per-function checklist and [PLAN.md](PLAN.md) for the phases.
+Ongoing work lands on `dev-002`.
 
 ## Goals
 
 - **Full compatibility.** Same function names and the same answers as MPU, on
-  the native `u64`/`u128` path first and big integers later. Every MPU test
+  the native `u64`/`u128` path, and on `BigUint` (cargo feature `bigint`) for the
+  names listed in [docs/bigint-coverage.md](docs/bigint-coverage.md). Every MPU test
   file has a Rust counterpart that replays the oracle's output.
 - **Performance.** MPU's C algorithms ported as they are, benchmarked against
   the C on the same machine; target within 1.2× of the C.
@@ -24,8 +27,9 @@ per-function checklist and [PLAN.md](PLAN.md) for the phases. Ongoing work lands
 
 `tools/test.sh` runs the suite; `tools/gate.sh` adds fmt, clippy, MSRV and
 doc checks. The tests need no Perl: the oracle is committed as
-**273,025 rows in 17 fixture files** (`tests/fixtures/*.tsv`, recorded from
-MPU 0.75; `grep -vh '^#' tests/fixtures/*.tsv | grep -c .`). Where MPU is
+**279,306 rows in 23 fixture files** (`tests/fixtures/*.tsv`, recorded from
+MPU 0.75; `grep -vh '^#' tests/fixtures/*.tsv | grep -c .`). The six `bigint_*` files hold MPU's
+pure-Perl results on big inputs and run with `cargo test --features bigint`. Where MPU is
 wrong the port asserts the correct value and skips the row; see
 [docs/upstream-findings.md](docs/upstream-findings.md).
 
@@ -65,6 +69,7 @@ The phases are described in `PLAN.md` section 6.
 - [x] Milestone 7: iterators and the for-family ported (done 2026-10-19)
 - [x] Milestone 8: random primes and the random number generator ported (done 2026-10-19)
 - [x] Milestone 9: primality proving, real functions and the bigint backend ported (done 2026-10-19)
+- [x] Milestone 10: big integers: `BigUint` forms behind the `bigint` feature, every name audited (done 2026-10-19)
 - [ ] Release 1.0.0 published on crates.io
 
 ## Installation and requirements
@@ -99,16 +104,49 @@ function behaviour and the test oracle come from MPU. The Rust code is a new imp
 from MPU:
 
 - The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
-- The native path covers `u64` and `u128`. The `Int` trait (feature `bigint` adds `num_bigint::BigUint`)
-  gives `is_prime`, `factor`, `powmod`, `gcd`, `next_prime` and the basic arithmetic one generic surface;
-  the modules `bigint::arith`, `bigint::primality`, `bigint::factor` and `bigint::divisors` carry the
-  integer core, the primality tests, factoring and the divisor functions on `BigUint`; the rest of the
-  bigint path is not ported yet.
+- MPU handles big integers through Math::BigInt. This crate's native path covers `u64` and `u128`; with the
+  cargo feature `bigint`, 82 names also have a `BigUint` form, and the other names stay native only, each
+  for a reason given in [docs/bigint-coverage.md](docs/bigint-coverage.md).
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
   and records the difference for upstream review. See
   [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
 
 MPU is not affiliated with this port and has not endorsed it.
+
+## What works with and without `bigint`
+
+| Build | Integer types | What you get |
+|---|---|---|
+| default | `u64` and `u128` (`i64`/`i128` where MPU takes signed values) | All 428 names except `is_higgs_prime` (not in MPU 0.75), and the [`Int`] trait on `u64` and `u128`. Pure Rust. |
+| `features = ["bigint"]` | adds `num_bigint::BigUint` | All of the above, plus `BigUint` forms of 82 names in `bigint::arith`, `bigint::primality`, `bigint::factor`, `bigint::divisors`, `bigint::modular`, `bigint::counts` and `bigint::proving`, and the [`Int`] trait on `BigUint`. Pure Rust. |
+| `features = ["gmp"]` | adds `rug::Integer` | The [`Int`] trait on `rug::Integer` with GMP's arithmetic. Links the installed GMP. Add `bigint` as well for the `BigUint` modules. |
+
+The `u64`/`u128` signatures are the same in every build; the feature only adds functions. The `BigUint` forms
+keep the MPU names and take `&BigUint` where the native form takes a fixed-width integer; add `num-bigint = "0.4"` to your own
+dependencies to name the type.
+
+```rust
+use math_prime_util::{factor, is_prime};
+
+// Native path, every build.
+assert_eq!(is_prime(1_000_000_007), 2); // 2: proven prime
+assert_eq!(factor(600_851_475_143), vec![71, 839, 1471, 6857]);
+
+// Feature `bigint`: the same names on BigUint, past 2^64.
+use math_prime_util::bigint::{factor::factor as big_factor, primality::is_prime as big_is_prime};
+use num_bigint::BigUint;
+
+let m89 = (BigUint::from(1_u8) << 89_u32) - 1_u8; // 2^89 - 1, a Mersenne prime
+assert_eq!(big_is_prime(&m89), 1); // 1: BPSW probable prime (proofs: bigint::proving)
+let f = big_factor(&((BigUint::from(1_u8) << 64_u32) + 1_u8)).unwrap();
+assert_eq!(f, [274_177_u64, 67_280_421_310_721].map(BigUint::from));
+```
+
+Of the other 346 names, 258 stay native only in this release (`no`: for example the growing results such as
+`fibonacci` and `primorial`, the prime family counts, and random big primes) and for 88 a `BigUint` form does
+not apply (`n.a.`: num-bigint's own operators already do it, real functions, generator state, enumeration).
+[STATUS.md](STATUS.md) gives the value per name; [docs/bigint-coverage.md](docs/bigint-coverage.md) lists the
+`BigUint` forms with their fixture rows and every native-only name with its reason.
 
 ## Generic integers
 
@@ -140,6 +178,9 @@ The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, 
 `is_square_free`, `prime_bigomega`, `prime_omega`) take `&BigUint` and keep the MPU names; the families
 `bigint_arith`, `bigint_primality` and `bigint_factor` replay MPU's pure Perl path on 65 to 1000 bit
 inputs against them.
+`bigint::modular` carries the modular number theory (`sqrtmod`, `allsqrtmod`, `rootmod`, `znorder`,
+`znprimroot`, `znlog`, `is_primitive_root`, `chinese`, `factorialmod`, `binomialmod`, `lucasumod`,
+`lucasvmod`, `is_carmichael`, `is_quasi_carmichael`; family `bigint_modular`).
 `bigint::counts` continues the counts, bounds and estimates, the `n`th prime, the prime stream, `forprimes` and
 `is_polygonal` past `u64::MAX` (family `bigint_counts`); the native functions keep returning `None` there.
 

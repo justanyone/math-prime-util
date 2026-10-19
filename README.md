@@ -67,6 +67,25 @@ The phases are described in `PLAN.md` section 6.
 - [ ] Milestone 9: primality proving, real functions and the bigint backend ported
 - [ ] Release 1.0.0 published on crates.io
 
+## Installation and requirements
+
+Add the crate to `Cargo.toml`:
+
+```toml
+[dependencies]
+math-prime-util = "1"
+```
+
+- Rust 1.85 or newer (edition 2024). Nothing else: the default build is pure Rust and links no system library.
+  Its only dependency is `getrandom`.
+- Feature `bigint` adds the pure-Rust `num-bigint` crate for integers beyond 128 bits. No system library.
+- Feature `gmp` (planned, not in this version) will add the `rug` crate, which links GMP. That build needs
+  either the GMP development package at build time (`libgmp-dev` on Debian and Ubuntu, `gmp-devel` on Fedora,
+  `gmp` from Homebrew) or, with rug's bundled source build, a C compiler, `m4` and `make`. Users who do not
+  enable `gmp` never need GMP.
+
+To build from a checkout: `cargo build --release`; tests: `cargo test --all-features`.
+
 ## Minimum Rust version
 
 1.85 (edition 2024).

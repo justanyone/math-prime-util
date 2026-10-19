@@ -59,13 +59,34 @@ The phases are described in `PLAN.md` section 6.
 - [x] Milestone 2: factoring and number theory ported and benchmarked against Perl (done 2026-10-17)
 - [ ] Release 0.1.0 published on crates.io
 - [ ] Milestone 3: prime counting, nth prime and prime sums ported
-- [ ] Milestone 4: prime families ported
-- [ ] Milestone 5: digits, rationals, combinatorics and inverse sigma ported
-- [ ] Milestone 6: vector and set operations ported
-- [ ] Milestone 7: iterators and the for-family ported
-- [ ] Milestone 8: random primes and the random number generator ported
-- [ ] Milestone 9: primality proving, real functions and the bigint backend ported
+- [x] Milestone 4: prime families ported (done 2026-10-19)
+- [x] Milestone 5: digits, rationals, combinatorics and inverse sigma ported (done 2026-10-19)
+- [x] Milestone 6: vector and set operations ported (done 2026-10-19)
+- [x] Milestone 7: iterators and the for-family ported (done 2026-10-19)
+- [x] Milestone 8: random primes and the random number generator ported (done 2026-10-19)
+- [x] Milestone 9: primality proving, real functions and the bigint backend ported (done 2026-10-19)
 - [ ] Release 1.0.0 published on crates.io
+
+## Installation and requirements
+
+Add the crate to `Cargo.toml`:
+
+```toml
+[dependencies]
+math-prime-util = "1"
+```
+
+- Rust 1.85 or newer (edition 2024). Nothing else: the default build is pure Rust and links no system library.
+  Its only dependency is `getrandom`.
+- Feature `bigint` adds the pure-Rust `num-bigint` crate for integers beyond 128 bits. No system library.
+- Feature `gmp` adds the `rug` crate, which links the installed GMP and makes `rug::Integer` a third
+  `Int` backend. That build needs the GMP development package at build time (`libgmp-dev` on Debian and
+  Ubuntu, `gmp-devel` on Fedora, `gmp` from Homebrew); it never compiles GMP from source, so no C compiler,
+  `m4` or `make` is needed. Users who do not enable `gmp` never need GMP.
+
+Three builds, then: the default (`cargo build`, pure Rust), `--features bigint` (pure Rust, big integers)
+and `--features gmp` (links GMP). To build from a checkout: `cargo build --release`; tests:
+`cargo test --all-features` (needs GMP) or `cargo test --features bigint` (pure Rust).
 
 ## Minimum Rust version
 
@@ -102,17 +123,20 @@ arithmetic the generic algorithms need: `add_int`, `sub_int`, `mul_int`, `divrem
 operations return `None` where a fixed-width type would overflow; `BigUint` never overflows.
 
 Enable the backend with `features = ["bigint"]` on the dependency line; the default build has no dependency on
-`num-bigint`. The compat tests replay every unsigned fixture row of the
-families primality, factor, modular, int and sieve through the trait on each backend and compare with the native path.
+`num-bigint`. Feature `gmp` adds `rug::Integer` as a third backend with the same algorithms over GMP's arithmetic
+(see "Installation and requirements"); GMP's own `gcd` and `next_prime` take `self` by value and win method
+resolution on a concrete `Integer`, so write `Int::gcd(&a, &b)` and `Int::next_prime(&n)` for the trait's forms.
+The compat tests replay every unsigned fixture row of the families primality, factor, modular, int and sieve
+through the trait on each backend and compare with the native path; `benches/bigint.rs` compares the two
+arbitrary precision backends on a 200-digit `is_prime` and a 60-digit `factor`.
 The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, binomials) and
 `bigint::primality` (the pseudoprime tests, BPSW, `lucas_sequence`, `next_prime`, `prev_prime`,
 `is_mersenne_prime`) take `&BigUint` and keep the MPU names; the families `bigint_arith` and
 `bigint_primality` replay MPU's pure Perl path on 65 to 1000 bit inputs against them.
-
 `bigint::proving` proves primality above 2^64: `is_provable_prime`, `is_provable_prime_with_cert`,
 `prime_certificate` and `verify_prime` on `&BigUint`, the BLS75 n-1 proof of `PrimalityProving.pm`, and an
-ECPP downrun (Atkin-Morain with the class polynomials of class number at most three) where pure Perl MPU gives
-up, so proofs to 200 digits complete. `Certificate` and `Proof` hold a certificate as a value, print and parse
+ECPP downrun (Atkin-Morain with the Hilbert class polynomials of the 250 discriminants of class number at most six,
+`tools/class_polynomials.py`) where pure Perl MPU gives up, so proofs to 200 digits complete. `Certificate` and `Proof` hold a certificate as a value, print and parse
 the MPU text format (every type MPU's `verify_prime` reads, ECPP and the Primo forms included), and derive
 `Serialize` and `Deserialize` with the cargo feature `serde` (integers as decimal strings). `is_aks_prime` is
 the pure Perl AKS. The family `bigint_proving` replays MPU's proofs and verifications, and the replay test runs

@@ -213,56 +213,32 @@ mod generic {
 
     use math_prime_util::Int;
 
+    /// The fixture families with rows for the `Int` trait's functions.
+    const FAMILIES: [&str; 5] = ["primality", "factor", "modular", "int", "sieve"];
+
+    fn skip(case: &common::Case, family: &str, function: &str) -> bool {
+        case.func != function || (family == "sieve" && function != "next_prime")
+    }
+
     fn replay(function: &str) {
         let mut count = 0;
-        for family in ["primality", "factor", "modular", "int", "sieve"] {
+        for family in FAMILIES {
             for case in common::load(family) {
-                if case.func != function || (family == "sieve" && function != "next_prime") {
+                if skip(&case, family, function) {
                     continue;
                 }
                 // Signed rows (modular: powmod with a negative base or exponent) are
                 // outside these unsigned backends. A row above u128 (modular: the
-                // 41-digit powmod) is replayed through BigUint when `bigint` is on.
+                // 41-digit powmod) is replayed by `replay_big` with a wide backend.
                 let Ok(args) = case
                     .args
                     .iter()
                     .map(|s| s.parse::<u128>())
                     .collect::<Result<Vec<_>, _>>()
                 else {
-                    #[cfg(feature = "bigint")]
-                    {
-                        if let Ok(big_args) = case
-                            .args
-                            .iter()
-                            .map(|s| s.parse::<num_bigint::BigUint>())
-                            .collect::<Result<Vec<_>, _>>()
-                        {
-                            assert_eq!(
-                                evaluate(&big_args, function),
-                                case.result,
-                                "BigUint {family}:{}",
-                                case.line
-                            );
-                            count += 1;
-                        }
-                    }
                     continue;
                 };
                 let result = evaluate(&args, function);
-                #[cfg(feature = "bigint")]
-                {
-                    let big_args = args
-                        .iter()
-                        .copied()
-                        .map(num_bigint::BigUint::from)
-                        .collect::<Vec<_>>();
-                    assert_eq!(
-                        evaluate(&big_args, function),
-                        result,
-                        "BigUint {family}:{}",
-                        case.line
-                    );
-                }
                 // The sieve oracle uses the bounded native next_prime API.
                 if function == "next_prime" && case.result.is_none() {
                     assert_eq!(u64::try_from(args[0]).unwrap().next_prime(), None);
@@ -311,6 +287,50 @@ mod generic {
         assert!(count > 0);
     }
 
+    /// Replays every unsigned row of `function` through the wide backend `T`:
+    /// rows within u128 against the native backend (the sieve oracle's
+    /// `next_prime` rows above u64 are `undef`, which the wide backends answer),
+    /// rows above u128 (modular: the 41-digit powmod) against the oracle.
+    #[cfg(any(feature = "bigint", feature = "gmp"))]
+    pub(super) fn replay_big<T>(function: &str, backend: &str)
+    where
+        T: Int + From<u8> + std::str::FromStr + std::fmt::Display + std::fmt::Debug,
+    {
+        let mut count = 0;
+        for family in FAMILIES {
+            for case in common::load(family) {
+                if skip(&case, family, function) || case.args.iter().any(|s| s.starts_with('-')) {
+                    continue;
+                }
+                let args = case
+                    .args
+                    .iter()
+                    .map(|s| s.parse::<T>())
+                    .collect::<Result<Vec<_>, _>>()
+                    .unwrap_or_else(|_| {
+                        panic!("{backend} {family}:{}: {:?}", case.line, case.args)
+                    });
+                let expected = match case
+                    .args
+                    .iter()
+                    .map(|s| s.parse::<u128>())
+                    .collect::<Result<Vec<_>, _>>()
+                {
+                    Ok(native) => evaluate(&native, function),
+                    Err(_) => case.result.clone(),
+                };
+                assert_eq!(
+                    evaluate(&args, function),
+                    expected,
+                    "{backend} {family}:{}",
+                    case.line
+                );
+                count += 1;
+            }
+        }
+        assert!(count > 0);
+    }
+
     fn evaluate<T: Int + From<u8> + std::fmt::Display + std::fmt::Debug>(
         args: &[T],
         function: &str,
@@ -353,6 +373,62 @@ mod generic {
     #[test]
     fn compat_primality_next_prime() {
         replay("next_prime");
+    }
+}
+
+/// The same fixture families through `num_bigint::BigUint`.
+#[cfg(feature = "bigint")]
+mod bigint {
+    use super::generic::replay_big;
+    use num_bigint::BigUint;
+
+    #[test]
+    fn compat_bigint_is_prime() {
+        replay_big::<BigUint>("is_prime", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_factor() {
+        replay_big::<BigUint>("factor", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_powmod() {
+        replay_big::<BigUint>("powmod", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_gcd() {
+        replay_big::<BigUint>("gcd", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_next_prime() {
+        replay_big::<BigUint>("next_prime", "BigUint");
+    }
+}
+
+/// The same fixture families through `rug::Integer` (GMP).
+#[cfg(feature = "gmp")]
+mod gmp {
+    use super::generic::replay_big;
+    use rug::Integer;
+
+    #[test]
+    fn compat_gmp_is_prime() {
+        replay_big::<Integer>("is_prime", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_factor() {
+        replay_big::<Integer>("factor", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_powmod() {
+        replay_big::<Integer>("powmod", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_gcd() {
+        replay_big::<Integer>("gcd", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_next_prime() {
+        replay_big::<Integer>("next_prime", "rug::Integer");
     }
 }
 

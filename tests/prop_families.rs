@@ -2,6 +2,26 @@
 use math_prime_util::*;
 use proptest::prelude::*;
 
+/// Semiprimes below `limit`, found by counting prime factors with multiplicity.
+fn semiprimes_below(limit: u64) -> Vec<u64> {
+    (4..limit)
+        .filter(|&m| {
+            let (mut rest, mut d, mut count) = (m, 2u64, 0u32);
+            while d * d <= rest {
+                while rest % d == 0 {
+                    rest /= d;
+                    count += 1;
+                }
+                d += 1;
+            }
+            if rest > 1 {
+                count += 1;
+            }
+            count == 2
+        })
+        .collect()
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(64))]
     #[test]
@@ -99,8 +119,8 @@ fn prime_power_boundaries_and_repeated_calls() {
     assert_eq!(prev_prime_power(0), None);
     assert_eq!(prev_prime_power(1), None);
     assert_eq!(prev_prime_power(2), None);
-    assert_eq!(prime_powers(0, 1), []);
-    assert_eq!(prime_powers(20, 10), []);
+    assert_eq!(prime_powers(0, 1), [] as [u64; 0]);
+    assert_eq!(prime_powers(20, 10), [] as [u64; 0]);
     assert_eq!(prime_powers(10, 20), [11, 13, 16, 17, 19]);
     assert_eq!(prime_powers(0, 10), [2, 3, 4, 5, 7, 8, 9]);
     assert_eq!(prime_powers(0, 2), [2]);
@@ -173,11 +193,11 @@ proptest! {
 
 #[test]
 fn native_and_segment_boundaries() {
-    assert_eq!(twin_primes(11, 10), []);
+    assert_eq!(twin_primes(11, 10), [] as [u64; 0]);
     assert_eq!(twin_primes(11, 11), vec![11]);
     assert_eq!(twin_primes(29, 29), vec![29]);
     assert_eq!(twin_primes(u64::MAX - 844, u64::MAX), vec![u64::MAX - 844]);
-    assert_eq!(twin_primes(u64::MAX, u64::MAX), []);
+    assert_eq!(twin_primes(u64::MAX, u64::MAX), [] as [u64; 0]);
     assert_eq!(nth_twin_prime(u64::MAX), None);
     let pairs = twin_primes(0, 1_000_100);
     assert_eq!(pairs.len() as u64, twin_prime_count(1_000_100));
@@ -302,9 +322,9 @@ proptest! {
 
 #[test]
 fn empty_ranges_and_repeat_calls() {
-    assert_eq!(semi_primes(15, 4), []);
-    assert_eq!(semi_primes(0, 3), []);
-    assert_eq!(semi_primes(u64::MAX, u64::MAX), []);
+    assert_eq!(semi_primes(15, 4), [] as [u64; 0]);
+    assert_eq!(semi_primes(0, 3), [] as [u64; 0]);
+    assert_eq!(semi_primes(u64::MAX, u64::MAX), [] as [u64; 0]);
     let expected = semi_primes(0, 2000);
     let workers: Vec<_> = (0..4)
         .map(|_| std::thread::spawn(|| semi_primes(0, 2000)))
@@ -528,7 +548,21 @@ proptest! {
     }
     #[test]
     fn nth_semiprime_matches_table(k in 1u64..191) {
-        prop_assert!(nth_semiprime(k).unwrap() >= nth_semiprime_approx(k).unwrap().min(nth_semiprime(k).unwrap()));
+        // Independent expected values: semiprimes are numbers with exactly two prime factors.
+        let expected = semiprimes_below(700)[usize::try_from(k).unwrap() - 1];
+        prop_assert_eq!(nth_semiprime(k).unwrap(), expected);
+        prop_assert_eq!(nth_semiprime_approx(k).unwrap(), expected);
+    }
+    #[test]
+    fn nth_semiprime_past_table_round_trips(k in 191u64..20_000) {
+        // Past the table the result is a semiprime whose exact count is k,
+        // and the estimate stays within five percent of it (MPU is about
+        // 1.5 percent off just past the table, far closer later).
+        let s = nth_semiprime(k).unwrap();
+        prop_assert!(is_semiprime(s));
+        prop_assert_eq!(semiprime_count(s), k);
+        let a = nth_semiprime_approx(k).unwrap();
+        prop_assert!(a.abs_diff(s) * 20 <= s, "approx {a} vs exact {s}");
     }
 }
 

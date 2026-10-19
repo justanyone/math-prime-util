@@ -75,7 +75,7 @@ fn bigint_sequences_boundaries_and_repeated_calls() {
     for _ in 0..2 {
         assert_eq!(s::vecsum(&[]), big(0));
         assert_eq!(s::vecprod(&[]), big(1));
-        assert!(s::vecprefixsum(&[]).is_empty());
+        assert_eq!(s::vecprefixsum(&[]).len(), 0);
         assert_eq!(s::frobenius_number(&[]), None);
         assert_eq!(s::frobenius_number(&[big(7)]), None);
         assert_eq!(s::frobenius_number(&[big(1)]), Some((-1).into()));

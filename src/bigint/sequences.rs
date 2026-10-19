@@ -69,7 +69,7 @@ pub fn lucasuv(p: &BigInt, q: &BigInt, k: &BigUint) -> (BigInt, BigInt) {
             vl = &vh * vl - p * &ql;
             vh = &vh * &vh - (&qh << 1);
         } else {
-            qh = ql.clone();
+            qh.clone_from(&ql);
             uh = uh * &vl - &ql;
             vh = vh * &vl - p * &ql;
             vl = &vl * &vl - (&ql << 1);
@@ -358,7 +358,7 @@ pub fn frobenius_number(values: &[BigUint]) -> Option<BigInt> {
                     let p = usize::try_from(&distance % &basis[0]).ok()?;
                     if let Some(old) = &distances[p] {
                         if old < &distance {
-                            distance = old.clone();
+                            distance.clone_from(old);
                         }
                     }
                     distances[p] = Some(distance.clone());

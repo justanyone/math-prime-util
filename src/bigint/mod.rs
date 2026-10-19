@@ -14,10 +14,10 @@ mod biguint;
 pub mod counts;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
-pub mod divisors;
+pub mod digits;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
-pub mod digits;
+pub mod divisors;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod factor;

@@ -21,7 +21,9 @@ pub fn todigits(n: &BigUint, base: u64, length: Option<usize>) -> Vec<u64> {
         digits.push((&n % base).to_u64().expect("digit fits base"));
         n /= base;
     }
-    if let Some(len) = length { digits.resize(len, 0); }
+    if let Some(len) = length {
+        digits.resize(len, 0);
+    }
     digits.reverse();
     digits
 }
@@ -38,9 +40,15 @@ pub fn todigits(n: &BigUint, base: u64, length: Option<usize>) -> Vec<u64> {
 /// ```
 pub fn todigitstring(n: &BigUint, base: u64, length: Option<usize>) -> String {
     assert!((2..=36).contains(&base));
-    todigits(n, base, length).into_iter().map(|d| {
-        char::from(b"0123456789abcdefghijklmnopqrstuvwxyz"[usize::try_from(d).expect("digit fits usize")])
-    }).collect()
+    todigits(n, base, length)
+        .into_iter()
+        .map(|d| {
+            char::from(
+                b"0123456789abcdefghijklmnopqrstuvwxyz"
+                    [usize::try_from(d).expect("digit fits usize")],
+            )
+        })
+        .collect()
 }
 
 /// Combine digits without a size limit.
@@ -116,7 +124,11 @@ pub fn is_harshad(n: &BigUint, base: u64) -> bool {
 /// ```
 pub fn digital_root(n: &BigUint, base: u64) -> BigUint {
     assert!(base >= 2);
-    if n == &BigUint::ZERO { BigUint::ZERO } else { (n - 1_u32) % (base - 1) + 1_u32 }
+    if n == &BigUint::ZERO {
+        BigUint::ZERO
+    } else {
+        (n - 1_u32) % (base - 1) + 1_u32
+    }
 }
 
 /// Return the iterated digit product.
@@ -133,7 +145,10 @@ pub fn mult_digital_root(n: &BigUint, base: u64) -> BigUint {
     let mut n = n.clone();
     let b = BigUint::from(base);
     while n >= b {
-        n = todigits(&n, base, None).into_iter().map(BigUint::from).product();
+        n = todigits(&n, base, None)
+            .into_iter()
+            .map(BigUint::from)
+            .product();
     }
     n
 }
@@ -145,7 +160,9 @@ pub fn mult_digital_root(n: &BigUint, base: u64) -> BigUint {
 /// assert_eq!(math_prime_util::bigint::digits::tozeckendorf(&6_u32.into()), "1001");
 /// ```
 pub fn tozeckendorf(n: &BigUint) -> String {
-    if n == &BigUint::ZERO { return "0".into(); }
+    if n == &BigUint::ZERO {
+        return "0".into();
+    }
     let (mut a, mut b, mut c) = (BigUint::ZERO, BigUint::from(1_u32), BigUint::from(1_u32));
     let mut count = 0;
     while &c <= n {
@@ -158,7 +175,12 @@ pub fn tozeckendorf(n: &BigUint) -> String {
     for _ in 0..count {
         let previous = &b - &a;
         (a, b, c) = (previous, a, b);
-        out.push(if c <= n { n -= &c; '1' } else { '0' });
+        out.push(if c <= n {
+            n -= &c;
+            '1'
+        } else {
+            '0'
+        });
     }
     out
 }
@@ -173,10 +195,17 @@ pub fn tozeckendorf(n: &BigUint) -> String {
 /// assert_eq!(math_prime_util::bigint::digits::fromzeckendorf("1001"), Some(6_u32.into()));
 /// ```
 pub fn fromzeckendorf(text: &str) -> Option<BigUint> {
-    assert!(text == "0" || (text.starts_with('1') && !text.contains("11") && text.bytes().all(|b| b == b'0' || b == b'1')));
+    assert!(
+        text == "0"
+            || (text.starts_with('1')
+                && !text.contains("11")
+                && text.bytes().all(|b| b == b'0' || b == b'1'))
+    );
     let (mut a, mut b, mut n) = (BigUint::from(1_u32), BigUint::from(2_u32), BigUint::ZERO);
     for d in text.bytes().rev() {
-        if d == b'1' { n += &a; }
+        if d == b'1' {
+            n += &a;
+        }
         let next = &a + &b;
         (a, b) = (b, next);
     }
@@ -199,8 +228,13 @@ pub fn is_happy(n: &BigUint, base: u32, exponent: u32) -> u64 {
     let mut height = 1_u64;
     let mut checkpoint = BigUint::ZERO;
     while n > BigUint::from(1_u32) && n != checkpoint {
-        if height.is_power_of_two() { checkpoint = n.clone(); }
-        n = todigits(&n, u64::from(base), None).into_iter().map(|d| BigUint::from(d).pow(exponent)).sum();
+        if height.is_power_of_two() {
+            checkpoint = n.clone();
+        }
+        n = todigits(&n, u64::from(base), None)
+            .into_iter()
+            .map(|d| BigUint::from(d).pow(exponent))
+            .sum();
         height += 1;
     }
     if n == BigUint::from(1_u32) { height } else { 0 }
@@ -283,8 +317,12 @@ pub fn toint(text: &str) -> Option<BigUint> {
         );
         text
     };
-    let magnitude = digits.chars().try_fold(BigUint::ZERO, |n, c| {
-        Some(n * base + c.to_digit(base)?)
-    })?;
-    if negative && magnitude != BigUint::ZERO { None } else { Some(magnitude) }
+    let magnitude = digits
+        .chars()
+        .try_fold(BigUint::ZERO, |n, c| Some(n * base + c.to_digit(base)?))?;
+    if negative && magnitude != BigUint::ZERO {
+        None
+    } else {
+        Some(magnitude)
+    }
 }

@@ -17,3 +17,5 @@ The focused name-filter run completed successfully after the compile fixes. Re-r
 All five new tests pass, including all 51 oracle rows. Clippy default, bigint and GMP pass; all-features is running.
 All clippy feature sets pass. MSRV compilation is running. Added native agreement across every power-of-two modulus in the full u64 range; excluded zero-root lists that exceed MPU's output cap.
 MSRV build passes, and the gate has reached its tests. Full-suite tests are still running; coverage has not been measured.
+Final review: all eleven APIs, C source citations, examples, offline generator, generated fixtures, compatibility replay and native properties are on disk. Native signatures and dependencies are unchanged.
+Initial five focused tests passed. The added full-width test is queued behind the full suite. Gate has not printed green; coverage and validation on aragog/wonko remain outstanding.

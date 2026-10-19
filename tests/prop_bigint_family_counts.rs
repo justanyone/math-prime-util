@@ -1,5 +1,10 @@
 #![cfg(feature = "bigint")]
-use math_prime_util::{bigint::family_counts as f, *};
+use math_prime_util::{
+    almost_prime_count, bigint::family_counts as f, legendre_phi, mertens, omega_prime_count,
+    perfect_power_count, powerfree_count, powerfree_part_sum, powerfree_sum, powerful_count,
+    prime_count, rough_count, semiprime_count, smooth_count, sum_primes, sumliouville, sumpowerful,
+    sumtotient,
+};
 use num_bigint::{BigInt, BigUint};
 use proptest::prelude::*;
 

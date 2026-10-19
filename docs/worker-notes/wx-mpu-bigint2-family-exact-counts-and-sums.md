@@ -17,3 +17,6 @@ Not yet implemented: nth_perfect_power, nth_powerfree, nth_powerful, prime_power
 All STATUS.md entries for implemented MPU names were already checked, so STATUS.md needs no change. No generated status file or README was edited.
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 16 bytes)
+Final: oracle generation and Perl syntax checks passed; cargo fmt passed. No Rust builds, focused tests, gate, whole suite or coverage ran because this is wowbagger. Run tools/test.sh bigint_family_counts and tools/gate.sh on aragog or wonk <<cut 194 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 169 bytes)

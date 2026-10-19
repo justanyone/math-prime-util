@@ -10,107 +10,6 @@ fn one() -> BigUint {
     BigUint::from(1_u8)
 }
 
-/// Euclidean Jacobi reduction, from MPU `util.c::jacobi_iu`.
-fn jacobi(mut a: BigUint, mut n: BigUint) -> i8 {
-    let mut sign = 1;
-    a %= &n;
-    while a != zero() {
-        while !a.bit(0) {
-            a >>= 1;
-            let residue = &n % 8_u8;
-            if residue == BigUint::from(3_u8) || residue == BigUint::from(5_u8) {
-                sign = -sign;
-            }
-        }
-        std::mem::swap(&mut a, &mut n);
-        if &a % 4_u8 == BigUint::from(3_u8) && &n % 4_u8 == BigUint::from(3_u8) {
-            sign = -sign;
-        }
-        a %= &n;
-    }
-    if n == one() { sign } else { 0 }
-}
-
-fn half(mut value: BigUint, n: &BigUint) -> BigUint {
-    if value.bit(0) {
-        value += n;
-    }
-    value >> 1
-}
-
-/// Base-two strong test, MPU `primality.c::is_strong_pseudoprime`.
-fn strong_base_two(n: &BigUint) -> bool {
-    let nm1 = n - 1_u8;
-    let mut d = nm1.clone();
-    let mut s = 0;
-    while !d.bit(0) {
-        d >>= 1;
-        s += 1;
-    }
-    let mut x = BigUint::from(2_u8).modpow(&d, n);
-    if x == one() || x == nm1 {
-        return true;
-    }
-    for _ in 1..s {
-        x = (&x * &x) % n;
-        if x == nm1 {
-            return true;
-        }
-        if x == one() {
-            return false;
-        }
-    }
-    false
-}
-
-/// Extra-strong Lucas test, MPU `primality.c::is_lucas_pseudoprime`
-/// (strength 3), including `select_extra_strong_parameters`.
-fn extra_strong_lucas(n: &BigUint) -> bool {
-    let root = n.sqrt();
-    if &root * &root == *n {
-        return false;
-    }
-    let mut p = BigUint::from(3_u8);
-    let discriminant = loop {
-        let d = &p * &p - 4_u8;
-        match jacobi(d.clone(), n.clone()) {
-            -1 => break d,
-            0 if d.gcd(n) != *n => return false,
-            _ => p += 1_u8,
-        }
-    };
-    let mut d = n + 1_u8;
-    let mut s = 0;
-    while !d.bit(0) {
-        d >>= 1;
-        s += 1;
-    }
-    let (mut u, mut v) = (one(), p.clone());
-    for bit in (0..d.bits() - 1).rev() {
-        u = (&u * &v) % n;
-        v = (&v * &v + n - 2_u8) % n;
-        if d.bit(bit) {
-            let next_u = half((&p * &u + &v) % n, n);
-            v = half((&discriminant * &u + &p * &v) % n, n);
-            u = next_u;
-        }
-    }
-    let two = BigUint::from(2_u8);
-    if u == zero() && (v == two || v == n - 2_u8) {
-        return true;
-    }
-    for _ in 1..s {
-        if v == zero() {
-            return true;
-        }
-        v = (&v * &v + n - 2_u8) % n;
-        if v == two {
-            return false;
-        }
-    }
-    false
-}
-
 fn difference(a: &BigUint, b: &BigUint) -> BigUint {
     if a >= b { a - b } else { b - a }
 }
@@ -227,7 +126,8 @@ impl Int for BigUint {
     }
 
     /// MPU `primality.c::BPSW` and `PP.pm::_is_prime7`: base-two MR and
-    /// extra-strong Lucas above the native range.
+    /// extra-strong Lucas above the native range, through
+    /// [`primality::is_prob_prime`](super::primality::is_prob_prime).
     ///
     /// ```
     /// use math_prime_util::Int;
@@ -235,17 +135,7 @@ impl Int for BigUint {
     /// assert_eq!(((BigUint::from(1_u8) << 521_usize) - 1_u8).is_prime(), 1);
     /// ```
     fn is_prime(&self) -> u8 {
-        if let Ok(n) = u128::try_from(self) {
-            return n.is_prime();
-        }
-        for p in [
-            2_u8, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
-        ] {
-            if self % p == zero() {
-                return 0;
-            }
-        }
-        u8::from(strong_base_two(self) && extra_strong_lucas(self))
+        super::primality::is_prob_prime(self)
     }
 
     /// MPU `factor.c::factor`: trial division, prime and square checks, then Brent.
@@ -334,7 +224,8 @@ impl Int for BigUint {
         a
     }
 
-    /// Candidate search, MPU `util.c::next_prime` and `PP.pm::next_prime`.
+    /// Candidate search, MPU `util.c::next_prime` and `PP.pm::next_prime`,
+    /// through [`primality::next_prime`](super::primality::next_prime).
     ///
     /// ```
     /// use math_prime_util::Int;
@@ -342,24 +233,7 @@ impl Int for BigUint {
     /// assert_eq!(BigUint::from(14_u8).next_prime(), Some(BigUint::from(17_u8)));
     /// ```
     fn next_prime(&self) -> Option<Self> {
-        const ADVANCE: [u8; 30] = [
-            1, 6, 5, 4, 3, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 2, 1, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1,
-            2,
-        ];
-        if let Ok(n) = u64::try_from(self) {
-            if let Some(p) = n.next_prime() {
-                return Some(Self::from(p));
-            }
-        }
-        let mut n = self.clone();
-        loop {
-            // The remainder is at most 29 on every supported architecture.
-            let residue = usize::try_from(&n % 30_u8).unwrap_or_default();
-            n += ADVANCE[residue];
-            if &n % 7_u8 != zero() && n.is_prime() != 0 {
-                return Some(n);
-            }
-        }
+        Some(super::primality::next_prime(self))
     }
 }
 
@@ -376,31 +250,16 @@ mod tests {
     fn arbitrary_precision_primality() {
         for bits in [127, 521, 607] {
             let p = mersenne(bits);
-            assert_ne!(p.is_prime(), 0);
-            assert!(strong_base_two(&p));
-            assert!(extra_strong_lucas(&p));
+            assert_eq!(p.is_prime(), 1);
             assert_eq!((&p * 3_u8).is_prime(), 0);
             assert_eq!((&p * &p).is_prime(), 0);
-            assert!(!extra_strong_lucas(&(&p * &p)));
         }
         // Strong base-two pseudoprimes must still fail the Lucas test.
         for n in [2047_u32, 3277, 4033, 4681, 8321, 15841, 29341, 42799, 49141] {
-            let n = BigUint::from(n);
-            assert!(strong_base_two(&n));
-            assert!(!extra_strong_lucas(&n));
+            assert_eq!(BigUint::from(n).is_prime(), 0);
         }
-        assert!(!strong_base_two(&BigUint::from(341_u32)));
-        assert!(!strong_base_two(&BigUint::from(9_u8)));
-        assert_eq!(jacobi(BigUint::from(5_u8), BigUint::from(11_u8)), 1);
-        assert_eq!(jacobi(BigUint::from(6_u8), BigUint::from(9_u8)), 0);
-        assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(11_u8)), -1);
-        // Both arguments are 3 mod 4, so quadratic reciprocity flips the sign.
-        assert_eq!(jacobi(BigUint::from(3_u8), BigUint::from(7_u8)), -1);
-        // 13 is 5 mod 8, so the factor of 2 flips the sign.
-        assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(13_u8)), -1);
-        assert!(!extra_strong_lucas(&BigUint::from(9_u8)));
-        assert!(!extra_strong_lucas(&BigUint::from(15_u8)));
-        assert!(!extra_strong_lucas(&BigUint::from(25_u8)));
+        assert_eq!(BigUint::from(341_u32).is_prime(), 0);
+        assert_eq!(BigUint::from(9_u8).is_prime(), 0);
         assert_eq!(zero().powmod(&zero(), &one()), Some(zero()));
         assert_eq!(zero().powmod(&zero(), &BigUint::from(5_u8)), Some(one()));
     }

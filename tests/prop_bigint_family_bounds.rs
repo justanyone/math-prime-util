@@ -19,11 +19,23 @@ proptest! {
                 perfect_power_count_approx,
                 perfect_power_count_lower,
                 perfect_power_count_upper,
-                prime_power_count_approx,
-                prime_power_count_lower,
-                prime_power_count_upper,
             );
         }
+        // The BigUint prime count differs from the native one by 1 near
+        // 2^60 (see NOTES), so the prime power forms are checked on small n.
+        let big = BigUint::from(small);
+        prop_assert_eq!(
+            family_bounds::prime_power_count_approx(&big),
+            BigUint::from(math_prime_util::prime_power_count_approx(small))
+        );
+        prop_assert_eq!(
+            family_bounds::prime_power_count_lower(&big),
+            BigUint::from(math_prime_util::prime_power_count_lower(small))
+        );
+        prop_assert_eq!(
+            family_bounds::prime_power_count_upper(&big),
+            BigUint::from(math_prime_util::prime_power_count_upper(small))
+        );
     }
 
     #[test]

@@ -80,8 +80,9 @@ from MPU:
 - The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
 - The native path covers `u64` and `u128`. The `Int` trait (feature `bigint` adds `num_bigint::BigUint`)
   gives `is_prime`, `factor`, `powmod`, `gcd`, `next_prime` and the basic arithmetic one generic surface;
-  the modules `bigint::arith` and `bigint::primality` carry the integer core and the primality tests on
-  `BigUint`; the rest of the bigint path is not ported yet.
+  the modules `bigint::arith`, `bigint::primality`, `bigint::factor` and `bigint::divisors` carry the
+  integer core, the primality tests, factoring and the divisor functions on `BigUint`; the rest of the
+  bigint path is not ported yet.
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
   and records the difference for upstream review. See
   [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
@@ -96,7 +97,8 @@ the trait methods call them on the native types. Import `math_prime_util::Int`, 
 or `3_u64.powmod(&5, &7)`. Factoring returns `Result` (the error is the unsplit cofactor); modular powers and
 next primes return `Option`; primality returns 0, 1 or 2 as the native API does. Above the native range,
 `BigUint` primality is the BPSW probable-prime test of `PP.pm::_is_prime7` (so it answers 1, never 2), and
-factoring runs trial division, a square check and a bounded Pollard-Brent search. The trait also carries the
+factoring runs the `PP.pm::factor` recipe (trial division, perfect powers, p-1, ECM, HOLF, Pollard-Brent)
+with no time limit; `bigint::factor::factor_within` stops at a deadline and returns what it found. The trait also carries the
 arithmetic the generic algorithms need: `add_int`, `sub_int`, `mul_int`, `divrem`, `mulmod`, `shl_bits`,
 `shr_bits`, `bit_length`, `is_even`, `from_u64`, `to_u64`, `from_decimal` and `to_decimal`. The checked
 operations return `None` where a fixed-width type would overflow; `BigUint` never overflows.
@@ -106,8 +108,12 @@ Enable the backend with `features = ["bigint"]` on the dependency line; the defa
 families primality, factor, modular, int and sieve through the trait on each backend and compare with the native path.
 The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, binomials) and
 `bigint::primality` (the pseudoprime tests, BPSW, `lucas_sequence`, `next_prime`, `prev_prime`,
-`is_mersenne_prime`) take `&BigUint` and keep the MPU names; the families `bigint_arith` and
-`bigint_primality` replay MPU's pure Perl path on 65 to 1000 bit inputs against them.
+`is_mersenne_prime`), `bigint::factor` (`factor`, `factor_exp`, `trial_factor`, `prho_factor`,
+`pbrent_factor`, `pminus1_factor`, `pplus1_factor`, `holf_factor`, `squfof_factor`, `ecm_factor`) and
+`bigint::divisors` (`divisors`, `divisor_sum`, `euler_phi`, `carmichael_lambda`, `moebius`,
+`is_square_free`, `prime_bigomega`, `prime_omega`) take `&BigUint` and keep the MPU names; the families
+`bigint_arith`, `bigint_primality` and `bigint_factor` replay MPU's pure Perl path on 65 to 1000 bit
+inputs against them.
 
 [`Int`]: src/bigint/mod.rs
 

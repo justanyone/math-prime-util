@@ -195,7 +195,7 @@ pub trait Int: Sized {
 }
 
 macro_rules! native_ops {
-    ($t:ty, $wide:ty) => {
+    ($t:ty, $narrow:expr) => {
         fn add_int(&self, other: &Self) -> Option<Self> {
             self.checked_add(*other)
         }
@@ -217,10 +217,11 @@ macro_rules! native_ops {
                 return None;
             }
             // Operands must be smaller than the modulus: `addmod` subtracts from it.
-            let n = <$wide>::from(*modulus);
-            let a = <$wide>::from(*self % *modulus);
-            let b = <$wide>::from(*other % *modulus);
-            Self::try_from(mulmod(a, b, n)).ok()
+            let n = u128::from(*modulus);
+            let a = u128::from(*self % *modulus);
+            let b = u128::from(*other % *modulus);
+            // The result is below the modulus, so it fits the narrow type.
+            $narrow(mulmod(a, b, n))
         }
 
         fn shl_bits(&self, bits: u32) -> Option<Self> {
@@ -240,14 +241,6 @@ macro_rules! native_ops {
             self & 1 == 0
         }
 
-        fn from_u64(value: u64) -> Self {
-            Self::try_from(value).unwrap_or(Self::MAX)
-        }
-
-        fn to_u64(&self) -> Option<u64> {
-            u64::try_from(*self).ok()
-        }
-
         fn from_decimal(text: &str) -> Option<Self> {
             if text.is_empty() || !text.bytes().all(|b| b.is_ascii_digit()) {
                 return None;
@@ -262,7 +255,15 @@ macro_rules! native_ops {
 }
 
 impl Int for u64 {
-    native_ops!(u64, u128);
+    native_ops!(u64, |v: u128| u64::try_from(v).ok());
+
+    fn from_u64(value: u64) -> Self {
+        value
+    }
+
+    fn to_u64(&self) -> Option<u64> {
+        Some(*self)
+    }
 
     fn is_prime(&self) -> u8 {
         crate::primality::is_prime(*self)
@@ -306,7 +307,15 @@ fn mulmod(mut a: u128, mut b: u128, n: u128) -> u128 {
 }
 
 impl Int for u128 {
-    native_ops!(u128, u128);
+    native_ops!(u128, |v: u128| Some(v));
+
+    fn from_u64(value: u64) -> Self {
+        Self::from(value)
+    }
+
+    fn to_u64(&self) -> Option<u64> {
+        u64::try_from(*self).ok()
+    }
 
     fn is_prime(&self) -> u8 {
         crate::factor::is_prime_u128(*self)

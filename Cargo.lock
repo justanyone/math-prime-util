@@ -267,8 +267,6 @@ dependencies = [
  "criterion",
  "getrandom 0.3.4",
  "num-bigint",
- "num-integer",
- "num-traits",
  "proptest",
 ]
 

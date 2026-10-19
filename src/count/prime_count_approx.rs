@@ -1,4 +1,5 @@
-use crate::real::riemann_r;
+use super::long_double::Ld;
+use super::nth_prime_approx::riemann_r_with_precision;
 
 use super::prime_count;
 
@@ -13,16 +14,11 @@ use super::prime_count;
 /// assert_eq!(math_prime_util::prime_count_approx(10_000_000_000), 455_050_683);
 /// ```
 #[must_use]
-#[allow(
-    clippy::cast_precision_loss,
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
-)]
 pub fn prime_count_approx(n: u64) -> u64 {
     if n < 3_000_000 {
         return prime_count(n);
     }
-    (riemann_r(n as f64) + 0.5) as u64
+    (riemann_r_with_precision(Ld::from_u64(n), Ld::from_f64(1e-6)) + Ld::from_f64(0.5)).floor_u64()
 }
 
 #[cfg(test)]

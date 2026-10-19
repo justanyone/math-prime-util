@@ -208,6 +208,230 @@ fn is_delicate_prime_oracle() {
     });
 }
 
+mod generic {
+    use super::common;
+
+    use math_prime_util::Int;
+
+    /// The fixture families with rows for the `Int` trait's functions.
+    const FAMILIES: [&str; 5] = ["primality", "factor", "modular", "int", "sieve"];
+
+    fn skip(case: &common::Case, family: &str, function: &str) -> bool {
+        case.func != function || (family == "sieve" && function != "next_prime")
+    }
+
+    fn replay(function: &str) {
+        let mut count = 0;
+        for family in FAMILIES {
+            for case in common::load(family) {
+                if skip(&case, family, function) {
+                    continue;
+                }
+                // Signed rows (modular: powmod with a negative base or exponent) are
+                // outside these unsigned backends. A row above u128 (modular: the
+                // 41-digit powmod) is replayed by `replay_big` with a wide backend.
+                let Ok(args) = case
+                    .args
+                    .iter()
+                    .map(|s| s.parse::<u128>())
+                    .collect::<Result<Vec<_>, _>>()
+                else {
+                    continue;
+                };
+                let result = evaluate(&args, function);
+                // The sieve oracle uses the bounded native next_prime API.
+                if function == "next_prime" && case.result.is_none() {
+                    assert_eq!(u64::try_from(args[0]).unwrap().next_prime(), None);
+                } else {
+                    assert_eq!(result, case.result, "{family}:{}", case.line);
+                }
+                if let Ok(small) = args
+                    .iter()
+                    .copied()
+                    .map(u64::try_from)
+                    .collect::<Result<Vec<_>, _>>()
+                {
+                    // next_prime can leave the u64 range. The bounded backend returns None.
+                    let generic = evaluate(&small, function);
+                    if function != "next_prime" || generic.is_some() {
+                        assert_eq!(generic, result, "{family}:{}", case.line);
+                    }
+                    match function {
+                        "is_prime" => {
+                            assert_eq!(small[0].is_prime(), math_prime_util::is_prime(small[0]));
+                        }
+                        "factor" => assert_eq!(
+                            small[0].factor().unwrap(),
+                            math_prime_util::factor(small[0])
+                        ),
+                        "powmod" => assert_eq!(
+                            small[0].powmod(&small[1], &small[2]),
+                            math_prime_util::powmod(small[0], small[1], small[2])
+                        ),
+                        "gcd" => assert_eq!(
+                            small.iter().fold(0, |g, n| g.gcd(n)),
+                            small.iter().fold(0, |g, n| math_prime_util::gcd(g, *n))
+                        ),
+                        "next_prime" => {
+                            assert_eq!(
+                                small[0].next_prime(),
+                                math_prime_util::next_prime(small[0])
+                            );
+                        }
+                        _ => unreachable!(),
+                    }
+                }
+                count += 1;
+            }
+        }
+        assert!(count > 0);
+    }
+
+    /// Replays every unsigned row of `function` through the wide backend `T`:
+    /// rows within u128 against the native backend (the sieve oracle's
+    /// `next_prime` rows above u64 are `undef`, which the wide backends answer),
+    /// rows above u128 (modular: the 41-digit powmod) against the oracle.
+    #[cfg(any(feature = "bigint", feature = "gmp"))]
+    pub(super) fn replay_big<T>(function: &str, backend: &str)
+    where
+        T: Int + From<u8> + std::str::FromStr + std::fmt::Display + std::fmt::Debug,
+    {
+        let mut count = 0;
+        for family in FAMILIES {
+            for case in common::load(family) {
+                if skip(&case, family, function) || case.args.iter().any(|s| s.starts_with('-')) {
+                    continue;
+                }
+                let args = case
+                    .args
+                    .iter()
+                    .map(|s| s.parse::<T>())
+                    .collect::<Result<Vec<_>, _>>()
+                    .unwrap_or_else(|_| {
+                        panic!("{backend} {family}:{}: {:?}", case.line, case.args)
+                    });
+                let expected = match case
+                    .args
+                    .iter()
+                    .map(|s| s.parse::<u128>())
+                    .collect::<Result<Vec<_>, _>>()
+                {
+                    Ok(native) => evaluate(&native, function),
+                    Err(_) => case.result.clone(),
+                };
+                assert_eq!(
+                    evaluate(&args, function),
+                    expected,
+                    "{backend} {family}:{}",
+                    case.line
+                );
+                count += 1;
+            }
+        }
+        assert!(count > 0);
+    }
+
+    fn evaluate<T: Int + From<u8> + std::fmt::Display + std::fmt::Debug>(
+        args: &[T],
+        function: &str,
+    ) -> Option<String> {
+        match function {
+            "is_prime" => Some(args[0].is_prime().to_string()),
+            "factor" => {
+                let factors = args[0].factor().unwrap();
+                (!factors.is_empty()).then(|| {
+                    factors
+                        .iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                })
+            }
+            "powmod" => args[0].powmod(&args[1], &args[2]).map(|n| n.to_string()),
+            "gcd" => Some(args.iter().fold(T::from(0), |g, n| g.gcd(n)).to_string()),
+            "next_prime" => args[0].next_prime().map(|n| n.to_string()),
+            _ => unreachable!(),
+        }
+    }
+
+    #[test]
+    fn compat_primality_is_prime() {
+        replay("is_prime");
+    }
+    #[test]
+    fn compat_primality_factor() {
+        replay("factor");
+    }
+    #[test]
+    fn compat_primality_powmod() {
+        replay("powmod");
+    }
+    #[test]
+    fn compat_primality_gcd() {
+        replay("gcd");
+    }
+    #[test]
+    fn compat_primality_next_prime() {
+        replay("next_prime");
+    }
+}
+
+/// The same fixture families through `num_bigint::BigUint`.
+#[cfg(feature = "bigint")]
+mod bigint {
+    use super::generic::replay_big;
+    use num_bigint::BigUint;
+
+    #[test]
+    fn compat_bigint_is_prime() {
+        replay_big::<BigUint>("is_prime", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_factor() {
+        replay_big::<BigUint>("factor", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_powmod() {
+        replay_big::<BigUint>("powmod", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_gcd() {
+        replay_big::<BigUint>("gcd", "BigUint");
+    }
+    #[test]
+    fn compat_bigint_next_prime() {
+        replay_big::<BigUint>("next_prime", "BigUint");
+    }
+}
+
+/// The same fixture families through `rug::Integer` (GMP).
+#[cfg(feature = "gmp")]
+mod gmp {
+    use super::generic::replay_big;
+    use rug::Integer;
+
+    #[test]
+    fn compat_gmp_is_prime() {
+        replay_big::<Integer>("is_prime", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_factor() {
+        replay_big::<Integer>("factor", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_powmod() {
+        replay_big::<Integer>("powmod", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_gcd() {
+        replay_big::<Integer>("gcd", "rug::Integer");
+    }
+    #[test]
+    fn compat_gmp_next_prime() {
+        replay_big::<Integer>("next_prime", "rug::Integer");
+    }
+}
+
 #[test]
 fn verify_prime_native_bls15() {
     // MPU PrimalityProving.pm::_verify_bls15, with V_7(-1, 2) = 13.

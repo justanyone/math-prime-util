@@ -593,7 +593,7 @@ fn native_boundaries_and_repeated_calls() {
     assert_eq!(hclassno(0), Some(-1));
     assert_eq!(hclassno(1_u64 << 63), None);
     assert_eq!(hclassno(u64::MAX), None);
-    assert_eq!(numtoperm(0, u64::MAX), []);
+    assert_eq!(numtoperm(0, u64::MAX), [] as [usize; 0]);
     assert_eq!(numtoperm(1, u64::MAX), [0]);
     for n in [21, 24, 40] {
         let p = numtoperm(n, u64::MAX);

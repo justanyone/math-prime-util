@@ -145,6 +145,17 @@ mod tests {
     }
 
     #[test]
+    fn prime_factors_handles_small_primes_and_empty_inputs() {
+        assert_eq!(prime_factors(0), [] as [u64; 0]);
+        assert_eq!(prime_factors(1), [] as [u64; 0]);
+        for p in [2_u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47] {
+            assert_eq!(prime_factors(p), [p]);
+            assert_eq!(prime_factors(p * p), [p, p]);
+            assert_eq!(prime_factors(2 * p), [2, p]);
+        }
+    }
+
+    #[test]
     fn factor_support_keeps_order_and_multiplicity() {
         assert_eq!(prime_factors(1), [] as [u64; 0]);
         assert_eq!(prime_factors(1_000_003 * 1_000_033), [1_000_003, 1_000_033]);

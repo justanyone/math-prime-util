@@ -3,9 +3,10 @@
 use std::collections::HashMap;
 
 use crate::{primes, rootint, sqrtint};
+use nth_prime_upper::{MAX_PRIME, MAX_PRIME_IDX};
 
-mod long_double;
-mod nth_prime_approx;
+pub(crate) mod long_double;
+pub(crate) mod nth_prime_approx;
 mod nth_prime_lower;
 mod nth_prime_upper;
 mod prime_count_approx;
@@ -178,13 +179,32 @@ pub fn nth_prime(n: u64) -> Option<u64> {
     if let Some(&p) = usize::try_from(n - 1).ok().and_then(|i| SMALL.get(i)) {
         return Some(p);
     }
+    if n > MAX_PRIME_IDX {
+        return None;
+    }
+    if n == MAX_PRIME_IDX {
+        return Some(MAX_PRIME);
+    }
     // Rosser's bound: p_n < n (ln n + ln ln n) for n >= 6.
     #[allow(clippy::cast_precision_loss)]
     let fnn = n as f64;
     let ln = fnn.ln();
     let mut lo = SMALL[4] + 1;
+    // The float bound can exceed u64::MAX. `as` saturates at u64::MAX.
+    // Clamp to MAX_PRIME - 1 before the `+ 1`, so the addition cannot overflow.
+    // `prime_counts.c` `nth_prime` asks `nth_prime_upper` for this limit.
+    // That function returns MAX_PRIME when the bound does not fit in a u64.
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    let mut hi = (fnn * (ln + ln.ln())) as u64 + 1;
+    let mut hi = (fnn * (ln + ln.ln())) as u64;
+    hi = hi.min(MAX_PRIME - 1) + 1;
+    // The index below MAX_PRIME_IDX is the prime before MAX_PRIME.
+    // The clamped bound is MAX_PRIME, so a binary search would count primes
+    // near 2^64. Walk back one prime. The bigint path steps from MAX_PRIME
+    // the same way. The `hi == MAX_PRIME` check is the overflow guard:
+    // without the clamp, `+ 1` panics in debug and wraps to 0 in release.
+    if n == MAX_PRIME_IDX - 1 && hi == MAX_PRIME {
+        return crate::sieve::prev_prime(MAX_PRIME);
+    }
     while lo < hi {
         let mid = lo + (hi - lo) / 2;
         if prime_count(mid) < n {
@@ -250,6 +270,32 @@ mod tests {
     }
 
     #[test]
+    fn nth_prime_max_index_returns_max_prime() {
+        assert_eq!(nth_prime(MAX_PRIME_IDX), Some(MAX_PRIME));
+    }
+
+    /// The index below the last one overflows the old `as u64 + 1` bound.
+    /// Debug builds panic. Release builds wrap the bound to 0 and return 12.
+    #[test]
+    fn nth_prime_just_below_max_index_is_previous_prime() {
+        assert_eq!(
+            nth_prime(MAX_PRIME_IDX - 1),
+            crate::sieve::prev_prime(MAX_PRIME)
+        );
+        // A second call must return the same prime. The sieve cache is shared.
+        assert_eq!(
+            nth_prime(MAX_PRIME_IDX - 1),
+            crate::sieve::prev_prime(MAX_PRIME)
+        );
+    }
+
+    #[test]
+    fn nth_prime_past_max_index_is_none() {
+        assert_eq!(nth_prime(MAX_PRIME_IDX + 1), None);
+        assert_eq!(nth_prime(u64::MAX), None);
+    }
+
+    #[test]
     #[allow(clippy::float_cmp)] // Exact zeros from the Chebyshev definitions.
     fn chebyshev_known_values() {
         // ±0.0 is the defined value. Compare bits after abs so -0.0 matches.
@@ -271,6 +317,23 @@ mod tests {
             (100_000_000, 5_761_455),
         ] {
             assert_eq!(prime_count(n), count);
+        }
+    }
+
+    #[test]
+    fn phi_small_a_matches_brute_force() {
+        // Counter::phi(x, a) counts 1..=x with no factor among the first a primes.
+        // The a <= 4 branches are closed forms; only a == 1 is not reached
+        // through the public functions, so check all of them directly.
+        let mut counter = Counter::new(100);
+        let small = [2_u64, 3, 5, 7];
+        for x in 0..=300_u64 {
+            for a in 0..=4 {
+                let expected = (1..=x)
+                    .filter(|&m| small[..a].iter().all(|&p| m % p != 0))
+                    .count() as u64;
+                assert_eq!(counter.phi(x, a), expected, "phi({x}, {a})");
+            }
         }
     }
 

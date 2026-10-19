@@ -8,6 +8,8 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: -D warnings
+# The feature lists in this file and in tools/gate.sh must match.
+# Both use default, bigint, gmp, and all-features.
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -15,6 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with: { components: "clippy, rustfmt" }
+      - run: sudo apt-get install -y libgmp-dev
       - run: cargo fmt --all --check
       - run: cargo clippy --all-targets --all-features
       - run: cargo doc --no-deps --all-features
@@ -32,8 +35,34 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with: { toolchain: "${{ matrix.rust }}" }
       - uses: taiki-e/install-action@nextest
+      - run: sudo apt-get install -y libgmp-dev
       - run: cargo nextest run --all-features
       - run: cargo test --doc --all-features
+  # The GMP backend on its own: feature gmp without bigint, after the system GMP is installed.
+  # The pure-Rust builds (default and --features bigint) run in the same job without GMP's headers.
+  gmp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@nextest
+      - run: cargo build
+      - run: cargo build --features bigint
+      - run: sudo apt-get install -y libgmp-dev
+      - run: cargo nextest run --features gmp
+      - run: cargo test --doc --features gmp
+  test-bigint:
+    name: test-bigint (${{ matrix.rust }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [stable, "1.85"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with: { toolchain: "${{ matrix.rust }}" }
+      - run: cargo test --features bigint
   # Other platforms and toolchains: only on pushes to main and dev-* (not on pull requests), to save runner time.
   test-extra:
     if: github.event_name == 'push'
@@ -47,18 +76,24 @@ jobs:
         include:
           - { os: ubuntu-latest, rust: beta }
           - { os: ubuntu-latest, rust: nightly }
+          # The gmp feature links the system GMP, which these runners do not provide: pure Rust there.
+          - { os: macos-latest, features: "--features bigint" }
+          - { os: windows-latest, features: "--features bigint" }
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with: { toolchain: "${{ matrix.rust }}" }
       - uses: taiki-e/install-action@nextest
-      - run: cargo nextest run --all-features
-      - run: cargo test --doc --all-features
+      - if: runner.os == 'Linux'
+        run: sudo apt-get install -y libgmp-dev
+      - run: cargo nextest run ${{ matrix.features || '--all-features' }}
+      - run: cargo test --doc ${{ matrix.features || '--all-features' }}
   msrv:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.85
+      - run: sudo apt-get install -y libgmp-dev
       - run: cargo build --all-features
   coverage:
     runs-on: ubuntu-latest
@@ -67,6 +102,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with: { components: llvm-tools-preview }
       - uses: taiki-e/install-action@cargo-llvm-cov
+      - run: sudo apt-get install -y libgmp-dev
       - run: cargo llvm-cov --all-features --fail-under-lines 95 --lcov --output-path lcov.info
       - uses: actions/upload-artifact@v4
         with: { name: lcov, path: lcov.info }
@@ -78,6 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get install -y libgmp-dev
       - run: cargo bench --all-features -- --output-format bencher | tee bench.txt
       - uses: benchmark-action/github-action-benchmark@v1
         with:
@@ -87,4 +124,6 @@ jobs:
           auto-push: ${{ github.ref == 'refs/heads/main' }}
           alert-threshold: "110%"
           comment-on-alert: true
-          fail-on-alert: true
+          # The stored results come from other shared runners, which differ by more than 10 % on the same
+          # code (2026-10-19: half of the pushes failed here with no slower code). An alert is a comment only.
+          fail-on-alert: false

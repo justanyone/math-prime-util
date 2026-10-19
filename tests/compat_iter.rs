@@ -57,7 +57,8 @@ fn collected<T>(
     });
     values.into_iter()
 }
-/// Parse `hi` or `lo hi` as an inclusive range. Bigint bounds return `None` (skipped).
+/// Parse `hi` or `lo hi` as an inclusive range. Bigint bounds return `None` (skipped;
+/// with the `bigint` feature `bigint_rows` replays the prime and composite loops).
 fn parse_range(args: &[String]) -> Option<std::ops::RangeInclusive<u64>> {
     match args {
         [hi] => Some(0..=hi.parse().ok()?),
@@ -148,6 +149,7 @@ fn check(name: &str) {
                 // - arg `100000000000000000000` (above `u64::MAX`)
                 // - args `18446744073709551557` and `18446744073709551615`
                 //   (the oracle keeps going with primes above `u64::MAX`)
+                // With the `bigint` feature `bigint_rows` replays the last two kinds.
                 let start = if c.args.is_empty() {
                     0
                 } else {
@@ -568,4 +570,58 @@ fn lastfor() {
     });
     assert!(result.is_break());
     assert_eq!(count, 5);
+}
+
+/// The rows with a bound, a start or a result above `u64::MAX` that the
+/// native checks skip: `forprimes`, `forcomposites`, `foroddcomposites`,
+/// `prime_iterator` and `prime_iterator_object_iterate` through
+/// `bigint::counts`.
+#[cfg(feature = "bigint")]
+#[test]
+fn bigint_rows() {
+    use math_prime_util::bigint::counts;
+    use num_bigint::BigUint;
+    let big = |s: &str| s.parse::<BigUint>().expect("decimal");
+    let mut replayed = Vec::new();
+    for c in common::load("iter").iter().filter(|c| !c.error) {
+        let has_big = |values: &[String]| values.iter().any(|v| v.parse::<u64>().is_err());
+        let result = c.result.as_deref().unwrap_or("");
+        let words: Vec<String> = result.split_whitespace().map(str::to_string).collect();
+        match c.func.as_str() {
+            "forprimes" | "forcomposites" | "foroddcomposites"
+                if c.args.len() == 2 && has_big(&c.args) =>
+            {
+                let range = big(&c.args[0])..=big(&c.args[1]);
+                let mut values = Vec::new();
+                let mut save = |v: BigUint| {
+                    values.push(v.to_string());
+                    ControlFlow::Continue(())
+                };
+                let _: ControlFlow<()> = match c.func.as_str() {
+                    "forprimes" => counts::forprimes(range, &mut save),
+                    "forcomposites" => counts::forcomposites(range, &mut save),
+                    _ => counts::foroddcomposites(range, &mut save),
+                };
+                assert_eq!(values, words, "fixture line {}", c.line);
+            }
+            "prime_iterator" | "prime_iterator_object_iterate"
+                if (c.args.len() == 1 && has_big(&c.args)) || has_big(&words) =>
+            {
+                let start = c
+                    .args
+                    .first()
+                    .map_or_else(|| BigUint::from(0_u8), |s| big(s));
+                let iter = if c.func == "prime_iterator" {
+                    counts::prime_iterator(&start)
+                } else {
+                    counts::prime_iterator_object(&start)
+                };
+                let values: Vec<String> = iter.take(words.len()).map(|p| p.to_string()).collect();
+                assert_eq!(values, words, "fixture line {}", c.line);
+            }
+            _ => continue,
+        }
+        replayed.push(c.line);
+    }
+    assert_eq!(replayed.len(), 15, "{replayed:?}");
 }

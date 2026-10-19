@@ -1,6 +1,6 @@
 [package]
 name = "math-prime-util"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2024"
 rust-version = "1.85"
 description = "Rust port of Perl's Math::Prime::Util: primality, sieves, factoring, number theory"
@@ -14,6 +14,17 @@ exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 
 [dependencies]
 getrandom = { version = "0.3", features = ["std"] }
+num-bigint = { version = "0.4", optional = true }
+serde = { version = "1", optional = true, features = ["derive"] }
+# GMP backend: links the installed GMP (libgmp-dev); never builds GMP from source.
+rug = { version = "1", default-features = false, features = ["integer", "rand"], optional = true }
+gmp-mpfr-sys = { version = "1", default-features = false, features = ["use-system-libs"], optional = true }
+
+[features]
+bigint = ["dep:num-bigint"]
+gmp = ["dep:rug", "dep:gmp-mpfr-sys"]
+# Serialize and Deserialize on the certificate types of `bigint::proving`.
+serde = ["dep:serde"]
 
 [dev-dependencies]
 proptest = "1"
@@ -22,6 +33,10 @@ criterion = { version = "0.5", default-features = false }
 [lib]
 # The lib test harness rejects criterion flags (`--output-format bencher`); benches live in benches/.
 bench = false
+
+[[bench]]
+name = "primality"
+harness = false
 
 [[bench]]
 name = "arith"
@@ -82,6 +97,22 @@ harness = false
 [[bench]]
 name = "vec"
 harness = false
+[[bench]]
+name = "bits_pos"
+harness = false
+
+[[bench]]
+name = "iter"
+harness = false
+
+[[bench]]
+name = "misc_gap"
+harness = false
+
+[[bench]]
+name = "bigint"
+harness = false
+
 
 # Tests sieve and count over large ranges: unoptimised builds make the gate take tens of minutes. Overflow checks and debug assertions stay on.
 [profile.dev]

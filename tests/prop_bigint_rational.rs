@@ -70,3 +70,23 @@ fn edges_and_validation() {
     );
     assert_eq!(b::nth_calkin_wilf(&large), fraction);
 }
+
+#[test]
+fn address_space_and_threads() {
+    let one = BigUint::from(1u8);
+    let too_many_bits = &one << usize::BITS as usize;
+    assert_eq!(b::calkin_wilf_n(&one, &too_many_bits), None);
+    assert_eq!(b::stern_brocot_n(&one, &too_many_bits), None);
+    let handles: Vec<_> = (1u64..=4)
+        .map(|offset| {
+            std::thread::spawn(move || {
+                let index = (BigUint::from(1u8) << 128usize) + offset;
+                let (p, q) = b::nth_stern_brocot(&index);
+                assert_eq!(b::stern_brocot_n(&p, &q), Some(index));
+            })
+        })
+        .collect();
+    for handle in handles {
+        handle.join().expect("thread succeeds");
+    }
+}

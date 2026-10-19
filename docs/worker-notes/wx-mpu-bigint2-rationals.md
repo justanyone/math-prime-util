@@ -9,3 +9,4 @@ Generated bigint_rational fixtures offline using vendored MPU PP: local::lib is 
 Added all-row oracle replay and u64 native-agreement properties plus validation and repeat-call tests. Focused tests are running.
 Focused and gate runs are waiting for the offline all-features build. No algorithm or fixture failures have appeared yet.
 STATUS.md already checks all eleven native names; no checklist changes are needed or allowed beyond ticks.
+Added address-space rejection and concurrent independent tree round trips. Shared build locking still prevents validation output; no network or bootstrap was used.

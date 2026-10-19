@@ -662,11 +662,6 @@ fn nth_semiprime_oracle() {
 #[test]
 fn nth_semiprime_approx_oracle() {
     each("families", "nth_semiprime_approx", |c| {
-        // Skipped: indices past the 191-entry table need MPU's inverse
-        // interpolation (semiprime_count_approx), which is not ported yet.
-        if c.arg::<u64>(0) >= 191 {
-            return;
-        }
         c.check(nth_semiprime_approx(c.arg(0)).map(|v| v.to_string()));
     });
 }

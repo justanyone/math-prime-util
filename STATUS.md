@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 293 yes, 47 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -16,7 +16,7 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `addint` · bigint: n.a., integer operators
 - [x] `addmod` · bigint: yes, `bigint::arith`
 - [x] `aliquot_sum` · bigint: yes, `bigint::functions`
-- [x] `allrootmod` · bigint: no, modular helpers
+- [x] `allrootmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `allsqrtmod` · bigint: yes, `bigint::modular`
 - [x] `almost_prime_count` · bigint: yes, `bigint::family_counts`
 - [x] `almost_prime_count_approx` · bigint: yes, `bigint::family_bounds`
@@ -49,12 +49,12 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `chebyshev_psi` · bigint: n.a., real functions
 - [x] `chebyshev_theta` · bigint: n.a., real functions
 - [x] `chinese` · bigint: yes, `bigint::modular`
-- [x] `chinese2` · bigint: no, modular helpers
+- [x] `chinese2` · bigint: yes, `bigint::modular::helpers`
 - [x] `cmpint` · bigint: n.a., integer operators
 - [x] `consecutive_integer_lcm` · bigint: yes, `bigint::sequences`
 - [x] `contfrac` · bigint: yes, `bigint::rational`
 - [x] `convergents` · bigint: yes, `bigint::rational`
-- [x] `cornacchia` · bigint: no, modular helpers
+- [x] `cornacchia` · bigint: yes, `bigint::modular::helpers`
 - [x] `crootint` · bigint: yes, `bigint::functions`
 - [x] `csrand` · bigint: n.a., generator state
 - [x] `dedekind_psi` · bigint: yes, `bigint::functions`
@@ -167,7 +167,7 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `is_provable_prime` · bigint: yes, `bigint::proving`
 - [x] `is_provable_prime_with_cert` · bigint: yes, `bigint::proving`
 - [x] `is_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_qr` · bigint: no, modular helpers
+- [x] `is_qr` · bigint: yes, `bigint::modular::helpers`
 - [x] `is_quasi_carmichael` · bigint: yes, `bigint::modular`
 - [x] `is_ramanujan_prime` · bigint: no, prime families, counts and sums
 - [x] `is_rough` · bigint: yes, `bigint::predicates`
@@ -198,7 +198,7 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `lucasu` · bigint: yes, `bigint::sequences`
 - [x] `lucasumod` · bigint: yes, `bigint::modular`
 - [x] `lucasuv` · bigint: yes, `bigint::sequences`
-- [x] `lucasuvmod` · bigint: no, modular helpers
+- [x] `lucasuvmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `lucasv` · bigint: yes, `bigint::sequences`
 - [x] `lucasvmod` · bigint: yes, `bigint::modular`
 - [x] `lucky_count` · bigint: no, prime families, counts and sums
@@ -212,15 +212,15 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `modint` · bigint: n.a., integer operators
 - [x] `moebius` · bigint: yes, `bigint::divisors`
 - [x] `muladdint` · bigint: n.a., integer operators
-- [x] `muladdmod` · bigint: no, modular helpers
+- [x] `muladdmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `mulint` · bigint: n.a., integer operators
 - [x] `mulmod` · bigint: yes, `bigint::arith`
 - [x] `mulsubint` · bigint: n.a., integer operators
-- [x] `mulsubmod` · bigint: no, modular helpers
+- [x] `mulsubmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `mult_digital_root` · bigint: yes, `bigint::digits`
 - [x] `multifactorial` · bigint: yes, `bigint::combinat`
 - [x] `negint` · bigint: n.a., integer operators
-- [x] `negmod` · bigint: no, modular helpers
+- [x] `negmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `next_calkin_wilf` · bigint: yes, `bigint::rational`
 - [x] `next_chen_prime` · bigint: no, prime families, counts and sums
 - [x] `next_farey` · bigint: yes, `bigint::rational`
@@ -274,7 +274,7 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `perfect_power_count_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `permtonum` · bigint: yes, `bigint::combinat`
 - [x] `Pi` · bigint: n.a., already any size
-- [x] `pisano_period` · bigint: no, modular helpers
+- [x] `pisano_period` · bigint: yes, `bigint::modular::helpers`
 - [x] `pminus1_factor` · bigint: yes, `bigint::factor`
 - [x] `pn_primorial` · bigint: yes, `bigint::sequences`
 - [x] `powerfree_count` · bigint: yes, `bigint::family_counts`
@@ -313,7 +313,7 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `prime_signature` · bigint: yes, `bigint::functions`
 - [x] `primorial` · bigint: yes, `bigint::sequences`
 - [x] `print_primes` · bigint: no, prime families, counts and sums
-- [x] `qnr` · bigint: no, modular helpers
+- [x] `qnr` · bigint: yes, `bigint::modular::helpers`
 - [x] `ramanujan_prime_count` · bigint: no, prime families, counts and sums
 - [x] `ramanujan_prime_count_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `ramanujan_prime_count_lower` · bigint: yes, `bigint::family_bounds`
@@ -386,7 +386,7 @@ BigUint field: 282 yes, 58 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `sub1int` · bigint: n.a., integer operators
 - [x] `subfactorial` · bigint: yes, `bigint::combinat`
 - [x] `subint` · bigint: n.a., integer operators
-- [x] `submod` · bigint: no, modular helpers
+- [x] `submod` · bigint: yes, `bigint::modular::helpers`
 - [x] `sumdigits` · bigint: n.a., already any size
 - [x] `sumliouville` · bigint: yes, `bigint::family_counts`
 - [x] `sumpowerful` · bigint: yes, `bigint::family_counts`

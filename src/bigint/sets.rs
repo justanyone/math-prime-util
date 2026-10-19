@@ -6,7 +6,6 @@ use num_bigint::BigUint;
 use std::collections::BTreeSet;
 use std::ops::Add;
 
-
 /// Return an extreme value, or `None` for empty input.
 ///
 /// Port of MPU 0.75 `reference/mpu/XS.xs::vecmin`.
@@ -173,7 +172,6 @@ pub fn vecuniq<T: Ord + Clone>(a: &[T]) -> Vec<T> {
 /// assert_eq!(vecfreq(&a).len(), 2);
 /// ```
 pub fn vecfreq<T: Ord + Clone>(a: &[T]) -> Vec<(T, usize)> {
-
     let mut out: Vec<(T, usize)> = Vec::new();
     for x in vecsort(a) {
         if let Some(last) = out.last_mut() {
@@ -202,8 +200,11 @@ pub fn vecfreq<T: Ord + Clone>(a: &[T]) -> Vec<(T, usize)> {
 /// assert_eq!(vecsingleton(&a), a);
 /// ```
 pub fn vecsingleton<T: Ord + Clone>(a: &[T]) -> Vec<T> {
-    let single: BTreeSet<T> = vecfreq(a).into_iter()
-        .filter(|x| x.1 == 1).map(|x| x.0).collect();
+    let single: BTreeSet<T> = vecfreq(a)
+        .into_iter()
+        .filter(|x| x.1 == 1)
+        .map(|x| x.0)
+        .collect();
     a.iter().filter(|x| single.contains(*x)).cloned().collect()
 }
 
@@ -224,7 +225,9 @@ pub fn vecsingleton<T: Ord + Clone>(a: &[T]) -> Vec<T> {
 pub fn vecmex(a: &[BigUint]) -> BigUint {
     let seen: BTreeSet<&BigUint> = a.iter().collect();
     let mut value = BigUint::from(0_u8);
-    while seen.contains(&value) { value += 1_u8; }
+    while seen.contains(&value) {
+        value += 1_u8;
+    }
     value
 }
 
@@ -246,10 +249,15 @@ pub fn vecmex(a: &[BigUint]) -> BigUint {
 /// assert_eq!(vecpmex(&a), BigUint::from(3_u8));
 /// ```
 pub fn vecpmex(a: &[BigUint]) -> BigUint {
-    assert!(a.iter().all(|x| *x != BigUint::from(0_u8)), "values must be positive");
+    assert!(
+        a.iter().all(|x| *x != BigUint::from(0_u8)),
+        "values must be positive"
+    );
     let seen: BTreeSet<&BigUint> = a.iter().collect();
     let mut value = BigUint::from(1_u8);
-    while seen.contains(&value) { value += 1_u8; }
+    while seen.contains(&value) {
+        value += 1_u8;
+    }
     value
 }
 
@@ -574,7 +582,10 @@ pub fn set_is_proper_superset<T: Ord + Clone>(a: &[T], b: &[T]) -> bool {
 /// assert_eq!(set_is_proper_intersection(&a, &a), false);
 /// ```
 pub fn set_is_proper_intersection<T: Ord + Clone>(a: &[T], b: &[T]) -> bool {
-    { let n = setintersect(a, b).len(); n > 0 && n < toset(a).len() && n < toset(b).len() }
+    {
+        let n = setintersect(a, b).len();
+        n > 0 && n < toset(a).len() && n < toset(b).len()
+    }
 }
 
 /// Apply a closure to each pair and return sorted unique results.
@@ -594,7 +605,9 @@ pub fn set_is_proper_intersection<T: Ord + Clone>(a: &[T], b: &[T]) -> bool {
 pub fn setbinop<T: Ord + Clone>(a: &[T], b: &[T], mut f: impl FnMut(&T, &T) -> T) -> Vec<T> {
     let mut out = BTreeSet::new();
     for x in a {
-        for y in b { out.insert(f(x, y)); }
+        for y in b {
+            out.insert(f(x, y));
+        }
     }
     out.into_iter().collect()
 }
@@ -614,7 +627,9 @@ pub fn setbinop<T: Ord + Clone>(a: &[T], b: &[T], mut f: impl FnMut(&T, &T) -> T
 /// assert_eq!(sumset(&a, &a).len(), 3);
 /// ```
 pub fn sumset<T: Ord + Clone>(a: &[T], b: &[T]) -> Vec<T>
-where for<'a> &'a T: Add<&'a T, Output = T>, {
+where
+    for<'a> &'a T: Add<&'a T, Output = T>,
+{
     setbinop(a, b, |x, y| x + y)
 }
 
@@ -633,13 +648,19 @@ where for<'a> &'a T: Add<&'a T, Output = T>, {
 /// assert!(is_sidon_set(&a[..1]));
 /// ```
 pub fn is_sidon_set<T: Ord + Clone + From<u8>>(a: &[T]) -> bool
-where for<'a> &'a T: Add<&'a T, Output = T>, {
+where
+    for<'a> &'a T: Add<&'a T, Output = T>,
+{
     let a = toset(a);
-    if a.first().is_some_and(|x| *x < T::from(0_u8)) { return false; }
+    if a.first().is_some_and(|x| *x < T::from(0_u8)) {
+        return false;
+    }
     let mut seen = BTreeSet::new();
     for (i, x) in a.iter().enumerate() {
         for y in &a[i..] {
-            if !seen.insert(x + y) { return false; }
+            if !seen.insert(x + y) {
+                return false;
+            }
         }
     }
     true
@@ -660,11 +681,15 @@ where for<'a> &'a T: Add<&'a T, Output = T>, {
 /// assert!(is_sumfree_set(&a[..1]));
 /// ```
 pub fn is_sumfree_set<T: Ord + Clone + From<u8>>(a: &[T]) -> bool
-where for<'a> &'a T: Add<&'a T, Output = T>, {
+where
+    for<'a> &'a T: Add<&'a T, Output = T>,
+{
     let a = toset(a);
     for (i, x) in a.iter().enumerate() {
         for y in &a[i..] {
-            if a.binary_search(&(x + y)).is_ok() { return false; }
+            if a.binary_search(&(x + y)).is_ok() {
+                return false;
+            }
         }
     }
     true

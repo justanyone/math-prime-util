@@ -7,3 +7,5 @@ Implemented 16 bigint APIs; five global-scan families are impractical above 2^64
 Added generator, fixture replay, native property checks, writer-error, invalid-offset, repeated-call and thread tests. Next: generate oracle offline and run focused checks.
 Focused checks started; the vendored reference runs as an offline pure-Perl oracle without bootstrapping .perl-local. No dependency or tooling change.
 The first focused compile found the native minimal_goldbach_pair returns only the smaller prime; corrected the bigint return type to match. Oracle generation still runs.
+Native property checks pass (32 generated intervals plus edge/error/concurrency tests). Initial oracle run exceeded a practical wait and was stopped; enabled progress output and a bounded retry to identify the slow operation.
+Oracle progress reaches minimal_goldbach_pair quickly; the following range operations are the likely slow stage. Gate identified test-style lint failures; fixed must-use and empty assertions.

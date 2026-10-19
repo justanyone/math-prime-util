@@ -1,5 +1,6 @@
 //! Check bigint family lists against native results.
 #![cfg(feature = "bigint")]
+#![allow(clippy::assert_is_empty)]
 use math_prime_util::{self as native, bigint::families as big};
 use num_bigint::BigUint;
 use proptest::prelude::*;

@@ -36,7 +36,20 @@ macro_rules! unary_option {
         }); }
     )*};
 }
-unary_option!(ramanujan_tau, aliquot_sum, abundance, znprimroot, qnr);
+unary_option!(ramanujan_tau, aliquot_sum, znprimroot, qnr);
+#[test]
+fn abundance() {
+    each("arith", "abundance", |c| {
+        // MPU 0.75 wraps 1 - 18446744073709551557 to 60 (fixture line 8419);
+        // the correct value is below i64, so the port returns None.
+        // See docs/upstream-findings.md, finding 2.
+        if c.args[0].starts_with('-') || c.line == 8419 {
+            return;
+        }
+        c.check(math_prime_util::abundance(c.arg(0)));
+    });
+    assert_eq!(math_prime_util::abundance(18_446_744_073_709_551_557), None);
+}
 #[test]
 fn divisor_sum() {
     each("arith", "divisor_sum", |c| {

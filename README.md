@@ -20,6 +20,30 @@ per-function checklist and [PLAN.md](PLAN.md) for the phases. Ongoing work lands
   against MPU's pure-Perl implementation and other Rust crates, a 95 % line
   coverage gate, mutation testing, and Miri on any `unsafe`.
 
+## Testing
+
+`tools/test.sh` runs the suite; `tools/gate.sh` adds fmt, clippy, MSRV and
+doc checks. The tests need no Perl: the oracle is committed as
+**273,025 rows in 17 fixture files** (`tests/fixtures/*.tsv`, recorded from
+MPU 0.75; `grep -vh '^#' tests/fixtures/*.tsv | grep -c .`). Where MPU is
+wrong the port asserts the correct value and skips the row; see
+[docs/upstream-findings.md](docs/upstream-findings.md).
+
+CI gates every pull request on **95 % line coverage**
+(`cargo llvm-cov --all-features --fail-under-lines 95`).
+
+Mutation testing uses cargo-mutants 27.1.0: **22,282 candidates** in
+22 modules. The `factor` module has a full run (840 mutants, 76 %
+killed before survivor closure; the 56 remaining sites were re-run on
+2026-10-18 with 45 killed and 11 documented as equivalent or unreachable).
+The other seven modules with a run (`arith`, `combinat`, `families`,
+`iter`, `modular`, `count`, `random`) are sampled, one shard of about
+twenty mutants each: **144 mutants tested, 121 killed, 13 missed, 10
+unviable** (90 % of the scored sample); every survivor is triaged and the
+one real gap has a test. The nightly workflow runs the whole crate.
+Details and the survivor triage:
+[docs/mutation-testing.md](docs/mutation-testing.md).
+
 ## Branches
 
 Work lands on a numbered integration branch (`dev-001`, `dev-002`, and so on). Small task branches are cut from it
@@ -54,11 +78,30 @@ function behaviour and the test oracle come from MPU. The Rust code is a new imp
 from MPU:
 
 - The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
-- The native path covers `u64` and `u128`; big integers are not ported yet.
+- The native path covers `u64` and `u128`. The `Int` trait (feature `bigint` adds `num_bigint::BigUint`)
+  gives `is_prime`, `factor`, `powmod`, `gcd` and `next_prime` one generic surface; the rest of the
+  bigint path is not ported yet.
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
-  and reports the difference upstream. See [NOTICE](NOTICE).
+  and records the difference for upstream review. See
+  [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
 
 MPU is not affiliated with this port and has not endorsed it.
+
+## Generic integers
+
+The [`Int`] trait gives `is_prime`, `factor`, `powmod`, `gcd` and `next_prime` one surface over `u64`, `u128`
+and, with the cargo feature `bigint`, `num_bigint::BigUint`. The native free functions keep their signatures;
+the trait methods call them on the native types. Import `math_prime_util::Int`, then write `97_u128.is_prime()`
+or `3_u64.powmod(&5, &7)`. Factoring returns `Result` (the error is the unsplit cofactor); modular powers and
+next primes return `Option`; primality returns 0, 1 or 2 as the native API does. Above the native range,
+`BigUint` primality is the BPSW probable-prime test of `PP.pm::_is_prime7` (so it answers 1, never 2), and
+factoring runs trial division, a square check and a bounded Pollard-Brent search.
+
+Enable the backend with `features = ["bigint"]` on the dependency line; the default build has no dependency on
+`num-bigint`. The compat tests replay every unsigned fixture row of the
+families primality, factor, modular, int and sieve through the trait on each backend and compare with the native path.
+
+[`Int`]: src/bigint/mod.rs
 
 ## License
 

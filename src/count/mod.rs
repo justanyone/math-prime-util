@@ -275,6 +275,23 @@ mod tests {
     }
 
     #[test]
+    fn phi_small_a_matches_brute_force() {
+        // Counter::phi(x, a) counts 1..=x with no factor among the first a primes.
+        // The a <= 4 branches are closed forms; only a == 1 is not reached
+        // through the public functions, so check all of them directly.
+        let mut counter = Counter::new(100);
+        let small = [2_u64, 3, 5, 7];
+        for x in 0..=300_u64 {
+            for a in 0..=4 {
+                let expected = (1..=x)
+                    .filter(|&m| small[..a].iter().all(|&p| m % p != 0))
+                    .count() as u64;
+                assert_eq!(counter.phi(x, a), expected, "phi({x}, {a})");
+            }
+        }
+    }
+
+    #[test]
     fn independent_calls() {
         let threads: Vec<_> = (0..4)
             .map(|_| std::thread::spawn(|| prime_count(100_000)))

@@ -474,3 +474,126 @@ pub fn powerfree_part_sum(n: &BigUint, k: u32) -> Result<BigUint, BigUint> {
     }
     Ok(sum.magnitude().clone())
 }
+/// Count the twin prime pairs `(p, p + 2)` with `low <= p <= high`.
+///
+/// Port of MPU 0.75 `PP.pm::twin_prime_count`: the lesser prime must lie in
+/// the range, so `twin_prime_count(0, n)` equals the native
+/// `twin_prime_count(n)`. Uses direct iteration, so keep ranges short.
+/// Prime tests follow the BPSW contract of `bigint::primality`.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::twin_prime_count;
+/// use num_bigint::BigUint;
+/// assert_eq!(twin_prime_count(&0_u8.into(), &10_u8.into()), BigUint::from(2_u8));
+/// ```
+#[must_use]
+pub fn twin_prime_count(low: &BigUint, high: &BigUint) -> BigUint {
+    let mut count = BigUint::zero();
+    let mut n = low.clone();
+    while n <= *high {
+        if super::primality::is_prime(&n) != 0 && super::primality::is_prime(&(&n + 2_u8)) != 0 {
+            count += 1_u8;
+        }
+        n += 1_u8;
+    }
+    count
+}
+/// Return true if `n` is a power `p^e` of a prime `p` with `e >= 1`.
+fn is_prime_power(n: &BigUint) -> bool {
+    if *n < BigUint::from(2_u8) {
+        return false;
+    }
+    // The largest exponent leaves a root that is not itself a power.
+    let e = super::arith::is_power_exp(n).max(1);
+    super::primality::is_prime(&rootint(n, e)) != 0
+}
+/// Count the prime powers `p^e` (`e >= 1`) in the inclusive range `low..=high`.
+///
+/// Port of MPU 0.75 `PP.pm::prime_power_count`; one is not a prime power, so
+/// `prime_power_count(0, n)` equals the native `prime_power_count(n)`.
+/// Uses direct iteration, so keep ranges short.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::prime_power_count;
+/// use num_bigint::BigUint;
+/// assert_eq!(prime_power_count(&1_u8.into(), &16_u8.into()), BigUint::from(10_u8));
+/// ```
+#[must_use]
+pub fn prime_power_count(low: &BigUint, high: &BigUint) -> BigUint {
+    let mut count = BigUint::zero();
+    let mut n = low.clone();
+    while n <= *high {
+        if is_prime_power(&n) {
+            count += 1_u8;
+        }
+        n += 1_u8;
+    }
+    count
+}
+/// Return the `n`th perfect power (1, 4, 8, 9, 16, ...), or `None` for `n = 0`.
+///
+/// Port of MPU 0.75 `perfect_powers.c::nth_perfect_power`, found by bisection
+/// on [`perfect_power_count`], which takes one integer root per exponent.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::nth_perfect_power;
+/// use num_bigint::BigUint;
+/// assert_eq!(nth_perfect_power(&6_u8.into()), Some(BigUint::from(25_u8)));
+/// assert_eq!(nth_perfect_power(&0_u8.into()), None);
+/// ```
+#[must_use]
+pub fn nth_perfect_power(n: &BigUint) -> Option<BigUint> {
+    if n.is_zero() {
+        return None;
+    }
+    // Rank n lies at or below n^2, which is the nth square.
+    let mut lo = BigUint::one();
+    let mut hi = n * n;
+    while lo < hi {
+        let mid: BigUint = (&lo + &hi) / 2_u8;
+        if perfect_power_count(&mid) >= *n {
+            hi = mid;
+        } else {
+            lo = mid + 1_u8;
+        }
+    }
+    Some(lo)
+}
+/// Return the `n`th `k`-powerfree integer, or `None` for `n = 0` or `k < 2`.
+///
+/// Port of MPU 0.75 `powerfree.c::nth_powerfree`, found by bisection on
+/// [`powerfree_count`], whose cost grows with the kth root. Use large `k`
+/// for large inputs.
+///
+/// # Errors
+/// Return an unresolved cofactor if factorization fails.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::nth_powerfree;
+/// use num_bigint::BigUint;
+/// assert_eq!(nth_powerfree(&7_u8.into(), 2).expect("factors"), Some(BigUint::from(10_u8)));
+/// ```
+pub fn nth_powerfree(n: &BigUint, k: u32) -> Result<Option<BigUint>, BigUint> {
+    if n.is_zero() || k < 2 {
+        return Ok(None);
+    }
+    // Every integer below 2^k is kth-powerfree.
+    if u64::from(k) >= n.bits() || *n < BigUint::from(4_u8) {
+        return Ok(Some(n.clone()));
+    }
+    let mut lo = n.clone();
+    let mut hi = n * 2_u8;
+    while powerfree_count(&hi, k)? < *n {
+        lo = hi.clone();
+        hi *= 2_u8;
+    }
+    while lo < hi {
+        let mid: BigUint = (&lo + &hi) / 2_u8;
+        if powerfree_count(&mid, k)? >= *n {
+            hi = mid;
+        } else {
+            lo = mid + 1_u8;
+        }
+    }
+    Ok(Some(lo))
+}

@@ -69,3 +69,16 @@ fn zero_root_degree() {
 fn invalid_removal_factor() {
     remove_factors(&BigUint::from(0_u8), &BigUint::from(1_u8));
 }
+
+#[test]
+fn bigint_removal_and_totient_identity() {
+    let k = (BigUint::from(1_u8) << 80_usize) + 1_u8;
+    let n = k.pow(3) * 7_u8;
+    assert_eq!(remove_factors_exp(&n, &k), Some((BigUint::from(7_u8), 3)));
+    let t = BigUint::from(1_u8) << 64_usize;
+    let solutions = inverse_totient(&t).unwrap();
+    assert_eq!(solutions.len(), 32);
+    for x in solutions {
+        assert_eq!(math_prime_util::bigint::divisors::euler_phi(&x).unwrap(), t);
+    }
+}

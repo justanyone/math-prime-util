@@ -10,3 +10,5 @@ Offline PP fixture generation succeeded using reference/mpu/lib. Focused tests a
 Added inverse-totient odd-input shortcut and a nonempty 2^64 oracle case. Four native exceptions for launcher commit message: hclassno and integer_complexity reject big inputs in PP; inverse_sigma0 and inverse_sigma0_count require impractical enumeration on general bigint ranges.
 Review found no shared state in new library functions. Repeated-call tests cover inverse-totient state isolation; invalid degree and factor tests cover validation. No services or launcher paths touched.
 The inverse_sigma exceptions are specific to PP BigInt arguments: ref(k) disables its native generator and falls back to forfactored over the interval. Broad intervals above 2^64 are impractical. Request these four omissions in the launcher commit message.
+Formatting and whitespace checks pass. The first all-features filtered build still owns Cargo lock, so gate and explicit integration-test run are queued.
+Added a genuine 81-bit composite removal factor and checked every inverse-totient result at 2^64 by recomputing its totient.

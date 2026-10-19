@@ -279,7 +279,7 @@ pub fn sumtotient(low: &BigUint, high: &BigUint) -> Result<BigUint, BigUint> {
 ///
 /// ```
 /// use math_prime_util::bigint::family_counts::mertens;
-/// use num_bigint::{BigUint, BigInt};
+/// use num_bigint::BigInt;
 /// assert_eq!(mertens(&1_u8.into(), &0_u8.into()).expect("empty"), BigInt::from(0_u8));
 /// ```
 pub fn mertens(low: &BigUint, high: &BigUint) -> Result<BigInt, BigUint> {
@@ -299,7 +299,7 @@ pub fn mertens(low: &BigUint, high: &BigUint) -> Result<BigInt, BigUint> {
 ///
 /// ```
 /// use math_prime_util::bigint::family_counts::sumliouville;
-/// use num_bigint::{BigUint, BigInt};
+/// use num_bigint::BigInt;
 /// assert_eq!(sumliouville(&1_u8.into(), &0_u8.into()).expect("empty"), BigInt::from(0_u8));
 /// ```
 pub fn sumliouville(low: &BigUint, high: &BigUint) -> Result<BigInt, BigUint> {

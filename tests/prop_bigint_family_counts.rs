@@ -18,12 +18,12 @@ proptest! {
         prop_assert_eq!(f::smooth_count(&b,u64::from(k)), BigUint::from(smooth_count(n,u64::from(k))));
         prop_assert_eq!(f::semiprime_count(&z,&b).expect("factors"), BigUint::from(semiprime_count(n)));
         prop_assert_eq!(f::prime_count(&z,&b).expect("prime"), BigUint::from(prime_count(n)));
-        prop_assert_eq!(f::sum_primes(&z,&b).expect("prime"), BigUint::from(sum_primes(n).expect("small")));
+        prop_assert_eq!(f::sum_primes(&z,&b).expect("prime"), BigUint::from(sum_primes(0, n).expect("small")));
         prop_assert_eq!(f::sumtotient(&z,&b).expect("factors"), BigUint::from(sumtotient(n).expect("small")));
         prop_assert_eq!(f::mertens(&z,&b).expect("factors"), BigInt::from(mertens(n)));
         prop_assert_eq!(f::sumliouville(&z,&b).expect("factors"), BigInt::from(sumliouville(n)));
         prop_assert_eq!(f::almost_prime_count(u64::from(k),&z,&b).expect("factors"),
-            BigUint::from(almost_prime_count(k,n)));
+            BigUint::from(almost_prime_count(u64::from(k),n)));
         prop_assert_eq!(f::omega_prime_count(u64::from(k),&z,&b).expect("factors"),
             BigUint::from(omega_prime_count(k,n)));
         prop_assert_eq!(f::powerful_count(k,&z,&b).expect("factors"), BigUint::from(powerful_count(n,k)));

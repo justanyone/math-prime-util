@@ -21,3 +21,4 @@ Gate reached iterator fixtures with no failures. Focused bigint tests, all clipp
 Existing forsquarefreeint integration test has run over 60 seconds; no failures reported. Continuing the required full gate.
 No new failure; full gate is still in the existing iterator suite. All task code and fixture tests are complete.
 Full gate remains blocked on runtime of existing forsquarefreeint tests, not a test failure. Required green marker has not appeared yet.
+Approaching session limit: all task functions and tests are written; focused tests and lint/MSRV pass. Full gate still awaits the existing iterator test; coverage and designated-host runs remain unverified.

@@ -931,3 +931,176 @@ mod tests {
         assert_eq!(next_prime(&zero()), two());
     }
 }
+
+/// Tests whether a prime has a prime half predecessor.
+/// Port of MPU 0.75 `primality.c::is_safe_prime`.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_safe_prime;
+/// assert!(is_safe_prime(&23_u8.into()));
+/// ```
+#[must_use]
+pub fn is_safe_prime(n: &BigUint) -> bool {
+    *n >= BigUint::from(5_u8) && is_prime(n) != 0 && is_prime(&(n >> 1)) != 0
+}
+
+/// Tests whether `n` is prime and `n + 2` is prime or semiprime.
+/// Port of MPU 0.75 `prime_counts.c::is_chen_prime` and `PP.pm::is_chen_prime`.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_chen_prime;
+/// assert!(is_chen_prime(&7_u8.into()));
+/// ```
+#[must_use]
+pub fn is_chen_prime(n: &BigUint) -> bool {
+    if is_prime(n) == 0 {
+        return false;
+    }
+    let next = n + 2_u8;
+    is_prime(&next) != 0 || super::factor::factor(&next).is_ok_and(|f| f.len() == 2)
+}
+
+/// Tests primality of the Gaussian integer `a + bi`.
+/// Port of MPU 0.75 `util.c::is_gaussian_prime` and `PP.pm::is_gaussian_prime`.
+/// Returns the primality status of the norm, or of the nonzero axis value.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_gaussian_prime;
+/// assert_eq!(is_gaussian_prime(&1_u8.into(), &1_u8.into()), 2);
+/// ```
+#[must_use]
+pub fn is_gaussian_prime(a: &BigUint, b: &BigUint) -> u8 {
+    if a.bits() == 0 || b.bits() == 0 {
+        let axis = if a.bits() == 0 { b } else { a };
+        return if axis % 4_u8 == BigUint::from(3_u8) { is_prime(axis) } else { 0 };
+    }
+    is_prime(&(a * a + b * b))
+}
+
+/// Tests whether every single digit change makes a prime composite.
+/// Port of MPU 0.75 `primality.c::is_delicate_prime` and `PP.pm::is_delicate_prime`.
+/// Returns `None` for bases below two.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_delicate_prime;
+/// assert_eq!(is_delicate_prime(&2_u8.into(), 3), Some(true));
+/// ```
+#[must_use]
+pub fn is_delicate_prime(n: &BigUint, base: u32) -> Option<bool> {
+    if base < 2 { return None; }
+    if base == 3 && *n == two() { return Some(true); }
+    if is_prime(n) == 0 { return Some(false); }
+    let mut rest = n.clone();
+    let mut place = one();
+    while rest.bits() != 0 {
+        let digit = &rest % base;
+        let stripped = n - &place * &digit;
+        for replacement in 0..base {
+            if digit != BigUint::from(replacement)
+                && is_prime(&(&stripped + &place * replacement)) != 0 {
+                return Some(false);
+            }
+        }
+        rest /= base;
+        place *= base;
+    }
+    Some(true)
+}
+
+/// Runs the Frobenius test with MPU's default parameters.
+/// Port of MPU 0.75 `primality.c::is_frobenius_pseudoprime`.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_frobenius_pseudoprime;
+/// assert!(is_frobenius_pseudoprime(&101_u8.into()));
+/// ```
+#[must_use]
+pub fn is_frobenius_pseudoprime(n: &BigUint) -> bool {
+    if *n < BigUint::from(11_u8) { return matches!(u64::try_from(n), Ok(2 | 3 | 5 | 7)); }
+    if !n.bit(0) || is_square(n) { return false; }
+    let mut p = BigInt::from(1);
+    loop {
+        let d = &p * &p - 8;
+        match jacobi(&d, n) {
+            0 => return false,
+            -1 => break,
+            _ => { p += 2; if p == BigInt::from(3) { p += 2; } }
+        }
+    }
+    let (u, v, _) = lucas_sequence(n, &p, &BigInt::from(2), &(n + 1_u8));
+    u == zero() && v == BigUint::from(4_u8)
+}
+
+/// Runs Khashin's quadratic Frobenius test.
+/// Port of MPU 0.75 `primality.c::is_frobenius_khashin_pseudoprime`.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_frobenius_khashin_pseudoprime;
+/// assert!(is_frobenius_khashin_pseudoprime(&101_u8.into()));
+/// ```
+#[must_use]
+pub fn is_frobenius_khashin_pseudoprime(n: &BigUint) -> bool {
+    if *n < BigUint::from(4_u8) { return *n >= two(); }
+    if !n.bit(0) || is_square(n) { return false; }
+    let mut k = 2;
+    let mut c = one();
+    if n % 4_u8 == BigUint::from(3_u8) { c = n - 1_u8; }
+    else if n % 8_u8 == BigUint::from(5_u8) { c = two(); }
+    else {
+        k = 1;
+        while k == 1 {
+            c += 2_u8;
+            if c == BigUint::from(9_u8) || (c >= BigUint::from(15_u8)
+                && [3_u8, 5, 7, 11, 13].iter().any(|p| (&c % *p).bits() == 0)) { continue; }
+            k = jacobi(&BigInt::from(c.clone()), n);
+        }
+    }
+    if k == 0 || (k == 2 && (n % 3_u8).bits() == 0) { return false; }
+    let ea = if k == 2 { two() } else { one() };
+    let (mut ra, mut rb, mut a, mut b, mut d) = (ea.clone(), one(), ea.clone(), one(), n - 1_u8);
+    while d.bits() != 0 {
+        if d.bit(0) {
+            (ra, rb) = ((&ra * &a + &rb * &b * &c) % n, (&rb * &a + &ra * &b) % n);
+        }
+        d >>= 1;
+        if d.bits() != 0 { (a, b) = ((&a * &a + &b * &b * &c) % n, (2_u8 * &a * &b) % n); }
+    }
+    ra == ea && rb == n - 1_u8
+}
+
+/// Runs Underwood's quadratic Frobenius test.
+/// Port of MPU 0.75 `primality.c::is_frobenius_underwood_pseudoprime`.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_frobenius_underwood_pseudoprime;
+/// assert!(is_frobenius_underwood_pseudoprime(&101_u8.into()));
+/// ```
+#[must_use]
+pub fn is_frobenius_underwood_pseudoprime(n: &BigUint) -> bool {
+    if *n < BigUint::from(4_u8) { return *n >= two(); }
+    if !n.bit(0) || is_square(n) { return false; }
+    let mut x = 0_u64;
+    loop {
+        if ![2, 4, 7, 8, 10, 14, 16, 18].contains(&x) {
+            let j = jacobi(&(BigInt::from(x) * x - 4), n);
+            if j == -1 { break; }
+            if j == 0 { return false; }
+        }
+        x += 1;
+    }
+    let g = super::arith::gcd(n, &(BigUint::from(x + 4) * (2 * x + 5)));
+    if g != one() && g != *n { return false; }
+    let (mut a, mut b) = (one(), two());
+    let exponent = n + 1_u8;
+    for bit in (0..exponent.bits() - 1).rev() {
+        let t = (&a * (&a * x + 2_u8 * &b)) % n;
+        b = (submod(&b, &a, n) * ((&b + &a) % n)) % n;
+        a = t;
+        if exponent.bit(bit) {
+            let t = (&a * (x + 2) + &b) % n;
+            b = submod(&((2_u8 * &b) % n), &a, n);
+            a = t;
+        }
+    }
+    a == zero() && b == BigUint::from(2 * x + 5) % n
+}

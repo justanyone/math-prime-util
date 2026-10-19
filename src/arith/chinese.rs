@@ -89,6 +89,11 @@ fn simple_chinese(pairs: &[(u64, u64)]) -> Option<u64> {
     }
     let mut sum = 0_u64;
     for &(a, n) in pairs {
+        // A modulus of 1 adds no condition. util.c gets inverse 0 for it and fails, and MPU then answers
+        // through its big-integer path; skipping it gives that answer here.
+        if n == 1 {
+            continue;
+        }
         let p = lcm / n;
         let inverse = invmod(p, n)?;
         if inverse == 0 {
@@ -98,4 +103,18 @@ fn simple_chinese(pairs: &[(u64, u64)]) -> Option<u64> {
         sum = u64::try_from((u128::from(sum) + u128::from(term)) % u128::from(lcm)).ok()?;
     }
     Some(sum)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // The two moduli are coprime and their product is above 2^63, so the overflow path runs.
+    #[test]
+    fn overflow_path_ignores_a_modulus_of_one() {
+        let (n, m) = (3_125_122_409, 2_951_363_445);
+        assert_eq!(chinese(&[(0, n), (0, m), (0, 1)]), Some(0));
+        assert_eq!(chinese(&[(5, n), (7, m), (0, 1)]), Some(4_650_162_403_193_742_352));
+        assert_eq!(chinese(&[(5, n), (7, m)]), chinese(&[(5, n), (7, m), (0, 1)]));
+    }
 }

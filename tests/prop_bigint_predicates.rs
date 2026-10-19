@@ -3,7 +3,9 @@
 use math_prime_util::bigint::predicates as b;
 use num_bigint::BigUint;
 use proptest::prelude::*;
-fn big(n: u64) -> BigUint { BigUint::from(n) }
+fn big(n: u64) -> BigUint {
+    BigUint::from(n)
+}
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(32))]
     #[test]

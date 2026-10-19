@@ -10,3 +10,7 @@ Host is wowbagger, not the requested aragog/wonko. Build-host constraint may blo
 Implemented 15 predicates, including inverse-totient recursion. All integer arguments use BigUint; factor errors remain explicit. STATUS entries were already checked.
 
 Source generation needed correction after command text truncation. Corrected the two generated declarations; next add fixtures and tests.
+
+About five minutes remain: oracle generation is running; focused tests are launched through tools/test.sh. Two names remain native: congruent-number uses quadratic-form enumeration and Pillai scans factorial residues up to n.
+
+Added generator and tests for all 15 ports. Offline oracle uses vendored PP because .perl-local is absent; perl-env would attempt forbidden network bootstrap.

@@ -138,7 +138,7 @@ pub fn rough_count(n: &BigUint, k: u64) -> BigUint {
     if k <= 2 {
         return n.clone();
     }
-    phi(n, &crate::primes(k - 1))
+    phi(n, &crate::primes(2, k - 1))
 }
 
 fn psi(n: &BigUint, primes: &[u64]) -> BigUint {
@@ -168,7 +168,7 @@ fn psi(n: &BigUint, primes: &[u64]) -> BigUint {
 /// assert_eq!(smooth_count(&100_u8.into(), 5), BigUint::from(34_u8));
 /// ```
 pub fn smooth_count(n: &BigUint, k: u64) -> BigUint {
-    psi(n, &crate::primes(k))
+    psi(n, &crate::primes(2, k))
 }
 
 fn fold<T>(
@@ -315,4 +315,122 @@ pub fn sumliouville(low: &BigUint, high: &BigUint) -> Result<BigInt, BigUint> {
         };
         Ok(())
     })
+}
+
+/// Return the family count or sum in the inclusive range `low..=high`.
+///
+/// Port of MPU 0.75 `almost_primes.c::almost_prime_count_range`, using direct iteration.
+/// Keep ranges short.
+///
+/// # Errors
+/// Return an unresolved cofactor if factorization fails.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::almost_prime_count;
+/// use num_bigint::BigUint;
+/// assert_eq!(almost_prime_count(2, &1_u8.into(), &0_u8.into()).expect("empty"), BigUint::from(0_u8));
+/// ```
+pub fn almost_prime_count(k: u64, low: &BigUint, high: &BigUint) -> Result<BigUint, BigUint> {
+    fold(low, high, BigUint::zero(), |n, sum| {
+        *sum += BigUint::from(u8::from(!n.is_zero() && divisors::prime_bigomega(n)? == k));
+        Ok(())
+    })
+}
+
+/// Return the family count or sum in the inclusive range `low..=high`.
+///
+/// Port of MPU 0.75 `omega_primes.c::omega_prime_count`, using direct iteration.
+/// Keep ranges short.
+///
+/// # Errors
+/// Return an unresolved cofactor if factorization fails.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::omega_prime_count;
+/// use num_bigint::BigUint;
+/// assert_eq!(omega_prime_count(2, &1_u8.into(), &0_u8.into()).expect("empty"), BigUint::from(0_u8));
+/// ```
+pub fn omega_prime_count(k: u64, low: &BigUint, high: &BigUint) -> Result<BigUint, BigUint> {
+    fold(low, high, BigUint::zero(), |n, sum| {
+        *sum += BigUint::from(u8::from(!n.is_zero() && divisors::prime_omega(n)? == k));
+        Ok(())
+    })
+}
+
+/// Return the family count or sum in the inclusive range `low..=high`.
+///
+/// Port of MPU 0.75 `powerful.c::powerful_count`, using direct iteration.
+/// Keep ranges short.
+///
+/// # Errors
+/// Return an unresolved cofactor if factorization fails.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::powerful_count;
+/// use num_bigint::BigUint;
+/// assert_eq!(powerful_count(2, &1_u8.into(), &0_u8.into()).expect("empty"), BigUint::from(0_u8));
+/// ```
+pub fn powerful_count(k: u32, low: &BigUint, high: &BigUint) -> Result<BigUint, BigUint> {
+    fold(low, high, BigUint::zero(), |n, sum| {
+        *sum += BigUint::from(u8::from(
+            !n.is_zero() && super::factor::factor_exp(n)?.iter().all(|(_, e)| *e >= k),
+        ));
+        Ok(())
+    })
+}
+
+/// Return the family count or sum in the inclusive range `low..=high`.
+///
+/// Port of MPU 0.75 `powerful.c::sumpowerful`, using direct iteration.
+/// Keep ranges short.
+///
+/// # Errors
+/// Return an unresolved cofactor if factorization fails.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::sumpowerful;
+/// use num_bigint::BigUint;
+/// assert_eq!(sumpowerful(2, &1_u8.into(), &0_u8.into()).expect("empty"), BigUint::from(0_u8));
+/// ```
+pub fn sumpowerful(k: u32, low: &BigUint, high: &BigUint) -> Result<BigUint, BigUint> {
+    fold(low, high, BigUint::zero(), |n, sum| {
+        *sum += if !n.is_zero() && super::factor::factor_exp(n)?.iter().all(|(_, e)| *e >= k) {
+            n.clone()
+        } else {
+            BigUint::zero()
+        };
+        Ok(())
+    })
+}
+
+/// Sum the kth-powerfree parts of positive integers at most `n`.
+///
+/// Port of MPU 0.75 `powerfree.c::powerfree_part_sum` and `fprod`.
+/// Cost grows with the kth root. Use large `k` for large inputs.
+///
+/// # Errors
+/// Return an unresolved cofactor if factorization fails.
+///
+/// ```
+/// use math_prime_util::bigint::family_counts::powerfree_part_sum;
+/// use num_bigint::BigUint;
+/// assert_eq!(powerfree_part_sum(&10_u8.into(), 2).expect("factors"), BigUint::from(38_u8));
+/// ```
+pub fn powerfree_part_sum(n: &BigUint, k: u32) -> Result<BigUint, BigUint> {
+    if k < 2 {
+        return Ok(BigUint::from(u8::from(!n.is_zero())));
+    }
+    let mut sum = BigInt::from(n * (n + 1_u8) / 2_u8);
+    let top = rootint(n, k);
+    let mut j = BigUint::from(2_u8);
+    while j <= top {
+        let mut product = BigInt::one();
+        for (p, _) in super::factor::factor_exp(&j)? {
+            product *= BigInt::one() - BigInt::from(p.pow(k));
+        }
+        let q = n / j.pow(k);
+        sum += product * BigInt::from(&q * (&q + 1_u8) / 2_u8);
+        j += 1_u8;
+    }
+    Ok(sum.magnitude().clone())
 }

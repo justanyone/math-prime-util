@@ -6,3 +6,5 @@ The host is wowbagger, not an authorized build host; no remote execution is avai
 The local Perl environment is absent; use the vendored MPU PP oracle offline instead of the network bootstrap.
 Added the family module with integer-root inclusion/exclusion, phi/psi recurrences, and fallible inclusive range folds.
 Next: generate PP fixtures from vendored sources and add native agreement checks; no network bootstrap will run.
+Approximately five minutes remain: core prefix forms and six range forms are written; finish offline fixtures and tests now.
+Build/test execution remains blocked by the explicit aragog/wonko host constraint (this host is wowbagger).

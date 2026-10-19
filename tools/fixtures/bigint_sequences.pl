@@ -28,6 +28,7 @@ sub gen_bigint_sequences {
   for my $n (0, 1, 2, 10, $big, $big * $big) {
     $emit->('powersum', $n, $_) for (0, 1, 2, 3, 4, 5, 6, 9);
   }
+  $emit->('powersum', 2, 128);
   for my $list ([], [0], [1], [$big], [$big, $big+1, $big*3], [$big,0,7]) {
     $emit->($_, @$list) for qw(vecsum vecprod vecprefixsum);
   }

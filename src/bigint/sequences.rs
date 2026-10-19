@@ -260,6 +260,25 @@ pub fn powersum(n: &BigUint, k: &BigUint) -> BigUint {
     if k == &BigUint::from(1_u8) {
         return n * (n + 1_u8) / 2_u8;
     }
+    if k >= n {
+        let mut sum = BigUint::from(0_u8);
+        let mut i = BigUint::from(1_u8);
+        while &i <= n {
+            let mut power = BigUint::from(1_u8);
+            let mut base = i.clone();
+            for bit in 0..k.bits() {
+                if k.bit(bit) {
+                    power *= &base;
+                }
+                if bit + 1 < k.bits() {
+                    base = &base * &base;
+                }
+            }
+            sum += power;
+            i += 1_u8;
+        }
+        return sum;
+    }
     let mut row = vec![BigUint::from(1_u8)];
     let mut degree = BigUint::from(0_u8);
     while &degree < k {

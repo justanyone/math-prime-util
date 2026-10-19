@@ -12,3 +12,6 @@ Added above-2^64 Lucas indices for the practical P=1,Q=0 case; the fixture now h
 Validation: offline MPU fixture generation, rustfmt --check, and git diff --check pass. tools/test.sh, tools/gate.sh, and coverage were not run: this host is wowbagger and the task permits builds/tests only on aragog or wonko. No network, g <<cut 39 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 27 bytes)
+Final review restored MPU's direct-summation powersum branch when k >= n, avoiding a large Stirling table for small n and large k. Added its 2^128+1 oracle case; 276 rows now replay. Formatting and diff checks pass. Rust gate and coverage r <<cut 23 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -1 bytes)

@@ -67,6 +67,7 @@ proptest! {
 #[test]
 fn bigint_sequences_boundaries_and_repeated_calls() {
     let huge: BigUint = big(1) << 100;
+    assert_eq!(s::powersum(&big(2), &big(128)), (big(1) << 128) + 1_u8);
     assert_eq!(
         s::lucasuv(&1.into(), &0.into(), &huge),
         (1.into(), 1.into())

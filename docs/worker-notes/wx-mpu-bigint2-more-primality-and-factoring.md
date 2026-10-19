@@ -11,3 +11,7 @@ The direct Catalan oracle probe also fails in this host's Math::BigInt with miss
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 115 bytes)
 Revised Lehman decision: added a faithful C wrapper with its explicit cutoff, native dispatch and optional trial division through 2011. Added native properties and bigint cutoff regressions. Only Catalan remains a practicality exclusion.
+Static review found a Lehman boundary case: removing small factors can reduce a bigint input below the C cutoff. Dispatch that residual cofactor to the native algorithm. Added a regression with 2^100 * 2017 * 2027 that fails without the dis <<cut 6 chars by kit>>
+Commit message requirement: only is_catalan_pseudoprime stays native. MPU 0.75 PP.pm::binomialmod materializes the full central binomial coefficient, requiring roughly n bits and n/2 multiplication steps on big prime inputs. Lehman is now i <<cut 34 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -7 bytes)

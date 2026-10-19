@@ -78,3 +78,12 @@ fn bigint_moretests_lehman_cutoff() {
     let unsplit = BigUint::from(2017_u16).pow(10);
     assert_eq!(factor::lehman_factor(&unsplit, Some(true)), vec![unsplit]);
 }
+
+#[test]
+fn bigint_moretests_lehman_small_cofactor_after_trial() {
+    let n = (BigUint::from(1_u8) << 100_usize) * 2017_u16 * 2027_u16;
+    let factors = factor::lehman_factor(&n, None);
+    assert!(factors.contains(&BigUint::from(2017_u16)));
+    assert!(factors.contains(&BigUint::from(2027_u16)));
+    assert_eq!(factors.into_iter().product::<BigUint>(), n);
+}

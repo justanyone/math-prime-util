@@ -1939,6 +1939,12 @@ pub fn lehman_factor(n: &BigUint, do_trial: Option<bool>) -> Vec<BigUint> {
             .collect();
     }
     method(n, |m| {
+        if let Ok(native) = u64::try_from(m) {
+            return crate::lehman_factor(native, do_trial)
+                .into_iter()
+                .find(|&f| f > 1 && f < native)
+                .map(BigUint::from);
+        }
         // For this range, FirstCut is capped at 65535. The C prime table
         // ends at 2011, then the input cutoff returns the unsplit cofactor.
         if do_trial.unwrap_or(true) {

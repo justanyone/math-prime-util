@@ -1,4 +1,4 @@
-//! BigUint integer functions agree with the native functions.
+//! `BigUint` integer functions agree with the native functions.
 #![cfg(feature = "bigint")]
 use math_prime_util::{self as native, bigint::functions::*};
 use num_bigint::{BigInt, BigUint};

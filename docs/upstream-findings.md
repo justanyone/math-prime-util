@@ -347,7 +347,6 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
     `stub_method_oracle` in `tests/compat_bigint_factor.rs` checks the
     port's C-method results as valid splits and equal to the oracle where
     both sides split.
-
 21. `setinsert`, `setinvert`, `setcontains` and `set_is_proper_intersection`
     (PP) assume their set arguments are sorted and unique and give
     undefined results otherwise (for example `setinsert` of the unsorted list
@@ -356,6 +355,24 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
     of `bigint_sets.tsv` with such an argument are skipped by
     `bigint_sets_oracle` in `tests/compat_bigint_sets.rs`; the rows with
     valid sets all replay.
+22. Family bounds above 2^64 (`bigint_family_bounds.tsv`, PP under
+    `MPU_NO_GMP=1`). In `PP.pm`: (a) `lucky_count_{approx,lower,upper}`
+    above 2^64, `nth_prime_power_*` above about 2^59 and several
+    `nth_almost_prime_*` rows die or return `NaN`, because a `Math::BigFloat`
+    goes into an integer function; the port runs the search the source
+    states and the tests check it by definition. (b) The fitted search range
+    of `lucky_count_*` misses the answer near 2^64 (the search then returns
+    an end of the range, an invalid bound); the port widens the range.
+    (c) `toint` of a double goes through a 15 digit string, so a result of
+    16 or more digits ends in zeros; the port copies this where PP does.
+    (d) The exponents of `nth_perfect_power_*` are the doubles 1.33333333333333
+    and 1.2; the port uses exact rational exponents, so results agree to 15
+    digits only. (e) `ramanujan_prime_count_approx` exits its search early
+    only if `hi` is a native integer (`Math::BigInt` division never meets
+    the 1e-15 test), so the result depends on the type of `hi`; the port
+    copies it. (f) Native `inverse_li(10^15)` is off by 44 against the exact
+    value; the bigint form is exact.
+
 ## Checked, no defect found
 
 Method: the compatibility tests (`tests/compat_*.rs`) pass on every fixture

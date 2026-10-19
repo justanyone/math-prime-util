@@ -24,3 +24,6 @@ Gate progressed through family fixtures and reached existing iterator tests. The
 Existing forsquarefreeint is still running in the gate, with no reported failures. Requested focused documentation examples as an additional independent check; full suite remains queued/running.
 All eleven new documentation examples passed. Oracle, property, validation, repeat-call, and concurrent tests pass; all clippy configurations and MSRV pass. Only existing full-suite runtime and unavailable host/coverage validation remain.
 - 2026-10-19T16:14:34Z launcher: no commit for 60 s; 727 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint2-rationals.md, src/bigint/mod.rs, src/bigint/rational.rs, tests/compat_bigint_rational.rs, tests/fixtures/bigint_rational.tsv, tests/prop_bigint_rational.rs, tools/fixtures/bigint_rational.pl.
+Near the session deadline, gate is still in the pre-existing forsquarefreeint test and has not printed green. New-family checks are green; do not claim full-gate or 95% coverage success. Launcher must preserve the farey/farey_rank impractic <<cut 39 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 15 bytes)

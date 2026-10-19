@@ -4,6 +4,9 @@
 //! The backends are `u64`, `u128`, and, with feature `bigint`, `num_bigint::BigUint`.
 
 #[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod arith;
+#[cfg(feature = "bigint")]
 mod biguint;
 
 /// The shared number theory surface for unsigned integers.

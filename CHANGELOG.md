@@ -51,8 +51,6 @@ All notable changes to this crate are listed here. The format follows
 - `nth_prime(n)` near the last `u64` prime: `n = MAX_PRIME_IDX` returns the last prime, larger `n` returns
   `None`, and the search bound can no longer overflow.
 - `is_power_exp(n)` finds prime exponents from 41 to 61 (for example `2^61`); it stopped at 37 before.
-- `chinese` with a modulus of 1 among moduli whose product is above 2^63 returned `None`; it now returns the
-  solution, as MPU does (found by the bigint property test in CI).
 
 ## [1.0.0] - 2026-10-18
 

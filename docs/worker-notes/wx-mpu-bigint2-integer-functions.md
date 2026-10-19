@@ -17,3 +17,4 @@ Coverage blocker: cargo-llvm-cov is not installed on wonko; no network install a
 Five-minute checkpoint: fixed the one library clippy diagnostic (math notation needed code quotes). Oracle generation and formatting pass; explicit tests, full suite, and gate remain in progress. Coverage cannot run without cargo-llvm-cov.
 First filtered run completed successfully. Isolated all-target clippy found and fixed one test-module doc-markdown warning. Waiting for explicit compat/property results and gate.
 All-target lint also required consuming the compat helper Vec; fixed that warning without suppressions. No algorithm changes were needed.
+Bigint all-target clippy is clean with -D warnings. Gate default clippy passed and advanced to bigint. Full suite was launched once through tools/test.sh.

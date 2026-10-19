@@ -32,6 +32,9 @@ pub mod primality;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod proving;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod rational;
 
 /// The shared number theory surface for unsigned integers.
 ///

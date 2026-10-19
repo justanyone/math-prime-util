@@ -16,3 +16,5 @@ About five minutes remain: oracle generation is running; focused tests are launc
 Added generator and tests for all 15 ports. Offline oracle uses vendored PP because .perl-local is absent; perl-env would attempt forbidden network bootstrap.
 
 Oracle generated 2679 rows offline from vendored MPU 0.75. Required test and gate wrappers are running on the available wowbagger host; designated-host reruns remain necessary. No network or git writes were used.
+
+Focused tests passed: 2679 oracle rows, 32 native-agreement property cases, and large boundary cases. No PP discrepancies were found. Exclusions for launcher commit message: is_congruent_number has general quadratic-form enumeration beyond practical bigint sizes; is_pillai scans factorial residues up to n, which is impractical above 2^64.

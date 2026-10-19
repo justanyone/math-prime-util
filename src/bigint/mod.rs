@@ -10,6 +10,9 @@ pub mod arith;
 mod biguint;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod modular;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod primality;
 
 /// The shared number theory surface for unsigned integers.

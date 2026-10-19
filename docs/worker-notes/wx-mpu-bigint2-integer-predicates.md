@@ -14,3 +14,5 @@ Source generation needed correction after command text truncation. Corrected the
 About five minutes remain: oracle generation is running; focused tests are launched through tools/test.sh. Two names remain native: congruent-number uses quadratic-form enumeration and Pillai scans factorial residues up to n.
 
 Added generator and tests for all 15 ports. Offline oracle uses vendored PP because .perl-local is absent; perl-env would attempt forbidden network bootstrap.
+
+Oracle generated 2679 rows offline from vendored MPU 0.75. Required test and gate wrappers are running on the available wowbagger host; designated-host reruns remain necessary. No network or git writes were used.

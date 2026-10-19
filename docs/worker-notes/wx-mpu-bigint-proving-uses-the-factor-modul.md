@@ -17,3 +17,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The all-feature test command has passed unit tests, bigint proving compatibility, and multiple other compatibility suites. It is still running long iterator/property work (forsquarefreeint passed 60 seconds); no failure has appeared. Next:  <<cut 62 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 38 bytes)
+- 2026-10-19T12:32:19Z launcher: no commit for 60 s; 575 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-proving-uses-the-factor-modul.md, src/bigint/proving.rs.

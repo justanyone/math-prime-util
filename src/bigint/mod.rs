@@ -23,6 +23,9 @@ mod gmp;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod primality;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod proving;
 
 /// The shared number theory surface for unsigned integers.
 ///

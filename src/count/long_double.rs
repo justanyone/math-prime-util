@@ -31,7 +31,7 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 ///
 /// `sig` has bit 63 set, or is 0 for zero.
 #[derive(Clone, Copy, Debug)]
-pub(super) struct Ld {
+pub(crate) struct Ld {
     neg: bool,
     exp: i32,
     sig: u64,
@@ -55,18 +55,18 @@ const SQRT2_SIG: u64 = 0xb504_f333_f9de_6484;
 
 impl Ld {
     /// Zero.
-    pub(super) const ZERO: Self = Self {
+    pub(crate) const ZERO: Self = Self {
         neg: false,
         exp: 0,
         sig: 0,
     };
     /// One.
-    pub(super) const ONE: Self = Self::new(0, 1 << 63);
+    pub(crate) const ONE: Self = Self::new(0, 1 << 63);
     /// `LDBL_EPSILON`, `2^-63`.
-    pub(super) const EPSILON: Self = Self::new(-63, 1 << 63);
+    pub(crate) const EPSILON: Self = Self::new(-63, 1 << 63);
 
     /// The positive value `sig * 2^(exp - 63)`. `sig` must have bit 63 set.
-    pub(super) const fn new(exp: i32, sig: u64) -> Self {
+    pub(crate) const fn new(exp: i32, sig: u64) -> Self {
         Self {
             neg: false,
             exp,
@@ -75,14 +75,14 @@ impl Ld {
     }
 
     /// `n` exactly, as C converts a `UV` to `long double`.
-    pub(super) fn from_u64(n: u64) -> Self {
+    pub(crate) fn from_u64(n: u64) -> Self {
         Self::round(false, u128::from(n), 0, false)
     }
 
     /// `x` exactly, as C converts a `double` to `long double`.
     ///
     /// `x` must be finite.
-    pub(super) fn from_f64(x: f64) -> Self {
+    pub(crate) fn from_f64(x: f64) -> Self {
         let bits = x.to_bits();
         let neg = bits >> 63 == 1;
         let frac = bits & ((1 << 52) - 1);
@@ -102,7 +102,7 @@ impl Ld {
 
     /// Round to binary64 precision, as the NV argument and result of
     /// MPU 0.75 `real.c`, `Li`. Callers stay in the normal binary64 range.
-    pub(super) fn round_binary64(self) -> Self {
+    pub(crate) fn round_binary64(self) -> Self {
         let sig = self.sig >> 11;
         let tail = self.sig & 0x7ff;
         let up = tail > 0x400 || (tail == 0x400 && sig & 1 != 0);
@@ -115,13 +115,28 @@ impl Ld {
     }
 
     /// `fabsl`.
-    pub(super) fn abs(self) -> Self {
+    pub(crate) fn abs(self) -> Self {
         Self { neg: false, ..self }
+    }
+
+    /// The value as a `double`, as the C cast `(NV) x` converts it: rounded
+    /// to nearest, ties to even. Callers stay in the normal binary64 range.
+    #[cfg(feature = "bigint")]
+    pub(crate) fn to_f64(self) -> f64 {
+        if self.sig == 0 {
+            return 0.0;
+        }
+        let rounded = self.round_binary64();
+        // The low 11 bits are clear after the rounding: 53 bits remain.
+        #[allow(clippy::cast_precision_loss)]
+        let mantissa = (rounded.sig >> 11) as f64;
+        let value = mantissa * 2_f64.powi(rounded.exp - 52);
+        if rounded.neg { -value } else { value }
     }
 
     /// `floorl` converted to `UV`. Negative values give 0; values from `2^64`
     /// up give `u64::MAX` (MPU checks for those before converting).
-    pub(super) fn floor_u64(self) -> u64 {
+    pub(crate) fn floor_u64(self) -> u64 {
         if self.neg || self.sig == 0 || self.exp < 0 {
             return 0;
         }
@@ -133,7 +148,7 @@ impl Ld {
 
     /// `ceill` converted to `UV`, saturating at `u64::MAX` as MPU's
     /// `inverse_R` does. Values up to 0 give 0.
-    pub(super) fn ceil_u64(self) -> u64 {
+    pub(crate) fn ceil_u64(self) -> u64 {
         if self.neg || self.sig == 0 {
             return 0;
         }
@@ -150,7 +165,7 @@ impl Ld {
     }
 
     /// `sqrtl`, correctly rounded as the x87 `fsqrt` is. Values up to 0 give 0.
-    pub(super) fn sqrt(self) -> Self {
+    pub(crate) fn sqrt(self) -> Self {
         if self.neg || self.sig == 0 {
             return Self::ZERO;
         }
@@ -173,7 +188,7 @@ impl Ld {
     /// once to 64 bits (see the module documentation).
     ///
     /// `self` must be positive.
-    pub(super) fn ln(self) -> Self {
+    pub(crate) fn ln(self) -> Self {
         let (e, ln_m) = self.ln_parts();
         #[allow(clippy::cast_possible_wrap)]
         let log2 = i128::from(e) * ONE_FIX as i128 + signed_mul_fix(ln_m, INV_LN2_FIX);
@@ -194,7 +209,7 @@ impl Ld {
 
     /// `self^y` for positive `self`, correctly rounded; stands in for glibc
     /// `powl`.
-    pub(super) fn pow(self, y: Self) -> Self {
+    pub(crate) fn pow(self, y: Self) -> Self {
         let (e, ln_m) = self.ln_parts();
         #[allow(clippy::cast_possible_wrap)]
         let ln_x = i128::from(e) * LN2_FIX as i128 + ln_m;

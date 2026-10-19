@@ -15,26 +15,23 @@ class StatusGeneratorTest(unittest.TestCase):
             root = Path(temp)
             shutil.copy(ROOT / "tools" / "status.py", root / "tools_status.py")
             (root / "src" / "bigint").mkdir(parents=True)
-            (root / "src" / "bigint" / "one.rs").write_text("pub fn test_only_name() {}\n")
-            (root / "src" / "native.rs").write_text("pub fn test_only_name() {}\n")
+            (root / "src" / "bigint" / "one.rs").write_text("pub fn absint() {}\n")
+            (root / "src" / "native.rs").write_text("pub fn absint() {}\n")
             (root / "docs").mkdir()
-            (root / "STATUS.md").write_text("- [ ] `test_only_name`\n")
+            (root / "STATUS.md").write_text("- [ ] `absint`\n")
             script = root / "tools_status.py"
-            source = script.read_text().replace(
+            script.write_text(script.read_text().replace(
                 'ROOT = Path(__file__).resolve().parent.parent', f'ROOT = Path({str(root)!r})'
-            ).replace('"Requires a native machine word": {"rand_bits", "urandomr", "urandomm"}',
-                      '"test group": {"test_only_name"}')
-            script.write_text(source)
+            ))
             run = subprocess.run(["python3", "-I", str(script)], text=True, capture_output=True, check=False)
-            self.assertEqual(run.returncode, 0, run.stderr)
-            self.assertEqual(run.stdout.count("warning:"), 1)
-            self.assertIn("[x] `test_only_name`", (root / "STATUS.md").read_text())
-            self.assertNotIn("test_only_name", (root / "docs" / "bigint-coverage.md").read_text())
-            current = subprocess.run(["python3", "-I", str(script), "--check"], capture_output=True)
-            self.assertEqual(current.returncode, 0)
-            (root / "docs" / "bigint-coverage.md").write_text("stale\n")
-            stale = subprocess.run(["python3", "-I", str(script), "--check"], capture_output=True)
-            self.assertEqual(stale.returncode, 1)
+            self.assertEqual(run.returncode, 1)
+            self.assertIn("listed native-only in tools/status.py: absint", run.stderr)
+            self.assertIn("[x] `absint` · bigint: yes", (root / "STATUS.md").read_text())
+
+    def test_repository_status_is_current(self):
+        run = subprocess.run(["python3", "-I", str(ROOT / "tools" / "status.py"), "--check"],
+                             text=True, capture_output=True, check=False)
+        self.assertEqual(run.returncode, 0, run.stderr + run.stdout)
 
 
 if __name__ == "__main__":

@@ -67,19 +67,19 @@ NATIVE_ONLY = [
     ("growing results", NO,
      "The value outgrows 64 or 128 bits quickly, where MPU returns a big integer; the native forms stop at "
      "their fixed width. A `BigUint` result form is not ported.",
-     "bell_number bernfrac catalan_number consecutive_integer_lcm falling_factorial fibonacci floor_sum "
-     "frobenius_number fubini harmfrac lucas_number lucasu lucasuv lucasv multifactorial numtoperm partitions "
-     "partitionsq permtonum pn_primorial powersum primorial ramanujan_tau rising_factorial stirling "
-     "subfactorial vecprefixsum vecprod vecsum"),
+     " consecutive_integer_lcm fibonacci floor_sum "
+     "frobenius_number lucas_number lucasu lucasuv lucasv "
+     " pn_primorial powersum primorial "
+     " vecprefixsum vecprod vecsum"),
     ("functions of one integer", NO,
      "Functions and predicates of one integer, most built on its factorization. `bigint::factor` and "
      "`bigint::divisors` give the factorization and the main divisor functions; these are not ported.",
-     "abundance aliquot_sum crootint dedekind_psi exp_mangoldt hclassno integer_complexity inverse_sigma0 "
-     "inverse_sigma0_count inverse_totient is_almost_prime is_congruent_number is_cyclic is_fundamental "
-     "is_omega_prime is_perfect_number is_perfect_power is_pillai is_powerfree is_powerful is_practical "
-     "is_prime_power is_rough is_semiprime is_smooth is_sum_of_squares is_totient jordan_totient liouville "
-     "powerfree_part prime_signature ramanujan_sum remove_factors remove_factors_exp sopf sopfr "
-     "squarefree_kernel"),
+     " hclassno integer_complexity inverse_sigma0 "
+     "inverse_sigma0_count is_congruent_number "
+     " is_pillai "
+     " "
+     " "
+     ""),
     ("modular helpers", NO,
      "Modular helpers with a `u64` modulus. `bigint::arith` and `bigint::modular` carry `addmod`, `mulmod`, "
      "`powmod`, `invmod`, `sqrtmod`, `rootmod`, `chinese`, `lucasumod` and `lucasvmod`; these are not ported.",
@@ -131,13 +131,13 @@ NATIVE_ONLY = [
     ("rationals", NO,
      "Continued fractions and the Calkin-Wilf, Stern-Brocot and Farey functions take `u64` or `u32` "
      "numerators, denominators and orders; these are not ported.",
-     "calkin_wilf_n contfrac convergents farey farey_rank from_contfrac next_calkin_wilf next_farey "
-     "next_stern_brocot nth_calkin_wilf nth_stern_brocot nth_stern_diatomic stern_brocot_n"),
+     " farey farey_rank "
+     ""),
     ("digits", NO,
      "Digit functions on `i128` or `u64`. num-bigint's `to_radix_be`, `to_str_radix`, `from_radix_be` and "
      "`parse_bytes` cover base conversion on `BigUint`; the other digit functions are not ported.",
-     "digital_root fromdigits fromzeckendorf is_happy is_harshad is_palindrome mult_digital_root "
-     "reverse_digits todigits todigitstring toint tozeckendorf"),
+     " "
+     ""),
     ("sets of i64", NO,
      "Sets and sorted vectors of `i64` (`vecmax` and `vecmin` need `Copy`). Rust's `sort`, `dedup` and "
      "`BTreeSet` do plain set work on `BigUint`; the MPU forms are not ported.",

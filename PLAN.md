@@ -124,6 +124,10 @@ API shape:
   "returns undef" becomes `Option`.
 - The `Int` trait gives one generic surface across `u64`, `u128`, and the
   bigint backends, so `is_prime(&big)` works when the `bigint` feature is on.
+- The bigint API is additive. Functions live in the `bigint` module under
+  their MPU names and take `&BigUint` (or `T: Int`). Native functions keep
+  their `u64`/`u128` signatures. Everything sits behind feature `bigint`.
+  Tests check that the bigint path agrees with the native path on the `u64` range.
 - The `for*` family becomes iterators (`primes_in(lo..=hi)`) plus
   closure-taking functions named like MPU for people porting Perl code.
 - Feature flags: `std` (default), `bigint` (num-bigint, pure Rust), `gmp`

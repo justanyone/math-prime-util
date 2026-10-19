@@ -98,8 +98,8 @@ from MPU:
 
 - The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
 - The native path covers `u64` and `u128`. The `Int` trait (feature `bigint` adds `num_bigint::BigUint`)
-  gives `is_prime`, `factor`, `powmod`, `gcd` and `next_prime` one generic surface; the rest of the
-  bigint path is not ported yet.
+  gives `is_prime`, `factor`, `powmod`, `gcd`, `next_prime` and the basic arithmetic one generic surface;
+  the rest of the bigint path is not ported yet.
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
   and records the difference for upstream review. See
   [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
@@ -114,7 +114,10 @@ the trait methods call them on the native types. Import `math_prime_util::Int`, 
 or `3_u64.powmod(&5, &7)`. Factoring returns `Result` (the error is the unsplit cofactor); modular powers and
 next primes return `Option`; primality returns 0, 1 or 2 as the native API does. Above the native range,
 `BigUint` primality is the BPSW probable-prime test of `PP.pm::_is_prime7` (so it answers 1, never 2), and
-factoring runs trial division, a square check and a bounded Pollard-Brent search.
+factoring runs trial division, a square check and a bounded Pollard-Brent search. The trait also carries the
+arithmetic the generic algorithms need: `add_int`, `sub_int`, `mul_int`, `divrem`, `mulmod`, `shl_bits`,
+`shr_bits`, `bit_length`, `is_even`, `from_u64`, `to_u64`, `from_decimal` and `to_decimal`. The checked
+operations return `None` where a fixed-width type would overflow; `BigUint` never overflows.
 
 Enable the backend with `features = ["bigint"]` on the dependency line; the default build has no dependency on
 `num-bigint`. The compat tests replay every unsigned fixture row of the

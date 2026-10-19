@@ -171,6 +171,61 @@ fn brent(n: &BigUint, mut rounds: usize) -> Option<BigUint> {
 }
 
 impl Int for BigUint {
+    fn add_int(&self, other: &Self) -> Option<Self> {
+        Some(self + other)
+    }
+
+    fn sub_int(&self, other: &Self) -> Option<Self> {
+        (self >= other).then(|| self - other)
+    }
+
+    fn mul_int(&self, other: &Self) -> Option<Self> {
+        Some(self * other)
+    }
+
+    fn divrem(&self, divisor: &Self) -> Option<(Self, Self)> {
+        (*divisor != zero()).then(|| (self / divisor, self % divisor))
+    }
+
+    fn mulmod(&self, other: &Self, modulus: &Self) -> Option<Self> {
+        (*modulus != zero()).then(|| (self * other) % modulus)
+    }
+
+    fn shl_bits(&self, bits: u32) -> Option<Self> {
+        Some(self << bits)
+    }
+
+    fn shr_bits(&self, bits: u32) -> Self {
+        self >> bits
+    }
+
+    fn bit_length(&self) -> u64 {
+        self.bits()
+    }
+
+    fn is_even(&self) -> bool {
+        !self.bit(0)
+    }
+
+    fn from_u64(value: u64) -> Self {
+        Self::from(value)
+    }
+
+    fn to_u64(&self) -> Option<u64> {
+        u64::try_from(self).ok()
+    }
+
+    fn from_decimal(text: &str) -> Option<Self> {
+        if text.is_empty() || !text.bytes().all(|b| b.is_ascii_digit()) {
+            return None;
+        }
+        text.parse().ok()
+    }
+
+    fn to_decimal(&self) -> String {
+        self.to_string()
+    }
+
     /// MPU `primality.c::BPSW` and `PP.pm::_is_prime7`: base-two MR and
     /// extra-strong Lucas above the native range.
     ///
@@ -252,7 +307,14 @@ impl Int for BigUint {
     /// assert_eq!(BigUint::from(3_u8).powmod(&BigUint::from(5_u8), &n), Some(BigUint::from(5_u8)));
     /// ```
     fn powmod(&self, exponent: &Self, modulus: &Self) -> Option<Self> {
-        (modulus != &zero()).then(|| self.modpow(exponent, modulus))
+        if modulus == &zero() {
+            return None;
+        }
+        // Every residue modulo 1 is 0. `BigUint::modpow` can return 1 for a^0.
+        if modulus == &one() {
+            return Some(zero());
+        }
+        Some(self.modpow(exponent, modulus))
     }
 
     /// Euclidean reduction, MPU `util.h::gcd_ui`.
@@ -332,6 +394,15 @@ mod tests {
         assert_eq!(jacobi(BigUint::from(5_u8), BigUint::from(11_u8)), 1);
         assert_eq!(jacobi(BigUint::from(6_u8), BigUint::from(9_u8)), 0);
         assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(11_u8)), -1);
+        // Both arguments are 3 mod 4, so quadratic reciprocity flips the sign.
+        assert_eq!(jacobi(BigUint::from(3_u8), BigUint::from(7_u8)), -1);
+        // 13 is 5 mod 8, so the factor of 2 flips the sign.
+        assert_eq!(jacobi(BigUint::from(2_u8), BigUint::from(13_u8)), -1);
+        assert!(!extra_strong_lucas(&BigUint::from(9_u8)));
+        assert!(!extra_strong_lucas(&BigUint::from(15_u8)));
+        assert!(!extra_strong_lucas(&BigUint::from(25_u8)));
+        assert_eq!(zero().powmod(&zero(), &one()), Some(zero()));
+        assert_eq!(zero().powmod(&zero(), &BigUint::from(5_u8)), Some(one()));
     }
 
     #[test]
@@ -391,6 +462,89 @@ mod tests {
             BigUint::from(u64::MAX).next_prime(),
             u128::from(u64::MAX).next_prime().map(BigUint::from)
         );
+    }
+
+    #[test]
+    fn arithmetic_ops_and_decimal() {
+        let big = one() << 200_usize;
+        assert_eq!(big.bit_length(), 201);
+        assert!(big.is_even() && !(big.clone() + 1_u8).is_even());
+        assert_eq!(big.shr_bits(190), BigUint::from(1024_u32));
+        assert_eq!(one().shl_bits(70), Some(one() << 70_usize));
+        assert_eq!(big.to_u64(), None);
+        assert_eq!(<BigUint as Int>::from_u64(7).to_u64(), Some(7));
+        assert_eq!(big.sub_int(&(big.clone() + 1_u8)), None);
+        assert_eq!(big.sub_int(&big), Some(zero()));
+        assert_eq!(big.add_int(&one()), Some(big.clone() + 1_u8));
+        assert_eq!(big.mul_int(&big), Some(one() << 400_usize));
+        assert_eq!(big.divrem(&zero()), None);
+        assert_eq!(big.mulmod(&big, &zero()), None);
+        let (ten, three) = (BigUint::from(10_u8), BigUint::from(3_u8));
+        assert_eq!(ten.divrem(&three), Some((three.clone(), one())));
+        assert_eq!(
+            BigUint::from(7_u8).mulmod(&BigUint::from(8_u8), &ten),
+            Some(BigUint::from(6_u8))
+        );
+        let text = big.to_decimal();
+        assert_eq!(<BigUint as Int>::from_decimal(&text), Some(big));
+        assert_eq!(<BigUint as Int>::from_decimal(""), None);
+        assert_eq!(<BigUint as Int>::from_decimal("-1"), None);
+    }
+
+    #[test]
+    fn native_edge_ops() {
+        assert_eq!(u64::MAX.shl_bits(1), None);
+        assert_eq!(u128::MAX.shl_bits(200), None);
+        assert_eq!(<u64 as Int>::from_decimal(""), None);
+        assert_eq!(5_u64.mulmod(&3, &0), None);
+        assert_eq!(5_u64.sub_int(&6), None);
+        assert_eq!(<u64 as Int>::from_u64(5), 5);
+        assert_eq!(<u128 as Int>::from_u64(u64::MAX), u128::from(u64::MAX));
+        assert_eq!(<u64 as Int>::from_decimal("5"), Some(5));
+        assert_eq!(5_u128.mul_int(&3), Some(15));
+        assert_eq!(5_u128.add_int(&3), Some(8));
+        assert_eq!(1_u128.to_decimal(), "1");
+        assert_eq!(1_u128.divrem(&0), None);
+        assert_eq!(1_u128.shr_bits(1), 0);
+        // Values above the modulus must not overflow the widening multiply.
+        assert_eq!(u128::MAX.mulmod(&u128::MAX, &1), Some(0));
+        assert_eq!(u128::MAX.mulmod(&3, &10), Some(5));
+        assert_eq!(0_u64.powmod(&0, &5), Some(1));
+        assert_eq!(0_u128.powmod(&0, &1), Some(0));
+    }
+
+    proptest! {
+        #[test]
+        fn ops_agree_across_backends(a: u64, b: u64, m in 1_u64..=u64::MAX, bits in 0_u32..64) {
+            let (x, y, z) = (BigUint::from(a), BigUint::from(b), BigUint::from(m));
+            let (wa, wb) = (u128::from(a), u128::from(b));
+            prop_assert_eq!(a.mulmod(&b, &m).map(BigUint::from), x.mulmod(&y, &z));
+            prop_assert_eq!(
+                wa.mulmod(&wb, &u128::from(m)),
+                x.mulmod(&y, &z).and_then(|v| v.to_u64()).map(u128::from)
+            );
+            prop_assert_eq!(a.bit_length(), x.bit_length());
+            prop_assert_eq!(a.is_even(), x.is_even());
+            prop_assert_eq!(a.shr_bits(bits).to_decimal(), x.shr_bits(bits).to_decimal());
+            prop_assert_eq!(
+                a.divrem(&m).map(|(q, r)| (BigUint::from(q), BigUint::from(r))),
+                x.divrem(&z)
+            );
+            prop_assert_eq!(a.sub_int(&b).map(BigUint::from), x.sub_int(&y));
+            prop_assert_eq!(
+                wa.add_int(&wb).map(|v| v.to_decimal()),
+                x.add_int(&y).map(|v| v.to_decimal())
+            );
+            prop_assert_eq!(
+                wa.mul_int(&wb).map(|v| v.to_decimal()),
+                x.mul_int(&y).map(|v| v.to_decimal())
+            );
+            prop_assert_eq!(<u64 as Int>::from_decimal(&a.to_decimal()), Some(a));
+            prop_assert_eq!(
+                wa.shl_bits(bits).map(|v| v.to_decimal()),
+                x.shl_bits(bits).map(|v| v.to_decimal())
+            );
+        }
     }
 
     proptest! {

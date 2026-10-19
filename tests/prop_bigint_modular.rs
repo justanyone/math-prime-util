@@ -103,15 +103,38 @@ proptest! {
     }
 }
 
+fn large_prime_inputs(x: u64, y: u64, shift: u64) -> (BigUint, BigUint, BigUint) {
+    let p = next_prime(&(big(x) << (shift + 64)));
+    let candidate = next_prime(&((big(y) << (shift + 64)) + 1_u8));
+    let q = next_prime(&candidate.max(p.clone()));
+    let a = (big(x) << (shift + 60)) % (&p - 1_u8) + 1_u8;
+    (p, q, a)
+}
+
+#[test]
+fn large_prime_inputs_keep_identity_preconditions() {
+    // Small and equal seeds must still give distinct bigint primes and a unit.
+    for (x, y) in [(2, 2), (2, 3), (3, 2)] {
+        let (p, q, a) = large_prime_inputs(x, y, 1);
+        assert!(p.bits() > 64 && q > p);
+        assert!(a > big(0) && a < p);
+        let inverse = invmod(&a, &p).unwrap();
+        assert_eq!(&a * inverse % &p, big(1));
+        let value = &a * &q + 1_u8;
+        assert_eq!(
+            chinese(&[(&value % &p, p.clone()), (&value % &q, q)]),
+            Some(value)
+        );
+    }
+}
+
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(24))]
 
     #[test]
     fn identities_on_large_primes(x in 2_u64..=u64::MAX, y in 2_u64..=u64::MAX, shift in 1_u64..200, k in 3_u64..12) {
         // Two primes above 2^64 and a value below their product.
-        let p = next_prime(&(big(x) << shift));
-        let q = next_prime(&((big(y) << shift) + 1_u8));
-        let a = (big(x) << (shift + 60)) % &p + 2_u8;
+        let (p, q, a) = large_prime_inputs(x, y, shift);
         // sqrtmod squares back.
         let square = &a * &a % &p;
         let r = sqrtmod(&square, &p).unwrap();

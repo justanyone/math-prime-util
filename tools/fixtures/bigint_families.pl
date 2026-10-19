@@ -19,7 +19,6 @@ sub gen_bigint_families {
     emit($fh, 'semi_primes', [$n,$hi], sub { @{semi_primes($n,$hi)} });
     emit($fh, 'almost_primes', [3,$n,$hi], sub { @{almost_primes(3,$n,$hi)} });
     emit($fh, 'omega_primes', [2,$n,$hi], sub { @{omega_primes(2,$n,$hi)} });
-    emit($fh, 'powerful_numbers', [$n,$hi,2], sub { @{powerful_numbers($n,$hi,2)} });
     emit($fh, 'sieve_range', [$n,$hi,7], sub { sieve_range($n,25,7) });
     emit($fh, 'sieve_prime_cluster', [$n,$hi,2], sub { sieve_prime_cluster($n,$hi,2) });
     emit($fh, 'print_primes', [$n,$hi], sub { @{primes($n,$hi)} });

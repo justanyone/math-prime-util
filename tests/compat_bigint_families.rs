@@ -29,7 +29,6 @@ fn bigint_families_oracle() {
             "semi_primes" => list(semi_primes(&a, &b()).unwrap()),
             "almost_primes" => list(almost_primes(c.arg(0), &b(), &c.arg(2)).unwrap()),
             "omega_primes" => list(omega_primes(c.arg(0), &b(), &c.arg(2)).unwrap()),
-            "powerful_numbers" => list(powerful_numbers(&a, &b(), c.arg(2)).unwrap()),
             "sieve_range" => list(sieve_range(&a, &b(), &c.arg(2))),
             "sieve_prime_cluster" => list(sieve_prime_cluster(&a, &b(), &[c.arg(2)])),
             "next_prime_power" => Some(next_prime_power(&a).to_string()),

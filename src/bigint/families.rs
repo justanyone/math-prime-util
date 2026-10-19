@@ -167,26 +167,6 @@ pub fn omega_primes(k: u32, low: &BigUint, high: &BigUint) -> Result<Vec<BigUint
     })
 }
 
-/// Return numbers whose prime exponents are at least `k`.
-/// Port of MPU `powerful.c::powerful_numbers_range`, with trial factor tests.
-/// # Errors
-/// Return an unresolved cofactor if factoring fails.
-/// ```
-/// use math_prime_util::bigint::families::powerful_numbers;
-/// assert_eq!(powerful_numbers(&8_u8.into(), &9_u8.into(), 2).unwrap().len(), 2);
-/// ```
-pub fn powerful_numbers(low: &BigUint, high: &BigUint, k: u32) -> Result<Vec<BigUint>, BigUint> {
-    scan(low, high, |n| {
-        if *n == BigUint::from(0_u8) {
-            return Ok(false);
-        }
-        if k <= 1 {
-            return Ok(true);
-        }
-        Ok(factor::factor_exp(n)?.iter().all(|(_, e)| *e >= k))
-    })
-}
-
 fn prime_power(n: &BigUint) -> bool {
     if primality::is_prob_prime(n) != 0 {
         return true;

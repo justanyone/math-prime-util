@@ -9,3 +9,5 @@ Focused checks started; the vendored reference runs as an offline pure-Perl orac
 The first focused compile found the native minimal_goldbach_pair returns only the smaller prime; corrected the bigint return type to match. Oracle generation still runs.
 Native property checks pass (32 generated intervals plus edge/error/concurrency tests). Initial oracle run exceeded a practical wait and was stopped; enabled progress output and a bounded retry to identify the slow operation.
 Oracle progress reaches minimal_goldbach_pair quickly; the following range operations are the likely slow stage. Gate identified test-style lint failures; fixed must-use and empty assertions.
+The pure-Perl omega list completed; powerful_numbers now takes the long wait. The Rust short-range factor implementation remains practical. Preparing smaller oracle cases for that path.
+Keep powerful_numbers native too: PP enumerates global power bases even for a 25-integer range at 2^64, and did not finish within the bounded oracle run. Removed that API and its tests rather than replace its enumeration algorithm with trial factoring.

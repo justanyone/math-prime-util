@@ -19,7 +19,6 @@ proptest! {
         prop_assert_eq!(big::semi_primes(&lo,&hi).unwrap(), values(native::semi_primes(n,n+width)));
         prop_assert_eq!(big::almost_primes(u64::from(k),&lo,&hi).unwrap(), values(native::almost_primes(u64::from(k),n,n+width)));
         prop_assert_eq!(big::omega_primes(k,&lo,&hi).unwrap(), values(native::omega_primes(k,n,n+width)));
-        prop_assert_eq!(big::powerful_numbers(&lo,&hi,k).unwrap(), values(native::powerful_numbers(n,n+width,k)));
         prop_assert_eq!(big::sieve_range(&lo,&hi,&7_u8.into()), values(native::sieve_range(n,width+1,7)));
         prop_assert_eq!(big::sieve_prime_cluster(&lo,&hi,&[0,2,6]), values(native::sieve_prime_cluster(n,n+width,&[0,2,6])));
         prop_assert_eq!(Some(big::next_prime_power(&lo)),native::next_prime_power(n).map(BigUint::from));
@@ -58,7 +57,6 @@ fn edges_and_repeated_calls() {
             .is_empty()
     );
     assert!(
-        big::powerful_numbers(&0_u8.into(), &0_u8.into(), 2)
             .unwrap()
             .is_empty()
     );

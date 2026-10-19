@@ -1,8 +1,7 @@
 //! Random integers and probable primes from MPU's thread-local seeded stream.
 
 use num_bigint::BigUint;
-use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
-use num_integer::Integer;
+
 
 use super::primality::{is_prob_prime, is_strong_pseudoprime, next_prime, prev_prime};
 
@@ -31,15 +30,15 @@ pub fn urandomb(bits: u32) -> BigUint {
 /// ```
 #[must_use]
 pub fn urandomm(modulus: &BigUint) -> BigUint {
-    assert!(!modulus.is_zero(), "modulus must be positive");
-    if let Some(n) = modulus.to_u64() {
+    assert!(*modulus != BigUint::from(0_u8), "modulus must be positive");
+    if let Some(n) = u64::try_from(modulus).ok() {
         return crate::urandomm(n).into();
     }
     // PP estimates log2(n) from its decimal length, then adds a full byte.
     let digits = modulus.to_str_radix(10).len();
     let bytes = (digits * 3322 / 1000 + 15) >> 3;
     let bits = u32::try_from(bytes * 8).expect("bit count fits u32");
-    let max = (BigUint::one() << bits) - 1_u8;
+    let max = (BigUint::from(1_u8) << bits) - 1_u8;
     let overflow = &max - &max % modulus;
     loop {
         let r = urandomb(bits);
@@ -57,7 +56,7 @@ pub fn urandomm(modulus: &BigUint) -> BigUint {
 /// ```
 #[must_use]
 pub fn urandomr(low: &BigUint, high: &BigUint) -> Option<BigUint> {
-    if let (Some(l), Some(h)) = (low.to_u64(), high.to_u64()) {
+    if let (Some(l), Some(h)) = (u64::try_from(low).ok(), u64::try_from(high).ok()) {
         return crate::urandomr(l, h).map(BigUint::from);
     }
     (low <= high).then(|| low + urandomm(&(high - low + 1_u8)))
@@ -72,7 +71,7 @@ pub fn urandomr(low: &BigUint, high: &BigUint) -> Option<BigUint> {
 /// ```
 #[must_use]
 pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
-    if let (Some(l), Some(h)) = (low.to_u64(), high.to_u64()) {
+    if let (Some(l), Some(h)) = (u64::try_from(low).ok(), u64::try_from(high).ok()) {
         return crate::random_prime(l, h).map(BigUint::from);
     }
     if low > high || high < &2_u8.into() {
@@ -113,7 +112,7 @@ pub fn random_nbit_prime(bits: u32) -> Option<BigUint> {
     loop {
         let b = (urandomb(bits - l - 2) << 1_usize) + 1_u8;
         for _ in 0..1_000_000 {
-            let a = (BigUint::one() << l) + urandomb(l);
+            let a = (BigUint::from(1_u8) << l) + urandomb(l);
             let p = (a << (bits - l - 1)) + &b;
             if is_prob_prime(&p) != 0 { return Some(p); }
         }
@@ -150,12 +149,12 @@ pub fn random_ndigit_prime(digits: u32) -> Option<BigUint> {
 pub fn random_safe_prime(bits: u32) -> Option<BigUint> {
     assert!(bits >= 3, "bits must be >= 3");
     if bits <= 64 { return crate::random_safe_prime(bits).map(BigUint::from); }
-    let base = (BigUint::one() << (bits - 1)) + 3_u8 + (urandomb(bits - 35) << 2_usize);
+    let base = (BigUint::from(1_u8) << (bits - 1)) + 3_u8 + (urandomb(bits - 35) << 2_usize);
     loop {
         let mut p = &base + (urandomb(32) << (bits - 33));
         let mut q = &p >> 1_usize;
         let rem = (&q + 1_u8) % 6_u8;
-        if !rem.is_zero() {
+        if rem != BigUint::from(0_u8) {
             q -= rem;
             if q.bits() != u64::from(bits - 1) { q += 12_u8; }
             p = (&q << 1_usize) + 1_u8;
@@ -181,7 +180,7 @@ pub fn random_strong_prime(bits: u32) -> Option<BigUint> {
         let qpp = random_nbit_prime(l - 20)?;
         let qp2 = &qp << 1_usize;
         let qpp2 = qpp << 1_usize;
-        let il = ((BigUint::one() << (l - 1)) - 1_u8).div_ceil(&qpp2);
+        let il = ceil_div(&((BigUint::from(1_u8) << (l - 1)) - 1_u8), &qpp2);
         let iu = ((BigUint::from(2_u8) << l) - 2_u8) / &qpp2;
         let mut i = &il + urandomm(&(&iu - &il + 1_u8));
         while i <= iu {
@@ -190,8 +189,8 @@ pub fn random_strong_prime(bits: u32) -> Option<BigUint> {
             if is_prob_prime(&q) == 0 { continue; }
             let step = &q * &qp2;
             let pp = &qp2 * qp.modpow(&(&q - 2_u8), &q) - 1_u8;
-            let jl = ((BigUint::one() << (bits - 1)) - &pp).div_ceil(&step);
-            let ju = ((BigUint::one() << bits) - &pp - 1_u8) / &step;
+            let jl = ceil_div(&((BigUint::from(1_u8) << (bits - 1)) - &pp), &step);
+            let ju = ((BigUint::from(1_u8) << bits) - &pp - 1_u8) / &step;
             let mut j = &jl + urandomm(&(&ju - &jl + 1_u8));
             while j <= ju {
                 let p = &j * &step + &pp;
@@ -231,17 +230,17 @@ pub fn random_semiprime(bits: u32) -> Option<BigUint> {
 /// ```
 #[must_use]
 pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
-    assert!(!n.is_zero(), "n must be positive");
-    if let Some(n) = n.to_u64() {
+    assert!(*n != BigUint::from(0_u8), "n must be positive");
+    if let Some(n) = u64::try_from(n).ok() {
         let (r, f) = crate::random_factored_integer(n);
         return (r.into(), f.into_iter().map(BigUint::from).collect());
     }
     loop {
         let mut s = n.clone();
         let mut factors = Vec::new();
-        while s > BigUint::one() {
+        while s > BigUint::from(1_u8) {
             s = urandomm(&s) + 1_u8;
-            if s > BigUint::one() && is_prob_prime(&s) != 0 { factors.push(s.clone()); }
+            if s > BigUint::from(1_u8) && is_prob_prime(&s) != 0 { factors.push(s.clone()); }
         }
         let r: BigUint = factors.iter().product();
         if &r <= n && urandomm(n) + 1_u8 <= r {
@@ -262,7 +261,7 @@ pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
 #[must_use]
 pub fn miller_rabin_random(n: &BigUint, bases: u64) -> Option<u8> {
     assert!(bases > 0, "bases must be positive");
-    if let Some(n) = n.to_u64() { return crate::miller_rabin_random(u128::from(n), bases); }
+    if let Some(n) = u64::try_from(n).ok() { return crate::miller_rabin_random(u128::from(n), bases); }
     for _ in 0..bases {
         let base = urandomm(&(n - 2_u8)) + 2_u8;
         if !is_strong_pseudoprime(n, &[base]) { return Some(0); }
@@ -319,7 +318,7 @@ pub fn random_unrestricted_semiprime(bits: u32) -> Option<BigUint> {
         (113, 0.0544330141081874),
         (127, 0.0490620204315701),
     ];
-    let min = BigUint::one() << (bits - 1);
+    let min = BigUint::from(1_u8) << (bits - 1);
     let max = (&min << 1_usize) - 1_u8;
     let mut r = crate::drand(1.0);
     let mut selected = None;
@@ -337,15 +336,23 @@ pub fn random_unrestricted_semiprime(bits: u32) -> Option<BigUint> {
             if r >= lower { break r; }
         };
         let a = if r <= 3.54 {
-            BigUint::from_f64((r.exp().exp() + 0.5).floor())?
+            float_integer((r.exp().exp() + 0.5).floor())?
         } else {
             let re = r.exp();
             let exponent = (re / 34.5).floor() + 1.0;
-            let exponent = u32::from_f64(exponent)?;
-            BigUint::from_f64(((re / f64::from(exponent)).exp() + 0.5).floor())?.pow(exponent)
+            let exponent = format!("{exponent:.0}").parse::<u32>().ok()?;
+            float_integer(((re / f64::from(exponent)).exp() + 0.5).floor())?.pow(exponent)
         };
         if a < 2_u8.into() { 2_u8.into() } else { prev_prime(&(a + 1_u8))? }
     };
-    let q = random_prime(&min.div_ceil(&p), &(&max / &p))?;
+    let q = random_prime(&ceil_div(&min, &p), &(&max / &p))?;
     Some(p * q)
+}
+
+fn ceil_div(n: &BigUint, d: &BigUint) -> BigUint {
+    (n + d - 1_u8) / d
+}
+
+fn float_integer(n: f64) -> Option<BigUint> {
+    format!("{n:.0}").parse().ok()
 }

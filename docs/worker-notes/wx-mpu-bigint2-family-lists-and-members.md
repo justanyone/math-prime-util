@@ -21,3 +21,4 @@ MSRV build passed. Gate and the required final tools/test.sh suite are executing
 MSRV is green. The final full suite is still compiling, and gate waits for its build lock. No further implementation changes are planned; coverage measurement and the requested remote-host run are unavailable.
 Full compilation finished and the gate now runs compatibility tests. No oracle mismatches or regressions have been reported so far.
 The full gate continues through existing count compatibility tests. All new family tests passed. The only unmeasured acceptance check is touched-module line coverage; no LLVM coverage tools are installed.
+The existing prime_count_oracle test is the current full-suite bottleneck (over 60 seconds). No failures are reported. Waiting within the session limit; all new focused tests have passed.

@@ -45,9 +45,8 @@ proofs, large-number factoring) are phase 9, not part of the first release.
 | Worker models | Codex for sizes m and l, Haiku for s (today's SkyBuild setting). |
 | Merge gate | cargo nextest (unit, doc, compat) on stable; clippy `-D warnings` and `fmt --check`; 95% line coverage on the touched module; MSRV 1.85 build. |
 
-Still open: crates.io login (owner runs `cargo login` with the `!` prefix before
-first publish) and `libgmp-dev` (owner runs `! sudo apt install libgmp-dev`
-when the GMP backend is wanted).
+Done: the crates.io login (1.0.0 published 2026-10-18) and `libgmp-dev` on the build hosts
+(2026-10-18, for the GMP backend).
 
 ## 3. How Rust distributes libraries (CPAN / PyPI equivalent)
 
@@ -59,6 +58,8 @@ when the GMP backend is wanted).
 - **Semantic versioning** is enforced by the ecosystem. Plan: `0.1.0` after
   phase 2 to claim the name and get the pipeline proven; `0.x` while the API
   moves; `1.0.0` when all 428 functions are ported and the API is frozen.
+  Result: 0.1.0 was skipped; 1.0.0 shipped on 2026-10-18 and 1.1.0 (add-only `BigUint`
+  forms behind the `bigint` feature) on 2026-10-19. Changes per version: `CHANGELOG.md`.
 
 ## 4. Toolchain isolation ("virtual environments")
 
@@ -153,7 +154,11 @@ through the Rust compat tests.
 | 7 | Iterators and `for*` family, `lastfor`, prime_iterator, PrimeArray | 32-* | ~20 |
 | 8 | `chacha.c`, `csprng.c`, `entropy.c`, `random_prime.c`, RandomPrimes.pm (Maurer, Shawe-Taylor, safe/strong) | 16, 34, 35-* | ~25 |
 | 9 | `aks.c`, PrimalityProving.pm, certificates; `real.c` and ZetaBigFloat; bigint backends; MPU::GMP algorithms | 22, 23-*, 28, 29, 53, 70, 81 | ~20 + bigint coverage of all above |
-| → | **publish 1.0.0** when STATUS.md shows 428/428 | | |
+| → | **publish 1.0.0** when STATUS.md shows 428/428 (done 2026-10-18) | | |
+| 10 | Bigint coverage: `BigUint` forms of 82 names in `bigint::{arith, primality, factor, divisors, modular, counts, proving}`, audit of all 428 names (`docs/bigint-coverage.md`) | bigint fixtures (MPU pure-Perl path) | 82 |
+| → | **publish 1.1.0** (done 2026-10-19) | | |
+| 11 | `BigUint` forms of the other 258 names (board rows `MPU-BIGINT2-*`) | bigint fixtures | 258 |
+| → | **publish 1.2.0** | | |
 
 Threading: MPU's C uses pthread locks only around its shared sieve cache. The
 Rust port uses `OnceLock`/`Mutex` for the same cache and is `Send + Sync`

@@ -44,3 +44,5 @@ All 15 new runnable documentation examples passed. Full suites continue through 
 
 Full gate is still pending in existing iterator tests. No implementation change is needed from the passing focused checks; await the gate within the remaining session budget.
 - 2026-10-19T16:06:33Z launcher: no commit for 60 s; 757 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint2-integer-predicates.md, src/bigint/mod.rs, src/bigint/predicates.rs, tests/compat_bigint_predicates.rs, tests/fixtures/bigint_predicates.tsv, tests/prop_bigint_predicates.rs, tools/fixtures/bigint_predicates.pl.
+
+Final status: 15 predicates and their 2679-row oracle family are implemented. Focused replay/property tests, all 15 doctests, four clippy sets, and MSRV passed. Full gate and whole-suite runs remain active in existing forsquarefreeint coverage; cargo-llvm-cov and requested build hosts are unavailable here. Congruent-number and Pillai remain native for the documented impractical searches.

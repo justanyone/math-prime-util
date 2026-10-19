@@ -8,3 +8,4 @@ Added the generator, compat replay, and native-equivalence and power-boundary pr
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)
 Generated 90 oracle rows offline from reference/mpu/lib (MPU 0.75, pure Perl). Rustfmt, Perl syntax checks, and diff whitespace checks pass. No Rust test or gate run is authorized on wowbagger; no coverage claim is made.
+Host restriction clarification is pending. Continue static review; the added functions are pure and have no shared state, launch paths, or concurrency controls. STATUS.md already ticks these six native names, so it needs no change.

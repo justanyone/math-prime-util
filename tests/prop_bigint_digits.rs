@@ -78,3 +78,26 @@ fn bigint_digits_validation_and_decimal_forms() {
     assert!(std::panic::catch_unwind(|| digits::is_happy(&n, 10, 11)).is_err());
     assert_eq!(digits::is_happy(&n, 36, 10), native::is_happy(19, 36, 10));
 }
+
+#[test]
+fn bigint_digits_large_bases_and_exponents() {
+    let n = BigUint::from(u64::MAX).pow(4);
+    for base in [u64::MAX, u64::MAX - 1, 1_u64 << 32] {
+        let ds = digits::todigits(&n, base, None);
+        assert_eq!(digits::fromdigits(&ds, base), Some(n.clone()));
+        assert!(digits::digital_root(&n, base) < BigUint::from(base));
+        assert!(digits::mult_digital_root(&n, base) < BigUint::from(base));
+    }
+    assert_eq!(
+        digits::toint("1e170141183460469231731687303715884105727"),
+        None
+    );
+    assert_eq!(
+        digits::toint("1.2e-170141183460469231731687303715884105728"),
+        None
+    );
+    assert_eq!(
+        digits::toint("1e-170141183460469231731687303715884105727"),
+        Some(BigUint::ZERO)
+    );
+}

@@ -10,3 +10,4 @@ First replay exposed empty-list fixture encoding, not arithmetic; generator now 
 All focused tests passed: full oracle replay, u64 parity, wide round trips, and invalid input checks. Gate is running; coverage tool is unavailable.
 Reviewed state/concurrency: functions have no shared mutable state or I/O. Generator writes only its requested family; fixture replay is deterministic.
 Fmt and default/bigint/GMP clippy checks passed. Whole-suite validation is compiling integration tests offline.
+Added u64::MAX-base round trips and extreme exponent checks for conversion boundaries. Full suite and remaining gate steps continue offline.

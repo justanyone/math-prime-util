@@ -1,6 +1,5 @@
 //! Check bigint family lists against native results.
 #![cfg(feature = "bigint")]
-#![allow(clippy::assert_is_empty)]
 use math_prime_util::{self as native, bigint::families as big};
 use num_bigint::BigUint;
 use proptest::prelude::*;
@@ -37,44 +36,37 @@ proptest! {
 #[test]
 fn edges_and_repeated_calls() {
     for n in 0_u8..12 {
-        let n = BigUint::from(n);
-        assert_eq!(big::next_perfect_power(&n), big::next_perfect_power(&n));
+        let b = BigUint::from(n);
         assert_eq!(
-            big::prev_perfect_power(&n),
-            native::prev_perfect_power(u64::try_from(&n).unwrap()).map(BigUint::from)
+            big::next_perfect_power(&b),
+            BigUint::from(native::next_perfect_power(u64::from(n)).unwrap())
+        );
+        assert_eq!(
+            big::prev_perfect_power(&b),
+            native::prev_perfect_power(u64::from(n)).map(BigUint::from)
         );
     }
-    assert!(big::primes(&10_u8.into(), &2_u8.into()).is_empty());
-    assert!(big::primes(&0_u8.into(), &1_u8.into()).is_empty());
-    assert!(
-        big::almost_primes(0, &0_u8.into(), &0_u8.into())
-            .unwrap()
-            .is_empty()
+    assert_eq!(big::primes(&10_u8.into(), &2_u8.into()), []);
+    assert_eq!(big::primes(&0_u8.into(), &1_u8.into()), []);
+    assert_eq!(
+        big::almost_primes(0, &0_u8.into(), &0_u8.into()).unwrap(),
+        []
     );
-    assert!(
-        big::omega_primes(0, &0_u8.into(), &0_u8.into())
-            .unwrap()
-            .is_empty()
+    assert_eq!(
+        big::omega_primes(0, &0_u8.into(), &0_u8.into()).unwrap(),
+        []
     );
-    assert!(
-            .unwrap()
-            .is_empty()
+    assert_eq!(
+        big::sieve_range(&10_u8.into(), &2_u8.into(), &0_u8.into()),
+        []
     );
-    assert!(big::sieve_range(&10_u8.into(), &2_u8.into(), &0_u8.into()).is_empty());
     let handles: Vec<_> = (0..2)
         .map(|_| std::thread::spawn(|| big::primes(&2_u8.into(), &19_u8.into())))
         .collect();
     for h in handles {
         assert_eq!(h.join().unwrap(), values(native::primes(2, 19)));
     }
-    assert!(
-        big::print_primes(
-            &2_u8.into(),
-            &3_u8.into(),
-            std::io::Write::by_ref(&mut FailingWriter)
-        )
-        .is_err()
-    );
+    assert!(big::print_primes(&2_u8.into(), &3_u8.into(), &mut FailingWriter).is_err());
 }
 struct FailingWriter;
 impl std::io::Write for FailingWriter {

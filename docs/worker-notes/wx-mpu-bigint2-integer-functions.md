@@ -20,3 +20,4 @@ All-target lint also required consuming the compat helper Vec; fixed that warnin
 Bigint all-target clippy is clean with -D warnings. Gate default clippy passed and advanced to bigint. Full suite was launched once through tools/test.sh.
 Explicit focused run passed: all 198 oracle rows and all five property/boundary tests. Native agreement took 48 seconds. Gate passed default and bigint clippy and is now checking GMP; no oracle correction or upstream finding was needed.
 Gate passed every clippy feature set (default, bigint, gmp, all-features) and has reached the Rust 1.85 MSRV build. Focused tests remain green. Waiting for full-suite and gate completion.
+Generator now explicitly disables XS and GMP dispatch as well as calling PP directly. Regenerated the same fixture family offline. No Rust changes after focused validation.

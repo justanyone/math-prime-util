@@ -4,6 +4,7 @@ use warnings;
 sub gen_bigint_functions {
   my ($fh) = @_;
   require Math::Prime::Util::PP;
+  Math::Prime::Util::prime_set_config(xs => 0, gmp => 0);
   die 'GMP oracle is not permitted' if exists $INC{'Math/Prime/Util/GMP.pm'};
   my @inputs = (0, 1, 2, 12, 27, '18446744073709551616',
                 '36893488147419103232', '12157665459056928801',

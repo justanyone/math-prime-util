@@ -699,239 +699,6 @@ pub fn prev_prime(n: &BigUint) -> Option<BigUint> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn big(text: &str) -> BigUint {
-        text.parse().expect("decimal")
-    }
-
-    fn mersenne(bits: usize) -> BigUint {
-        (one() << bits) - 1_u8
-    }
-
-    #[test]
-    fn small_inputs_follow_the_native_rules() {
-        let bases = vec![two(), one()];
-        for n in 0_u8..3 {
-            let n = BigUint::from(n);
-            assert_eq!(is_strong_pseudoprime(&n, &bases), n == two());
-            assert_eq!(is_pseudoprime(&n, &bases), n == two());
-            assert_eq!(is_euler_pseudoprime(&n, &bases), n == two());
-            assert_eq!(is_euler_plumb_pseudoprime(&n), n == two());
-            assert_eq!(is_lucas_pseudoprime(&n), n == two());
-            assert_eq!(is_strong_lucas_pseudoprime(&n), n == two());
-            assert_eq!(is_extra_strong_lucas_pseudoprime(&n), n == two());
-            assert_eq!(is_almost_extra_strong_lucas_pseudoprime(&n, 1), n == two());
-        }
-        let four = BigUint::from(4_u8);
-        assert!(!is_strong_pseudoprime(&four, &bases));
-        assert!(!is_euler_pseudoprime(&four, &bases));
-        assert!(!is_euler_plumb_pseudoprime(&four));
-        assert!(!is_lucas_pseudoprime(&four));
-        assert!(!is_strong_lucas_pseudoprime(&four));
-        assert!(!is_extra_strong_lucas_pseudoprime(&four));
-        assert!(!is_almost_extra_strong_lucas_pseudoprime(&four, 1));
-        assert!(!is_almost_extra_strong_lucas_pseudoprime(
-            &BigUint::from(25_u8),
-            1
-        ));
-        assert!(is_almost_extra_strong_lucas_pseudoprime(
-            &BigUint::from(331_u16),
-            16
-        ));
-        assert!(is_almost_extra_strong_lucas_pseudoprime(
-            &BigUint::from(631_u16),
-            149
-        ));
-        assert!(!is_almost_extra_strong_lucas_pseudoprime(
-            &BigUint::from(333_u16),
-            16
-        ));
-        // Fermat tests see 4 with base 2 as 2^3 = 0 mod 4: not a pseudoprime.
-        assert!(!is_pseudoprime(&four, &[two()]));
-        // A base that reduces to 1 passes every test.
-        let n = BigUint::from(101_u8);
-        assert!(is_pseudoprime(&n, &[BigUint::from(102_u8)]));
-        assert!(is_strong_pseudoprime(
-            &n,
-            &[BigUint::from(102_u8), BigUint::from(100_u8)]
-        ));
-        assert!(is_euler_pseudoprime(&n, &[BigUint::from(102_u8)]));
-        // A base sharing a factor with n fails the Euler test.
-        assert!(!is_euler_pseudoprime(
-            &BigUint::from(15_u8),
-            &[BigUint::from(3_u8)]
-        ));
-        // Plumb: 2 is a quadratic residue mod 17 (1 mod 8) and 7 (7 mod 8).
-        assert!(is_euler_plumb_pseudoprime(&BigUint::from(17_u8)));
-        assert!(is_euler_plumb_pseudoprime(&BigUint::from(7_u8)));
-        assert!(is_euler_plumb_pseudoprime(&BigUint::from(11_u8)));
-        assert!(is_euler_plumb_pseudoprime(&BigUint::from(13_u8)));
-        assert!(!is_euler_plumb_pseudoprime(&BigUint::from(15_u8)));
-        assert!(!is_euler_plumb_pseudoprime(&BigUint::from(21_u8)));
-    }
-
-    #[test]
-    #[should_panic(expected = "invalid base")]
-    fn strong_base_one_panics() {
-        is_strong_pseudoprime(&BigUint::from(101_u8), &[one()]);
-    }
-
-    #[test]
-    #[should_panic(expected = "invalid base")]
-    fn fermat_base_zero_panics() {
-        is_pseudoprime(&BigUint::from(101_u8), &[zero()]);
-    }
-
-    #[test]
-    #[should_panic(expected = "invalid base")]
-    fn euler_base_one_panics() {
-        is_euler_pseudoprime(&BigUint::from(101_u8), &[one()]);
-    }
-
-    #[test]
-    #[should_panic(expected = "invalid increment")]
-    fn increment_zero_panics() {
-        is_almost_extra_strong_lucas_pseudoprime(&BigUint::from(101_u8), 0);
-    }
-
-    #[test]
-    #[should_panic(expected = "modulus n must be > 0")]
-    fn lucas_sequence_modulus_zero_panics() {
-        lucas_sequence(&zero(), &BigInt::from(1), &BigInt::from(-1), &one());
-    }
-
-    #[test]
-    fn lucas_sequence_edges() {
-        let (p, q) = (BigInt::from(3), BigInt::from(-1));
-        assert_eq!(
-            lucas_sequence(&one(), &p, &q, &one()),
-            (zero(), zero(), zero())
-        );
-        let n = BigUint::from(10_u8);
-        assert_eq!(lucas_sequence(&n, &p, &q, &zero()), (zero(), two(), one()));
-        assert_eq!(
-            lucas_sequence(&two(), &p, &q, &zero()),
-            (zero(), zero(), one())
-        );
-        assert_eq!(
-            lucas_sequence(&n, &p, &q, &one()),
-            (one(), BigUint::from(3_u8), BigUint::from(9_u8))
-        );
-        // U_2 = P, V_2 = P^2 - 2Q: 3 and 11 for (3, -1).
-        assert_eq!(
-            lucas_sequence(&n, &p, &q, &two()),
-            (BigUint::from(3_u8), one(), one())
-        );
-        // An even modulus with a square discriminant: P = 2, Q = 1 gives U_k = k, V_k = 2.
-        let (u, v, qk) = lucas_sequence(
-            &BigUint::from(1000_u16),
-            &BigInt::from(2),
-            &BigInt::from(1),
-            &BigUint::from(1234_u16),
-        );
-        assert_eq!((u, v, qk), (BigUint::from(234_u8), two(), one()));
-        // Negative P reduces mod n.
-        let m = mersenne(127);
-        assert_eq!(
-            lucas_sequence(
-                &m,
-                &BigInt::from(-3),
-                &BigInt::from(-5),
-                &BigUint::from(7_u8)
-            ),
-            (BigUint::from(4229_u16), &m - 22_767_u32, &m - 78_125_u32)
-        );
-        assert_eq!(
-            lucas_sequence(&m, &p, &q, &m),
-            (one(), BigUint::from(3_u8), &m - 1_u8)
-        );
-    }
-
-    #[test]
-    fn mersenne_primes_and_lucas_lehmer() {
-        for bits in [127, 521, 607] {
-            let m = mersenne(bits);
-            assert_eq!(is_prime(&m), 1);
-            assert_eq!(is_bpsw_prime(&m), 1);
-            assert!(is_lucas_pseudoprime(&m));
-            assert!(is_strong_lucas_pseudoprime(&m));
-            assert!(is_extra_strong_lucas_pseudoprime(&m));
-            assert!(is_almost_extra_strong_lucas_pseudoprime(&m, 3));
-            assert_eq!(is_prime(&(&m * &m)), 0);
-            assert!(!is_strong_lucas_pseudoprime(&(&m * &m)));
-        }
-        for p in [
-            2_u64, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279,
-        ] {
-            assert!(lucas_lehmer(p), "{p}");
-            assert!(is_mersenne_prime(p));
-        }
-        for p in [0_u64, 1, 4, 6, 9, 11, 15, 23, 29, 37, 67, 257, 1023] {
-            assert!(!lucas_lehmer(p), "{p}");
-            assert!(!is_mersenne_prime(p));
-        }
-        assert!(is_mersenne_prime(136_279_841));
-        assert!(!is_mersenne_prime(81_307_408));
-        // Above the verified bound: composite exponents and Sophie Germain
-        // exponents (2p + 1 divides 2^p - 1) are rejected without the test.
-        assert!(!is_mersenne_prime(100_000_000));
-        assert!(!is_mersenne_prime(81_307_763));
-    }
-
-    #[test]
-    fn above_the_native_range() {
-        let p = big("170141183460469231731687303715884105757"); // 2^127 + 29
-        assert_eq!(is_prob_prime(&p), 1);
-        assert_eq!(is_bpsw_prime(&(one() << 130_usize)), 0);
-        let q = mersenne(521);
-        assert_eq!(is_prob_prime(&(&q * 113_u8)), 0);
-        assert_eq!(is_prob_prime(&(&q * &p)), 0);
-        assert_eq!(is_bpsw_prime(&(&q * &p)), 0);
-        // 2^67 - 1: a strong pseudoprime base 2 that the Lucas tests reject.
-        let m67 = mersenne(67);
-        assert!(is_strong_pseudoprime(&m67, &[]));
-        assert!(is_pseudoprime(&m67, &[]));
-        assert!(is_euler_pseudoprime(&m67, &[]));
-        assert!(!is_strong_pseudoprime(&m67, &[BigUint::from(3_u8)]));
-        assert!(!is_lucas_pseudoprime(&m67));
-        assert!(!is_strong_lucas_pseudoprime(&m67));
-        assert!(!is_extra_strong_lucas_pseudoprime(&m67));
-        assert!(!is_almost_extra_strong_lucas_pseudoprime(&m67, 1));
-        assert_eq!(is_bpsw_prime(&m67), 0);
-        // (4^p - 1)/3 is a Fermat pseudoprime base 2 but 5 mod 8, so not an Euler one.
-        let cipolla = ((one() << 254_usize) - 1_u8) / 3_u8;
-        assert!(is_pseudoprime(&cipolla, &[]));
-        assert!(!is_euler_pseudoprime(&cipolla, &[]));
-        assert!(!is_strong_pseudoprime(&cipolla, &[]));
-        // A factor found during parameter selection: 3 divides D = 9 and 5 divides D = 5.
-        let by_three = &q * 3_u8;
-        assert!(!is_lucas_pseudoprime(&by_three));
-        assert!(!is_strong_lucas_pseudoprime(&(&q * 5_u8)));
-        assert!(!is_extra_strong_lucas_pseudoprime(&(&q * 5_u8)));
-        assert!(!is_almost_extra_strong_lucas_pseudoprime(&(&q * 5_u8), 1));
-        assert!(!is_extra_strong_lucas_pseudoprime(&(&q * &q)));
-        assert_eq!(next_prime(&(&p - 1_u8)), p);
-        assert_eq!(prev_prime(&(&p + 1_u8)), Some(p.clone()));
-        assert_eq!(
-            next_prime(&BigUint::from(u64::MAX - 59)),
-            BigUint::from(u64::MAX - 58)
-        );
-        assert_eq!(
-            next_prime(&BigUint::from(u64::MAX - 58)),
-            (one() << 64_usize) + 13_u8
-        );
-        assert_eq!(
-            prev_prime(&((one() << 64_usize) + 13_u8)),
-            Some(BigUint::from(u64::MAX - 58))
-        );
-        assert_eq!(prev_prime(&zero()), None);
-        assert_eq!(next_prime(&zero()), two());
-    }
-}
-
 /// Tests whether a prime has a prime half predecessor.
 /// Port of MPU 0.75 `primality.c::is_safe_prime`.
 ///
@@ -1251,5 +1018,237 @@ pub fn is_perrin_pseudoprime(n: &BigUint, restricted: u32) -> bool {
                     let d = submod(&s[2], &s[3], n);
                     (&d * &d) % n == n - (BigUint::from(23_u8) % n)
                 })
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn big(text: &str) -> BigUint {
+        text.parse().expect("decimal")
+    }
+
+    fn mersenne(bits: usize) -> BigUint {
+        (one() << bits) - 1_u8
+    }
+
+    #[test]
+    fn small_inputs_follow_the_native_rules() {
+        let bases = vec![two(), one()];
+        for n in 0_u8..3 {
+            let n = BigUint::from(n);
+            assert_eq!(is_strong_pseudoprime(&n, &bases), n == two());
+            assert_eq!(is_pseudoprime(&n, &bases), n == two());
+            assert_eq!(is_euler_pseudoprime(&n, &bases), n == two());
+            assert_eq!(is_euler_plumb_pseudoprime(&n), n == two());
+            assert_eq!(is_lucas_pseudoprime(&n), n == two());
+            assert_eq!(is_strong_lucas_pseudoprime(&n), n == two());
+            assert_eq!(is_extra_strong_lucas_pseudoprime(&n), n == two());
+            assert_eq!(is_almost_extra_strong_lucas_pseudoprime(&n, 1), n == two());
+        }
+        let four = BigUint::from(4_u8);
+        assert!(!is_strong_pseudoprime(&four, &bases));
+        assert!(!is_euler_pseudoprime(&four, &bases));
+        assert!(!is_euler_plumb_pseudoprime(&four));
+        assert!(!is_lucas_pseudoprime(&four));
+        assert!(!is_strong_lucas_pseudoprime(&four));
+        assert!(!is_extra_strong_lucas_pseudoprime(&four));
+        assert!(!is_almost_extra_strong_lucas_pseudoprime(&four, 1));
+        assert!(!is_almost_extra_strong_lucas_pseudoprime(
+            &BigUint::from(25_u8),
+            1
+        ));
+        assert!(is_almost_extra_strong_lucas_pseudoprime(
+            &BigUint::from(331_u16),
+            16
+        ));
+        assert!(is_almost_extra_strong_lucas_pseudoprime(
+            &BigUint::from(631_u16),
+            149
+        ));
+        assert!(!is_almost_extra_strong_lucas_pseudoprime(
+            &BigUint::from(333_u16),
+            16
+        ));
+        // Fermat tests see 4 with base 2 as 2^3 = 0 mod 4: not a pseudoprime.
+        assert!(!is_pseudoprime(&four, &[two()]));
+        // A base that reduces to 1 passes every test.
+        let n = BigUint::from(101_u8);
+        assert!(is_pseudoprime(&n, &[BigUint::from(102_u8)]));
+        assert!(is_strong_pseudoprime(
+            &n,
+            &[BigUint::from(102_u8), BigUint::from(100_u8)]
+        ));
+        assert!(is_euler_pseudoprime(&n, &[BigUint::from(102_u8)]));
+        // A base sharing a factor with n fails the Euler test.
+        assert!(!is_euler_pseudoprime(
+            &BigUint::from(15_u8),
+            &[BigUint::from(3_u8)]
+        ));
+        // Plumb: 2 is a quadratic residue mod 17 (1 mod 8) and 7 (7 mod 8).
+        assert!(is_euler_plumb_pseudoprime(&BigUint::from(17_u8)));
+        assert!(is_euler_plumb_pseudoprime(&BigUint::from(7_u8)));
+        assert!(is_euler_plumb_pseudoprime(&BigUint::from(11_u8)));
+        assert!(is_euler_plumb_pseudoprime(&BigUint::from(13_u8)));
+        assert!(!is_euler_plumb_pseudoprime(&BigUint::from(15_u8)));
+        assert!(!is_euler_plumb_pseudoprime(&BigUint::from(21_u8)));
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid base")]
+    fn strong_base_one_panics() {
+        is_strong_pseudoprime(&BigUint::from(101_u8), &[one()]);
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid base")]
+    fn fermat_base_zero_panics() {
+        is_pseudoprime(&BigUint::from(101_u8), &[zero()]);
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid base")]
+    fn euler_base_one_panics() {
+        is_euler_pseudoprime(&BigUint::from(101_u8), &[one()]);
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid increment")]
+    fn increment_zero_panics() {
+        is_almost_extra_strong_lucas_pseudoprime(&BigUint::from(101_u8), 0);
+    }
+
+    #[test]
+    #[should_panic(expected = "modulus n must be > 0")]
+    fn lucas_sequence_modulus_zero_panics() {
+        lucas_sequence(&zero(), &BigInt::from(1), &BigInt::from(-1), &one());
+    }
+
+    #[test]
+    fn lucas_sequence_edges() {
+        let (p, q) = (BigInt::from(3), BigInt::from(-1));
+        assert_eq!(
+            lucas_sequence(&one(), &p, &q, &one()),
+            (zero(), zero(), zero())
+        );
+        let n = BigUint::from(10_u8);
+        assert_eq!(lucas_sequence(&n, &p, &q, &zero()), (zero(), two(), one()));
+        assert_eq!(
+            lucas_sequence(&two(), &p, &q, &zero()),
+            (zero(), zero(), one())
+        );
+        assert_eq!(
+            lucas_sequence(&n, &p, &q, &one()),
+            (one(), BigUint::from(3_u8), BigUint::from(9_u8))
+        );
+        // U_2 = P, V_2 = P^2 - 2Q: 3 and 11 for (3, -1).
+        assert_eq!(
+            lucas_sequence(&n, &p, &q, &two()),
+            (BigUint::from(3_u8), one(), one())
+        );
+        // An even modulus with a square discriminant: P = 2, Q = 1 gives U_k = k, V_k = 2.
+        let (u, v, qk) = lucas_sequence(
+            &BigUint::from(1000_u16),
+            &BigInt::from(2),
+            &BigInt::from(1),
+            &BigUint::from(1234_u16),
+        );
+        assert_eq!((u, v, qk), (BigUint::from(234_u8), two(), one()));
+        // Negative P reduces mod n.
+        let m = mersenne(127);
+        assert_eq!(
+            lucas_sequence(
+                &m,
+                &BigInt::from(-3),
+                &BigInt::from(-5),
+                &BigUint::from(7_u8)
+            ),
+            (BigUint::from(4229_u16), &m - 22_767_u32, &m - 78_125_u32)
+        );
+        assert_eq!(
+            lucas_sequence(&m, &p, &q, &m),
+            (one(), BigUint::from(3_u8), &m - 1_u8)
+        );
+    }
+
+    #[test]
+    fn mersenne_primes_and_lucas_lehmer() {
+        for bits in [127, 521, 607] {
+            let m = mersenne(bits);
+            assert_eq!(is_prime(&m), 1);
+            assert_eq!(is_bpsw_prime(&m), 1);
+            assert!(is_lucas_pseudoprime(&m));
+            assert!(is_strong_lucas_pseudoprime(&m));
+            assert!(is_extra_strong_lucas_pseudoprime(&m));
+            assert!(is_almost_extra_strong_lucas_pseudoprime(&m, 3));
+            assert_eq!(is_prime(&(&m * &m)), 0);
+            assert!(!is_strong_lucas_pseudoprime(&(&m * &m)));
+        }
+        for p in [
+            2_u64, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279,
+        ] {
+            assert!(lucas_lehmer(p), "{p}");
+            assert!(is_mersenne_prime(p));
+        }
+        for p in [0_u64, 1, 4, 6, 9, 11, 15, 23, 29, 37, 67, 257, 1023] {
+            assert!(!lucas_lehmer(p), "{p}");
+            assert!(!is_mersenne_prime(p));
+        }
+        assert!(is_mersenne_prime(136_279_841));
+        assert!(!is_mersenne_prime(81_307_408));
+        // Above the verified bound: composite exponents and Sophie Germain
+        // exponents (2p + 1 divides 2^p - 1) are rejected without the test.
+        assert!(!is_mersenne_prime(100_000_000));
+        assert!(!is_mersenne_prime(81_307_763));
+    }
+
+    #[test]
+    fn above_the_native_range() {
+        let p = big("170141183460469231731687303715884105757"); // 2^127 + 29
+        assert_eq!(is_prob_prime(&p), 1);
+        assert_eq!(is_bpsw_prime(&(one() << 130_usize)), 0);
+        let q = mersenne(521);
+        assert_eq!(is_prob_prime(&(&q * 113_u8)), 0);
+        assert_eq!(is_prob_prime(&(&q * &p)), 0);
+        assert_eq!(is_bpsw_prime(&(&q * &p)), 0);
+        // 2^67 - 1: a strong pseudoprime base 2 that the Lucas tests reject.
+        let m67 = mersenne(67);
+        assert!(is_strong_pseudoprime(&m67, &[]));
+        assert!(is_pseudoprime(&m67, &[]));
+        assert!(is_euler_pseudoprime(&m67, &[]));
+        assert!(!is_strong_pseudoprime(&m67, &[BigUint::from(3_u8)]));
+        assert!(!is_lucas_pseudoprime(&m67));
+        assert!(!is_strong_lucas_pseudoprime(&m67));
+        assert!(!is_extra_strong_lucas_pseudoprime(&m67));
+        assert!(!is_almost_extra_strong_lucas_pseudoprime(&m67, 1));
+        assert_eq!(is_bpsw_prime(&m67), 0);
+        // (4^p - 1)/3 is a Fermat pseudoprime base 2 but 5 mod 8, so not an Euler one.
+        let cipolla = ((one() << 254_usize) - 1_u8) / 3_u8;
+        assert!(is_pseudoprime(&cipolla, &[]));
+        assert!(!is_euler_pseudoprime(&cipolla, &[]));
+        assert!(!is_strong_pseudoprime(&cipolla, &[]));
+        // A factor found during parameter selection: 3 divides D = 9 and 5 divides D = 5.
+        let by_three = &q * 3_u8;
+        assert!(!is_lucas_pseudoprime(&by_three));
+        assert!(!is_strong_lucas_pseudoprime(&(&q * 5_u8)));
+        assert!(!is_extra_strong_lucas_pseudoprime(&(&q * 5_u8)));
+        assert!(!is_almost_extra_strong_lucas_pseudoprime(&(&q * 5_u8), 1));
+        assert!(!is_extra_strong_lucas_pseudoprime(&(&q * &q)));
+        assert_eq!(next_prime(&(&p - 1_u8)), p);
+        assert_eq!(prev_prime(&(&p + 1_u8)), Some(p.clone()));
+        assert_eq!(
+            next_prime(&BigUint::from(u64::MAX - 59)),
+            BigUint::from(u64::MAX - 58)
+        );
+        assert_eq!(
+            next_prime(&BigUint::from(u64::MAX - 58)),
+            (one() << 64_usize) + 13_u8
+        );
+        assert_eq!(
+            prev_prime(&((one() << 64_usize) + 13_u8)),
+            Some(BigUint::from(u64::MAX - 58))
+        );
+        assert_eq!(prev_prime(&zero()), None);
+        assert_eq!(next_prime(&zero()), two());
     }
 }

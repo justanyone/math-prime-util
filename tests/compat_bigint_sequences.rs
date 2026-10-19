@@ -30,9 +30,16 @@ fn bigint_sequences_oracle() {
                 "vecprod" => s::vecprod(&values).to_string(),
                 "vecprefixsum" => {
                     let sums = s::vecprefixsum(&values);
-                    return (!sums.is_empty()).then(|| sums.iter().map(ToString::to_string).collect::<Vec<_>>().join(" "));
+                    return (!sums.is_empty()).then(|| {
+                        sums.iter()
+                            .map(ToString::to_string)
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                    });
                 }
-                "floor_sum" => s::floor_sum(&values[0], &values[1], &values[2], &values[3]).to_string(),
+                "floor_sum" => {
+                    s::floor_sum(&values[0], &values[1], &values[2], &values[3]).to_string()
+                }
                 "frobenius_number" => return s::frobenius_number(&values).map(|v| v.to_string()),
                 name => panic!("unknown fixture function {name}"),
             };

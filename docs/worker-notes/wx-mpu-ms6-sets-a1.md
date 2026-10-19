@@ -13,3 +13,4 @@ compat_vec and prop_vec passed (exit 0). Starting tools/gate.sh.
 - 2026-10-19T02:45:04Z launcher: no commit for 60 s; 395 s elapsed. Files changed so far: README.md, docs/worker-notes/wx-mpu-ms6-sets-a1.md.
 - 2026-10-19T02:46:06Z launcher: no commit for 61 s; 457 s elapsed. Files changed so far: README.md, docs/worker-notes/wx-mpu-ms6-sets-a1.md.
 - 2026-10-19T02:47:06Z launcher: no commit for 60 s; 517 s elapsed. Files changed so far: README.md, docs/worker-notes/wx-mpu-ms6-sets-a1.md.
+Gate ran fmt, clippy, and MSRV, then cargo test. The 15-minute tool limit killed it during compat_iter (forsquarefreeint). Docs step did not run. README milestone 6 line is the only product change. Stop.

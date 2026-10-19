@@ -135,7 +135,10 @@ proptest! {
         let n = k * 11;
         prop_assert_eq!(factorialmod(&big(n), &p), Some(factorial(n) % &p));
         prop_assert_eq!(binomialmod(&a, &big(n), &p), Some(binomial(&a, &big(n)).unwrap() % &p));
-        prop_assert_eq!(binomialmod(&a, &big(n), &(&p * &q)), Some(binomial(&a, &big(n)).unwrap() % (&p * &q)));
+        // A composite modulus whose factors the recipe finds at once: a
+        // product of two large primes would take as long as factoring it.
+        let m = &p * 1_000_003_u32;
+        prop_assert_eq!(binomialmod(&a, &big(n), &m), Some(binomial(&a, &big(n)).unwrap() % &m));
         // A prime is not Carmichael; two primes are not quasi-Carmichael
         // unless a base works, which the native rule decides.
         prop_assert!(!is_carmichael(&p));

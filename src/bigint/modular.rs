@@ -14,9 +14,11 @@
 //! Functions that need the factorization of a composite modulus or of a
 //! group order (`allsqrtmod`, `znorder`, `znprimroot`, `znlog`,
 //! `is_primitive_root`, `is_quasi_carmichael`, and `sqrtmod` and `rootmod`
-//! on composite moduli) factor by trial division and Pollard-Brent with a
-//! bounded budget; a cofactor that budget cannot split is treated as prime.
-//! They are meant for moduli that are prime, or whose factors are small.
+//! on composite moduli) factor through [`factor::factor`], MPU's pure Perl
+//! recipe with no time limit; a cofactor the recipe cannot split is treated
+//! as prime. They are meant for moduli that are prime, or whose factors are
+//! small or quickly found: a modulus with two large prime factors takes as
+//! long as factoring it does, as in MPU.
 //!
 //! ```
 //! use math_prime_util::bigint::modular::{sqrtmod, znlog};
@@ -769,49 +771,203 @@ fn lift(r: &BigUint, a: &BigUint, k: &BigUint, n: &BigUint) -> Option<BigUint> {
     (!is_zero(&d)).then(|| sub(r, &d, n))
 }
 
+/// Primes below this bound take the native route when a Hensel step
+/// stalls: a scan over the other base roots, then the smallest root of the
+/// residue class. A larger prime that divides `a` but not `k` is handled by
+/// its valuation instead, since the scan tries up to `p` candidates.
+const NATIVE_SCAN: u64 = 1 << 16;
+
+/// The most roots the exact searches below keep at one time.
+const ROOT_SET_LIMIT: usize = 1 << 12;
+
+/// `(v, c)` with `t = p^v * c` and `p` not dividing `c`, for `t > 0`.
+fn split_valuation(t: &BigUint, p: &BigUint) -> (u32, BigUint) {
+    let (mut v, mut c) = (0_u32, t.clone());
+    while is_zero(&(&c % p)) {
+        c /= p;
+        v += 1;
+    }
+    (v, c)
+}
+
+/// Every root of `x^k = c` modulo the prime `p`, for `c` not divisible by
+/// `p`: one root times the `g`-th roots of unity, `g = gcd(k, p - 1)`.
+/// `None` when there are more than [`ROOT_SET_LIMIT`].
+fn all_roots_prime(c: &BigUint, k: &BigUint, p: &BigUint) -> Option<Vec<BigUint>> {
+    let x0 = root_prime(c, k, p);
+    if pow(&x0, k, p) != c % p {
+        return Some(vec![]);
+    }
+    let p1 = p - 1_u8;
+    let g = gcd(k, &p1)
+        .to_u64()
+        .filter(|&g| g <= ROOT_SET_LIMIT as u64)?;
+    if g == 1 {
+        return Some(vec![x0]);
+    }
+    let cofactor = &p1 / g;
+    let primes: Vec<u64> = crate::factor_exp(g).into_iter().map(|(q, _)| q).collect();
+    let mut h = two();
+    let zeta = loop {
+        if h >= *p {
+            return None;
+        }
+        let z = pow(&h, &cofactor, p);
+        if primes.iter().all(|&q| !is_one(&pow_u(&z, g / q, p))) {
+            break z;
+        }
+        h += 1_u8;
+    };
+    let mut roots = Vec::new();
+    let mut x = x0;
+    for _ in 0..g {
+        let next = mul(&x, &zeta, p);
+        roots.push(x);
+        x = next;
+    }
+    Some(roots)
+}
+
+/// Every root of `x^k = c` modulo `p^j` that reduces to one of `roots`,
+/// the roots modulo `p`, for `c` not divisible by `p`. A root lifts
+/// uniquely when `p` does not divide `k`; otherwise all `p` lifts of a
+/// root modulo `p^l` have the same `k`-th power modulo `p^(l+1)`. `None`
+/// when the set grows past [`ROOT_SET_LIMIT`].
+fn lift_roots(
+    roots: Vec<BigUint>,
+    c: &BigUint,
+    k: &BigUint,
+    p: &BigUint,
+    j: u32,
+) -> Option<Vec<BigUint>> {
+    let unique = !is_zero(&(k % p));
+    let count = p.to_u64().unwrap_or(u64::MAX);
+    let (mut roots, mut pl) = (roots, p.clone());
+    for _ in 1..j {
+        let next = &pl * p;
+        let target = c % &next;
+        roots = if unique {
+            roots
+                .iter()
+                .filter_map(|s| lift(s, c, k, &next))
+                .filter(|s| pow(s, k, &next) == target)
+                .collect()
+        } else {
+            let kept: Vec<BigUint> = roots
+                .into_iter()
+                .filter(|s| pow(s, k, &next) == target)
+                .collect();
+            if count.saturating_mul(kept.len() as u64) > ROOT_SET_LIMIT as u64 {
+                return None;
+            }
+            let pl = &pl;
+            kept.iter()
+                .flat_map(|s| (0..count).map(move |t| s + pl * t))
+                .collect()
+        };
+        pl = next;
+    }
+    Some(roots)
+}
+
+/// A root of `x^k = a` modulo `p^e` for a prime `p` that divides `a` but
+/// not `k`: `p^(v/k)` times a root of `a / p^v` modulo `p^(e-v)`, where `v`
+/// is the valuation of `a`.
+fn root_by_valuation(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Option<BigUint> {
+    let a = a % p.pow(e);
+    if is_zero(&a) {
+        return Some(zero());
+    }
+    let (v, c) = split_valuation(&a, p);
+    let w = u32::try_from(k)
+        .ok()
+        .filter(|&k| k > 0 && v % k == 0)
+        .map(|k| v / k)?;
+    let x0 = root_prime(&c, k, p);
+    if pow(&x0, k, p) != &c % p {
+        return None;
+    }
+    let u = lift_roots(vec![x0], &c, k, p, e - v)?;
+    u.into_iter().next().map(|u| p.pow(w) * u)
+}
+
+/// The smallest `s` below `p^i` with `s = base mod p` and `s^k = t mod p^i`,
+/// the value the native search for a stalled Hensel step finds by trying
+/// every `s`. Here a unit `t` takes the lifts of `base`, and `t = p^v * c`
+/// takes `p^(v/k)` times the smallest root of `c` modulo `p^(i-v)`; the
+/// plain search stays as the fallback for root sets past
+/// [`ROOT_SET_LIMIT`].
+fn smallest_root(t: &BigUint, k: &BigUint, p: &BigUint, i: u32, base: &BigUint) -> Option<BigUint> {
+    let fe = p.pow(i);
+    let t = t % &fe;
+    // A root of a multiple of p is itself a multiple of p.
+    if is_zero(&(&t % p)) && !is_zero(base) {
+        return None;
+    }
+    if is_zero(&t) {
+        return Some(zero());
+    }
+    let (v, c) = split_valuation(&t, p);
+    let exact = if v == 0 {
+        lift_roots(vec![base.clone()], &c, k, p, i).map(|roots| roots.into_iter().min())
+    } else {
+        match u32::try_from(k).ok().filter(|&k| k > 0 && v % k == 0) {
+            None => Some(None),
+            Some(k32) => all_roots_prime(&c, k, p)
+                .and_then(|roots| lift_roots(roots, &c, k, p, i - v))
+                .map(|roots| roots.into_iter().min().map(|u| p.pow(v / k32) * u)),
+        }
+    };
+    exact.unwrap_or_else(|| {
+        let mut s = base.clone();
+        while s < fe {
+            if pow(&s, k, &fe) == t {
+                return Some(s);
+            }
+            s += p;
+        }
+        None
+    })
+}
+
 /// A `k`-th root of `a` modulo the prime power `p^e`, lifted from the root
 /// modulo `p`, with the searches of `rootmod.c::_rootmod_composite1` when
 /// Newton's step stalls.
 fn root_prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Option<BigUint> {
     let ap = a % p;
+    let native = *p < big(NATIVE_SCAN);
+    if !native && is_zero(&ap) && !is_zero(&(k % p)) {
+        return root_by_valuation(a, k, p, e);
+    }
     let mut r = root_prime(&ap, k, p);
     if pow(&r, k, p) != ap {
         return None;
     }
     let mut fe = p.clone();
-    for _ in 1..e {
+    for level in 2..=e {
         fe *= p;
         let target = a % &fe;
         if let Some(s) = lift(&r, &target, k, &fe) {
             r = s;
             continue;
         }
-        let m = &fe / p / p;
-        let mut t = one();
-        let mut alternate = None;
-        while t < *p {
-            if let Some(s) = lift(&(&r + &t * &m), &target, k, &fe) {
-                alternate = Some(s);
-                break;
+        if native {
+            let m = &fe / p / p;
+            let mut t = one();
+            let mut alternate = None;
+            while t < *p {
+                if let Some(s) = lift(&(&r + &t * &m), &target, k, &fe) {
+                    alternate = Some(s);
+                    break;
+                }
+                t += 1_u8;
             }
-            t += 1_u8;
-        }
-        if let Some(s) = alternate {
-            r = s;
-            continue;
-        }
-        let base = &r % p;
-        let mut s = base;
-        loop {
-            if s >= fe {
-                return None;
+            if let Some(s) = alternate {
+                r = s;
+                continue;
             }
-            if pow(&s, k, &fe) == target {
-                break;
-            }
-            s += p;
         }
-        r = s;
+        r = smallest_root(&target, k, p, level, &(&r % p))?;
     }
     Some(r)
 }
@@ -823,6 +979,11 @@ fn root_prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Option<Big
 /// integer root when `a` is a perfect power, Tonelli-Shanks `k`-th roots
 /// modulo a prime, Hensel lifting on prime powers and the Chinese
 /// remainder theorem over a composite modulus, which must be factorable.
+/// Where a Hensel step stalls (a prime of the modulus divides `a` or `k`)
+/// the root comes from the valuation of `a` or from the exact set of roots
+/// in the residue class, so the result equals the native search's; a large
+/// prime that divides both `k` and a repeated factor of the modulus can
+/// still make that search slow, as MPU documents for large prime powers.
 ///
 /// ```
 /// use math_prime_util::bigint::modular::rootmod;
@@ -1496,8 +1657,14 @@ mod tests {
             }
         };
         let n = &pq * 3_u8;
-        assert_eq!(factor_exp_with(&n, stubborn), vec![(big(3), 1), (pq.clone(), 1)]);
-        assert_eq!(factor_exp_with(&(&n * 3_u8), stubborn), vec![(big(3), 2), (pq.clone(), 1)]);
+        assert_eq!(
+            factor_exp_with(&n, stubborn),
+            vec![(big(3), 1), (pq.clone(), 1)]
+        );
+        assert_eq!(
+            factor_exp_with(&(&n * 3_u8), stubborn),
+            vec![(big(3), 2), (pq.clone(), 1)]
+        );
         assert_eq!(factor_exp(&(&p * 9_u8)), vec![(big(3), 2), (p, 1)]);
     }
 
@@ -1575,6 +1742,85 @@ mod tests {
         assert_eq!(
             allsqrtmod(&big(4), &big(15)),
             [2, 7, 8, 13].map(big).to_vec()
+        );
+    }
+
+    /// The native search for a stalled Hensel step: the smallest
+    /// `s = base mod p` below `p^i` with `s^k = t mod p^i`.
+    fn search(t: u64, k: u64, p: u64, i: u32, base: u64) -> Option<BigUint> {
+        let fe = p.pow(i);
+        (0..fe / p)
+            .map(|j| base + j * p)
+            .find(|&s| pow_u(&big(s), k, &big(fe)) == big(t % fe))
+            .map(big)
+    }
+
+    #[test]
+    fn stalled_lifts_find_the_native_root() {
+        // Units with p dividing k, and multiples of p, against the search.
+        for (t, k, p, i, base) in [
+            (17, 2, 2, 10, 1),
+            (65, 4, 2, 12, 1),
+            (68, 2, 2, 12, 0),
+            (16 * 33, 4, 2, 14, 0),
+            (9 * 7, 2, 3, 7, 0),
+            (27 * 2, 3, 3, 6, 0),
+            (10, 3, 3, 5, 1),
+            (3 * 7, 2, 3, 5, 0),
+            (0, 2, 5, 3, 0),
+        ] {
+            assert_eq!(
+                smallest_root(&big(t), &big(k), &big(p), i, &big(base)),
+                search(t, k, p, i, base),
+                "{t} {k} {p} {i} {base}"
+            );
+        }
+        // A multiple of p has no root with a unit residue.
+        assert_eq!(smallest_root(&big(4), &big(2), &big(2), 4, &big(1)), None);
+        // Past the set limit the plain search runs.
+        assert_eq!(
+            smallest_root(&one(), &big(1 << 13), &big(2), 16, &one()),
+            Some(one())
+        );
+        // The native path, where its search is short.
+        for (a, k, n) in [
+            (68, 2, 1 << 20),
+            (68 * 9, 2, 9 << 20),
+            (81 * 10, 4, 3_u64.pow(9)),
+            (7 << 12, 6, 1 << 20),
+            (49 * 23, 2, 7_u64.pow(6) * 11),
+        ] {
+            assert_eq!(
+                rootmod(&big(a), &big(k), &big(n)),
+                crate::rootmod(a, k, n).map(big),
+                "{a} {k} {n}"
+            );
+        }
+    }
+
+    #[test]
+    fn large_primes_dividing_a_or_k() {
+        let p = big(65537);
+        let n = p.pow(4);
+        // p divides a: the root comes from the valuation of a.
+        let a = &p * &p * 4_u8;
+        let r = root_prime_power(&a, &big(2), &p, 4).unwrap();
+        assert_eq!(pow(&r, &big(2), &n), a);
+        assert_eq!(root_prime_power(&n, &big(2), &p, 4), Some(zero()));
+        assert_eq!(root_prime_power(&(&p * 4_u8), &big(2), &p, 4), None);
+        // 3 generates the units modulo the Fermat prime 65537.
+        assert_eq!(root_prime_power(&(&p * &p * 3_u8), &big(2), &p, 4), None);
+        let m = &n * 7_u8;
+        let a = &p * &p * 9_u8;
+        let r = rootmod(&a, &big(2), &m).unwrap();
+        assert_eq!(pow(&r, &big(2), &m), a);
+        assert_eq!(rootmod(&(&a * 3_u8), &big(2), &m), None);
+        // p divides k: 2 is not a p-th power modulo p^2.
+        assert_eq!(root_prime_power(&big(2), &p, &p, 2), None);
+        let cube = pow(&big(3), &p, &(&p * &p));
+        assert_eq!(
+            pow(&root_prime_power(&cube, &p, &p, 2).unwrap(), &p, &(&p * &p)),
+            cube
         );
     }
 

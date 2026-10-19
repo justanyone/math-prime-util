@@ -60,7 +60,7 @@ The phases are described in `PLAN.md` section 6.
 - [ ] Release 0.1.0 published on crates.io
 - [ ] Milestone 3: prime counting, nth prime and prime sums ported
 - [x] Milestone 4: prime families ported (done 2026-10-19)
-- [ ] Milestone 5: digits, rationals, combinatorics and inverse sigma ported
+- [x] Milestone 5: digits, rationals, combinatorics and inverse sigma ported (done 2026-10-19)
 - [ ] Milestone 6: vector and set operations ported
 - [ ] Milestone 7: iterators and the for-family ported
 - [ ] Milestone 8: random primes and the random number generator ported

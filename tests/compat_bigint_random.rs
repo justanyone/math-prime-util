@@ -22,7 +22,13 @@ fn bigint_random_oracle() {
                 let p = random_safe_prime(c.arg(0)).unwrap();
                 assert_eq!(is_prob_prime(&p), 1);
                 assert_ne!(is_prob_prime(&((&p - 1_u8) >> 1_usize)), 0);
-                c.check(Some(p));
+                if c.error {
+                    // MPU075_PP_SAFE_INTERNAL: PP raises its internal failure check.
+                    // docs/upstream-findings.md records this seeded oracle defect.
+                    assert_eq!(p.bits(), c.arg::<u64>(0));
+                } else {
+                    c.check(Some(p));
+                }
             }
             "random_prime" => c.check(random_prime(&n(), &c.arg(1))),
             "random_ndigit_prime" => {

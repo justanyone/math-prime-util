@@ -33,7 +33,7 @@ pub fn urandomb(bits: u32) -> BigUint {
 #[must_use]
 pub fn urandomm(modulus: &BigUint) -> BigUint {
     assert!(*modulus != BigUint::from(0_u8), "modulus must be positive");
-    if let Some(n) = u64::try_from(modulus).ok() {
+    if let Ok(n) = u64::try_from(modulus) {
         return crate::urandomm(n).into();
     }
     // PP estimates log2(n) from its decimal length, then adds a full byte.
@@ -280,7 +280,7 @@ pub fn random_semiprime(bits: u32) -> Option<BigUint> {
 #[must_use]
 pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
     assert!(*n != BigUint::from(0_u8), "n must be positive");
-    if let Some(n) = u64::try_from(n).ok() {
+    if let Ok(n) = u64::try_from(n) {
         let (r, f) = crate::random_factored_integer(n);
         return (r.into(), f.into_iter().map(BigUint::from).collect());
     }
@@ -294,7 +294,7 @@ pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
             }
         }
         let r: BigUint = factors.iter().product();
-        if &r <= n && urandomm(n) + 1_u8 <= r {
+        if &r <= n && urandomm(n) < r {
             factors.sort_unstable();
             return (r, factors);
         }
@@ -312,7 +312,7 @@ pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
 #[must_use]
 pub fn miller_rabin_random(n: &BigUint, bases: u64) -> Option<u8> {
     assert!(bases > 0, "bases must be positive");
-    if let Some(n) = u64::try_from(n).ok() {
+    if let Ok(n) = u64::try_from(n) {
         return crate::miller_rabin_random(u128::from(n), bases);
     }
     for _ in 0..bases {
@@ -336,10 +336,6 @@ pub fn miller_rabin_random(n: &BigUint, bases: u64) -> Option<u8> {
 #[must_use]
 #[allow(clippy::cast_precision_loss)] // PP uses double precision for its weights.
 pub fn random_unrestricted_semiprime(bits: u32) -> Option<BigUint> {
-    assert!(bits >= 3, "bits must be >= 3");
-    if bits <= 64 {
-        return crate::random_unrestricted_semiprime(bits).map(BigUint::from);
-    }
     const WEIGHTS: &[(u32, f64)] = &[
         (2, 1.912_183_974_522_43),
         (3, 1.339_548_265_550_21),
@@ -373,6 +369,11 @@ pub fn random_unrestricted_semiprime(bits: u32) -> Option<BigUint> {
         (113, 0.054_433_014_108_187_4),
         (127, 0.049_062_020_431_570_1),
     ];
+
+    assert!(bits >= 3, "bits must be >= 3");
+    if bits <= 64 {
+        return crate::random_unrestricted_semiprime(bits).map(BigUint::from);
+    }
     let min = BigUint::from(1_u8) << (bits - 1);
     let max = (&min << 1_usize) - 1_u8;
     let mut r = crate::drand(1.0);

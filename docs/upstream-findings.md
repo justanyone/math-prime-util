@@ -395,3 +395,12 @@ areas left open there were checked today as follows.
 
 Not checked against PP: `config.tsv`, `ramanujan_tau` above 300, and the
 rows listed as timeouts above.
+
+### MPU075_PP_SAFE_INTERNAL: seeded bigint safe prime
+
+MPU 0.75, pure Perl, no GMP: `csrand("bigint-random-fixed-seed-2026");
+Math::Prime::Util::PP::random_safe_prime(65)` raises
+`random safe prime internal failure`. The check is in
+`RandomPrimes.pm::_random_safe_prime_large`. The bigint_random fixture records
+ERROR. Its replay skips value equality for this named row and checks the correct
+65-bit safe prime form: both p and (p-1)/2 must pass primality tests.

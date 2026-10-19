@@ -252,7 +252,7 @@ areas left open there were checked today as follows.
 - bigint proving: `tools/gen_fixtures.pl bigint_proving` under `MPU_NO_XS=1`
   (276 rows: `is_provable_prime`, `is_provable_prime_with_cert` and
   `prime_certificate` on 40 inputs of 65 to 664 bits, 144 `verify_prime`
-  rows of which 42 accept and 102 reject, 9 `is_aks_prime` rows). Two
+  rows of which 46 accept and 98 reject, 9 `is_aks_prime` rows). Two
   inputs timed out under PP and are recorded as skipped comments. The 40
   `is_provable_prime` rows replay, every PP certificate verifies in the port
   (PP writes BLS5 and Small blocks only; Lucas, BLS3, Pocklington, BLS15,

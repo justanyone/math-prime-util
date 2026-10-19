@@ -30,8 +30,8 @@
 //! ```
 
 use super::Int;
-use super::factor::factor_within;
 use super::arith::{gcd, invmod, is_power_exp, is_square, jacobi, kronecker, rootint, sqrtint};
+use super::factor::factor_within;
 use super::primality::{is_prob_prime, lucas_sequence};
 use num_bigint::{BigInt, BigUint, Sign};
 use std::collections::{BTreeMap, BTreeSet};
@@ -1091,7 +1091,7 @@ fn bls75(n: &BigUint) -> Attempt {
     while bls5_bound(n, &a_part, &b_part).is_none() {
         let Some(m) = stack.pop() else { break };
         // Try the same staged factoring methods as MPU's BLS75 proof.
-        let factored = factor_within(&m, Duration::from_secs(1));
+        let factored = factor_within(&m, Duration::ZERO);
         for f in factored.primes {
             if !factors.contains(&f) {
                 factors.push(f.clone());
@@ -1368,7 +1368,7 @@ fn order_prime(m: &BigUint, primes: &[u64], split: bool) -> Option<BigUint> {
     if !split {
         return None;
     }
-    factor_within(&q, Duration::from_secs(1)).primes.into_iter().max()
+    factor_within(&q, Duration::ZERO).primes.into_iter().max()
 }
 
 /// The `(D, m, q)` at `n` with `q` a probable prime above `(n^(1/4) + 1)^2`,
@@ -1960,11 +1960,19 @@ mod tests {
         let m521 = (one() << 521_usize) - 1_u8;
         let m607 = (one() << 607_usize) - 1_u8;
         let hard = &m521 * &m607;
-        assert_eq!(factor_within(&hard, Duration::ZERO).unsplit, vec![hard.clone()]);
+        assert_eq!(
+            factor_within(&hard, Duration::ZERO).unsplit,
+            vec![hard.clone()]
+        );
         let factored = factor_within(&(&hard * 6_u8), Duration::ZERO);
         assert_eq!(factored.primes, vec![two(), BigUint::from(3_u8)]);
         assert_eq!(factored.unsplit, vec![hard.clone()]);
-        assert_eq!(factor_within(&(BigUint::from(360_u16) * &m521), Duration::from_secs(2)).primes.len(), 7);
+        assert_eq!(
+            factor_within(&(BigUint::from(360_u16) * &m521), Duration::from_secs(2))
+                .primes
+                .len(),
+            7
+        );
         let one = factor_within(&one(), Duration::ZERO);
         assert!(one.primes.is_empty());
         assert!(one.unsplit.is_empty());

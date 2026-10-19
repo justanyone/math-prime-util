@@ -34,6 +34,12 @@ impl Zero for BigUint {
     }
 }
 
+impl One for BigUint {
+    fn one() -> Self {
+        Self::from(1_u8)
+    }
+}
+
 impl One for BigInt {
     fn one() -> Self {
         Self::from(1_u8)

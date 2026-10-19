@@ -50,7 +50,10 @@ fn bigint_digits_validation_and_decimal_forms() {
         ("0B11", 3),
         ("42E+2", 4200),
     ] {
-        assert_eq!(digits::toint(text), Some(BigUint::from(expected as u32)));
+        assert_eq!(
+            digits::toint(text),
+            Some(BigUint::from(u32::try_from(expected).unwrap()))
+        );
     }
     assert_eq!(digits::toint("-1"), None);
     for text in [

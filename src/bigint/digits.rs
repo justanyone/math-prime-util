@@ -1,7 +1,6 @@
 //! Arbitrary precision digit operations from MPU 0.75.
 
 use num_bigint::BigUint;
-use num_traits::ToPrimitive;
 
 /// Return digits with optional padding or truncation.
 /// Port of MPU 0.75 `util.c::to_digit_array`.
@@ -18,7 +17,7 @@ pub fn todigits(n: &BigUint, base: u64, length: Option<usize>) -> Vec<u64> {
     let mut n = n.clone();
     let mut digits = Vec::new();
     while n != BigUint::ZERO && length.is_none_or(|len| digits.len() < len) {
-        digits.push((&n % base).to_u64().expect("digit fits base"));
+        digits.push(u64::try_from(&n % base).expect("digit fits base"));
         n /= base;
     }
     if let Some(len) = length {

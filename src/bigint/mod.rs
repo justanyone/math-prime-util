@@ -51,6 +51,10 @@ pub mod rational;
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod sets;
 
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod random;
+
 /// The shared number theory surface for unsigned integers.
 ///
 /// ```

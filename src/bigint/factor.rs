@@ -1861,16 +1861,23 @@ mod tests {
 #[must_use]
 pub fn fermat_factor(n: &BigUint, rounds: Option<u64>) -> Vec<BigUint> {
     if let Ok(native) = u64::try_from(n) {
-        return crate::fermat_factor(native, rounds).into_iter().map(BigUint::from).collect();
+        return crate::fermat_factor(native, rounds)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
     }
     method(n, |m| {
         let mut a = sqrtint(m);
-        if &a * &a == *m { return Some(a); }
+        if &a * &a == *m {
+            return Some(a);
+        }
         a += 1_u8;
         for _ in 0..rounds.unwrap_or(64_000_000) {
             let b2 = &a * &a - m;
             let b = sqrtint(&b2);
-            if &b * &b == b2 { return Some(a - b); }
+            if &b * &b == b2 {
+                return Some(a - b);
+            }
             a += 1_u8;
         }
         None
@@ -1895,12 +1902,20 @@ pub fn cheb_factor(n: &BigUint, bound: u64, init_x: u64) -> Vec<BigUint> {
         let inverse = (m + 1_u8) >> 1;
         for p in crate::primes_in(2..=bound) {
             let mut power = p;
-            while power <= bound / p { power *= p; }
-            let (_, v, _) = super::primality::lucas_sequence(m,
-                &num_bigint::BigInt::from((2_u8 * &x) % m), &num_bigint::BigInt::from(1), &big(power));
+            while power <= bound / p {
+                power *= p;
+            }
+            let (_, v, _) = super::primality::lucas_sequence(
+                m,
+                &num_bigint::BigInt::from((2_u8 * &x) % m),
+                &num_bigint::BigInt::from(1),
+                &big(power),
+            );
             x = (v * &inverse) % m;
             let f = gcd(&if x.bits() == 0 { m - 1_u8 } else { &x - 1_u8 }, m);
-            if f != one() { return Some(f); }
+            if f != one() {
+                return Some(f);
+            }
         }
         None
     })

@@ -64,7 +64,7 @@ The phases are described in `PLAN.md` section 6.
 - [x] Milestone 6: vector and set operations ported (done 2026-10-19)
 - [x] Milestone 7: iterators and the for-family ported (done 2026-10-19)
 - [x] Milestone 8: random primes and the random number generator ported (done 2026-10-19)
-- [ ] Milestone 9: primality proving, real functions and the bigint backend ported
+- [x] Milestone 9: primality proving, real functions and the bigint backend ported (done 2026-10-19)
 - [ ] Release 1.0.0 published on crates.io
 
 ## Installation and requirements

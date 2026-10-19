@@ -49,9 +49,11 @@ proptest! {
     }
 
     #[test]
-    fn bigint_sequences_wide_identities(n: u64, a: u64, b: u64) {
+    fn bigint_sequences_wide_identities(n: u64, a: u64, b: u64, k in 0_u64..10, m in 1_u64..=u64::MAX) {
         let bn = big(n);
-        let wide = (big(a) << 80) + big(b);
+        prop_assert_eq!(u64::try_from(s::powersum(&bn, &big(k))).ok(), math_prime_util::powersum(n, k));
+        prop_assert_eq!(u64::try_from(s::floor_sum(&bn, &big(m), &big(a), &big(b))).ok(), math_prime_util::floor_sum(n, m, a, b));
+        let wide: BigUint = (big(a) << 80) + big(b);
         prop_assert_eq!(s::powersum(&bn, &big(0)), bn.clone());
         prop_assert_eq!(s::powersum(&bn, &big(1)), &bn * (&bn + 1_u8) / 2_u8);
         prop_assert_eq!(s::floor_sum(&bn, &big(1), &wide, &big(b)), &wide * &bn * (&bn - u8::from(n != 0)) / 2_u8 + &bn * b);
@@ -64,7 +66,7 @@ proptest! {
 
 #[test]
 fn bigint_sequences_boundaries_and_repeated_calls() {
-    let huge = big(1) << 100;
+    let huge: BigUint = big(1) << 100;
     assert_eq!(
         s::lucasuv(&1.into(), &0.into(), &huge),
         (1.into(), 1.into())
@@ -106,24 +108,24 @@ fn bigint_sequences_boundaries_and_repeated_calls() {
 #[test]
 #[should_panic(expected = "divide by zero")]
 fn bigint_sequences_zero_modulus() {
-    s::floor_sum(&big(0), &big(0), &big(0), &big(0));
+    let _ = s::floor_sum(&big(0), &big(0), &big(0), &big(0));
 }
 
 #[test]
 #[should_panic(expected = "positive")]
 fn bigint_sequences_zero_coin() {
-    s::frobenius_number(&[big(0), big(3)]);
+    let _ = s::frobenius_number(&[big(0), big(3)]);
 }
 
 #[test]
 #[should_panic(expected = "coprime")]
 fn bigint_sequences_noncoprime_coins() {
-    s::frobenius_number(&[big(6), big(9)]);
+    let _ = s::frobenius_number(&[big(6), big(9)]);
 }
 
 #[test]
 #[should_panic(expected = "table is too large")]
 fn bigint_sequences_unrepresentable_table() {
-    let n = big(1) << 200;
-    s::frobenius_number(&[n.clone(), &n + 1_u8, &n + 2_u8]);
+    let n: BigUint = big(1) << 200;
+    let _ = s::frobenius_number(&[n.clone(), &n + 1_u8, &n + 2_u8]);
 }

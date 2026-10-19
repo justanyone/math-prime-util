@@ -292,7 +292,6 @@ pub fn powersum(n: &BigUint, k: &BigUint) -> BigUint {
 /// use math_prime_util::bigint::sequences::frobenius_number;
 /// assert_eq!(frobenius_number(&[6_u8.into(), 9_u8.into(), 20_u8.into()]), Some(43.into()));
 /// ```
-#[must_use]
 pub fn frobenius_number(values: &[BigUint]) -> Option<BigInt> {
     assert!(
         values.iter().all(|v| v.bits() != 0),

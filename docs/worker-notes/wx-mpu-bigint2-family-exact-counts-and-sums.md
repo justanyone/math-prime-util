@@ -8,3 +8,5 @@ Added the family module with integer-root inclusion/exclusion, phi/psi recurrenc
 Next: generate PP fixtures from vendored sources and add native agreement checks; no network bootstrap will run.
 Approximately five minutes remain: core prefix forms and six range forms are written; finish offline fixtures and tests now.
 Build/test execution remains blocked by the explicit aragog/wonko host constraint (this host is wowbagger).
+Generated the bigint_family_counts fixture offline with MPU_NO_XS=1 and PERL5LIB=reference/mpu/lib; added replay and property tests.
+Focused test and gate execution require aragog or wonko; cannot execute them on wowbagger under the stated host rule.

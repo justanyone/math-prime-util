@@ -23,3 +23,4 @@ Gate passed every clippy feature set (default, bigint, gmp, all-features) and ha
 Generator now explicitly disables XS and GMP dispatch as well as calling PP directly. Regenerated the same fixture family offline. No Rust changes after focused validation.
 MSRV build is compiling the crate successfully so far; all four gate lint configurations passed. Explicit PP dispatch regeneration succeeded. Full suite and gate are still pending; coverage tool remains unavailable.
 Rust 1.85 MSRV build passed. Gate has reached its full all-features test run. The separately requested full suite is also running; neither has reported a failure yet. No further source changes are planned.
+Gate unit tests completed and compatibility tests are progressing without failures. Started the 16 public-function doc examples as a focused offline test, because the full gate has not yet reached documentation.

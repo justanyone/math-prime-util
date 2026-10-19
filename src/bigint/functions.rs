@@ -44,7 +44,7 @@ pub fn aliquot_sum(n: &BigUint) -> Result<BigUint, BigUint> {
 
 /// Return sigma(n) minus twice n.
 ///
-/// Port of MPU 0.75 `factor.c::aliquot_sum`.
+/// Port of MPU 0.75 `XS.xs::abundance` and `factor.c::aliquot_sum`.
 ///
 /// # Errors
 /// Return the cofactor that could not be split.
@@ -338,7 +338,7 @@ pub fn remove_factors(n: &BigUint, k: &BigUint) -> Option<BigUint> {
 
 /// Return all integers whose totient is n.
 ///
-/// Port of MPU 0.75 `totients.c::inverse_totient`.
+/// Port of MPU 0.75 `totients.c::inverse_totient_list`.
 ///
 /// # Errors
 /// Return the cofactor that could not be split.
@@ -350,7 +350,7 @@ pub fn remove_factors(n: &BigUint, k: &BigUint) -> Option<BigUint> {
 /// assert_eq!(inverse_totient(&BigUint::from(1_u8)).unwrap(), vec![BigUint::from(1_u8), BigUint::from(2_u8)]);
 /// ```
 pub fn inverse_totient(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
-    if n.bits() == 0 {
+    if n.bits() == 0 || (*n > BigUint::from(1_u8) && n.bit(0)) {
         return Ok(Vec::new());
     }
     let mut values = BTreeMap::from([(BigUint::from(1_u8), vec![BigUint::from(1_u8)])]);

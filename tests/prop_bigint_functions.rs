@@ -22,6 +22,7 @@ proptest! {
             if let Some(v) = native::abundance(n) { prop_assert_eq!(abundance(&b).unwrap(), BigInt::from(v)); }
             if let Some(v) = native::dedekind_psi(n) { prop_assert_eq!(dedekind_psi(&b).unwrap(), BigUint::from(v)); }
             if let Some(v) = native::jordan_totient(u64::from(k), n) { prop_assert_eq!(jordan_totient(u64::from(k), &b).unwrap(), BigUint::from(v)); }
+            prop_assert!(inverse_totient(&BigUint::from(n | 3)).unwrap().is_empty());
             let factor = u64::from(k) + 1;
             prop_assert_eq!(remove_factors(&b, &BigUint::from(factor)), native::remove_factors(n, factor).map(BigUint::from));
             prop_assert_eq!(remove_factors_exp(&b, &BigUint::from(factor)), native::remove_factors_exp(n, factor).map(|(r,e)| (BigUint::from(r),u64::from(e))));

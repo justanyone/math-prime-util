@@ -30,7 +30,7 @@ sub gen_bigint_functions {
     }
   }
   # Odd inputs have no preimages. These include values above 2^64.
-  for my $str (0, 1, 2, 4, 12, 24, '18446744073709551617') {
+  for my $str (0, 1, 2, 4, 12, 24, '18446744073709551616', '18446744073709551617') {
     my $n = Math::BigInt->new("$str");
     emit($fh, 'inverse_totient', [$n], sub { Math::Prime::Util::PP::inverse_totient($n->copy) });
   }

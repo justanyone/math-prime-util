@@ -18,3 +18,4 @@ Waiting for existing count-family integration tests in the full gate; bigint dig
 Full suite is spending over a minute in the existing prime_count oracle. No bigint digit failure; waiting for gate completion.
 Gate has passed the count tests and is replaying factor fixtures. Full-suite execution remains in progress.
 Gate reached iterator fixtures with no failures. Focused bigint tests, all clippy configurations, and MSRV remain passed.
+Existing forsquarefreeint integration test has run over 60 seconds; no failures reported. Continuing the required full gate.

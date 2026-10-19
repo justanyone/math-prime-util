@@ -9,3 +9,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The first proving test failed because the new two-second factor budget produced a BLS75 proof where the prior helper gave up. Reduced the budget to one second to retain the ECPP fallback; the targeted proving_paths run is still executing. N <<cut 46 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 22 bytes)
+- 2026-10-19T12:28:18Z launcher: no commit for 60 s; 334 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-proving-uses-the-factor-modul.md, src/bigint/proving.rs.

@@ -115,7 +115,35 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: sudo apt-get install -y libgmp-dev
-      - run: cargo bench --all-features -- --output-format bencher | tee bench.txt
+      - name: Benchmark merge base and head on this runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=$(git merge-base origin/main "$GITHUB_SHA")
+          mkdir -p "$RUNNER_TEMP/base"
+          git archive "$base" | tar -x -C "$RUNNER_TEMP/base"
+          cp -a target "$RUNNER_TEMP/base/" 2>/dev/null || true
+          (cd "$RUNNER_TEMP/base" && cargo bench --all-features -- --save-baseline base)
+          cargo bench --all-features -- --baseline base
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          failures = []
+          for path in pathlib.Path("target/criterion").glob("*/new/estimates.json"):
+              estimates = json.loads(path.read_text())
+              change = estimates.get("change", {})
+              lower = change.get("confidence_interval", {}).get("lower_bound")
+              if lower is not None and lower > 0.10:
+                  failures.append((path.parts[-3], lower))
+          if failures:
+              for name, lower in failures:
+                  print(f"::error::{name} is slower (change lower bound {lower:.1%})")
+              sys.exit(1)
+          print("No benchmark has a change lower bound above 10%.")
+          PY
+          cargo bench --all-features -- --output-format bencher | tee bench.txt
       - uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: cargo
@@ -123,5 +151,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.ref == 'refs/heads/main' }}
           alert-threshold: "110%"
-          comment-on-alert: true
-          fail-on-alert: true
+          comment-on-alert: false
+          fail-on-alert: false

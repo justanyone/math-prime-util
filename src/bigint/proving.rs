@@ -30,12 +30,14 @@
 //! ```
 
 use super::Int;
+use super::factor::factor_within;
 use super::arith::{gcd, invmod, is_power_exp, is_square, jacobi, kronecker, rootint, sqrtint};
 use super::primality::{is_prob_prime, lucas_sequence};
 use num_bigint::{BigInt, BigUint, Sign};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::str::FromStr;
+use std::time::Duration;
 
 fn zero() -> BigUint {
     BigUint::from(0_u8)
@@ -1053,41 +1055,6 @@ impl Certificate {
 // ---------------------------------------------------------------------------
 // Proving.
 
-/// The prime factors of `n` found by bounded factoring stages, and the
-/// cofactors they could not split: the native path below 2^128, then 2, 3,
-/// 5 and 20,000 rounds of Pollard-Brent on each larger composite. The full
-/// `bigint::factor` recipe has no time limit, too slow for every level of a
-/// proof.
-fn partial_factor(n: &BigUint) -> (Vec<BigUint>, Vec<BigUint>) {
-    let (mut primes, mut rest) = (Vec::new(), Vec::new());
-    let mut stack = vec![n.clone()];
-    while let Some(m) = stack.pop() {
-        if let Ok(v) = u128::try_from(&m) {
-            match crate::factor::factor_u128(v) {
-                Ok(f) => primes.extend(f.into_iter().map(BigUint::from)),
-                Err(c) => {
-                    rest.push(BigUint::from(c));
-                    stack.push(BigUint::from(v / c));
-                }
-            }
-            continue;
-        }
-        let parts = super::factor::pbrent_factor(&m, Some(20_000), None);
-        let split = parts.len() > 1;
-        for f in parts {
-            if is_prob_prime(&f) != 0 {
-                primes.push(f);
-            } else if split {
-                stack.push(f);
-            } else {
-                rest.push(f);
-            }
-        }
-    }
-    primes.sort_unstable();
-    (primes, rest)
-}
-
 /// Result of a proof attempt: the blocks, or MPU's status for no proof
 /// (0 composite, 1 could not prove).
 type Attempt = Result<Vec<Proof>, u8>;
@@ -1124,8 +1091,8 @@ fn bls75(n: &BigUint) -> Attempt {
     while bls5_bound(n, &a_part, &b_part).is_none() {
         let Some(m) = stack.pop() else { break };
         // The cofactors the stages cannot split would fail again: drop them.
-        let (primes, _) = partial_factor(&m);
-        for f in primes {
+        let factored = factor_within(&m, Duration::from_secs(2));
+        for f in factored.primes {
             if !factors.contains(&f) {
                 factors.push(f.clone());
             }
@@ -1401,8 +1368,7 @@ fn order_prime(m: &BigUint, primes: &[u64], split: bool) -> Option<BigUint> {
     if !split {
         return None;
     }
-    let (found, _) = partial_factor(&q);
-    found.into_iter().max()
+    factor_within(&q, Duration::from_secs(2)).primes.into_iter().max()
 }
 
 /// The `(D, m, q)` at `n` with `q` a probable prime above `(n^(1/4) + 1)^2`,
@@ -1990,16 +1956,18 @@ mod tests {
     }
 
     #[test]
-    fn partial_factoring() {
+    fn bounded_factoring_for_proofs() {
         let m521 = (one() << 521_usize) - 1_u8;
         let m607 = (one() << 607_usize) - 1_u8;
         let hard = &m521 * &m607;
-        assert_eq!(partial_factor(&hard), (vec![], vec![hard.clone()]));
-        let (primes, rest) = partial_factor(&(&hard * 6_u8));
-        assert_eq!(primes, vec![two(), BigUint::from(3_u8)]);
-        assert_eq!(rest, vec![hard.clone()]);
-        assert_eq!(partial_factor(&(BigUint::from(360_u16) * &m521)).0.len(), 7);
-        assert_eq!(partial_factor(&one()), (vec![], vec![]));
+        assert_eq!(factor_within(&hard, Duration::ZERO).unsplit, vec![hard.clone()]);
+        let factored = factor_within(&(&hard * 6_u8), Duration::ZERO);
+        assert_eq!(factored.primes, vec![two(), BigUint::from(3_u8)]);
+        assert_eq!(factored.unsplit, vec![hard.clone()]);
+        assert_eq!(factor_within(&(BigUint::from(360_u16) * &m521), Duration::from_secs(2)).primes.len(), 7);
+        let one = factor_within(&one(), Duration::ZERO);
+        assert!(one.primes.is_empty());
+        assert!(one.unsplit.is_empty());
     }
 
     #[test]

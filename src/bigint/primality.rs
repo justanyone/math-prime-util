@@ -945,7 +945,7 @@ pub fn is_safe_prime(n: &BigUint) -> bool {
 }
 
 /// Tests whether `n` is prime and `n + 2` is prime or semiprime.
-/// Port of MPU 0.75 `prime_counts.c::is_chen_prime` and `PP.pm::is_chen_prime`.
+/// Port of MPU 0.75 `almost_primes.c::is_chen_prime` and `PP.pm::is_chen_prime`.
 ///
 /// ```
 /// use math_prime_util::bigint::primality::is_chen_prime;
@@ -953,6 +953,7 @@ pub fn is_safe_prime(n: &BigUint) -> bool {
 /// ```
 #[must_use]
 pub fn is_chen_prime(n: &BigUint) -> bool {
+    if let Ok(native) = u64::try_from(n) { return crate::is_chen_prime(native); }
     if is_prime(n) == 0 {
         return false;
     }
@@ -961,7 +962,7 @@ pub fn is_chen_prime(n: &BigUint) -> bool {
 }
 
 /// Tests primality of the Gaussian integer `a + bi`.
-/// Port of MPU 0.75 `util.c::is_gaussian_prime` and `PP.pm::is_gaussian_prime`.
+/// Port of MPU 0.75 `XS.xs::is_gaussian_prime` and `PP.pm::is_gaussian_prime`.
 /// Returns the primality status of the norm, or of the nonzero axis value.
 ///
 /// ```
@@ -970,6 +971,7 @@ pub fn is_chen_prime(n: &BigUint) -> bool {
 /// ```
 #[must_use]
 pub fn is_gaussian_prime(a: &BigUint, b: &BigUint) -> u8 {
+    if let (Ok(a), Ok(b)) = (u64::try_from(a), u64::try_from(b)) { return crate::is_gaussian_prime(a, b); }
     if a.bits() == 0 || b.bits() == 0 {
         let axis = if a.bits() == 0 { b } else { a };
         return if axis % 4_u8 == BigUint::from(3_u8) { is_prime(axis) } else { 0 };
@@ -978,8 +980,11 @@ pub fn is_gaussian_prime(a: &BigUint, b: &BigUint) -> u8 {
 }
 
 /// Tests whether every single digit change makes a prime composite.
-/// Port of MPU 0.75 `primality.c::is_delicate_prime` and `PP.pm::is_delicate_prime`.
-/// Returns `None` for bases below two.
+/// Port of MPU 0.75 `util.c::is_delicate_prime` and `PP.pm::is_delicate_prime`.
+/// Returns the native overflow status for inputs that fit in `u64`.
+///
+/// # Panics
+/// Panics if the base is below two.
 ///
 /// ```
 /// use math_prime_util::bigint::primality::is_delicate_prime;
@@ -987,7 +992,8 @@ pub fn is_gaussian_prime(a: &BigUint, b: &BigUint) -> u8 {
 /// ```
 #[must_use]
 pub fn is_delicate_prime(n: &BigUint, base: u32) -> Option<bool> {
-    if base < 2 { return None; }
+    assert!(base >= 2, "is_delicate_prime base must be >= 2");
+    if let Ok(native) = u64::try_from(n) { return crate::is_delicate_prime(native, base); }
     if base == 3 && *n == two() { return Some(true); }
     if is_prime(n) == 0 { return Some(false); }
     let mut rest = n.clone();

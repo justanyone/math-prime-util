@@ -12,3 +12,4 @@ About five minutes remain. Focused replay exposed a PP safe-prime oracle error. 
 All four focused tests pass, including every generated row. Documented MPU075_PP_SAFE_INTERNAL. Gate restarted after correcting clippy conversion and comparison findings.
 Expanded native comparisons across 64-bit magnitudes and added prime-factor checks for 65-bit semiprimes. cargo-llvm-cov is absent, so coverage measurement is blocked offline; no package installation attempted.
 Five focused integration tests now pass with broad native inputs and semiprime factor checks. Started the required full offline suite and final gate. All twelve names remain supported; no impractical-name exclusions are needed.
+Final lint passed on default, bigint, gmp, and all features. MSRV 1.85 build passed. Full suite is compiling/running; LLVM coverage binaries are also absent from PATH.

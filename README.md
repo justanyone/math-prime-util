@@ -109,6 +109,15 @@ The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, 
 `is_mersenne_prime`) take `&BigUint` and keep the MPU names; the families `bigint_arith` and
 `bigint_primality` replay MPU's pure Perl path on 65 to 1000 bit inputs against them.
 
+`bigint::proving` proves primality above 2^64: `is_provable_prime`, `is_provable_prime_with_cert`,
+`prime_certificate` and `verify_prime` on `&BigUint`, the BLS75 n-1 proof of `PrimalityProving.pm`, and an
+ECPP downrun (Atkin-Morain with the class polynomials of class number at most three) where pure Perl MPU gives
+up, so proofs to 200 digits complete. `Certificate` and `Proof` hold a certificate as a value, print and parse
+the MPU text format (every type MPU's `verify_prime` reads, ECPP and the Primo forms included), and derive
+`Serialize` and `Deserialize` with the cargo feature `serde` (integers as decimal strings). `is_aks_prime` is
+the pure Perl AKS. The family `bigint_proving` replays MPU's proofs and verifications, and the replay test runs
+`Math::Prime::Util::verify_prime` on this crate's certificates when a Perl with the vendored MPU tree loads.
+
 [`Int`]: src/bigint/mod.rs
 
 ## License

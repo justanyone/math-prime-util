@@ -14,3 +14,4 @@ Expanded native comparisons across 64-bit magnitudes and added prime-factor chec
 Five focused integration tests now pass with broad native inputs and semiprime factor checks. Started the required full offline suite and final gate. All twelve names remain supported; no impractical-name exclusions are needed.
 Final lint passed on default, bigint, gmp, and all features. MSRV 1.85 build passed. Full suite is compiling/running; LLVM coverage binaries are also absent from PATH.
 Full tests have passed bigint proving and reached count compatibility tests. No test failures observed. Coverage and the requested aragog/wonko host validation remain unavailable in this checkout.
+All authored integration tests and native comparisons pass. Final suite is still in existing count tests; no failures yet. git diff --check is clean.

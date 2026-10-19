@@ -26,6 +26,9 @@ pub mod divisors;
 pub mod factor;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod family_counts;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod functions;
 #[cfg(feature = "gmp")]
 mod gmp;

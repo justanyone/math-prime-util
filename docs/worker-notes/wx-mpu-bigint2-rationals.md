@@ -10,3 +10,4 @@ Added all-row oracle replay and u64 native-agreement properties plus validation 
 Focused and gate runs are waiting for the offline all-features build. No algorithm or fixture failures have appeared yet.
 STATUS.md already checks all eleven native names; no checklist changes are needed or allowed beyond ticks.
 Added address-space rejection and concurrent independent tree round trips. Shared build locking still prevents validation output; no network or bootstrap was used.
+Oracle replay passed all 44 rows. The address-space test hit usize::MAX after the final CF decrement and attempted allocation; corrected the test to exceed usize after that decrement. Gate found one doc-markdown lint, now fixed.

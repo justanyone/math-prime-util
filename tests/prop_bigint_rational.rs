@@ -1,4 +1,4 @@
-//! BigUint and native rational agreement and round trips.
+//! `BigUint` and native rational agreement and round trips.
 #![cfg(feature = "bigint")]
 use math_prime_util::{bigint::rational as b, rational as n};
 use num_bigint::BigUint;
@@ -74,7 +74,7 @@ fn edges_and_validation() {
 #[test]
 fn address_space_and_threads() {
     let one = BigUint::from(1u8);
-    let too_many_bits = &one << usize::BITS as usize;
+    let too_many_bits = (&one << usize::BITS as usize) + 2u8;
     assert_eq!(b::calkin_wilf_n(&one, &too_many_bits), None);
     assert_eq!(b::stern_brocot_n(&one, &too_many_bits), None);
     let handles: Vec<_> = (1u64..=4)

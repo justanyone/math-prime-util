@@ -263,6 +263,8 @@ fn sqrt_prime_power(a: &BigUint, p: &BigUint, e: u32) -> Option<BigUint> {
 }
 
 /// A square root of `a` modulo `n`, or `None` when there is none. The
+///
+/// C reference: MPU 0.75 `rootmod.c::sqrtmod`.
 /// smaller of a root and its negative is returned; over a composite
 /// modulus the root is the combination of the smaller roots modulo each
 /// prime power, as on the native path.
@@ -423,6 +425,8 @@ fn pohlig_hellman(a: &BigUint, g: &BigUint, p: &BigUint, n: &BigUint) -> Option<
 
 /// The least `k` with `g^k = a mod n`, or `None` when there is none.
 ///
+/// C reference: MPU 0.75 `znlog.c::znlog`.
+///
 /// Port of MPU 0.75 `PP.pm::znlog` with the native `znlog.c` structure:
 /// a base that shares a factor with the modulus is peeled off first, then
 /// Pohlig-Hellman over the factors of the order of `g`, with baby-step
@@ -565,6 +569,8 @@ fn cyclic_prime_power(n: &BigUint) -> Option<(BigUint, u32)> {
 }
 
 /// The least primitive root modulo `n`, or `None` when `n` is zero or no
+///
+/// C reference: MPU 0.75 `util.c::znprimroot`.
 /// root exists.
 ///
 /// Port of MPU 0.75 `PP.pm::znprimroot`: `n` must be 1, 2, 4, `p^e` or
@@ -618,6 +624,8 @@ pub fn znprimroot(n: &BigUint) -> Option<BigUint> {
 }
 
 /// Tests whether `a` is a primitive root modulo `n`; `None` when `n` is
+///
+/// C reference: MPU 0.75 `util.c::is_primitive_root`.
 /// zero.
 ///
 /// Port of MPU 0.75 `PP.pm::is_primitive_root`: cheap exclusions (even
@@ -973,6 +981,8 @@ fn root_prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Option<Big
 }
 
 /// A `k`-th root of `a` modulo `n`, or `None` when there is none. For
+///
+/// C reference: MPU 0.75 `rootmod.c::rootmod`.
 /// `k = 2` the smaller of a root and its negative is returned.
 ///
 /// Port of MPU 0.75 `PP.pm::rootmod` by the native `rootmod.c` route: an
@@ -1084,6 +1094,8 @@ fn roots_pk(a: &BigUint, p: &BigUint, k: u32) -> Vec<BigUint> {
 }
 
 /// All square roots of `a` modulo `n` in ascending order; empty when there
+///
+/// C reference: MPU 0.75 `rootmod.c::allsqrtmod`.
 /// is none.
 ///
 /// Port of MPU 0.75 `PP.pm::allsqrtmod`: the roots modulo each prime power
@@ -1123,6 +1135,8 @@ pub fn allsqrtmod(a: &BigUint, n: &BigUint) -> Vec<BigUint> {
 }
 
 /// Solves simultaneous congruences `x = a_i mod n_i`, given as
+///
+/// C reference: MPU 0.75 `util.c::chinese`.
 /// `(residue, modulus)` pairs, and returns the least solution. An empty
 /// input gives zero. Returns `None` for a zero modulus or inconsistent
 /// congruences; the moduli need not be coprime.
@@ -1181,6 +1195,8 @@ fn factorial_valuation(n: &BigUint, p: &BigUint) -> BigUint {
 }
 
 /// `n! mod m`, or `None` when `m` is zero or the product would need more
+///
+/// C reference: MPU 0.75 `factmod.c::factorialmod`.
 /// than 2^64 steps (`n`, or `m - n - 1` when Wilson's theorem turns the
 /// product around, above the `u64` range).
 ///
@@ -1395,6 +1411,8 @@ fn binomial_granville(n: &BigUint, k: &BigUint, p: &BigUint, mut q: u32) -> BigU
 
 /// The binomial coefficient `C(n, k) mod m`, or `None` when `m` is zero.
 ///
+/// C reference: MPU 0.75 `factmod.c::binomialmod`.
+///
 /// Port of MPU 0.75 `PP.pm::binomialmod` by the native `factmod.c` route:
 /// Lucas's theorem for a prime modulus, and for each prime power of a
 /// composite modulus (which must be factorable) the direct unit product
@@ -1443,6 +1461,8 @@ pub fn binomialmod(n: &BigUint, k: &BigUint, m: &BigUint) -> Option<BigUint> {
 
 /// `U_k(P, Q) mod n`.
 ///
+/// C reference: MPU 0.75 `lucas_seq.c::lucasumod`.
+///
 /// Port of MPU 0.75 `PP.pm::lucasumod` through
 /// [`lucas_sequence`].
 ///
@@ -1462,6 +1482,8 @@ pub fn lucasumod(p: &BigInt, q: &BigInt, k: &BigUint, n: &BigUint) -> BigUint {
 
 /// `V_k(P, Q) mod n`.
 ///
+/// C reference: MPU 0.75 `lucas_seq.c::lucasvmod`.
+///
 /// Port of MPU 0.75 `PP.pm::lucasvmod` through
 /// [`lucas_sequence`].
 ///
@@ -1480,6 +1502,8 @@ pub fn lucasvmod(p: &BigInt, q: &BigInt, k: &BigUint, n: &BigUint) -> BigUint {
 }
 
 /// Tests whether `n` is a Carmichael number.
+///
+/// C reference: MPU 0.75 `util.c::is_carmichael`.
 ///
 /// Port of MPU 0.75 `PP.pm::is_carmichael`: Korselt's criterion on the
 /// small divisors, a Fermat test to base 2, then the factorization when
@@ -1541,6 +1565,8 @@ pub fn is_carmichael(n: &BigUint) -> bool {
 }
 
 /// The number of quasi-Carmichael bases of `n`: the `b` with `p - b`
+///
+/// C reference: MPU 0.75 `util.c::is_quasi_carmichael`.
 /// dividing `n - b` for every prime `p` of the square-free `n`.
 ///
 /// Port of MPU 0.75 `PP.pm::is_quasi_carmichael` by the native `util.c`

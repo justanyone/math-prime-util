@@ -2082,3 +2082,9 @@ mod tests {
         }
     }
 }
+
+mod helpers;
+pub use helpers::{
+    allrootmod, chinese2, cornacchia, is_qr, lucasuvmod, muladdmod, mulsubmod, negmod,
+    pisano_period, qnr, submod,
+};

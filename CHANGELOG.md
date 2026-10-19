@@ -43,6 +43,8 @@ All notable changes to this crate are listed here. The format follows
   count, block sieve, final walk) instead of a linear scan; `nth_semiprime_approx` applies MPU's inverse
   interpolation.
 - The prime count bounds share one long double type.
+- CI: a benchmark alert posts a comment and no longer fails the run. The stored results come from other
+  shared runners, which differ by more than 10 % on the same code.
 
 ### Fixed
 

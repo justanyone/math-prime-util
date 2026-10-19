@@ -1,6 +1,6 @@
 [package]
 name = "math-prime-util"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2024"
 rust-version = "1.85"
 description = "Rust port of Perl's Math::Prime::Util: primality, sieves, factoring, number theory"
@@ -10,7 +10,6 @@ documentation = "https://docs.rs/math-prime-util"
 readme = "README.md"
 keywords = ["prime", "number-theory", "factoring", "sieve", "primality"]
 categories = ["mathematics", "algorithms"]
-publish = false
 exclude = ["reference/", ".perl-local/", "tools/", ".github/"]
 
 [dependencies]

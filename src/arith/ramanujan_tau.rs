@@ -1,7 +1,7 @@
 use super::{divisor_sum, factor_powers};
 use crate::is_square;
 
-const TAU: &[i64] = &[
+pub(crate) const TAU: &[i64] = &[
     0,
     1,
     -24,
@@ -115,7 +115,7 @@ fn tau_prime(p: u64) -> Option<i128> {
     leading.checked_sub(32_i128.checked_mul(sum / 3)?)
 }
 // util.c::hclassno and _count_class_div, in the bounded tau-prime path.
-fn class_number(n: u64) -> i128 {
+pub(crate) fn class_number(n: u64) -> i128 {
     if n == 0 {
         return -1;
     }

@@ -30,6 +30,10 @@ pub mod primality;
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod proving;
 
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod sequences;
+
 /// The shared number theory surface for unsigned integers.
 ///
 /// ```

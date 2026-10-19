@@ -88,7 +88,7 @@ pub fn forsquarefree(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint
 /// ```
 pub fn forfactored(lo: &BigUint, hi: &BigUint) -> Result<Vec<Vec<BigUint>>, BigUint> {
     let mut out = Vec::new();
-    for n in range(lo, hi, 2) {
+    for n in range(lo, hi, 1) {
         out.push(factor::factor(&n)?);
     }
     Ok(out)

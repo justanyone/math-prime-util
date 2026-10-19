@@ -11,3 +11,5 @@ All focused tests passed: full oracle replay, u64 parity, wide round trips, and 
 Reviewed state/concurrency: functions have no shared mutable state or I/O. Generator writes only its requested family; fixture replay is deterministic.
 Fmt and default/bigint/GMP clippy checks passed. Whole-suite validation is compiling integration tests offline.
 Added u64::MAX-base round trips and extreme exponent checks for conversion boundaries. Full suite and remaining gate steps continue offline.
+All five focused tests now pass, including large bases and exponent boundaries. All four clippy feature sets passed; the gate is building MSRV dependencies.
+Gate MSRV build passed and full tests are executing. No upstream discrepancies appeared in the bigint digit oracle.

@@ -2,8 +2,8 @@
 
 use num_bigint::BigUint;
 
-use super::primality::{is_prob_prime, is_strong_pseudoprime, next_prime, prev_prime};
 use super::arith::gcd;
+use super::primality::{is_prob_prime, is_strong_pseudoprime, next_prime, prev_prime};
 use super::proving::{Certificate, Proof};
 use crate::random::sha256;
 
@@ -208,7 +208,7 @@ pub fn random_maurer_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)
 }
 
 /// Returns a random Shawe–Taylor prime with exactly `bits` bits.
-/// Port of `RandomPrimes.pm::random_shawe_taylor_prime`.
+/// Port of `RandomPrimes.pm::random_shawe_taylor_prime`; up to 64 bits it gives the native answer.
 /// # Panics
 /// Panics if `bits < 2`.
 /// ```
@@ -218,12 +218,16 @@ pub fn random_maurer_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)
 /// ```
 #[must_use]
 pub fn random_shawe_taylor_prime(bits: u32) -> Option<BigUint> {
+    assert!(bits >= 2, "bits must be >= 2");
+    if bits <= 64 {
+        // MPU dispatches the plain form to random_nbit_prime up to 64 bits.
+        return random_nbit_prime(bits);
+    }
     random_shawe_taylor_prime_with_cert(bits).map(|x| x.0)
 }
 
 /// Returns a random Shawe–Taylor prime and its certificate.
 /// Port of `RandomPrimes.pm::random_shawe_taylor_prime_with_cert`.
-/// Up to 64 bits it gives the native answer.
 /// # Panics
 /// Panics if `bits < 2`.
 /// ```
@@ -235,9 +239,6 @@ pub fn random_shawe_taylor_prime(bits: u32) -> Option<BigUint> {
 #[must_use]
 pub fn random_shawe_taylor_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
     assert!(bits >= 2, "bits must be >= 2");
-    if bits <= 64 {
-        return with_cert(small_cert(bits));
-    }
     let seed = crate::random_bytes(64);
     with_cert(shawe_taylor(bits, &seed).map(|(n, _, _, proofs)| (n, proofs)))
 }

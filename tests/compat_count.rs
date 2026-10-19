@@ -54,9 +54,10 @@ fn count_bounds_repeated_and_concurrent() {
 
 /// `nth_prime_*` rows with `n` above `MPU_MAX_PRIME_IDX`
 /// (`425_656_284_035_217_743`): MPU's XS hands them to its bigint Perl code,
-/// and the `n`th prime is above `u64::MAX`, so the Rust functions return
-/// `None` there. Skipped for each of the three functions:
-/// `425_656_284_035_217_744` and `425_656_284_035_217_745`.
+/// and the `n`th prime is above `u64::MAX`, so the native Rust functions
+/// return `None` there. Skipped by the native checks for each of the three
+/// functions, `425_656_284_035_217_744` and `425_656_284_035_217_745`; with
+/// the `bigint` feature [`nth_prime_bounds_above_max_prime_idx`] replays them.
 const ABOVE_MAX_PRIME_IDX: [u64; 2] = [425_656_284_035_217_744, 425_656_284_035_217_745];
 
 /// Checks every fixture row of `func`, skipping only [`ABOVE_MAX_PRIME_IDX`].
@@ -72,6 +73,32 @@ fn check_nth(func: &str, f: fn(u64) -> Option<u64>) {
         }
     });
     assert_eq!(skipped, ABOVE_MAX_PRIME_IDX);
+}
+
+/// The six rows of [`ABOVE_MAX_PRIME_IDX`] through `bigint::counts`.
+#[cfg(feature = "bigint")]
+#[test]
+fn nth_prime_bounds_above_max_prime_idx() {
+    use math_prime_util::bigint::counts;
+    use num_bigint::BigUint;
+    let mut rows = 0;
+    for (func, f) in [
+        (
+            "nth_prime_lower",
+            counts::nth_prime_lower as fn(&BigUint) -> Option<BigUint>,
+        ),
+        ("nth_prime_upper", counts::nth_prime_upper),
+        ("nth_prime_approx", counts::nth_prime_approx),
+    ] {
+        each("count", func, |c| {
+            let n: u64 = c.arg(0);
+            if ABOVE_MAX_PRIME_IDX.contains(&n) {
+                c.check(f(&BigUint::from(n)));
+                rows += 1;
+            }
+        });
+    }
+    assert_eq!(rows, 6);
 }
 
 #[test]

@@ -1,7 +1,9 @@
 /// Test whether `n` is a polygonal number with `k` sides.
 ///
 /// Port of `util.c`, `polygonal_root`, from MPU 0.75.
-/// Use the square discriminant and the integral root test.
+/// Use the square discriminant and the integral root test. A discriminant
+/// beyond 128 bits leaves at most three candidate roots, which are tested
+/// directly.
 ///
 /// # Panics
 /// Panics if `k < 3`.
@@ -29,22 +31,11 @@ pub fn is_polygonal(n: u64, k: u64) -> bool {
         .checked_mul(u128::from(n))
         .and_then(|d| d.checked_add(offset * offset))
     else {
-        // MPU dispatches an overflowing discriminant to bigint arithmetic.
-        // Compare the same quadratic in factored form without a bigint.
-        let mut low = 2u128;
-        let mut high = u128::from(crate::sqrtint(n)) * 2 + 1;
-        while low <= high {
-            let r = low + (high - low) / 2;
-            let value = r
-                .checked_mul((k - 2) * (r - 1) + 2)
-                .map_or(u128::MAX, |v| v / 2);
-            match value.cmp(&u128::from(n)) {
-                core::cmp::Ordering::Equal => return true,
-                core::cmp::Ordering::Less => low = r + 1,
-                core::cmp::Ordering::Greater => high = r - 1,
-            }
-        }
-        return false;
+        // The discriminant exceeds 128 bits only when `9 (k - 2) n >= 2^128`,
+        // so with `k <= n < 2^64` the root `r` has `r (r - 1) <= 2n / (k - 2) < 18`:
+        // test the candidates `r = 2, 3, 4` directly.
+        let n = u128::from(n);
+        return (2..=4).any(|r| r * ((k - 2) * (r - 1) + 2) / 2 == n);
     };
     let root = sqrt_u128(d);
     if root * root != d {
@@ -106,5 +97,10 @@ mod tests {
         let k = u64::MAX / 3;
         assert!(is_polygonal(3 * k - 3, k));
         assert!(!is_polygonal(3 * k - 2, k));
+        // The 4th k-gonal number is 6k - 8; the discriminant overflows u128.
+        let k = u64::MAX / 6;
+        assert!(is_polygonal(6 * k - 8, k));
+        assert!(!is_polygonal(6 * k - 7, k));
+        assert!(!is_polygonal(6 * k - 9, k));
     }
 }

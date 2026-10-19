@@ -149,7 +149,7 @@ fn aks_oracle() {
         if c.error {
             // Skipped: PP `is_aks_prime` dies with `toint: 'NaN'` for every
             // input above 2^64 that passes its trivial tests
-            // (docs/upstream-findings.md entry 15). The three inputs are
+            // (docs/upstream-findings.md entry 18). The three inputs are
             // composite, so the correct value is 0.
             assert!(!is_aks_prime(&n), "fixture line {}", c.line);
             return;

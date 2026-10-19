@@ -16,3 +16,4 @@ Validation is still compiling. Remaining work is gate completion and coverage me
 Coverage blocker: cargo-llvm-cov is not installed on wonko; no network install attempted. Started an isolated library clippy build to get actionable diagnostics while the all-test build finishes.
 Five-minute checkpoint: fixed the one library clippy diagnostic (math notation needed code quotes). Oracle generation and formatting pass; explicit tests, full suite, and gate remain in progress. Coverage cannot run without cargo-llvm-cov.
 First filtered run completed successfully. Isolated all-target clippy found and fixed one test-module doc-markdown warning. Waiting for explicit compat/property results and gate.
+All-target lint also required consuming the compat helper Vec; fixed that warning without suppressions. No algorithm changes were needed.

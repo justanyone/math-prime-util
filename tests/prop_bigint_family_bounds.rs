@@ -41,7 +41,18 @@ proptest! {
 
 #[test]
 fn zero_one_and_small_powers() {
-    for (n, expected) in [(0_u8, 0_u8), (1, 1), (3, 1), (4, 2), (7, 2), (8, 3), (16, 5)] {
-        assert_eq!(family_bounds::perfect_power_count_approx(&BigUint::from(n)), BigUint::from(expected));
+    for (n, expected) in [
+        (0_u8, 0_u8),
+        (1, 1),
+        (3, 1),
+        (4, 2),
+        (7, 2),
+        (8, 3),
+        (16, 5),
+    ] {
+        assert_eq!(
+            family_bounds::perfect_power_count_approx(&BigUint::from(n)),
+            BigUint::from(expected)
+        );
     }
 }

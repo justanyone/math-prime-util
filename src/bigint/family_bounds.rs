@@ -7,8 +7,9 @@ use super::{arith::rootint, counts};
 
 fn perfect_power_count(n: &BigUint) -> BigUint {
     if *n < BigUint::from(8_u8) {
-        return BigUint::from(u8::from(*n >= BigUint::from(1_u8))
-            + u8::from(*n >= BigUint::from(4_u8)));
+        return BigUint::from(
+            u8::from(*n >= BigUint::from(1_u8)) + u8::from(*n >= BigUint::from(4_u8)),
+        );
     }
     let mut sum = BigInt::from(1_u8);
     for k in 2..n.bits() {
@@ -18,7 +19,8 @@ fn perfect_power_count(n: &BigUint) -> BigUint {
             sum -= BigInt::from(mu) * BigInt::from(rootint(n, exponent) - 1_u8);
         }
     }
-    sum.to_biguint().expect("perfect power count is nonnegative")
+    sum.to_biguint()
+        .expect("perfect power count is nonnegative")
 }
 
 fn prime_power_count(n: &BigUint, count: fn(&BigUint) -> BigUint) -> BigUint {
@@ -128,4 +130,3 @@ pub fn prime_power_count_upper(n: &BigUint) -> BigUint {
     }
     prime_power_count(n, counts::prime_count_upper)
 }
-

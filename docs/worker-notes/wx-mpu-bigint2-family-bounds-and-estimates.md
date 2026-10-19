@@ -7,3 +7,4 @@ Added six count functions using C root sums and existing bigint prime count boun
 Added the generator, compat replay, and native-equivalence and power-boundary property tests for six functions. Vendored MPU 0.75 loads offline; fixture generation is running with XS and GMP disabled. Rust builds and tools/test.sh are block <<cut 34 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)
+Generated 90 oracle rows offline from reference/mpu/lib (MPU 0.75, pure Perl). Rustfmt, Perl syntax checks, and diff whitespace checks pass. No Rust test or gate run is authorized on wowbagger; no coverage claim is made.

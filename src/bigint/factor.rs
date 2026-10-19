@@ -1250,15 +1250,15 @@ const STAGES: [Stage; 13] = [
 ];
 
 /// The factoring recipe of `PP.pm::factor` on one composite cofactor with
-/// no factor below 5000: a factor, or `None` when every stage failed or the
-/// deadline passed.
-fn recipe(n: &BigUint, deadline: Deadline) -> Option<BigUint> {
+/// no factor below 5000: the perfect-power check, then `stages` in order.
+/// A factor, or `None` when every stage failed or the deadline passed.
+fn recipe(n: &BigUint, stages: &[Stage], deadline: Deadline) -> Option<BigUint> {
     let k = is_power_exp(n);
     if k > 1 {
         return Some(rootint(n, k));
     }
     let mut holf_pos = 1_u64;
-    for stage in STAGES {
+    for &stage in stages {
         if deadline.expired() {
             return None;
         }
@@ -1279,9 +1279,10 @@ fn recipe(n: &BigUint, deadline: Deadline) -> Option<BigUint> {
     None
 }
 
-/// `PP.pm::factor`: trial division to 4999, then the recipe on a stack of
-/// cofactors. `native` hands cofactors below 2^128 to the native path.
-fn run(n: &BigUint, deadline: Deadline, native: bool) -> Factored {
+/// `PP.pm::factor`: trial division to 4999, then the recipe with `stages`
+/// on a stack of cofactors. `native` hands cofactors below 2^128 to the
+/// native path.
+fn run(n: &BigUint, stages: &[Stage], deadline: Deadline, native: bool) -> Factored {
     const LIMIT: u64 = 4999;
     let mut result = Factored::default();
     if *n < big(4) {
@@ -1317,7 +1318,7 @@ fn run(n: &BigUint, deadline: Deadline, native: bool) -> Factored {
                 }
             }
         }
-        match recipe(&m, deadline) {
+        match recipe(&m, stages, deadline) {
             Some(f) => {
                 stack.push(&m / &f);
                 stack.push(f);
@@ -1353,7 +1354,7 @@ fn run(n: &BigUint, deadline: Deadline, native: bool) -> Factored {
 /// assert_eq!(factor(&(&p * &q * 4_u8)), Ok(vec![BigUint::from(2_u8), BigUint::from(2_u8), q, p]));
 /// ```
 pub fn factor(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
-    let mut result = run(n, Deadline::NONE, true);
+    let mut result = run(n, &STAGES, Deadline::NONE, true);
     if result.unsplit.is_empty() {
         Ok(result.primes)
     } else {
@@ -1377,7 +1378,19 @@ pub fn factor(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
 /// assert!(got.unsplit.is_empty());
 /// ```
 pub fn factor_within(n: &BigUint, limit: Duration) -> Factored {
-    run(n, Deadline::after(limit), true)
+    run(n, &STAGES, Deadline::after(limit), true)
+}
+
+/// Prime factors found by a fixed amount of work, and the cofactors left
+/// unsplit: the steps of [`factor`] (trial division to 4999, the native
+/// path below 2^128, the primality test and the perfect-power check on each
+/// cofactor) with `rounds` of Pollard-Brent (`a = 1`) as the only stage.
+///
+/// No clock is read, so the result is the same on every host. The primality
+/// proofs call this on every level, where the full recipe is too slow and a
+/// time limit would make the proof depend on the load.
+pub(super) fn factor_bounded(n: &BigUint, rounds: u64) -> Factored {
+    run(n, &[Stage::Brent(rounds, 1)], Deadline::NONE, true)
 }
 
 /// Prime factors and their exponents, in ascending order of the prime.
@@ -1410,6 +1423,113 @@ pub(super) fn group(factors: Vec<BigUint>) -> Vec<(BigUint, u32)> {
     grouped
 }
 
+/// Tries Fermat's difference of squares method.
+/// Port of MPU 0.75 `factor.c::fermat_factor` and `PP.pm::_factor_fermat`.
+/// `None` uses 64 million rounds. A failed attempt keeps the cofactor.
+///
+/// ```
+/// use math_prime_util::bigint::factor::fermat_factor;
+/// assert_eq!(fermat_factor(&91_u8.into(), Some(10)), vec![7_u8.into(), 13_u8.into()]);
+/// ```
+#[must_use]
+pub fn fermat_factor(n: &BigUint, rounds: Option<u64>) -> Vec<BigUint> {
+    if let Ok(native) = u64::try_from(n) {
+        return crate::fermat_factor(native, rounds)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
+    }
+    method(n, |m| {
+        let mut a = sqrtint(m);
+        if &a * &a == *m {
+            return Some(a);
+        }
+        a += 1_u8;
+        for _ in 0..rounds.unwrap_or(64_000_000) {
+            let b2 = &a * &a - m;
+            let b = sqrtint(&b2);
+            if &b * &b == b2 {
+                return Some(a - b);
+            }
+            a += 1_u8;
+        }
+        None
+    })
+}
+
+/// Tries Chebyshev factoring with a prime power ladder.
+/// Port of MPU 0.75 `factor.c::cheb_factor` and `PP.pm::_factor_cheb`.
+/// Zero selects the default bound or the initial value 72.
+///
+/// ```
+/// use math_prime_util::bigint::factor::cheb_factor;
+/// assert_eq!(cheb_factor(&403_u16.into(), 0, 0), vec![13_u8.into(), 31_u8.into()]);
+/// ```
+#[must_use]
+pub fn cheb_factor(n: &BigUint, bound: u64, init_x: u64) -> Vec<BigUint> {
+    method(n, |m| {
+        let default_bound = 8_u64.saturating_mul((m.bits() - 1).saturating_pow(2));
+        let bound = if bound == 0 { default_bound } else { bound };
+        let bound = u64::try_from(sqrtint(m)).map_or(bound, |root| bound.min(root));
+        let mut x = big(if init_x == 0 { 72 } else { init_x }) % m;
+        let inverse = (m + 1_u8) >> 1;
+        for p in crate::primes_in(2..=bound) {
+            let mut power = p;
+            while power <= bound / p {
+                power *= p;
+            }
+            let (_, v, _) = super::primality::lucas_sequence(
+                m,
+                &num_bigint::BigInt::from((2_u8 * &x) % m),
+                &num_bigint::BigInt::from(1),
+                &big(power),
+            );
+            x = (v * &inverse) % m;
+            let f = gcd(&if x.bits() == 0 { m - 1_u8 } else { &x - 1_u8 }, m);
+            if f != one() {
+                return Some(f);
+            }
+        }
+        None
+    })
+}
+
+/// Tries Lehman's method, with the input cutoff used by MPU's C code.
+/// Port of MPU 0.75 `factor.c::lehman_factor` and its `XS.xs` wrapper.
+/// Above 8,796,393,022,207, only trial division runs. It defaults to true.
+/// This follows C; `PP.pm::lehman_factor` substitutes Pollard-Brent instead.
+///
+/// ```
+/// use math_prime_util::bigint::factor::lehman_factor;
+/// assert_eq!(lehman_factor(&91_u8.into(), None), vec![7_u8.into(), 13_u8.into()]);
+/// ```
+#[must_use]
+pub fn lehman_factor(n: &BigUint, do_trial: Option<bool>) -> Vec<BigUint> {
+    if let Ok(native) = u64::try_from(n) {
+        return crate::lehman_factor(native, do_trial)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
+    }
+    method(n, |m| {
+        if let Ok(native) = u64::try_from(m) {
+            return crate::lehman_factor(native, do_trial)
+                .into_iter()
+                .find(|&f| f > 1 && f < native)
+                .map(BigUint::from);
+        }
+        // For this range, FirstCut is capped at 65535. The C prime table
+        // ends at 2011, then the input cutoff returns the unsplit cofactor.
+        if do_trial.unwrap_or(true) {
+            for p in crate::primes_in(7..=2011) {
+                if (m % p).bits() == 0 {
+                    return Some(big(p));
+                }
+            }
+        }
+        None
+    })
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1772,15 +1892,20 @@ mod tests {
     fn recipe_and_run_on_small_inputs() {
         // The recipe without the native hand-off, on inputs the native path would take.
         let n = big(1_000_003) * big(10_000_019) * big(4999) * big(2);
-        let got = run(&n, Deadline::NONE, false);
+        let got = run(&n, &STAGES, Deadline::NONE, false);
         assert_eq!(
             got.primes,
             vec![big(2), big(4999), big(1_000_003), big(10_000_019)]
         );
         assert_eq!(got.unsplit, Vec::<BigUint>::new());
-        let got = run(&(big(1_000_003) * big(1_000_003)), Deadline::NONE, false);
+        let got = run(
+            &(big(1_000_003) * big(1_000_003)),
+            &STAGES,
+            Deadline::NONE,
+            false,
+        );
         assert_eq!(got.primes, vec![big(1_000_003); 2]);
-        let got = run(&(big(5_003) * big(5_009)), Deadline::NONE, false);
+        let got = run(&(big(5_003) * big(5_009)), &STAGES, Deadline::NONE, false);
         assert_eq!(got.primes, vec![big(5_003), big(5_009)]);
         for n in [
             1_u64,
@@ -1791,14 +1916,17 @@ mod tests {
             25_000_000,
             4_294_967_311 * 65_537,
         ] {
-            let got = run(&big(n), Deadline::NONE, false);
+            let got = run(&big(n), &STAGES, Deadline::NONE, false);
             assert_eq!(product(&got.primes), big(n), "{n}");
             assert_eq!(got.unsplit, Vec::<BigUint>::new());
             assert!(got.primes.iter().all(|p| p.is_prime() != 0));
         }
-        assert_eq!(run(&one(), Deadline::NONE, false).primes, vec![]);
-        assert_eq!(run(&zero(), Deadline::NONE, true).primes, vec![zero()]);
-        assert_eq!(run(&one(), Deadline::NONE, true).primes, vec![]);
+        assert_eq!(run(&one(), &STAGES, Deadline::NONE, false).primes, vec![]);
+        assert_eq!(
+            run(&zero(), &STAGES, Deadline::NONE, true).primes,
+            vec![zero()]
+        );
+        assert_eq!(run(&one(), &STAGES, Deadline::NONE, true).primes, vec![]);
         // A cube and a Mersenne product over the native range.
         let cube = &p89() * &p89() * &p89();
         assert_eq!(factor(&cube), Ok(vec![p89(); 3]));
@@ -1841,11 +1969,41 @@ mod tests {
     fn deadline_stops_each_stage() {
         let n = h89() * h107();
         let expired = Deadline::after(Duration::ZERO);
-        assert_eq!(recipe(&n, expired), None);
+        assert_eq!(recipe(&n, &STAGES, expired), None);
         assert_eq!(ecm(&n, 500, 25_000, 20, 0, expired), None);
         assert_eq!(pminus1(&n, 65_536, 65_536, expired), None);
         assert_eq!(brent(&n, 1 << 20, 7, expired), None);
         assert_eq!(holf(&n, 1 << 20, 1, expired), None);
-        assert_eq!(recipe(&(&p89() * &p89()), expired), Some(p89()));
+        assert_eq!(recipe(&(&p89() * &p89()), &STAGES, expired), Some(p89()));
+    }
+
+    #[test]
+    fn bounded_work() {
+        // A prime cofactor above 2^128 is a prime, with no factoring work.
+        let got = factor_bounded(&(big(360) * mersenne(521)), 0);
+        assert_eq!(got.primes.len(), 7);
+        assert_eq!(got.primes.last(), Some(&mersenne(521)));
+        assert_eq!(got.unsplit, Vec::<BigUint>::new());
+        // Pollard-Brent splits a 20-bit factor off a large prime; with one
+        // round it does not, and a deadline that has passed runs no stage.
+        let n = big(1_000_003) * mersenne(521);
+        let got = factor_bounded(&n, 20_000);
+        assert_eq!(got.primes, vec![big(1_000_003), mersenne(521)]);
+        assert_eq!(got.unsplit, Vec::<BigUint>::new());
+        assert_eq!(factor_bounded(&n, 1).unsplit, vec![n.clone()]);
+        assert_eq!(factor_within(&n, Duration::ZERO).unsplit, vec![n.clone()]);
+        // The perfect-power check runs before the stage; two large primes
+        // stay unsplit; the native path takes values below 2^128.
+        assert_eq!(
+            factor_bounded(&(&p89() * &p89() * &p89()), 0).primes,
+            vec![p89(); 3]
+        );
+        let hard = h89() * h107();
+        let got = factor_bounded(&(&hard * 6_u8), 20_000);
+        assert_eq!(got.primes, vec![big(2), big(3)]);
+        assert_eq!(got.unsplit, vec![hard]);
+        let got = factor_bounded(&(h89() * big(1_000_003)), 0);
+        assert_eq!(got.primes, vec![big(1_000_003), h89()]);
+        assert_eq!(factor_bounded(&one(), 0), Factored::default());
     }
 }

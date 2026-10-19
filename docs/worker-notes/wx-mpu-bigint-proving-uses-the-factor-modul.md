@@ -14,3 +14,6 @@ The one-second limit still proved the test semiprime, so set proof callers to Du
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 57 bytes)
 - 2026-10-19T12:30:19Z launcher: no commit for 61 s; 455 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-proving-uses-the-factor-modul.md, src/bigint/proving.rs.
+The all-feature test command has passed unit tests, bigint proving compatibility, and multiple other compatibility suites. It is still running long iterator/property work (forsquarefreeint passed 60 seconds); no failure has appeared. Next:  <<cut 62 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 38 bytes)

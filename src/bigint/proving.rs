@@ -1974,8 +1974,8 @@ mod tests {
             7
         );
         let one = factor_within(&one(), Duration::ZERO);
-        assert!(one.primes.is_empty());
-        assert!(one.unsplit.is_empty());
+        assert_eq!(one.primes, Vec::<BigUint>::new());
+        assert_eq!(one.unsplit, Vec::<BigUint>::new());
     }
 
     #[test]

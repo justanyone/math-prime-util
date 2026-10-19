@@ -1,5 +1,5 @@
-//! Seeded MPU 0.75 PP oracle replay. PP and native draws differ for prime
-//! factors below 64 bits, so those rows check form instead of stream identity.
+//! Seeded MPU 0.75 PP oracle replay. Factored and unrestricted sampling
+//! use property checks where PP and native-sized modulus draws differ.
 #![cfg(feature = "bigint")]
 mod common;
 use math_prime_util::bigint::{primality::is_prob_prime, random::*};
@@ -32,15 +32,17 @@ fn bigint_random_oracle() {
             }
             "random_prime" => c.check(random_prime(&n(), &c.arg(1))),
             "random_ndigit_prime" => {
-                // PP partitions a large interval and draws in a different order.
+                // Replay the PP partition choice and test its prime form.
                 let p = random_ndigit_prime(c.arg(0)).unwrap();
                 assert_eq!(p.to_string().len(), c.arg::<usize>(0));
                 assert_ne!(is_prob_prime(&p), 0);
-                let oracle: BigUint = c.result.unwrap().parse().unwrap();
+                let oracle: BigUint = c.result.as_ref().unwrap().parse().unwrap();
                 assert_ne!(is_prob_prime(&oracle), 0);
+                c.check(Some(p));
             }
             "random_strong_prime" | "random_semiprime" | "random_unrestricted_semiprime" => {
-                // PP generates its small prime factors through the PP draw path.
+                // Strong and balanced primes also match the seeded PP value.
+                // Unrestricted sampling uses different native-sized modulus draws.
                 let bits = c.arg(0);
                 let p = match c.func.as_str() {
                     "random_strong_prime" => random_strong_prime(bits),
@@ -49,10 +51,13 @@ fn bigint_random_oracle() {
                 }
                 .unwrap();
                 assert_eq!(p.bits(), u64::from(bits));
-                let oracle: BigUint = c.result.unwrap().parse().unwrap();
+                let oracle: BigUint = c.result.as_ref().unwrap().parse().unwrap();
                 assert_eq!(oracle.bits(), u64::from(bits));
                 if c.func == "random_strong_prime" {
                     assert_ne!(is_prob_prime(&p), 0);
+                }
+                if c.func != "random_unrestricted_semiprime" {
+                    c.check(Some(p));
                 }
             }
             "random_factored_integer" => {

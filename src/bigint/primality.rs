@@ -1104,3 +1104,53 @@ pub fn is_frobenius_underwood_pseudoprime(n: &BigUint) -> bool {
     }
     a == zero() && b == BigUint::from(2 * x + 5) % n
 }
+
+/// Runs the Perrin signature test with restriction level zero through three.
+/// Port of MPU 0.75 `primality.c::calc_perrin_sig` and `is_perrin_pseudoprime`.
+///
+/// # Panics
+/// Panics if `restricted` exceeds three.
+///
+/// ```
+/// use math_prime_util::bigint::primality::is_perrin_pseudoprime;
+/// assert!(is_perrin_pseudoprime(&101_u8.into(), 3));
+/// ```
+#[must_use]
+pub fn is_perrin_pseudoprime(n: &BigUint, restricted: u32) -> bool {
+    assert!(restricted <= 3, "restriction must be between 0 and 3");
+    if *n < BigUint::from(4_u8) { return *n >= two(); }
+    if restricted == 3 && !n.bit(0) { return false; }
+    let mut s = [one(), n - 1_u8, BigUint::from(3_u8), BigUint::from(3_u8), zero(), two()];
+    for bit in (0..n.bits() - 1).rev() {
+        let t: [BigUint; 6] = std::array::from_fn(|i| {
+            submod(&((&s[i] * &s[i]) % n), &((2_u8 * &s[5 - i]) % n), n)
+        });
+        let t01 = submod(&t[2], &t[1], n);
+        let t34 = submod(&t[5], &t[4], n);
+        let t45 = (&t34 + &t[3]) % n;
+        s = if n.bit(bit) {
+            [t[0].clone(), t01, t[1].clone(), t[4].clone(), t45, t[5].clone()]
+        } else {
+            [t01.clone(), t[1].clone(), (&t01 + &t[0]) % n, t34, t[4].clone(), t45]
+        };
+    }
+    if s[4] != zero() { return false; }
+    if restricted == 0 { return true; }
+    if s[1] != n - 1_u8 { return false; }
+    if restricted == 1 { return true; }
+    let j = jacobi(&BigInt::from(-23), n);
+    if j == -1 {
+        let b = &s[2];
+        let b2 = (b * b) % n;
+        let a = submod(&((3_u8 * b + 1_u8) % n), &b2, n);
+        let c = submod(&((3_u8 * &b2) % n), &two(), n);
+        s[0] == a && s[3] == *b && s[5] == c && *b != BigUint::from(3_u8)
+            && submod(&((&b2 * b) % n), b, n) == one()
+    } else {
+        if j == 0 && *n != BigUint::from(23_u8) && restricted == 3 { return false; }
+        (s[0] == one() && s[2] == BigUint::from(3_u8) && s[3] == BigUint::from(3_u8) && s[5] == two())
+            || (s[0] == zero() && s[5] == n - 1_u8 && s[2] != s[3]
+                && (&s[2] + &s[3]) % n == n - 3_u8
+                && { let d = submod(&s[2], &s[3], n); (&d * &d) % n == n - (BigUint::from(23_u8) % n) })
+    }
+}

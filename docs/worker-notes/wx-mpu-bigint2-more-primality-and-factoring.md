@@ -15,3 +15,6 @@ Static review found a Lehman boundary case: removing small factors can reduce a 
 Commit message requirement: only is_catalan_pseudoprime stays native. MPU 0.75 PP.pm::binomialmod materializes the full central binomial coefficient, requiring roughly n bits and n/2 multiplication steps on big prime inputs. Lehman is now i <<cut 34 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -7 bytes)
+Final: eleven APIs, 266 generated pure-Perl oracle rows, replay tests, native agreement properties and Lehman boundary regressions are written. cargo fmt --all --check and git diff --check pass. Rust tests, tools/gate.sh and 95% coverage ar <<cut 256 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 231 bytes)

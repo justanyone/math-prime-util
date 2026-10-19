@@ -4,3 +4,4 @@ Prior run claimed the clamp is in src/count/mod.rs and a MAX_PRIME_IDX test exis
 
 Next: read the bound and the tests, add the missing case if a fast path exists, then run tools/test.sh and tools/gate.sh.
 - 2026-10-19T07:09:21Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-nth-prime-at-max-prime-idx-overflows-continue.md.
+- 2026-10-19T07:10:21Z launcher: no commit for 60 s; 151 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-nth-prime-at-max-prime-idx-overflows-continue.md.

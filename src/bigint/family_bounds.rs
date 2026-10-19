@@ -66,3 +66,64 @@ pub fn perfect_power_count_lower(n: &BigUint) -> BigUint {
 pub fn perfect_power_count_upper(n: &BigUint) -> BigUint {
     perfect_power_count(n)
 }
+
+fn prime_power_sum(n: &BigUint, count: fn(&BigUint) -> BigUint) -> BigUint {
+    if *n <= BigUint::from(5_u8) {
+        return if n.bits() == 0 {
+            BigUint::from(0_u8)
+        } else {
+            n - 1_u8
+        };
+    }
+    let mut sum = count(n);
+    for k in 2..n.bits() {
+        let exponent = u32::try_from(k).expect("root exponent fits u32");
+        sum += count(&rootint(n, exponent));
+    }
+    sum
+}
+
+/// Estimate the number of prime powers at most `n`.
+///
+/// Port of MPU 0.75 `prime_powers.c::prime_power_count_approx`.
+/// Sum the prime count estimates at each integer root.
+///
+/// ```
+/// use math_prime_util::bigint::family_bounds::prime_power_count_approx;
+/// use num_bigint::BigUint;
+/// assert_eq!(prime_power_count_approx(&BigUint::from(100_u8)), BigUint::from(35_u8));
+/// ```
+#[must_use]
+pub fn prime_power_count_approx(n: &BigUint) -> BigUint {
+    prime_power_sum(n, super::counts::prime_count_approx)
+}
+
+/// Return a lower bound for the number of prime powers at most `n`.
+///
+/// Port of MPU 0.75 `prime_powers.c::prime_power_count_lower`.
+/// Sum the prime count lower bounds at each integer root.
+///
+/// ```
+/// use math_prime_util::bigint::family_bounds::prime_power_count_lower;
+/// use num_bigint::BigUint;
+/// assert_eq!(prime_power_count_lower(&BigUint::from(100_u8)), BigUint::from(35_u8));
+/// ```
+#[must_use]
+pub fn prime_power_count_lower(n: &BigUint) -> BigUint {
+    prime_power_sum(n, super::counts::prime_count_lower)
+}
+
+/// Return an upper bound for the number of prime powers at most `n`.
+///
+/// Port of MPU 0.75 `prime_powers.c::prime_power_count_upper`.
+/// Sum the prime count upper bounds at each integer root.
+///
+/// ```
+/// use math_prime_util::bigint::family_bounds::prime_power_count_upper;
+/// use num_bigint::BigUint;
+/// assert_eq!(prime_power_count_upper(&BigUint::from(100_u8)), BigUint::from(35_u8));
+/// ```
+#[must_use]
+pub fn prime_power_count_upper(n: &BigUint) -> BigUint {
+    prime_power_sum(n, super::counts::prime_count_upper)
+}

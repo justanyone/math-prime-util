@@ -18,5 +18,8 @@ fn bigint_family_bounds_oracle() {
         perfect_power_count_approx,
         perfect_power_count_lower,
         perfect_power_count_upper,
+        prime_power_count_approx,
+        prime_power_count_lower,
+        prime_power_count_upper,
     );
 }

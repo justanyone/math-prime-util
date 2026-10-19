@@ -37,3 +37,5 @@ The full gate suite has started executing tests after compilation. No failing te
 The gate and final suite are still running; no failures have appeared. Focused tests, all clippy feature sets, and MSRV have passed. Coverage and designated-host verification remain external checks.
 
 About five minutes remain. Implementation and focused tests are complete; full-suite runs are waiting on existing long-running oracle tests. No further code changes are planned.
+
+Added a focused runnable-doc check while the full suites execute existing oracle cases. The final diff remains limited to the bigint module, its fixture family/tests, and these required worker notes.

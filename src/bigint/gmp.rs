@@ -121,11 +121,13 @@ fn extra_strong_lucas(n: &Integer) -> bool {
 }
 
 /// Returns `|a - b|`.
+#[cfg(any(not(feature = "bigint"), test))]
 fn difference(a: &Integer, b: &Integer) -> Integer {
     Integer::from(a - b).abs()
 }
 
 /// Returns `x^2 + a mod n`, the Pollard-Brent iteration.
+#[cfg(any(not(feature = "bigint"), test))]
 fn step(x: &Integer, a: u32, n: &Integer) -> Integer {
     let mut result = Integer::from(x.square_ref());
     result += a;
@@ -134,6 +136,7 @@ fn step(x: &Integer, a: u32, n: &Integer) -> Integer {
 
 /// Pollard-Brent, MPU `factor.c::pbrent_factor` (non-Montgomery path).
 /// A finite work budget preserves the trait's unsplit-cofactor error contract.
+#[cfg(any(not(feature = "bigint"), test))]
 fn brent(n: &Integer, mut rounds: usize) -> Option<Integer> {
     let (mut x, mut anchor) = (Integer::from(1_u32), Integer::from(1_u32));
     let (mut r, mut failures, mut a) = (1_usize, 6_u8, 1_u32);
@@ -186,6 +189,48 @@ fn brent(n: &Integer, mut rounds: usize) -> Option<Integer> {
         return Some(f);
     }
     None
+}
+
+/// MPU `factor.c::factor` with a bounded Brent: the `gmp`-only path of
+/// [`Int::factor`].
+#[cfg(not(feature = "bigint"))]
+fn brent_factor(value: &Integer) -> Result<Vec<Integer>, Integer> {
+    let mut pending = vec![value.clone()];
+    let mut factors = Vec::new();
+    while let Some(mut n) = pending.pop() {
+        if let Some(native) = n.to_u128() {
+            factors.extend(
+                native
+                    .factor()
+                    .map_err(Integer::from)?
+                    .into_iter()
+                    .map(Integer::from),
+            );
+            continue;
+        }
+        for p in SMALL_PRIMES {
+            while n.is_divisible_u(p) {
+                factors.push(Integer::from(p));
+                n /= p;
+            }
+        }
+        if n == 1 {
+            continue;
+        }
+        if n.is_prime() != 0 {
+            factors.push(n);
+            continue;
+        }
+        let f = if n.is_perfect_square() {
+            Integer::from(n.sqrt_ref())
+        } else {
+            brent(&n, 20_000).ok_or_else(|| n.clone())?
+        };
+        pending.push(Integer::from(&n / &f));
+        pending.push(f);
+    }
+    factors.sort_unstable();
+    Ok(factors)
 }
 
 impl Int for Integer {
@@ -268,7 +313,11 @@ impl Int for Integer {
         u8::from(strong_base_two(self) && extra_strong_lucas(self))
     }
 
-    /// MPU `factor.c::factor`: trial division, prime and square checks, then Brent.
+    /// With feature `bigint`, MPU `PP.pm::factor` through
+    /// [`factor::factor`](super::factor::factor) on the digits (the recipe of
+    /// perfect powers, p-1, ECM, HOLF and Pollard-Brent, no time limit);
+    /// without it, MPU `factor.c::factor`: trial division, prime and square
+    /// checks, then a bounded Brent.
     ///
     /// # Panics
     /// Panics for a negative value, which has no factorization in this
@@ -282,42 +331,25 @@ impl Int for Integer {
     /// ```
     fn factor(&self) -> Result<Vec<Self>, Self> {
         assert!(!self.is_negative(), "factor needs a non-negative integer");
-        let mut pending = vec![self.clone()];
-        let mut factors = Vec::new();
-        while let Some(mut n) = pending.pop() {
-            if let Some(native) = n.to_u128() {
-                factors.extend(
-                    native
-                        .factor()
-                        .map_err(Self::from)?
-                        .into_iter()
-                        .map(Self::from),
-                );
-                continue;
-            }
-            for p in SMALL_PRIMES {
-                while n.is_divisible_u(p) {
-                    factors.push(Self::from(p));
-                    n /= p;
-                }
-            }
-            if n == 1 {
-                continue;
-            }
-            if n.is_prime() != 0 {
-                factors.push(n);
-                continue;
-            }
-            let f = if n.is_perfect_square() {
-                Self::from(n.sqrt_ref())
-            } else {
-                brent(&n, 20_000).ok_or_else(|| n.clone())?
+        #[cfg(feature = "bigint")]
+        {
+            // Decimal text carries the value both ways; a non-negative
+            // integer's digits always parse.
+            let back = |b: &num_bigint::BigUint| {
+                Self::parse(b.to_string())
+                    .map(Self::from)
+                    .unwrap_or_default()
             };
-            pending.push(Self::from(&n / &f));
-            pending.push(f);
+            let n = num_bigint::BigUint::parse_bytes(self.to_string().as_bytes(), 10)
+                .unwrap_or_default();
+            super::factor::factor(&n)
+                .map(|factors| factors.iter().map(back).collect())
+                .map_err(|cofactor| back(&cofactor))
         }
-        factors.sort_unstable();
-        Ok(factors)
+        #[cfg(not(feature = "bigint"))]
+        {
+            brent_factor(self)
+        }
     }
 
     /// MPU `mulmod.h::powmod`, using GMP's modular exponentiation. A negative
@@ -467,9 +499,16 @@ mod tests {
         assert_eq!(Int::gcd(&p, &int(0_u32)), p);
         assert_eq!(brent(&int(101_u32), 0), None);
         assert_eq!(brent(&int(101_u32), 100), None);
-        // Neither factor is within the bounded Brent search's reach.
+        // Neither factor is within the bounded Brent search's reach; with
+        // feature bigint the recipe runs instead and splits by p-1.
         let hard_composite = mersenne(521) * mersenne(607);
-        assert_eq!(hard_composite.factor(), Err(hard_composite));
+        #[cfg(not(feature = "bigint"))]
+        assert_eq!(hard_composite.factor(), Err(hard_composite.clone()));
+        #[cfg(feature = "bigint")]
+        assert_eq!(
+            hard_composite.factor(),
+            Ok(vec![mersenne(521), mersenne(607)])
+        );
         for n in [9_u32, 15, 25, 49, 77, 101 * 103] {
             let n = int(n);
             let f = brent(&n, 10_000).unwrap();

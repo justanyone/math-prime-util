@@ -9,6 +9,12 @@
 pub mod arith;
 #[cfg(feature = "bigint")]
 mod biguint;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod divisors;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod factor;
 #[cfg(feature = "gmp")]
 mod gmp;
 #[cfg(feature = "bigint")]

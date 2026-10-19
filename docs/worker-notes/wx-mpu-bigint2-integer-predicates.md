@@ -28,3 +28,5 @@ All four clippy feature sets passed with -D warnings. Gate is building MSRV 1.85
 MSRV 1.85 passed. Started the one final whole-suite tools/test.sh run; gate is now compiling its full test suite. Final two-name exclusions are documented for the launcher commit.
 
 Final review found no oracle disagreements and no input-validation panics. The generator is deterministic, and normal Rust tests replay committed fixtures without invoking Perl.
+
+Full-suite compilation is still running. The code and focused fixtures are complete; waiting for the prescribed gate and final suite results.

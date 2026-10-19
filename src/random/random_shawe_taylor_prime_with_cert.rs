@@ -68,7 +68,7 @@ const K: [u32; 64] = [
 ];
 
 // FIPS 180-4 SHA-256, used by MPU's Digest::SHA::sha256 calls.
-fn sha256(input: &[u8]) -> [u8; 32] {
+pub(crate) fn sha256(input: &[u8]) -> [u8; 32] {
     let mut data = input.to_vec();
     data.push(0x80);
     while data.len() % 64 != 56 {

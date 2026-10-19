@@ -339,6 +339,8 @@ mod random_shawe_taylor_prime;
 pub use random_shawe_taylor_prime::random_shawe_taylor_prime;
 mod random_shawe_taylor_prime_with_cert;
 pub use random_shawe_taylor_prime_with_cert::random_shawe_taylor_prime_with_cert;
+#[cfg(feature = "bigint")]
+pub(crate) use random_shawe_taylor_prime_with_cert::sha256;
 mod random_semiprime;
 pub use random_semiprime::random_semiprime;
 

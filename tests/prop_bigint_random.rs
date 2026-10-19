@@ -37,12 +37,11 @@ fn bigint_edges_and_reseed() {
     assert_eq!(big::urandomr(&lo, &lo), Some(lo.clone()));
     assert_eq!(big::random_prime(&(&lo + 1_u8), &lo), None);
     assert_eq!(big::random_prime(&lo, &lo), None);
-    assert_eq!(
+    assert!(
         big::urandomr(&0_u8.into(), &u64::MAX.into())
             .unwrap()
             .bits()
-            <= 64,
-        true
+            <= 64
     );
     for bits in [65, 79, 80, 128, 512] {
         srand(123);
@@ -81,4 +80,24 @@ fn invalid_inputs() {
     assert!(std::panic::catch_unwind(|| big::random_semiprime(3)).is_err());
     assert!(std::panic::catch_unwind(|| big::random_unrestricted_semiprime(2)).is_err());
     assert!(std::panic::catch_unwind(|| big::miller_rabin_random(&7_u8.into(), 0)).is_err());
+}
+
+#[test]
+fn semiprime_form() {
+    for seed in 0..4 {
+        srand(seed);
+        let n = big::random_semiprime(65).unwrap();
+        let f = math_prime_util::bigint::factor::factor(&n);
+        assert_eq!(f.len(), 2);
+        assert_eq!(f.iter().product::<BigUint>(), n);
+        assert!(
+            f.iter()
+                .all(|p| math_prime_util::bigint::primality::is_prob_prime(p) != 0)
+        );
+        srand(seed);
+        let n = big::random_unrestricted_semiprime(65).unwrap();
+        let f = math_prime_util::bigint::factor::factor(&n);
+        assert_eq!(f.len(), 2);
+        assert_eq!(f.iter().product::<BigUint>(), n);
+    }
 }

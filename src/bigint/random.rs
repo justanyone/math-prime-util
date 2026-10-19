@@ -423,3 +423,20 @@ fn ceil_div(n: &BigUint, d: &BigUint) -> BigUint {
 fn float_integer(n: f64) -> Option<BigUint> {
     format!("{n:.0}").parse().ok()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn integer_helpers() {
+        assert_eq!(ceil_div(&7_u8.into(), &3_u8.into()), 3_u8.into());
+        assert_eq!(float_integer(1234.0), Some(1234_u32.into()));
+        assert_eq!(float_integer(f64::INFINITY), None);
+        for seed in 0..24 {
+            crate::srand(seed);
+            let n = random_unrestricted_semiprime(256).expect("semiprime");
+            assert_eq!(n.bits(), 256);
+        }
+    }
+}

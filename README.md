@@ -5,7 +5,7 @@ A Rust port of Perl's [Math::Prime::Util](https://metacpan.org/pod/Math::Prime::
 number-theory toolbox around them (totients, Möbius, modular roots and logs,
 Lucas sequences, continued fractions, combinatorics, random primes, and more).
 
-Status: **version 1.0.0.** All 428 exported names of MPU 0.75 are ported, except
+Status: **version 1.1.0** (changes: [CHANGELOG.md](CHANGELOG.md)). All 428 exported names of MPU 0.75 are ported, except
 `is_higgs_prime`, which does not exist in 0.75. With the cargo feature `bigint`, 82 of them also
 take `BigUint` (see [What works with and without `bigint`](#what-works-with-and-without-bigint)).
 See [STATUS.md](STATUS.md) for the per-function checklist and [PLAN.md](PLAN.md) for the phases.
@@ -61,16 +61,19 @@ The phases are described in `PLAN.md` section 6.
 
 - [x] Milestone 1: core ported (sieve, primality, Lucas sequences, configuration) (done 2026-10-17)
 - [x] Milestone 2: factoring and number theory ported and benchmarked against Perl (done 2026-10-17)
-- [ ] Release 0.1.0 published on crates.io
-- [ ] Milestone 3: prime counting, nth prime and prime sums ported
+- [x] Release 0.1.0: skipped; the first release on crates.io was 1.0.0
+- [x] Milestone 3: prime counting, nth prime and prime sums ported (done 2026-10-19)
 - [x] Milestone 4: prime families ported (done 2026-10-19)
 - [x] Milestone 5: digits, rationals, combinatorics and inverse sigma ported (done 2026-10-19)
 - [x] Milestone 6: vector and set operations ported (done 2026-10-19)
 - [x] Milestone 7: iterators and the for-family ported (done 2026-10-19)
 - [x] Milestone 8: random primes and the random number generator ported (done 2026-10-19)
 - [x] Milestone 9: primality proving, real functions and the bigint backend ported (done 2026-10-19)
+- [x] Release 1.0.0 published on crates.io (2026-10-18)
 - [x] Milestone 10: big integers: `BigUint` forms behind the `bigint` feature, every name audited (done 2026-10-19)
-- [ ] Release 1.0.0 published on crates.io
+- [x] Release 1.1.0 published on crates.io (2026-10-19)
+- [ ] Milestone 11: `BigUint` forms of the 258 names that are native only in 1.1.0 (see [docs/bigint-coverage.md](docs/bigint-coverage.md))
+- [ ] Release 1.2.0 published on crates.io
 
 ## Installation and requirements
 
@@ -78,16 +81,20 @@ Add the crate to `Cargo.toml`:
 
 ```toml
 [dependencies]
-math-prime-util = "1"
+math-prime-util = "1.1"
+# or, for big integers past u128:
+# math-prime-util = { version = "1.1", features = ["bigint"] }
 ```
 
 - Rust 1.85 or newer (edition 2024). Nothing else: the default build is pure Rust and links no system library.
-  Its only dependency is `getrandom`.
+  Its only required dependency is `getrandom`; `num-bigint`, `rug` and `serde` are optional (features
+  `bigint`, `gmp` and `serde`).
 - Feature `bigint` adds the pure-Rust `num-bigint` crate for integers beyond 128 bits. No system library.
 - Feature `gmp` adds the `rug` crate, which links the installed GMP and makes `rug::Integer` a third
   `Int` backend. That build needs the GMP development package at build time (`libgmp-dev` on Debian and
   Ubuntu, `gmp-devel` on Fedora, `gmp` from Homebrew); it never compiles GMP from source, so no C compiler,
   `m4` or `make` is needed. Users who do not enable `gmp` never need GMP.
+- Feature `serde` adds `Serialize` and `Deserialize` on the certificate types of `bigint::proving`.
 
 Three builds, then: the default (`cargo build`, pure Rust), `--features bigint` (pure Rust, big integers)
 and `--features gmp` (links GMP). To build from a checkout: `cargo build --release`; tests:

@@ -65,8 +65,12 @@ proptest! {
     fn chinese_agrees_with_native(a: u64, n in 1_u64..=u64::from(u32::MAX), b: u64, m in 1_u64..=u64::from(u32::MAX), c: u64, l in 0_u64..1000) {
         let pairs = [(a, n), (b, m), (c, l)];
         let bigs: Vec<(BigUint, BigUint)> = pairs.iter().map(|&(x, y)| big_pair(x, y)).collect();
-        // The native path returns None when the combined modulus overflows.
-        let fits = n.checked_mul(m).and_then(|v| v.checked_mul(l.max(1))).is_some();
+        // The native path answers in full only while the combined modulus stays below 2^63 (util.c's signed path).
+        // Above it, util.c::_simple_chinese needs coprime moduli and refuses a modulus of 1, so native may return None.
+        let fits = n
+            .checked_mul(m)
+            .and_then(|v| v.checked_mul(l.max(1)))
+            .is_some_and(|v| v <= u64::MAX >> 1);
         for len in 0..=3 {
             let expected = math_prime_util::chinese(&pairs[..len]).map(big);
             if fits || len < 3 {

@@ -6,8 +6,8 @@ use num_bigint::BigUint;
 
 fn list<T: ToString>(v: Vec<T>) -> Option<String> {
     (!v.is_empty()).then(|| {
-        v.iter()
-            .map(ToString::to_string)
+        v.into_iter()
+            .map(|x| x.to_string())
             .collect::<Vec<_>>()
             .join(" ")
     })

@@ -114,7 +114,13 @@ mod tests {
     fn overflow_path_ignores_a_modulus_of_one() {
         let (n, m) = (3_125_122_409, 2_951_363_445);
         assert_eq!(chinese(&[(0, n), (0, m), (0, 1)]), Some(0));
-        assert_eq!(chinese(&[(5, n), (7, m), (0, 1)]), Some(4_650_162_403_193_742_352));
-        assert_eq!(chinese(&[(5, n), (7, m)]), chinese(&[(5, n), (7, m), (0, 1)]));
+        assert_eq!(
+            chinese(&[(5, n), (7, m), (0, 1)]),
+            Some(4_650_162_403_193_742_352)
+        );
+        assert_eq!(
+            chinese(&[(5, n), (7, m)]),
+            chinese(&[(5, n), (7, m), (0, 1)])
+        );
     }
 }

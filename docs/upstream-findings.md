@@ -12,8 +12,8 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 5, probable 6, API difference or documentation only 8.
-Entries 15 to 18 are numbered in the order they were found, not by section.
+Counts: confirmed 6, probable 6, API difference or documentation only 8.
+Entries 15 to 19 are numbered in the order they were found, not by section.
 
 ## Confirmed
 
@@ -113,6 +113,45 @@ Entries 15 to 18 are numbered in the order they were found, not by section.
   asserts 0 for the `ERROR` rows instead of requiring a panic.
 - Status: confirmed (reachable in 0.75; the dying line is in MPU).
 
+### 19. `allsqrtmod` and `rootmod` (PP, `PP.pm`) on moduli with a factor 2^k, 33 <= k <= 63: an overflow gives wrong roots
+
+- Function and input: `allsqrtmod(17, 2^63)` and `rootmod(17, 2, 2^63)`;
+  in the fixture `allsqrtmod(18174344979715097060, 2^65)` and
+  `allsqrtmod(509519686070420241709284, 2^65 * 15015)`, where `a = 4 mod 8`
+  leaves a square root modulo 2^63 to find (`bigint_modular.tsv` lines 295
+  and 439), and `rootmod(a, 2, n)` on the same inputs (lines 294 and 438).
+- Perl 0.75 value: `allsqrtmod(17, 2^63)` gives
+  `0 405959429219100393 8817412607635675415 9223372036854775808`; 0 and
+  2^63 do not square to 17 and 2^63 is not below the modulus.
+  `rootmod(17, 2, 2^63)` gives `undef`. Line 295 lists 0, 2^64 twice and
+  2^65 among its 8 roots; lines 294 and 438 are `undef`.
+- Correct value: `405959429219100393 4205726589208287511 5017645447646488297
+  8817412607635675415`, each of which squares to 17 modulo 2^63;
+  `rootmod(17, 2, 2^63)` has a root, for example the first of them. The
+  fixture rows have the right count of roots, 8 and 64.
+- Location: `PP.pm` `sub _allsqrtmodpk`, line 6634,
+  `my $q2 = ($q * ($pj - 1)) % $pk;`. With `$q` and `$pk = 2^k` native
+  integers the product passes 2^64 for `k >= 33` and becomes a double, so
+  `%` returns 0 or 2^(k-1) where it should return `q * (2^(k-1) - 1) mod 2^k`.
+  `rootmod` takes the first root of `allrootmod` for a prime power
+  (`_rootmod_composite1`), and `allrootmod` with `k = 2` goes through
+  `_allsqrtmodfact` to the same line, so the first root, 0, fails the final
+  check. Fix: `my $q2 = Mmulmod($q, $pj - 1, $pk);`.
+- How verified: PP run today (`MPU_NO_XS=1`, no GMP);
+  `allsqrtmod(17, 2^32)` is right, `allsqrtmod(17, 2^63)` is not. XS
+  handles moduli below 2^64 in C; a larger modulus, or a residue reduced to
+  a native integer inside `_allsqrtmodpk` as on line 295, takes the PP code
+  on every build. Not checked against upstream master.
+- Port: `bigint::modular::allsqrtmod` and `rootmod` multiply modulo `p^k`
+  in `BigUint`.
+- Test that skips the rows: `sqrtmod_oracle` (constant `PP_ALLSQRTMOD_WRONG`)
+  and `rootmod_oracle` (constant `PP_ROOTMOD_UNDEF`) in
+  `tests/compat_bigint_modular.rs`; they check that the port's roots square
+  back, are distinct and below the modulus, and include every valid root the
+  oracle lists.
+- Upstream test: `is_deeply([allsqrtmod(17, "9223372036854775808")], [qw/405959429219100393 4205726589208287511 5017645447646488297 8817412607635675415/], "allsqrtmod 17 mod 2^63");`
+- Status: confirmed (reachable in 0.75; the overflowing line is in MPU).
+
 ## Probable
 
 ### 5. `vecuniq`, `vecmax` (XS) canonicalise numeric strings; the POD and PP keep them
@@ -176,6 +215,11 @@ Entries 15 to 18 are numbered in the order they were found, not by section.
   smaller count.
 - Test that skips the row: `combinatorics_oracle` in
   `tests/compat_bigint_arith.rs` asserts the falling-factorial value instead.
+  `binomialmod` (PP) reduces `Mbinomial($n, $k)` and dies the same way for
+  every bigint `n` with `k >= 100`: the `binomialmod` rows of
+  `bigint_modular.tsv` with `k = 200`, `k = 3000` and `k = n - 3` are
+  `ERROR`; `factorial_binomial_oracle` in `tests/compat_bigint_modular.rs`
+  asserts the exact binomial reduced mod `m` for them.
 - Status: probable (reachable in 0.75 with a current Math::BigInt; the
   failing call lives in Math::BigInt, the missing reflection in MPU).
 
@@ -332,6 +376,14 @@ areas left open there were checked today as follows.
   `verify_prime` row replays, including the tampered and malformed texts.
   The 3 `ERROR` rows are entry 18. `compat_bigint_proving` and
   `prop_bigint_proving` pass.
+- bigint modular: `tools/gen_fixtures.pl bigint_modular` under
+  `MPU_NO_XS=1` (1605 rows on 65 to 500 bit inputs: square and `k`-th
+  roots, orders, primitive roots, discrete logarithms, the Chinese remainder
+  theorem, factorial and binomial residues, Lucas sequences, the Carmichael
+  and quasi-Carmichael tests); every row replays except the 4 of entry 19
+  and the 34 `binomialmod` rows of entry 8. Over composite moduli 15
+  `sqrtmod` rows and 9 `rootmod` rows give another root than PP; the POD
+  allows any root there, and the tests check that the port's root is one.
 - Earlier pass (unchanged): int (`sqrtint`, `rootint`, `powint`, `is_square`,
   `logint`, `gcd`, `lcm`, `binomial`, `valuation`, `divint` family); arith
   (totients, `moebius`, `mertens` to 200000, `sigma`, `divisor_sum`,

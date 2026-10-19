@@ -3,3 +3,5 @@ Add a pure Perl oracle family and native agreement properties.
 Keep native APIs and dependencies unchanged. Run focused offline tests and the gate.
 The checkout is on wowbagger, not aragog or wonko; record host restrictions before tests.
 - 2026-10-19T15:57:14Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint2-modular-helpers.md.
+Implemented ten helpers using existing bigint operations; next implement all roots and oracle tests.
+The local Perl environment is absent. Use the vendored MPU pure Perl module offline instead of the network bootstrap.

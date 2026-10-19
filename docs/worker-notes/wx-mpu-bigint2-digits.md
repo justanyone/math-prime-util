@@ -9,3 +9,4 @@ Focused build found an unavailable direct num_traits import; replaced it with st
 First replay exposed empty-list fixture encoding, not arithmetic; generator now serializes digit lists explicitly. Fixed the clippy clone assignment warning.
 All focused tests passed: full oracle replay, u64 parity, wide round trips, and invalid input checks. Gate is running; coverage tool is unavailable.
 Reviewed state/concurrency: functions have no shared mutable state or I/O. Generator writes only its requested family; fixture replay is deterministic.
+Fmt and default/bigint/GMP clippy checks passed. Whole-suite validation is compiling integration tests offline.

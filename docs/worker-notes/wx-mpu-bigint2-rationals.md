@@ -16,3 +16,4 @@ Default, bigint, and GMP clippy stages pass. The all-features gate and the one p
 All four clippy feature sets and MSRV build passed; gate is running tests. No LLVM coverage binaries are on PATH, so the 95% line threshold cannot be measured locally. Required aragog/wonko validation also remains external.
 Checked Rust toolchain bin directories too: LLVM coverage tools are absent. Focused tests pass; all-feature full suites are still running. No public native signatures or dependencies changed.
 - 2026-10-19T16:09:00Z launcher: no commit for 60 s; 393 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint2-rationals.md, src/bigint/mod.rs, src/bigint/rational.rs, tests/compat_bigint_rational.rs, tests/fixtures/bigint_rational.tsv, tests/prop_bigint_rational.rs, tools/fixtures/bigint_rational.pl.
+Full-suite gate remains in existing count oracle tests; no reported failures. Waiting for completion, with the focused new-family tests already green.

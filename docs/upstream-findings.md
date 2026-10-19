@@ -12,7 +12,7 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 4, probable 4, API difference or documentation only 6.
+Counts: confirmed 4, probable 4, API difference or documentation only 7.
 
 ## Confirmed
 
@@ -178,6 +178,12 @@ Counts: confirmed 4, probable 4, API difference or documentation only 6.
     `prime_signature_scalar(24739954287740860)` as 46 against XS 4620
     (`factor.tsv` line 1223); a direct PP call today returns 4620, so that
     difference is withdrawn.
+14. `is_euler_plumb_pseudoprime` (PP) returns the empty string (Perl false)
+    instead of 0 when `2^((n-1)/2^e)` is 1 or `n - 1` but `n mod 8` does not
+    match: the comparison result is returned as is. XS returns 0. Five
+    composites in `bigint_primality.tsv` (lines 1164, 1180, 1196, 1212, 1228);
+    `base_tests_oracle` in `tests/compat_bigint_primality.rs` asserts false
+    for an empty oracle value.
 
 ## Checked, no defect found
 
@@ -212,6 +218,12 @@ areas left open there were checked today as follows.
   `nth_ramanujan_prime` and single rows of 9 other functions) were not checked
   under PP. `is_gaussian_prime` (373 rows) and `minimal_goldbach_pair` are
   included and agree. `compat_families` and `prop_families` pass.
+- bigint primality: `tools/gen_fixtures.pl bigint_primality` under
+  `MPU_NO_XS=1` (2310 rows on 65 to 1000 bit inputs, 128 inputs through the
+  whole pseudoprime family, 110 `lucas_sequence` rows, 78 prime walks, 46
+  Mersenne exponents); every row replays except the 5 of entry 14. The 7
+  `ERROR` rows (bases 0 and 1, increments 0 and 257, modulus 0) panic on the
+  Rust side as the native functions do.
 - Earlier pass (unchanged): int (`sqrtint`, `rootint`, `powint`, `is_square`,
   `logint`, `gcd`, `lcm`, `binomial`, `valuation`, `divint` family); arith
   (totients, `moebius`, `mertens` to 200000, `sigma`, `divisor_sum`,

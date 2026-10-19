@@ -11,6 +11,9 @@ pub mod arith;
 mod biguint;
 #[cfg(feature = "gmp")]
 mod gmp;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod primality;
 
 /// The shared number theory surface for unsigned integers.
 ///

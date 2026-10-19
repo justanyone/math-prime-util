@@ -101,7 +101,8 @@ from MPU:
 - The code is Rust (edition 2024), not Perl and C. Functions that MPU answers with `undef` return `Option`.
 - The native path covers `u64` and `u128`. The `Int` trait (feature `bigint` adds `num_bigint::BigUint`)
   gives `is_prime`, `factor`, `powmod`, `gcd`, `next_prime` and the basic arithmetic one generic surface;
-  the rest of the bigint path is not ported yet.
+  the modules `bigint::arith` and `bigint::primality` carry the integer core and the primality tests on
+  `BigUint`; the rest of the bigint path is not ported yet.
 - Where the Perl answer is wrong, this crate gives the correct value, skips that fixture row with a named comment,
   and records the difference for upstream review. See
   [upstream findings](docs/upstream-findings.md) and [NOTICE](NOTICE).
@@ -128,6 +129,10 @@ resolution on a concrete `Integer`, so write `Int::gcd(&a, &b)` and `Int::next_p
 The compat tests replay every unsigned fixture row of the families primality, factor, modular, int and sieve
 through the trait on each backend and compare with the native path; `benches/bigint.rs` compares the two
 arbitrary precision backends on a 200-digit `is_prime` and a 60-digit `factor`.
+The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, binomials) and
+`bigint::primality` (the pseudoprime tests, BPSW, `lucas_sequence`, `next_prime`, `prev_prime`,
+`is_mersenne_prime`) take `&BigUint` and keep the MPU names; the families `bigint_arith` and
+`bigint_primality` replay MPU's pure Perl path on 65 to 1000 bit inputs against them.
 
 [`Int`]: src/bigint/mod.rs
 

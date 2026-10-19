@@ -1090,8 +1090,8 @@ fn bls75(n: &BigUint) -> Attempt {
     }
     while bls5_bound(n, &a_part, &b_part).is_none() {
         let Some(m) = stack.pop() else { break };
-        // The cofactors the stages cannot split would fail again: drop them.
-        let factored = factor_within(&m, Duration::from_secs(2));
+        // Try the same staged factoring methods as MPU's BLS75 proof.
+        let factored = factor_within(&m, Duration::from_secs(1));
         for f in factored.primes {
             if !factors.contains(&f) {
                 factors.push(f.clone());
@@ -1368,7 +1368,7 @@ fn order_prime(m: &BigUint, primes: &[u64], split: bool) -> Option<BigUint> {
     if !split {
         return None;
     }
-    factor_within(&q, Duration::from_secs(2)).primes.into_iter().max()
+    factor_within(&q, Duration::from_secs(1)).primes.into_iter().max()
 }
 
 /// The `(D, m, q)` at `n` with `q` a probable prime above `(n^(1/4) + 1)^2`,

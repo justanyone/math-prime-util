@@ -121,6 +121,7 @@ impl Ld {
 
     /// The value as a `double`, as the C cast `(NV) x` converts it: rounded
     /// to nearest, ties to even. Callers stay in the normal binary64 range.
+    #[cfg(feature = "bigint")]
     pub(crate) fn to_f64(self) -> f64 {
         if self.sig == 0 {
             return 0.0;

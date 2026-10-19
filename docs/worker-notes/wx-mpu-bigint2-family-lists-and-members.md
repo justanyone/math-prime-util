@@ -18,3 +18,4 @@ Oracle generation completed both intervals. All 30 rows replay, and all four pro
 All four clippy feature configurations passed. Added deterministic 0..12 checks for prime-power and Goldbach boundaries and zero-depth sieve behavior. Gate is building MSRV.
 All 30 oracle rows match; no wrong Perl values were found. Coverage binaries are absent, so 95 percent line coverage remains unmeasured. Full offline suite and gate are still running.
 MSRV build passed. Gate and the required final tools/test.sh suite are executing; the focused suite already passed on the complete fixture.
+MSRV is green. The final full suite is still compiling, and gate waits for its build lock. No further implementation changes are planned; coverage measurement and the requested remote-host run are unavailable.

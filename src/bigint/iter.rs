@@ -34,11 +34,15 @@ pub fn fordivisors(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
 /// assert_eq!(foralmostprimes(2, &BigUint::from(1_u8), &BigUint::from(10_u8)).unwrap(), [4_u8, 6, 9, 10].map(BigUint::from));
 /// ```
 pub fn foralmostprimes(k: u64, lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint> {
-    if k == 0 { return Ok(Vec::new()); }
+    if k == 0 {
+        return Ok(Vec::new());
+    }
     let mut out = Vec::new();
     for n in range(lo, hi, 1) {
         let factors = factor::factor(&n)?;
-        if factors.len() as u64 == k { out.push(n); }
+        if factors.len() as u64 == k {
+            out.push(n);
+        }
     }
     Ok(out)
 }
@@ -66,7 +70,11 @@ pub fn forsemiprimes(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint
 /// ```
 pub fn forsquarefree(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint> {
     let mut out = Vec::new();
-    for n in range(lo, hi, 1) { if divisors::is_square_free(&n)? { out.push(n); } }
+    for n in range(lo, hi, 1) {
+        if divisors::is_square_free(&n)? {
+            out.push(n);
+        }
+    }
     Ok(out)
 }
 
@@ -80,7 +88,9 @@ pub fn forsquarefree(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint
 /// ```
 pub fn forfactored(lo: &BigUint, hi: &BigUint) -> Result<Vec<Vec<BigUint>>, BigUint> {
     let mut out = Vec::new();
-    for n in range(lo, hi, 2) { out.push(factor::factor(&n)?); }
+    for n in range(lo, hi, 2) {
+        out.push(factor::factor(&n)?);
+    }
     Ok(out)
 }
 
@@ -92,4 +102,6 @@ pub fn forfactored(lo: &BigUint, hi: &BigUint) -> Result<Vec<Vec<BigUint>>, BigU
 /// use num_bigint::BigUint;
 /// assert_eq!(forsquarefreeint(&BigUint::from(1_u8), &BigUint::from(6_u8)).unwrap(), [1_u8, 2, 3, 5, 6].map(BigUint::from));
 /// ```
-pub fn forsquarefreeint(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint> { forsquarefree(lo, hi) }
+pub fn forsquarefreeint(lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint> {
+    forsquarefree(lo, hi)
+}

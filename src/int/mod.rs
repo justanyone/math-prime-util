@@ -1,8 +1,8 @@
 //! Integer roots, logarithms, powers and gcd on `u64`.
 //!
 //! Ported from MPU's `util.c` and `util.h` (`isqrt`, `icbrt`, `rootint`,
-//! `crootint`, `logint`, `ipowsafe`, `is_power_ret`, `is_perfect_square_ret`,
-//! `gcd_ui`, `lcm_ui`, `gcdext`).
+//! `crootint`, `logint`, `ipowsafe`, `is_power_ret`, `powerof_ret`,
+//! `is_perfect_square_ret`, `gcd_ui`, `lcm_ui`, `gcdext`).
 
 // Used by the primality module (phase 1); unused until then.
 #[allow(dead_code)]
@@ -376,6 +376,9 @@ pub fn is_power_root(n: u64, k: u32) -> Option<u64> {
 
 /// The largest `k >= 2` such that `n` is a perfect `k`-th power, or `0` if
 /// `n` is not a perfect power. Matches MPU's one-argument `is_power(n)`.
+///
+/// Port of `powerof_ret` in `util.c`. The search tries every prime up to 61.
+/// A `u64` can hold `2^k` for each of those primes.
 ///
 /// `0` and `1` return `0`, as in MPU.
 ///

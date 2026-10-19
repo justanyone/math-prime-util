@@ -1,6 +1,6 @@
 #!/bin/sh
 # Merge gate: everything a head must pass before it merges into dev.
-# fmt, clippy (warnings are errors), MSRV build, tests, doc tests, docs.
+# fmt, clippy for each CI feature set (warnings are errors), MSRV build, tests, doc tests, docs.
 # Exit 0 = green. Each step prints its name; the first red step stops the run.
 # The feature lists in this file and in .github/workflows/ci.yml must match.
 # CI builds default, bigint, gmp, and all-features. Clippy runs each set.

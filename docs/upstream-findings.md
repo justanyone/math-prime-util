@@ -12,7 +12,7 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 4, probable 3, API difference or documentation only 6.
+Counts: confirmed 4, probable 4, API difference or documentation only 6.
 
 ## Confirmed
 
@@ -132,6 +132,27 @@ Counts: confirmed 4, probable 3, API difference or documentation only 6.
 - Status: probable (an undocumented PP-only edge). `numtoperm(0, 0)` is a
   similar edge: XS returns an empty list, PP returns undef (`combinat.tsv`
   line 18311).
+
+### 8. `binomial` (PP, `PP.pm`) dies for a bigint `n` with `k >= 100`
+
+- Function and input: `binomial(n, n - 20)` with the 100-bit
+  `n = 1190998462705547155062215048452`; also `binomial(2^70, 100)`.
+- Perl 0.75 value: dies with `Can't locate object method "_nok" via package
+  "Math::BigInt"` (`bigint_arith.tsv` line 737). `binomial(2^70, 99)` works.
+- Correct value: `binomial(n, 20)`, since `C(n, k) = C(n, n - k)`.
+- Location: `PP.pm` `sub binomial`, step 4. For `n > INTMAX` and `k < 100` it
+  divides the falling factorial by `k!`; every other bigint case calls
+  `Math::BigInt::bnok("$n", "$k")`, which fails with Math::BigInt 2.003002
+  (Perl 5.40). The source carries `TODO: consider reflection for large k`, so
+  the `k -> n - k` reflection that would avoid the call is known missing.
+- How verified: PP run today (`MPU_NO_XS=1`, no GMP). No XS value exists:
+  XS `binomial` returns the bigint result through the PP path as well.
+- Port: `bigint::arith::binomial` reflects `k` first and loops over the
+  smaller count.
+- Test that skips the row: `combinatorics_oracle` in
+  `tests/compat_bigint_arith.rs` asserts the falling-factorial value instead.
+- Status: probable (reachable in 0.75 with a current Math::BigInt; the
+  failing call lives in Math::BigInt, the missing reflection in MPU).
 
 ## API difference or documentation only (not a bug)
 

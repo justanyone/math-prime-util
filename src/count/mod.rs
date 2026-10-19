@@ -5,8 +5,8 @@ use std::collections::HashMap;
 use crate::{primes, rootint, sqrtint};
 use nth_prime_upper::{MAX_PRIME, MAX_PRIME_IDX};
 
-mod long_double;
-mod nth_prime_approx;
+pub(crate) mod long_double;
+pub(crate) mod nth_prime_approx;
 mod nth_prime_lower;
 mod nth_prime_upper;
 mod prime_count_approx;

@@ -233,7 +233,7 @@ pub(super) fn li_nv(x: Ld) -> Ld {
 
 /// MPU 0.75 `real.c`, `_Li(x)`, for `x > 1`: Ramanujan's series up to
 /// `10^16`, `Ei(ln x)` above.
-fn li(x: Ld) -> Ld {
+pub(crate) fn li(x: Ld) -> Ld {
     if x == Ld::from_u64(2) {
         return LI2;
     }

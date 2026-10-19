@@ -12,7 +12,8 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 4, probable 4, API difference or documentation only 8.
+Counts: confirmed 5, probable 6, API difference or documentation only 8.
+Entries 15 to 18 are numbered in the order they were found, not by section.
 
 ## Confirmed
 
@@ -88,6 +89,30 @@ Counts: confirmed 4, probable 4, API difference or documentation only 8.
   rows with no skip.
 - Upstream test: `is(ramanujan_prime_count(2), 1); is(ramanujan_prime_count(3), 1); is_deeply(ramanujan_primes(3), [2]);`
 
+### 18. `is_aks_prime` (PP, `PP.pm`) dies for every input above 2^64 that passes its trivial tests
+
+- Function and input: `is_aks_prime(18446744073709551617)` (2^64 + 1), also
+  2^64 + 3 and 2^128 + 1 (`bigint_proving.tsv` lines 268, 269, 271).
+- Perl 0.75 value: dies with `toint: 'NaN' is not a valid number`.
+  `is_aks_prime(18446744073709551621)` returns 0, but only because the input
+  is divisible by 3 and the trivial checks answer first.
+- Correct value: 0 for all three (2^64 + 1 = 274177 * 67280421310721,
+  2^64 + 3 = 467443687 * 39463029637, 2^128 + 1 is the Fermat number F7 =
+  59649589127497217 * 5704689200685129054721).
+- Location: `PP.pm` `sub is_aks_prime`, `my $log2n = log($n)/log(2) + 0.0001`.
+  For a `Math::BigInt` argument the overloaded `log` returns a `Math::BigInt`
+  (the integer part, 44 for 2^64 + 1); dividing it by the float `log(2)` gives
+  `NaN`, so `$r0` is `NaN` and `Mtoint($r0)` dies. Every input above
+  2^64 that is not a perfect power and not divisible by 2, 3, 5, 7 or 11
+  reaches this line, prime or composite.
+- How verified: PP run today (`MPU_NO_XS=1`, no GMP). XS `is_aks_prime`
+  handles only native integers and hands bigints to PP, so no XS value exists.
+- Port: `bigint::proving::is_aks_prime` computes the bit length as a float
+  from the integer and returns 0 for the three inputs.
+- Test that skips the row: `aks_oracle` in `tests/compat_bigint_proving.rs`
+  asserts 0 for the `ERROR` rows instead of requiring a panic.
+- Status: confirmed (reachable in 0.75; the dying line is in MPU).
+
 ## Probable
 
 ### 5. `vecuniq`, `vecmax` (XS) canonicalise numeric strings; the POD and PP keep them
@@ -154,6 +179,68 @@ Counts: confirmed 4, probable 4, API difference or documentation only 8.
 - Status: probable (reachable in 0.75 with a current Math::BigInt; the
   failing call lives in Math::BigInt, the missing reflection in MPU).
 
+### 15. `nth_prime_approx` (PP, `PP.pm`) keeps 15 digits of its estimate above 2^46
+
+- Function and input: `nth_prime_approx(425656284035217744)` and every index
+  above `10^12` whose estimate is above 2^46 (`bigint_counts.tsv` lines 4 to
+  67, every `nth_prime_approx` row).
+- Perl 0.75 value: PP gives `18446744070138400000`; the XS build gives
+  `18446744070138417152` (`count.tsv` line 991, where XS hands the index to
+  the same PP code).
+- Correct value: the XS value. Above `10^12` `nth_prime_approx` is
+  `toint(inverse_li_nv(n) + 0.5)`. `inverse_li_nv` is a `double`; the XS
+  `toint` converts it exactly, the PP `toint` goes through the string form
+  of the NV, which Perl prints with 15 significant digits (`PP.pm`
+  `sub toint`, the "being very conservative" branch). The two builds also
+  differ in the estimate itself: XS evaluates the inverse in `long double`
+  (`real.c` `ld_inverse_li`), PP in `double`; the difference is a few ulps
+  of the double, visible in the 15th digit for `2^64 - 1` (line 13: PP
+  `870566678483616000000`, the long double model `870566678483615350784`).
+- How verified: PP run today (`MPU_NO_XS=1`); `Math::BigFloat->new(2**64)`
+  prints `18446744073709600000` on the same Perl, which shows the 15-digit
+  conversion. The XS value is the fixture row.
+- Port: `bigint::counts::nth_prime_approx` follows the XS build (the
+  `long double` model up to `10^35`, exact arithmetic rounded to a `double`
+  beyond) and returns the whole double.
+- Test that skips the rows: `nth_prime_approx_oracle` in
+  `tests/compat_bigint_counts.rs` requires agreement to 14 significant
+  digits on all 22 rows; `nth_prime_bounds_above_max_prime_idx` in
+  `tests/compat_count.rs` replays the XS rows exactly.
+- Upstream test: `is(nth_prime_approx("18446744073709551616"), "870566678483615350784", "nth_prime_approx keeps its double");`
+  (the pure Perl value today ends in `616000000`).
+- Status: probable (the PP `toint` comment calls the conversion deliberate;
+  the XS and PP builds still return different values for the same call).
+
+### 16. The PP bounds carry 40 significant digits: trailing noise above 10^38
+
+- Function and input: `nth_prime_lower(2^127)`, `nth_prime_lower` and
+  `nth_prime_upper` of `10^40` and `2^200`, `prime_count_upper(10^40)`,
+  `prime_count_lower` and `prime_count_upper` of `2^200`
+  (`bigint_counts.tsv` lines 59, 62, 63, 65, 66, 117, 119, 120).
+- Perl 0.75 value: for example `nth_prime_lower(2^127)` =
+  `15573908835133645926997934045400650697606` (41 digits).
+- Correct value: the Axler formula in exact arithmetic gives
+  `...697605`; `nth_prime_upper(10^40)` is `...786073727` where PP prints
+  `...786073686`. Every row agrees with the exact value on its first 40
+  significant digits and differs after them.
+- Location: `PP.pm` `nth_prime_lower`, `nth_prime_upper`, `prime_count_lower`,
+  `prime_count_upper`. The index or count is upgraded to `Math::BigFloat`
+  with no accuracy set, so `log` and the divisions run at
+  `Math::BigFloat->div_scale`, 40 digits, while the results have 41 to 63.
+  `prime_count_approx` sets the accuracy from the length of its input and is
+  exact on the same inputs (its rows replay).
+- How verified: PP run today; the port's 256-bit fixed point evaluation of
+  the same formulas, which replays every other row of the family to the
+  last digit.
+- Port: `bigint::counts` keeps 77 digits and returns the exact floor or
+  ceiling of each bound.
+- Test that skips the rows: `nth_prime_bounds_oracle` and
+  `prime_count_bounds_oracle` in `tests/compat_bigint_counts.rs` compare
+  the three inputs on their leading 36 digits.
+- Upstream test: `is(nth_prime_lower(Math::BigInt->new(2)**127), "15573908835133645926997934045400650697605", "nth_prime_lower 2^127 exact to the unit");`
+- Status: probable (a precision limit rather than a wrong formula; the
+  bounds still hold, as the noise is far below the gap to the true prime).
+
 ## API difference or documentation only (not a bug)
 
 8. Results above u64 are `undef` in the fixtures (the generator's
@@ -185,7 +272,7 @@ Counts: confirmed 4, probable 4, API difference or documentation only 8.
     `base_tests_oracle` in `tests/compat_bigint_primality.rs` asserts false
     for an empty oracle value.
 
-15. `squfof_factor`, `pplus1_factor` and `lehman_factor` (PP, `PP.pm`
+17. `squfof_factor`, `pplus1_factor` and `lehman_factor` (PP, `PP.pm`
     `_stub_factor`) are Pollard-Brent stubs: the method's bound or round
     count becomes the Brent round count and the named method never runs.
     Documented in the PP source ("No implementations of these here"), so
@@ -234,6 +321,17 @@ areas left open there were checked today as follows.
   Mersenne exponents); every row replays except the 5 of entry 14. The 7
   `ERROR` rows (bases 0 and 1, increments 0 and 257, modulus 0) panic on the
   Rust side as the native functions do.
+- bigint proving: `tools/gen_fixtures.pl bigint_proving` under `MPU_NO_XS=1`
+  (276 rows: `is_provable_prime`, `is_provable_prime_with_cert` and
+  `prime_certificate` on 40 inputs of 65 to 664 bits, 144 `verify_prime`
+  rows of which 46 accept and 98 reject, 9 `is_aks_prime` rows). Two
+  inputs timed out under PP and are recorded as skipped comments. The 40
+  `is_provable_prime` rows replay, every PP certificate verifies in the port
+  (PP writes BLS5 and Small blocks only; Lucas, BLS3, Pocklington, BLS15,
+  ECPP and ECPP3 blocks come from hand-built certificates), and every
+  `verify_prime` row replays, including the tampered and malformed texts.
+  The 3 `ERROR` rows are entry 18. `compat_bigint_proving` and
+  `prop_bigint_proving` pass.
 - Earlier pass (unchanged): int (`sqrtint`, `rootint`, `powint`, `is_square`,
   `logint`, `gcd`, `lcm`, `binomial`, `valuation`, `divint` family); arith
   (totients, `moebius`, `mertens` to 200000, `sigma`, `divisor_sum`,

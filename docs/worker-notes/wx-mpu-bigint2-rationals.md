@@ -14,3 +14,4 @@ Oracle replay passed all 44 rows. The address-space test hit usize::MAX after th
 Focused compat and property suites now pass (44 oracle rows and three tests). Bigint feature lint found needless pass-by-value in the fixture formatter; changed it to borrow the pair.
 Default, bigint, and GMP clippy stages pass. The all-features gate and the one permitted full-suite test run are in progress. cargo-llvm-cov is not installed, so checking existing LLVM tools before claiming coverage.
 All four clippy feature sets and MSRV build passed; gate is running tests. No LLVM coverage binaries are on PATH, so the 95% line threshold cannot be measured locally. Required aragog/wonko validation also remains external.
+Checked Rust toolchain bin directories too: LLVM coverage tools are absent. Focused tests pass; all-feature full suites are still running. No public native signatures or dependencies changed.

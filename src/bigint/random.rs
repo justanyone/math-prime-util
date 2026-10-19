@@ -1,7 +1,8 @@
 //! Random integers and probable primes from MPU's thread-local seeded stream.
 
 use num_bigint::BigUint;
-use num_traits::{One, ToPrimitive, Zero};
+use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
+use num_integer::Integer;
 
 use super::primality::{is_prob_prime, is_strong_pseudoprime, next_prime, prev_prime};
 
@@ -267,4 +268,84 @@ pub fn miller_rabin_random(n: &BigUint, bases: u64) -> Option<u8> {
         if !is_strong_pseudoprime(n, &[base]) { return Some(0); }
     }
     Some(1)
+}
+
+/// Draws a semiprime with no balance rule for its two prime factors.
+/// Port of `reference/mpu/random_prime.c::random_unrestricted_semiprime`
+/// and `PP.pm::random_unrestricted_semiprime`.
+/// # Panics
+/// Panics if `bits < 3`.
+/// ```
+/// use math_prime_util::bigint::random::random_unrestricted_semiprime;
+/// assert_eq!(random_unrestricted_semiprime(65).expect("semiprime").bits(), 65);
+/// ```
+#[must_use]
+#[allow(clippy::cast_precision_loss)] // PP uses double precision for its weights.
+pub fn random_unrestricted_semiprime(bits: u32) -> Option<BigUint> {
+    assert!(bits >= 3, "bits must be >= 3");
+    if bits <= 64 {
+        return crate::random_unrestricted_semiprime(bits).map(BigUint::from);
+    }
+    const WEIGHTS: &[(u32, f64)] = &[
+        (2, 1.91218397452243),
+        (3, 1.33954826555021),
+        (5, 0.854756717114822),
+        (7, 0.635492301836862),
+        (11, 0.426616792046787),
+        (13, 0.368193843118344),
+        (17, 0.290512701603111),
+        (19, 0.263359264658156),
+        (23, 0.222406328935102),
+        (29, 0.181229250520242),
+        (31, 0.170874199059434),
+        (37, 0.146112155735473),
+        (41, 0.133427839963585),
+        (43, 0.127929010905662),
+        (47, 0.118254609086782),
+        (53, 0.106316418106489),
+        (59, 0.0966989675438643),
+        (61, 0.0938833658008547),
+        (67, 0.0864151823151671),
+        (71, 0.0820822953188297),
+        (73, 0.0800964416340746),
+        (79, 0.0747060914833344),
+        (83, 0.0714973706654851),
+        (89, 0.0672115468436284),
+        (97, 0.0622818892486191),
+        (101, 0.0600855891549939),
+        (103, 0.0590613570015407),
+        (107, 0.0570921135626976),
+        (109, 0.0561691667641485),
+        (113, 0.0544330141081874),
+        (127, 0.0490620204315701),
+    ];
+    let min = BigUint::one() << (bits - 1);
+    let max = (&min << 1_usize) - 1_u8;
+    let mut r = crate::drand(1.0);
+    let mut selected = None;
+    for &(p, weight) in WEIGHTS {
+        let probability = weight / f64::from(bits) + 0.19556 / f64::from(p);
+        if r <= probability { selected = Some(BigUint::from(p)); break; }
+        r -= probability;
+    }
+    let p = if let Some(p) = selected { p } else {
+        let mertens = 0.261_497_212_847_642_8;
+        let weight = mertens + (f64::from(bits) * std::f64::consts::LN_2 / 2.0).ln();
+        let lower = 131_f64.ln().ln();
+        let r = loop {
+            let r = crate::drand(weight) - mertens;
+            if r >= lower { break r; }
+        };
+        let a = if r <= 3.54 {
+            BigUint::from_f64((r.exp().exp() + 0.5).floor())?
+        } else {
+            let re = r.exp();
+            let exponent = (re / 34.5).floor() + 1.0;
+            let exponent = u32::from_f64(exponent)?;
+            BigUint::from_f64(((re / f64::from(exponent)).exp() + 0.5).floor())?.pow(exponent)
+        };
+        if a < 2_u8.into() { 2_u8.into() } else { prev_prime(&(a + 1_u8))? }
+    };
+    let q = random_prime(&min.div_ceil(&p), &(&max / &p))?;
+    Some(p * q)
 }

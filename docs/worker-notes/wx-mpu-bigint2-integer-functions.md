@@ -19,3 +19,4 @@ First filtered run completed successfully. Isolated all-target clippy found and 
 All-target lint also required consuming the compat helper Vec; fixed that warning without suppressions. No algorithm changes were needed.
 Bigint all-target clippy is clean with -D warnings. Gate default clippy passed and advanced to bigint. Full suite was launched once through tools/test.sh.
 Explicit focused run passed: all 198 oracle rows and all five property/boundary tests. Native agreement took 48 seconds. Gate passed default and bigint clippy and is now checking GMP; no oracle correction or upstream finding was needed.
+Gate passed every clippy feature set (default, bigint, gmp, all-features) and has reached the Rust 1.85 MSRV build. Focused tests remain green. Waiting for full-suite and gate completion.

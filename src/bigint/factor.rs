@@ -1920,3 +1920,34 @@ pub fn cheb_factor(n: &BigUint, bound: u64, init_x: u64) -> Vec<BigUint> {
         None
     })
 }
+
+/// Tries Lehman's method, with the input cutoff used by MPU's C code.
+/// Port of MPU 0.75 `factor.c::lehman_factor` and its `XS.xs` wrapper.
+/// Above 8,796,393,022,207, only trial division runs. It defaults to true.
+/// This follows C; `PP.pm::lehman_factor` substitutes Pollard-Brent instead.
+///
+/// ```
+/// use math_prime_util::bigint::factor::lehman_factor;
+/// assert_eq!(lehman_factor(&91_u8.into(), None), vec![7_u8.into(), 13_u8.into()]);
+/// ```
+#[must_use]
+pub fn lehman_factor(n: &BigUint, do_trial: Option<bool>) -> Vec<BigUint> {
+    if let Ok(native) = u64::try_from(n) {
+        return crate::lehman_factor(native, do_trial)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
+    }
+    method(n, |m| {
+        // For this range, FirstCut is capped at 65535. The C prime table
+        // ends at 2011, then the input cutoff returns the unsplit cofactor.
+        if do_trial.unwrap_or(true) {
+            for p in crate::primes_in(7..=2011) {
+                if (m % p).bits() == 0 {
+                    return Some(big(p));
+                }
+            }
+        }
+        None
+    })
+}

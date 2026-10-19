@@ -28,5 +28,10 @@ sub gen_bigint_moretests {
     emit($fh, 'fermat_factor', [$n, 100], sub { Math::Prime::Util::PP::fermat_factor($n->copy, 100) });
     emit($fh, 'cheb_factor', [$n, 100, 72], sub { Math::Prime::Util::PP::cheb_factor($n->copy, 100, 72) });
   }
+  # PP substitutes Brent for Lehman. These cases agree with C's input cutoff.
+  for my $text (qw(0 1 49 91 18446744073709551629 129127208515966861403)) {
+    my $n = Math::BigInt->new($text);
+    emit($fh, 'lehman_factor', [$n], sub { Math::Prime::Util::PP::lehman_factor($n->copy) });
+  }
 }
 1;

@@ -10,3 +10,4 @@ Practicality exclusions for the launcher's commit message: is_catalan_pseudoprim
 The direct Catalan oracle probe also fails in this host's Math::BigInt with missing _nok; no claim is made that this error measures the algorithm's runtime. Fixed replay of the generator's undef encoding for empty factor lists.
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 115 bytes)
+Revised Lehman decision: added a faithful C wrapper with its explicit cutoff, native dispatch and optional trial division through 2011. Added native properties and bigint cutoff regressions. Only Catalan remains a practicality exclusion.

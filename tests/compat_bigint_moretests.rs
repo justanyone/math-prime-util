@@ -34,8 +34,10 @@ fn bigint_moretests_fixtures() {
             "is_gaussian_prime" => {
                 primality::is_gaussian_prime(&n, &args[1].parse().unwrap()).to_string()
             }
-            "fermat_factor" | "cheb_factor" => {
-                let values = if fields[0] == "fermat_factor" {
+            "fermat_factor" | "cheb_factor" | "lehman_factor" => {
+                let values = if fields[0] == "lehman_factor" {
+                    factor::lehman_factor(&n, None)
+                } else if fields[0] == "fermat_factor" {
                     factor::fermat_factor(&n, Some(args[1].parse().unwrap()))
                 } else {
                     factor::cheb_factor(&n, args[1].parse().unwrap(), args[2].parse().unwrap())
@@ -49,12 +51,13 @@ fn bigint_moretests_fixtures() {
             name => panic!("unknown fixture function {name}"),
         };
         // The generator encodes an empty Perl list as undef.
-        let expected =
-            if fields[2] == "undef" && matches!(fields[0], "fermat_factor" | "cheb_factor") {
-                ""
-            } else {
-                fields[2]
-            };
+        let expected = if fields[2] == "undef"
+            && matches!(fields[0], "fermat_factor" | "cheb_factor" | "lehman_factor")
+        {
+            ""
+        } else {
+            fields[2]
+        };
         assert_eq!(result, expected, "{row}");
     }
 }

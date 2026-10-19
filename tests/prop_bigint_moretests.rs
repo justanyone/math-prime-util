@@ -17,6 +17,7 @@ proptest! {
         prop_assert_eq!(primality::is_frobenius_khashin_pseudoprime(&big), math_prime_util::is_frobenius_khashin_pseudoprime(n));
         prop_assert_eq!(primality::is_frobenius_underwood_pseudoprime(&big), math_prime_util::is_frobenius_underwood_pseudoprime(n));
         prop_assert_eq!(primality::is_perrin_pseudoprime(&big, restriction), math_prime_util::is_perrin_pseudoprime(n, restriction));
+        prop_assert_eq!(factor::lehman_factor(&big, None), math_prime_util::lehman_factor(n, None).into_iter().map(BigUint::from).collect::<Vec<_>>());
         prop_assert_eq!(factor::fermat_factor(&big, Some(10)), math_prime_util::fermat_factor(n, Some(10)).into_iter().map(BigUint::from).collect::<Vec<_>>());
         prop_assert_eq!(factor::cheb_factor(&big, 100, 72), math_prime_util::cheb_factor(n, 100, 72).into_iter().map(BigUint::from).collect::<Vec<_>>());
     }
@@ -66,4 +67,14 @@ fn bigint_moretests_invalid_base() {
 #[should_panic(expected = "restriction must")]
 fn bigint_moretests_invalid_restriction() {
     let _ = primality::is_perrin_pseudoprime(&2_u8.into(), 4);
+}
+
+#[test]
+fn bigint_moretests_lehman_cutoff() {
+    let p = (BigUint::from(1_u8) << 127_usize) - 1_u8;
+    let n = &p * 7_u8;
+    assert_eq!(factor::lehman_factor(&n, None), vec![7_u8.into(), p]);
+    assert_eq!(factor::lehman_factor(&n, Some(false)), vec![n]);
+    let unsplit = BigUint::from(2017_u16).pow(10);
+    assert_eq!(factor::lehman_factor(&unsplit, Some(true)), vec![unsplit]);
 }

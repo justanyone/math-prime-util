@@ -59,11 +59,11 @@ fn bigint_moretests_boundaries() {
 #[test]
 #[should_panic(expected = "base must be >= 2")]
 fn bigint_moretests_invalid_base() {
-    primality::is_delicate_prime(&2_u8.into(), 1);
+    let _ = primality::is_delicate_prime(&2_u8.into(), 1);
 }
 
 #[test]
 #[should_panic(expected = "restriction must")]
 fn bigint_moretests_invalid_restriction() {
-    primality::is_perrin_pseudoprime(&2_u8.into(), 4);
+    let _ = primality::is_perrin_pseudoprime(&2_u8.into(), 4);
 }

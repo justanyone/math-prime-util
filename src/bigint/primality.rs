@@ -1224,7 +1224,7 @@ pub fn is_perrin_pseudoprime(n: &BigUint, restricted: u32) -> bool {
     if restricted == 1 {
         return true;
     }
-    let j = jacobi(&BigInt::from(-23), n);
+    let j = super::arith::kronecker(&BigInt::from(-23), &BigInt::from(n.clone()));
     if j == -1 {
         let b = &s[2];
         let b2 = (b * b) % n;

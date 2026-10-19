@@ -48,6 +48,13 @@ fn bigint_moretests_fixtures() {
             }
             name => panic!("unknown fixture function {name}"),
         };
-        assert_eq!(result, fields[2], "{row}");
+        // The generator encodes an empty Perl list as undef.
+        let expected =
+            if fields[2] == "undef" && matches!(fields[0], "fermat_factor" | "cheb_factor") {
+                ""
+            } else {
+                fields[2]
+            };
+        assert_eq!(result, expected, "{row}");
     }
 }

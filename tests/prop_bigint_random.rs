@@ -32,14 +32,22 @@ proptest! {
 #[test]
 fn bigint_edges_and_reseed() {
     let lo = BigUint::from(1_u8) << 80_usize;
-    assert_eq!(big::urandomr(&(&lo+1_u8), &lo), None);
+    assert_eq!(big::urandomr(&(&lo + 1_u8), &lo), None);
     assert_eq!(big::urandomr(&lo, &lo), Some(lo.clone()));
-    assert_eq!(big::random_prime(&(&lo+1_u8), &lo), None);
+    assert_eq!(big::random_prime(&(&lo + 1_u8), &lo), None);
     assert_eq!(big::random_prime(&lo, &lo), None);
-    assert_eq!(big::urandomr(&0_u8.into(), &u64::MAX.into()).unwrap().bits() <= 64, true);
+    assert_eq!(
+        big::urandomr(&0_u8.into(), &u64::MAX.into())
+            .unwrap()
+            .bits()
+            <= 64,
+        true
+    );
     for bits in [65, 79, 80, 128, 512] {
-        srand(123); let a = big::random_nbit_prime(bits).unwrap();
-        srand(123); assert_eq!(big::random_nbit_prime(bits), Some(a.clone()));
+        srand(123);
+        let a = big::random_nbit_prime(bits).unwrap();
+        srand(123);
+        assert_eq!(big::random_nbit_prime(bits), Some(a.clone()));
         assert_eq!(a.bits(), u64::from(bits));
         assert_ne!(math_prime_util::bigint::primality::is_prob_prime(&a), 0);
     }
@@ -49,9 +57,14 @@ fn bigint_edges_and_reseed() {
         assert_eq!(p.bits(), 65);
     }
     assert_eq!(big::miller_rabin_random(&lo, 5), Some(0));
-    let handles: Vec<_> = (0..4).map(|_| std::thread::spawn(|| {
-        srand(55); big::urandomb(100)
-    })).collect();
+    let handles: Vec<_> = (0..4)
+        .map(|_| {
+            std::thread::spawn(|| {
+                srand(55);
+                big::urandomb(100)
+            })
+        })
+        .collect();
     let values: Vec<_> = handles.into_iter().map(|h| h.join().unwrap()).collect();
     assert!(values.windows(2).all(|v| v[0] == v[1]));
 }
@@ -66,5 +79,5 @@ fn invalid_inputs() {
     assert!(std::panic::catch_unwind(|| big::random_strong_prime(127)).is_err());
     assert!(std::panic::catch_unwind(|| big::random_semiprime(3)).is_err());
     assert!(std::panic::catch_unwind(|| big::random_unrestricted_semiprime(2)).is_err());
-    assert!(std::panic::catch_unwind(|| big::miller_rabin_random(&7_u8.into(),0)).is_err());
+    assert!(std::panic::catch_unwind(|| big::miller_rabin_random(&7_u8.into(), 0)).is_err());
 }

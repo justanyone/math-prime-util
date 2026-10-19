@@ -40,11 +40,14 @@ fn bigint_random_oracle() {
                     "random_strong_prime" => random_strong_prime(bits),
                     "random_semiprime" => random_semiprime(bits),
                     _ => random_unrestricted_semiprime(bits),
-                }.unwrap();
+                }
+                .unwrap();
                 assert_eq!(p.bits(), u64::from(bits));
                 let oracle: BigUint = c.result.unwrap().parse().unwrap();
                 assert_eq!(oracle.bits(), u64::from(bits));
-                if c.func == "random_strong_prime" { assert_ne!(is_prob_prime(&p), 0); }
+                if c.func == "random_strong_prime" {
+                    assert_ne!(is_prob_prime(&p), 0);
+                }
             }
             "random_factored_integer" => {
                 // Native-sized chain terms use the native seeded sampler.
@@ -52,7 +55,12 @@ fn bigint_random_oracle() {
                 assert!(r >= 1_u8.into() && r <= n());
                 assert_eq!(factors.iter().product::<BigUint>(), r);
                 assert!(factors.iter().all(|p| is_prob_prime(p) != 0));
-                let values: Vec<BigUint> = c.result.unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
+                let values: Vec<BigUint> = c
+                    .result
+                    .unwrap()
+                    .split_whitespace()
+                    .map(|s| s.parse().unwrap())
+                    .collect();
                 assert_eq!(values[1..].iter().product::<BigUint>(), values[0]);
             }
             f => panic!("unreplayed function {f}"),

@@ -28,6 +28,7 @@
 //! ```
 use super::Int;
 use super::arith::{gcd, gcdext, invmod, is_power, is_square, kronecker, sqrtint};
+use super::factor;
 use super::primality::{is_prob_prime, lucas_sequence};
 use num_bigint::{BigInt, BigUint, Sign};
 use std::collections::HashMap;
@@ -111,13 +112,22 @@ fn crt(r: &BigUint, n: &BigUint, s: &BigUint, m: &BigUint) -> BigUint {
 }
 
 /// The prime factorization of `n >= 1` as `(prime, exponent)` pairs in
-/// ascending order, through [`Int::factor`]. A cofactor the factoring
-/// budget cannot split is reported as a prime.
+/// ascending order, through [`factor::factor_exp`]. A cofactor the recipe
+/// cannot split is reported as a prime, as MPU does.
 fn factor_exp(n: &BigUint) -> Vec<(BigUint, u32)> {
+    factor_exp_with(n, factor::factor)
+}
+
+/// [`factor_exp`] over the factoring routine `split`, which returns the
+/// prime factors in ascending order or the first cofactor it cannot split.
+fn factor_exp_with<F>(n: &BigUint, split: F) -> Vec<(BigUint, u32)>
+where
+    F: Fn(&BigUint) -> Result<Vec<BigUint>, BigUint>,
+{
     let mut primes = Vec::new();
     let mut rest = n.clone();
     loop {
-        match Int::factor(&rest) {
+        match split(&rest) {
             Ok(found) => {
                 primes.extend(found);
                 break;
@@ -129,14 +139,7 @@ fn factor_exp(n: &BigUint) -> Vec<(BigUint, u32)> {
         }
     }
     primes.sort_unstable();
-    let mut out: Vec<(BigUint, u32)> = Vec::new();
-    for p in primes {
-        match out.last_mut() {
-            Some((q, e)) if *q == p => *e += 1,
-            _ => out.push((p, 1)),
-        }
-    }
-    out
+    factor::group(primes)
 }
 
 /// The divisors of `n >= 1` in ascending order.
@@ -1481,14 +1484,21 @@ mod tests {
 
     #[test]
     fn factor_exp_reports_an_unsplit_cofactor() {
-        // Two 200-bit primes: Brent cannot split the product in its budget.
+        // A routine that cannot split the product of two 200-bit primes.
         let p = super::super::primality::next_prime(&(one() << 200_usize));
         let q = super::super::primality::next_prime(&(&p + 2_u8));
-        let n = &p * &q * 3_u8;
-        let factors = factor_exp(&n);
-        assert_eq!(factors[0], (big(3), 1));
-        assert_eq!(factors.len(), 2);
-        assert_eq!(factors[1].0, &p * &q);
+        let pq = &p * &q;
+        let stubborn = |m: &BigUint| -> Result<Vec<BigUint>, BigUint> {
+            if m % &pq == zero() {
+                Err(pq.clone())
+            } else {
+                factor::factor(m)
+            }
+        };
+        let n = &pq * 3_u8;
+        assert_eq!(factor_exp_with(&n, stubborn), vec![(big(3), 1), (pq.clone(), 1)]);
+        assert_eq!(factor_exp_with(&(&n * 3_u8), stubborn), vec![(big(3), 2), (pq.clone(), 1)]);
+        assert_eq!(factor_exp(&(&p * 9_u8)), vec![(big(3), 2), (p, 1)]);
     }
 
     #[test]

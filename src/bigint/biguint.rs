@@ -10,65 +10,6 @@ fn one() -> BigUint {
     BigUint::from(1_u8)
 }
 
-fn difference(a: &BigUint, b: &BigUint) -> BigUint {
-    if a >= b { a - b } else { b - a }
-}
-
-/// Pollard-Brent, MPU `factor.c::pbrent_factor` (non-Montgomery path).
-/// A finite work budget preserves the trait's unsplit-cofactor error contract.
-fn brent(n: &BigUint, mut rounds: usize) -> Option<BigUint> {
-    let (mut x, mut anchor) = (one(), one());
-    let (mut r, mut failures, mut a) = (1_usize, 6_u8, 1_u32);
-    while rounds > 0 {
-        let mut left = r.min(rounds);
-        let mut saved = x.clone();
-        let mut f = one();
-        while left > 0 {
-            let batch = left.min(160);
-            left -= batch;
-            rounds -= batch;
-            saved.clone_from(&x);
-            let mut product = one();
-            for _ in 0..batch {
-                x = (&x * &x + a) % n;
-                product = (product * difference(&x, &anchor)) % n;
-            }
-            f = product.gcd(n);
-            if f != one() {
-                break;
-            }
-        }
-        if f == one() {
-            r *= 2;
-            anchor.clone_from(&x);
-            continue;
-        }
-        if f == *n {
-            x = saved;
-            loop {
-                x = (&x * &x + a) % n;
-                f = difference(&x, &anchor).gcd(n);
-                if f != one() || r == 0 {
-                    break;
-                }
-                r -= 1;
-            }
-        }
-        if f == zero() || f == *n {
-            if failures == 0 {
-                break;
-            }
-            failures -= 1;
-            anchor = (anchor + 11_u8) % n;
-            x.clone_from(&anchor);
-            a += 1;
-            continue;
-        }
-        return Some(f);
-    }
-    None
-}
-
 impl Int for BigUint {
     fn add_int(&self, other: &Self) -> Option<Self> {
         Some(self + other)
@@ -138,7 +79,9 @@ impl Int for BigUint {
         super::primality::is_prob_prime(self)
     }
 
-    /// MPU `factor.c::factor`: trial division, prime and square checks, then Brent.
+    /// MPU `PP.pm::factor` through [`factor::factor`](super::factor::factor):
+    /// the native path below 2^128, then trial division and the recipe of
+    /// perfect powers, p-1, ECM, HOLF and Pollard-Brent, with no time limit.
     ///
     /// ```
     /// use math_prime_util::Int;
@@ -147,45 +90,7 @@ impl Int for BigUint {
     ///            vec![BigUint::from(2_u8), BigUint::from(2_u8), BigUint::from(3_u8)]);
     /// ```
     fn factor(&self) -> Result<Vec<Self>, Self> {
-        let mut pending = vec![self.clone()];
-        let mut factors = Vec::new();
-        while let Some(mut n) = pending.pop() {
-            if let Ok(native) = u128::try_from(&n) {
-                factors.extend(
-                    native
-                        .factor()
-                        .map_err(Self::from)?
-                        .into_iter()
-                        .map(Self::from),
-                );
-                continue;
-            }
-            for p in [
-                2_u8, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
-            ] {
-                while &n % p == zero() {
-                    factors.push(Self::from(p));
-                    n /= p;
-                }
-            }
-            if n == one() {
-                continue;
-            }
-            if n.is_prime() != 0 {
-                factors.push(n);
-                continue;
-            }
-            let root = n.sqrt();
-            let f = if &root * &root == n {
-                root
-            } else {
-                brent(&n, 20_000).ok_or_else(|| n.clone())?
-            };
-            pending.push(&n / &f);
-            pending.push(f);
-        }
-        factors.sort_unstable();
-        Ok(factors)
+        super::factor::factor(self)
     }
 
     /// MPU `mulmod.h::powmod`, using arbitrary precision modular exponentiation.
@@ -289,17 +194,19 @@ mod tests {
         assert_eq!(zero().gcd(&zero()), zero());
         assert_eq!(zero().gcd(&p), p.clone());
         assert_eq!(p.gcd(&zero()), p);
-        assert_eq!(brent(&BigUint::from(101_u8), 0), None);
-        assert_eq!(brent(&BigUint::from(101_u8), 100), None);
-        // Neither factor is within the bounded Brent search's reach.
-        let hard_composite = mersenne(521) * mersenne(607);
-        assert_eq!(hard_composite.factor(), Err(hard_composite));
-        for n in [9_u32, 15, 25, 49, 77, 101 * 103] {
-            let n = BigUint::from(n);
-            let f = brent(&n, 10_000).unwrap();
-            assert!(f > one() && f < n);
-            assert_eq!(&n % f, zero());
-        }
+        // Neither factor is within the recipe's reach in the time given
+        // (two primes near 2^521 and 2^607 with no smooth p - 1).
+        let hard_composite = "3969745685053027095829272008321555493420549371184841838908388949650480805997696654879243857726781730813849513677826105629871642794993144228794931738739322943".parse::<BigUint>().unwrap()
+            * "408331445160761318965522736298462115793761047438075670193055264915062031268695293105202766647664264260520098352199997574239326119342265858952042425114562029533428897762635544393450859".parse::<BigUint>().unwrap();
+        let partial = crate::bigint::factor::factor_within(
+            &hard_composite,
+            std::time::Duration::from_millis(20),
+        );
+        assert_eq!(partial.unsplit, vec![hard_composite]);
+        assert_eq!(
+            (mersenne(89) * 1_000_003_u32).factor(),
+            Ok(vec![BigUint::from(1_000_003_u32), mersenne(89)])
+        );
     }
 
     #[test]

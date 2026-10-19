@@ -132,18 +132,44 @@ jobs:
           echo "Base commit: $BEFORE"
           mkdir -p "$RUNNER_TEMP/base"
           git archive "$BEFORE" | tar -x -C "$RUNNER_TEMP/base"
-          # Same target dir, so criterion finds the saved baseline. Shared runners differ by more than
-          # 10 % on identical code, so base and head must run in this one job.
-          (cd "$RUNNER_TEMP/base" && CARGO_TARGET_DIR="$GITHUB_WORKSPACE/target" cargo bench --all-features -- --save-baseline base)
-          # One head run: the bencher output feeds the history chart and criterion still writes
-          # change/estimates.json. --baseline-lenient skips benches that the base does not have.
-          cargo bench --all-features -- --baseline-lenient base --output-format bencher | tee bench.txt
+          # Shared runners differ by more than 10 % on identical code, and one runner drifts by 10 % over
+          # an hour. So build both trees, then run the two binaries of each bench file back to back
+          # (base, then head) and let both write to one criterion directory.
+          export CRITERION_HOME="$RUNNER_TEMP/criterion"
+          (cd "$RUNNER_TEMP/base" && CARGO_TARGET_DIR="$RUNNER_TEMP/base-target" cargo bench --all-features --no-run --message-format=json > "$RUNNER_TEMP/base.json")
+          cargo bench --all-features --no-run --message-format=json > "$RUNNER_TEMP/head.json"
           python3 - <<'PY'
           import json
+          import os
           import pathlib
+          import subprocess
           import sys
 
-          root = pathlib.Path("target/criterion")
+          temp = pathlib.Path(os.environ["RUNNER_TEMP"])
+          root = pathlib.Path(os.environ["CRITERION_HOME"])
+
+          def benches(name):
+              found = {}
+              for line in (temp / name).read_text().splitlines():
+                  if not line.startswith("{"):
+                      continue
+                  msg = json.loads(line)
+                  if msg.get("reason") == "compiler-artifact" and msg.get("executable") and "bench" in msg["target"]["kind"]:
+                      found[msg["target"]["name"]] = msg["executable"]
+              return found
+
+          base, head = benches("base.json"), benches("head.json")
+          with open("bench.txt", "w") as out:
+              for name, exe in sorted(head.items()):
+                  if name in base:
+                      subprocess.run([base[name], "--bench", "--save-baseline", "base"], cwd=temp / "base", check=True)
+                  # One head run feeds the history chart (bencher output) and writes change/estimates.json.
+                  # --baseline-lenient skips benches that the base does not have.
+                  done = subprocess.run([exe, "--bench", "--baseline-lenient", "base", "--output-format", "bencher"],
+                                        stdout=subprocess.PIPE, text=True, check=True)
+                  sys.stdout.write(done.stdout)
+                  out.write(done.stdout)
+
           failures = []
           for path in sorted(root.glob("**/change/estimates.json")):
               # Slower only when the lower bound of the 95 % interval of the mean change is above 10 %.

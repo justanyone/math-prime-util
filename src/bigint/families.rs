@@ -175,7 +175,7 @@ fn prime_power(n: &BigUint) -> bool {
     e > 1 && primality::is_prob_prime(&arith::rootint(n, e)) != 0
 }
 
-/// Return prime powers. Port of MPU `prime_powers.c::prime_powers` and
+/// Return prime powers. Port of MPU `prime_powers.c::next_prime_power` and
 /// `PP.pm::prime_powers`, using trial tests for short bigint intervals.
 /// ```
 /// use math_prime_util::bigint::families::prime_powers;

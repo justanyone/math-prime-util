@@ -38,6 +38,35 @@ fn edges_and_repeated_calls() {
     for n in 0_u8..12 {
         let b = BigUint::from(n);
         assert_eq!(
+            Some(big::next_prime_power(&b)),
+            native::next_prime_power(u64::from(n)).map(BigUint::from)
+        );
+        assert_eq!(
+            big::prev_prime_power(&b),
+            native::prev_prime_power(u64::from(n)).map(BigUint::from)
+        );
+        assert_eq!(
+            big::minimal_goldbach_pair(&b),
+            native::minimal_goldbach_pair(u64::from(n)).map(BigUint::from)
+        );
+        assert_eq!(
+            big::prime_powers(&b, &b),
+            values(native::prime_powers(u64::from(n), u64::from(n)))
+        );
+        assert_eq!(
+            big::almost_primes(0, &b, &b).unwrap(),
+            values(native::almost_primes(0, u64::from(n), u64::from(n)))
+        );
+        assert_eq!(
+            big::omega_primes(0, &b, &b).unwrap(),
+            values(native::omega_primes(0, u64::from(n), u64::from(n)))
+        );
+        assert_eq!(
+            big::sieve_range(&b, &b, &0_u8.into()),
+            values(native::sieve_range(u64::from(n), 1, 0))
+        );
+
+        assert_eq!(
             big::next_perfect_power(&b),
             BigUint::from(native::next_perfect_power(u64::from(n)).unwrap())
         );

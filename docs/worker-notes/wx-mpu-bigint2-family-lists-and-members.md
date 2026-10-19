@@ -15,3 +15,5 @@ Commit-message exceptions for launcher: goldbach_pairs scans half the input; luc
 Oracle has reached the 2^70 cases. Fixed the remaining fixture-helper ownership lint. Expanded random native intervals through 10000; all implemented APIs participate.
 About five minutes remain. Fifteen APIs remain after the allowed practicality exclusions. Fixed an incomplete test removal, and restarted focused replay and the full gate. Coverage tooling is not on PATH.
 Oracle generation completed both intervals. All 30 rows replay, and all four property/edge tests pass. Added an exact row-count check so an interrupted generation cannot pass with a partial fixture. STATUS already marks every task name complete, so it needs no change.
+All four clippy feature configurations passed. Added deterministic 0..12 checks for prime-power and Goldbach boundaries and zero-depth sieve behavior. Gate is building MSRV.
+All 30 oracle rows match; no wrong Perl values were found. Coverage binaries are absent, so 95 percent line coverage remains unmeasured. Full offline suite and gate are still running.

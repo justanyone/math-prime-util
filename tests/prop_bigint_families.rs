@@ -39,7 +39,10 @@ proptest! {
 fn edges_and_repeated_calls() {
     for n in 0_u8..40 {
         let b = BigUint::from(n);
-        assert_eq!(big::goldbach_pairs(&b), values(native::goldbach_pairs(u64::from(n))));
+        assert_eq!(
+            big::goldbach_pairs(&b),
+            values(native::goldbach_pairs(u64::from(n)))
+        );
     }
     for n in 0_u8..12 {
         let b = BigUint::from(n);

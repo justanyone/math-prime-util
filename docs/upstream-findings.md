@@ -12,7 +12,8 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 4, probable 4, API difference or documentation only 7.
+Counts: confirmed 5, probable 4, API difference or documentation only 7.
+Entry 15 is numbered after the last entry of the file.
 
 ## Confirmed
 
@@ -87,6 +88,30 @@ Counts: confirmed 4, probable 4, API difference or documentation only 7.
   `ramanujan_prime_count_oracle` in `tests/compat_families.rs` pass on the XS
   rows with no skip.
 - Upstream test: `is(ramanujan_prime_count(2), 1); is(ramanujan_prime_count(3), 1); is_deeply(ramanujan_primes(3), [2]);`
+
+### 15. `is_aks_prime` (PP, `PP.pm`) dies for every input above 2^64 that passes its trivial tests
+
+- Function and input: `is_aks_prime(18446744073709551617)` (2^64 + 1), also
+  2^64 + 3 and 2^128 + 1 (`bigint_proving.tsv` lines 268, 269, 271).
+- Perl 0.75 value: dies with `toint: 'NaN' is not a valid number`.
+  `is_aks_prime(18446744073709551621)` returns 0, but only because the input
+  is divisible by 3 and the trivial checks answer first.
+- Correct value: 0 for all three (2^64 + 1 = 274177 * 67280421310721,
+  2^64 + 3 = 467443687 * 39463029637, 2^128 + 1 is the Fermat number F7 =
+  59649589127497217 * 5704689200685129054721).
+- Location: `PP.pm` `sub is_aks_prime`, `my $log2n = log($n)/log(2) + 0.0001`.
+  For a `Math::BigInt` argument the overloaded `log` returns a `Math::BigInt`
+  (the integer part, 44 for 2^64 + 1); dividing it by the float `log(2)` gives
+  `NaN`, so `$r0` is `NaN` and `Mtoint($r0)` dies. Every input above
+  2^64 that is not a perfect power and not divisible by 2, 3, 5, 7 or 11
+  reaches this line, prime or composite.
+- How verified: PP run today (`MPU_NO_XS=1`, no GMP). XS `is_aks_prime`
+  handles only native integers and hands bigints to PP, so no XS value exists.
+- Port: `bigint::proving::is_aks_prime` computes the bit length as a float
+  from the integer and returns 0 for the three inputs.
+- Test that skips the row: `aks_oracle` in `tests/compat_bigint_proving.rs`
+  asserts 0 for the `ERROR` rows instead of requiring a panic.
+- Status: confirmed (reachable in 0.75; the dying line is in MPU).
 
 ## Probable
 
@@ -224,6 +249,17 @@ areas left open there were checked today as follows.
   Mersenne exponents); every row replays except the 5 of entry 14. The 7
   `ERROR` rows (bases 0 and 1, increments 0 and 257, modulus 0) panic on the
   Rust side as the native functions do.
+- bigint proving: `tools/gen_fixtures.pl bigint_proving` under `MPU_NO_XS=1`
+  (276 rows: `is_provable_prime`, `is_provable_prime_with_cert` and
+  `prime_certificate` on 40 inputs of 65 to 664 bits, 144 `verify_prime`
+  rows of which 42 accept and 102 reject, 9 `is_aks_prime` rows). Two
+  inputs timed out under PP and are recorded as skipped comments. The 40
+  `is_provable_prime` rows replay, every PP certificate verifies in the port
+  (PP writes BLS5 and Small blocks only; Lucas, BLS3, Pocklington, BLS15,
+  ECPP and ECPP3 blocks come from hand-built certificates), and every
+  `verify_prime` row replays, including the tampered and malformed texts.
+  The 3 `ERROR` rows are entry 15. `compat_bigint_proving` and
+  `prop_bigint_proving` pass.
 - Earlier pass (unchanged): int (`sqrtint`, `rootint`, `powint`, `is_square`,
   `logint`, `gcd`, `lcm`, `binomial`, `valuation`, `divint` family); arith
   (totients, `moebius`, `mertens` to 200000, `sigma`, `divisor_sum`,

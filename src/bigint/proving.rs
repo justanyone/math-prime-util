@@ -1618,7 +1618,9 @@ pub fn prime_certificate(n: &BigUint) -> String {
 /// use num_bigint::BigUint;
 /// let cert = prime_certificate(&((BigUint::from(1_u8) << 89_usize) - 1_u8));
 /// assert_eq!(verify_prime(&cert), Ok(true));
-/// assert_eq!(verify_prime(&cert.replace("Q[1] 3", "Q[1] 5")), Ok(false));
+/// // 7 does not divide 2^89 - 2, so a block that claims it is rejected.
+/// let q1 = cert.lines().find(|l| l.starts_with("Q[1] ")).unwrap_or("Q[1] ");
+/// assert_eq!(verify_prime(&cert.replacen(q1, "Q[1] 7", 1)), Ok(false));
 /// assert!(verify_prime("[MPU - Primality Certificate]\nType Small\nN 7\n").is_err());
 /// ```
 pub fn verify_prime(certificate: &str) -> Result<bool, String> {

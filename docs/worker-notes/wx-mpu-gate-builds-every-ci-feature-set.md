@@ -11,4 +11,8 @@ Edited tools/gate.sh (clippy-default, clippy-bigint, clippy-gmp, then clippy-all
 Next: hand-check a gmp-only dead method `GateProbe::to_f64` in src/arith/sopf.rs. Expect tools/gate.sh to stop at `clippy-gmp`. Then remove the probe and run the green gate.
 
 Hand check attempt 1 stopped at clippy-bigint on clippy::unused_self, not dead_code. The method body did not use `self`. Next: use `self` and run the gate again.
+
+Hand check (probe removed after): tools/gate.sh passed fmt, clippy-default, and clippy-bigint, then stopped at step clippy-gmp. Errors: `struct GateProbe is never constructed` and `method to_f64 is never used` in src/arith/sopf.rs. Later steps did not run. Commit message should state this check.
+
+Next: probe is gone. Run tools/gate.sh and expect `== gate: green`. About 5 minutes of budget may remain after that run starts.
 - 2026-10-19T11:39:52Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-gate-builds-every-ci-feature-set.md.

@@ -4,6 +4,40 @@ All notable changes to this crate are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the crate uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-19
+
+### Added
+
+- `BigUint` forms of 232 more names (feature `bigint`): 314 of the 428 names now have one, 26 stay native only
+  and for 88 a `BigUint` form does not apply. Each module has oracle fixtures recorded from MPU 0.75's pure-Perl
+  path on inputs past 2^64 and a property test that checks the `BigUint` form against the native one.
+  - `bigint::combinat`: Bell, Catalan and Stirling numbers, partitions, factorial forms, permutation ranks,
+    Bernoulli and harmonic fractions and Ramanujan tau.
+  - `bigint::digits`: digit lists and strings, Zeckendorf form, palindromes, Harshad and happy numbers, digital roots.
+  - `bigint::functions` and `bigint::predicates`: functions and predicates of one integer (totients, `sopf`,
+    prime signature, perfect and prime powers, powerful, smooth, rough and practical numbers, and more).
+  - `bigint::modular`: `submod`, `negmod`, `muladdmod`, `mulsubmod`, `chinese2`, `lucasuvmod`, `is_qr`, `qnr`,
+    `cornacchia`, `pisano_period` and `allrootmod`.
+  - `bigint::primality` and `bigint::factor`: the Frobenius and Perrin pseudoprime tests, Chen, delicate,
+    Gaussian and safe primes, and Fermat, Lehman and Chebyshev factoring.
+  - `bigint::rational`: continued fractions, the Calkin-Wilf and Stern-Brocot sequences and `next_farey`.
+  - `bigint::sequences`: Fibonacci and Lucas numbers, primorials, `consecutive_integer_lcm`, power sums, vector
+    sums and products, `floor_sum` and `frobenius_number`.
+  - `bigint::sets`: the set and vector operations.
+  - `bigint::family_bounds`: bounds and estimates of the prime family counts and `n`th values, and `inverse_li`.
+  - `bigint::family_counts`: the exact family counts and sums whose run time stays practical past 2^64.
+  - `bigint::families`: next and previous family members and the family lists of short ranges.
+  - `bigint::iter`: `fordivisors`, `forfactored`, `forsemiprimes`, `foralmostprimes`, `forsquarefree` and
+    `forsquarefreeint`.
+  - `bigint::random`: random integers and random, safe, strong and proven primes of any size (Maurer and
+    Shawe-Taylor, with certificates).
+- `docs/bigint-coverage.md` gives the reason for each of the 26 names that stay native only.
+- `docs/upstream-findings.md`: new findings from the bigint oracles.
+
+### Changed
+
+- `forsquarefreeint` on a short range near `u64::MAX` sieves primes in bounded blocks and factors the range.
+
 ## [1.1.0] - 2026-10-19
 
 ### Added
@@ -59,5 +93,6 @@ All notable changes to this crate are listed here. The format follows
 - First release. All 428 exported names of Math::Prime::Util 0.75 are ported on the native `u64` and `u128`
   path, except `is_higgs_prime`, which does not exist in 0.75. See `STATUS.md` for the per-function checklist.
 
+[1.2.0]: https://github.com/justanyone/math-prime-util/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/justanyone/math-prime-util/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/justanyone/math-prime-util/releases/tag/v1.0.0

@@ -22,6 +22,6 @@ struct GateProbe;
 #[cfg(any(feature = "bigint", feature = "gmp"))]
 impl GateProbe {
     fn to_f64(&self) -> f64 {
-        0.0
+        f64::from(std::mem::size_of_val(self) == 0)
     }
 }

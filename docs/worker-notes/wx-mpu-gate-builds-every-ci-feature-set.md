@@ -9,4 +9,6 @@ Next: read PLAN.md sections 5–8, tools/gate.sh, and .github/workflows/ci.yml, 
 Edited tools/gate.sh (clippy-default, clippy-bigint, clippy-gmp, then clippy-all-features) and the matching comment in ci.yml.
 
 Next: hand-check a gmp-only dead method `GateProbe::to_f64` in src/arith/sopf.rs. Expect tools/gate.sh to stop at `clippy-gmp`. Then remove the probe and run the green gate.
+
+Hand check attempt 1 stopped at clippy-bigint on clippy::unused_self, not dead_code. The method body did not use `self`. Next: use `self` and run the gate again.
 - 2026-10-19T11:39:52Z launcher: no commit for 61 s; 91 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-gate-builds-every-ci-feature-set.md.

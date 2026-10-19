@@ -14,3 +14,5 @@ Added u64::MAX-base round trips and extreme exponent checks for conversion bound
 All five focused tests now pass, including large bases and exponent boundaries. All four clippy feature sets passed; the gate is building MSRV dependencies.
 Gate MSRV build passed and full tests are executing. No upstream discrepancies appeared in the bigint digit oracle.
 Full test execution continues; no failure has been reported. Coverage >=95% cannot be measured without cargo-llvm-cov, and aragog/wonko are inaccessible under the no-network rule.
+Waiting for existing count-family integration tests in the full gate; bigint digit focused tests remain green.
+Full suite is spending over a minute in the existing prime_count oracle. No bigint digit failure; waiting for gate completion.

@@ -123,7 +123,7 @@ pub fn sieve_range(low: &BigUint, high: &BigUint, depth: &BigUint) -> Vec<BigUin
 }
 
 /// Return numbers with `k` prime factors counted with repetition.
-/// Port of MPU `almost_primes.c::almost_primes` and its trial path.
+/// Port of MPU `almost_primes.c::generate_almost_primes` and its trial path.
 /// # Errors
 /// Return an unresolved cofactor if factoring fails.
 /// ```

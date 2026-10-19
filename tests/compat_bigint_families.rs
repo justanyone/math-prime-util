@@ -19,7 +19,9 @@ fn list(v: Vec<BigUint>) -> Option<String> {
 
 #[test]
 fn bigint_families_oracle() {
-    for c in common::load("bigint_families") {
+    let rows = common::load("bigint_families");
+    assert_eq!(rows.len(), 30, "the oracle must complete both intervals");
+    for c in rows {
         let a: BigUint = c.arg(0);
         let b = || c.arg::<BigUint>(1);
         let got = match c.func.as_str() {

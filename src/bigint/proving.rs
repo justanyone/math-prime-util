@@ -31,13 +31,12 @@
 
 use super::Int;
 use super::arith::{gcd, invmod, is_power_exp, is_square, jacobi, kronecker, rootint, sqrtint};
-use super::factor::factor_within;
+use super::factor::factor_bounded;
 use super::primality::{is_prob_prime, lucas_sequence};
 use num_bigint::{BigInt, BigUint, Sign};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::str::FromStr;
-use std::time::Duration;
 
 fn zero() -> BigUint {
     BigUint::from(0_u8)
@@ -1055,6 +1054,12 @@ impl Certificate {
 // ---------------------------------------------------------------------------
 // Proving.
 
+/// The rounds of Pollard-Brent the proofs spend on each composite cofactor
+/// of `n - 1` or of a curve order, through [`factor_bounded`]. A fixed
+/// amount of work gives the same proof on every host; the full
+/// `bigint::factor` recipe is too slow for every level of a proof.
+const PROOF_BRENT_ROUNDS: u64 = 20_000;
+
 /// Result of a proof attempt: the blocks, or MPU's status for no proof
 /// (0 composite, 1 could not prove).
 type Attempt = Result<Vec<Proof>, u8>;
@@ -1090,9 +1095,8 @@ fn bls75(n: &BigUint) -> Attempt {
     }
     while bls5_bound(n, &a_part, &b_part).is_none() {
         let Some(m) = stack.pop() else { break };
-        // Try the same staged factoring methods as MPU's BLS75 proof.
-        let factored = factor_within(&m, Duration::ZERO);
-        for f in factored.primes {
+        // The cofactors the bounded stages cannot split would fail again: drop them.
+        for f in factor_bounded(&m, PROOF_BRENT_ROUNDS).primes {
             if !factors.contains(&f) {
                 factors.push(f.clone());
             }
@@ -1350,8 +1354,8 @@ struct Candidate {
 }
 
 /// The prime `q` of a curve order `m = k q`: the cofactor after the primes
-/// of `primes` are divided out, split further by the base factoring stages
-/// when `split` is set.
+/// of `primes` are divided out, split further by the bounded factoring
+/// stages when `split` is set.
 fn order_prime(m: &BigUint, primes: &[u64], split: bool) -> Option<BigUint> {
     let mut q = m.clone();
     for &p in primes {
@@ -1368,7 +1372,10 @@ fn order_prime(m: &BigUint, primes: &[u64], split: bool) -> Option<BigUint> {
     if !split {
         return None;
     }
-    factor_within(&q, Duration::ZERO).primes.into_iter().max()
+    factor_bounded(&q, PROOF_BRENT_ROUNDS)
+        .primes
+        .into_iter()
+        .max()
 }
 
 /// The `(D, m, q)` at `n` with `q` a probable prime above `(n^(1/4) + 1)^2`,
@@ -1956,26 +1963,34 @@ mod tests {
     }
 
     #[test]
-    fn bounded_factoring_for_proofs() {
+    fn factoring_for_proofs() {
+        // n - 1 = 2 * 3 * 11 * 1000003 * p with the prime p = 9 * 2^134 + 1.
+        // Trial division leaves 1000003 * p; the bounded Pollard-Brent stage
+        // splits it, so the n - 1 proof holds, and p, above 2^128, gets its
+        // own BLS5 block.
+        let p = (BigUint::from(9_u8) << 134_usize) + 1_u8;
+        let n = &p * 66_u8 * 1_000_003_u32 + 1_u8;
+        let proofs = bls75(&n).unwrap_or_else(|status| panic!("no BLS5 proof: {status}"));
+        let q = vec![
+            BigUint::from(3_u8),
+            BigUint::from(11_u8),
+            BigUint::from(1_000_003_u32),
+            p.clone(),
+        ];
+        assert_eq!(proofs.len(), 2);
+        assert!(matches!(&proofs[0], Proof::Bls5 { n: m, q: f, .. } if *m == n && *f == q));
+        assert!(matches!(&proofs[1], Proof::Bls5 { n: m, .. } if *m == p));
+        let (status, cert) = is_provable_prime_with_cert(&n);
+        assert_eq!(status, 2);
+        assert_eq!(verify_prime(&cert), Ok(true));
+        // A curve order of the same shape gives p; two large primes give none.
+        let primes = small_primes(100);
+        let m = &p * 1_000_003_u32 * 6_u8;
+        assert_eq!(order_prime(&m, &primes, true), Some(p.clone()));
+        assert_eq!(order_prime(&m, &primes, false), None);
         let m521 = (one() << 521_usize) - 1_u8;
         let m607 = (one() << 607_usize) - 1_u8;
-        let hard = &m521 * &m607;
-        assert_eq!(
-            factor_within(&hard, Duration::ZERO).unsplit,
-            vec![hard.clone()]
-        );
-        let factored = factor_within(&(&hard * 6_u8), Duration::ZERO);
-        assert_eq!(factored.primes, vec![two(), BigUint::from(3_u8)]);
-        assert_eq!(factored.unsplit, vec![hard.clone()]);
-        assert_eq!(
-            factor_within(&(BigUint::from(360_u16) * &m521), Duration::from_secs(2))
-                .primes
-                .len(),
-            7
-        );
-        let one = factor_within(&one(), Duration::ZERO);
-        assert_eq!(one.primes, Vec::<BigUint>::new());
-        assert_eq!(one.unsplit, Vec::<BigUint>::new());
+        assert_eq!(order_prime(&(m521 * m607 * 6_u8), &primes, true), None);
     }
 
     #[test]

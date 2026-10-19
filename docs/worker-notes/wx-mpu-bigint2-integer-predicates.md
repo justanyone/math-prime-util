@@ -39,3 +39,5 @@ The gate and final suite are still running; no failures have appeared. Focused t
 About five minutes remain. Implementation and focused tests are complete; full-suite runs are waiting on existing long-running oracle tests. No further code changes are planned.
 
 Added a focused runnable-doc check while the full suites execute existing oracle cases. The final diff remains limited to the bigint module, its fixture family/tests, and these required worker notes.
+
+All 15 new runnable documentation examples passed. Full suites continue through existing tests; no new predicate failure has appeared.

@@ -14,3 +14,4 @@ Offline verification is running locally on wowbagger because the named build hos
 All eleven functions have docs and runnable examples. STATUS already checks every task name, so it needs no edit.
 The focused test process still holds the build lock. No gate-green or coverage result is available yet.
 The focused name-filter run completed successfully after the compile fixes. Re-running only the two new test binaries to retain concise evidence; full suite and gate remain running.
+All five new tests pass, including all 51 oracle rows. Clippy default, bigint and GMP pass; all-features is running.

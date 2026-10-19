@@ -1,8 +1,8 @@
 //! Additional modular helpers from MPU 0.75.
 use super::{
-    BigInt, BigUint, add, allsqrtmod, big, chinese, divide, factor, factor_exp, gcd, is_one,
-    is_prime, is_square, is_zero, kronecker, lucas_sequence, mul, one, pow, rootmod, roots_pk,
-    sqrtint, sub, two, zero,
+    BigInt, BigUint, add, allsqrtmod, big, chinese, divide, factor_exp, gcd, is_one, is_prime,
+    is_square, is_zero, kronecker, lucas_sequence, mul, one, pow, rootmod, roots_pk, sqrtint, sub,
+    two, zero,
 };
 
 /// Return `(a - b) mod n`. Return `None` for modulus zero.
@@ -89,7 +89,7 @@ pub fn is_qr(a: &BigUint, n: &BigUint) -> bool {
     }
     factor_exp(n)
         .iter()
-        .all(|(p, e)| !roots_pk(&(a % n), p, *e).is_empty())
+        .all(|(p, e)| super::sqrt_prime_power(&(a % n), p, *e).is_some())
 }
 
 /// Return the first prime quadratic nonresidue. Return `None` for zero.
@@ -293,7 +293,7 @@ fn prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Vec<BigUint> {
             bounded_count(&(big(roots.len() as u64) * copies));
             return roots
                 .iter()
-                .flat_map(|r| (0..copies).map(|j| r * p + big(j) * p.pow(e - k32 + 1)))
+                .flat_map(|r| (0..copies).map(move |j| r * p + big(j) * p.pow(e - k32 + 1)))
                 .collect();
         }
     }
@@ -357,7 +357,10 @@ pub fn allrootmod(a: &BigUint, k: &BigUint, n: &BigUint) -> Vec<BigUint> {
     }
     let factors = factor_exp(n);
     let mut roots = vec![a];
-    for prime in factor::factor(k) {
+    for prime in factor_exp(k)
+        .into_iter()
+        .flat_map(|(p, e)| std::iter::repeat_n(p, e as usize))
+    {
         let mut next = Vec::new();
         for r in roots {
             let (mut rs, mut modulus) = (vec![zero()], one());

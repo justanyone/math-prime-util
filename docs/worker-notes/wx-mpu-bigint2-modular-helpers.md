@@ -8,3 +8,4 @@ The local Perl environment is absent. Use the vendored MPU pure Perl module offl
 Added allrootmod with prime-power lifting and bounded output, and the eleven-name oracle generator.
 Generated 51 fixture rows offline from vendored MPU; added replay, native properties, edge and root-lifting tests.
 About five minutes remain. Verification on aragog/wonko is unavailable from this sandbox; formatter and gate availability are next.
+Focused tests are compiling; gate waits on the build lock. is_qr now tests root existence without enumerating roots.

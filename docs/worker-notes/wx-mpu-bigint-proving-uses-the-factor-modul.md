@@ -5,3 +5,4 @@ I will run the focused test and available offline formatting/lint checks without
 Replaced partial_factor in the BLS75 and ECPP candidate paths with factor_within and migrated its unit coverage. The focused proving test runner is still active and has not printed output; next I will collect its result, format, and run the <<cut 18 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -6 bytes)
+- 2026-10-19T12:25:46Z launcher: no commit for 60 s; 182 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-proving-uses-the-factor-modul.md, src/bigint/proving.rs.

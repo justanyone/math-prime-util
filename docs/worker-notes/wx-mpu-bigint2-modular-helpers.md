@@ -9,3 +9,5 @@ Added allrootmod with prime-power lifting and bounded output, and the eleven-nam
 Generated 51 fixture rows offline from vendored MPU; added replay, native properties, edge and root-lifting tests.
 About five minutes remain. Verification on aragog/wonko is unavailable from this sandbox; formatter and gate availability are next.
 Focused tests are compiling; gate waits on the build lock. is_qr now tests root existence without enumerating roots.
+The first focused build found a factor API tuple mismatch and a closure lifetime error; both are fixed.
+Offline verification is running locally on wowbagger because the named build hosts cannot be reached under this task's no-SSH rule. This does not satisfy the requested host check.

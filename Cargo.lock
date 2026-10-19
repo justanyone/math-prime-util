@@ -292,6 +292,7 @@ dependencies = [
  "num-bigint",
  "proptest",
  "rug",
+ "serde",
 ]
 
 [[package]]

@@ -89,6 +89,7 @@ def main():
         f"//! most {MAX_ABS_D}: {len(entries)} entries.",
         "",
         "/// The class polynomials, smallest `|D|` first.",
+        "#[rustfmt::skip]",
         "pub const CLASS_POLYNOMIALS: &[(i64, &[&str])] = &[",
     ]
     for d, coeffs in entries:

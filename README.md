@@ -129,10 +129,12 @@ resolution on a concrete `Integer`, so write `Int::gcd(&a, &b)` and `Int::next_p
 The compat tests replay every unsigned fixture row of the families primality, factor, modular, int and sieve
 through the trait on each backend and compare with the native path; `benches/bigint.rs` compares the two
 arbitrary precision backends on a 200-digit `is_prime` and a 60-digit `factor`.
+
 The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, binomials) and
 `bigint::primality` (the pseudoprime tests, BPSW, `lucas_sequence`, `next_prime`, `prev_prime`,
 `is_mersenne_prime`) take `&BigUint` and keep the MPU names; the families `bigint_arith` and
 `bigint_primality` replay MPU's pure Perl path on 65 to 1000 bit inputs against them.
+
 `bigint::proving` proves primality above 2^64: `is_provable_prime`, `is_provable_prime_with_cert`,
 `prime_certificate` and `verify_prime` on `&BigUint`, the BLS75 n-1 proof of `PrimalityProving.pm`, and an
 ECPP downrun (Atkin-Morain with the Hilbert class polynomials of the 250 discriminants of class number at most six,

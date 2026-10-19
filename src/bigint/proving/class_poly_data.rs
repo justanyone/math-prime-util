@@ -6,6 +6,7 @@
 //! most 1500: 250 entries.
 
 /// The class polynomials, smallest `|D|` first.
+#[rustfmt::skip]
 pub const CLASS_POLYNOMIALS: &[(i64, &[&str])] = &[
     (-3, &["0"]),
     (-4, &["-1728"]),

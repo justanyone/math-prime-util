@@ -9,7 +9,10 @@ fn certified_random_prime(bits: u32) -> Option<(BigUint, Certificate)> {
     assert!(bits >= 2, "bits must be >= 2");
     let n = random_nbit_prime(bits)?;
     let certificate = if bits <= 64 {
-        Certificate { n: n.clone(), proofs: vec![Proof::Small { n: n.clone() }] }
+        Certificate {
+            n: n.clone(),
+            proofs: vec![Proof::Small { n: n.clone() }],
+        }
     } else {
         Certificate::prove(&n)?
     };
@@ -24,7 +27,9 @@ fn certified_random_prime(bits: u32) -> Option<(BigUint, Certificate)> {
 /// assert_eq!(random_maurer_prime(10).unwrap().bits(), 10);
 /// ```
 #[must_use]
-pub fn random_maurer_prime(bits: u32) -> Option<BigUint> { certified_random_prime(bits).map(|x| x.0) }
+pub fn random_maurer_prime(bits: u32) -> Option<BigUint> {
+    certified_random_prime(bits).map(|x| x.0)
+}
 
 /// Returns a random Maurer prime and its verifiable certificate.
 /// Port of `RandomPrimes.pm::random_maurer_prime_with_cert`.
@@ -35,7 +40,9 @@ pub fn random_maurer_prime(bits: u32) -> Option<BigUint> { certified_random_prim
 /// assert_eq!(c.verify(), Ok(true)); assert_eq!(p, c.n);
 /// ```
 #[must_use]
-pub fn random_maurer_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> { certified_random_prime(bits) }
+pub fn random_maurer_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
+    certified_random_prime(bits)
+}
 
 /// Returns a random Shawe–Taylor prime with exactly `bits` bits.
 /// Port of `RandomPrimes.pm::random_shawe_taylor_prime`.
@@ -45,7 +52,9 @@ pub fn random_maurer_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)
 /// assert_eq!(random_shawe_taylor_prime(10).unwrap().bits(), 10);
 /// ```
 #[must_use]
-pub fn random_shawe_taylor_prime(bits: u32) -> Option<BigUint> { certified_random_prime(bits).map(|x| x.0) }
+pub fn random_shawe_taylor_prime(bits: u32) -> Option<BigUint> {
+    certified_random_prime(bits).map(|x| x.0)
+}
 
 /// Returns a random Shawe–Taylor prime and its certificate.
 /// Port of `RandomPrimes.pm::random_shawe_taylor_prime_with_cert`.
@@ -56,7 +65,9 @@ pub fn random_shawe_taylor_prime(bits: u32) -> Option<BigUint> { certified_rando
 /// assert_eq!(c.verify(), Ok(true)); assert_eq!(p, c.n);
 /// ```
 #[must_use]
-pub fn random_shawe_taylor_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> { certified_random_prime(bits) }
+pub fn random_shawe_taylor_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
+    certified_random_prime(bits)
+}
 
 /// Returns a random proven prime with exactly `bits` bits.
 /// Port of `RandomPrimes.pm::random_proven_prime`.
@@ -66,7 +77,9 @@ pub fn random_shawe_taylor_prime_with_cert(bits: u32) -> Option<(BigUint, Certif
 /// assert_eq!(random_proven_prime(10).unwrap().bits(), 10);
 /// ```
 #[must_use]
-pub fn random_proven_prime(bits: u32) -> Option<BigUint> { certified_random_prime(bits).map(|x| x.0) }
+pub fn random_proven_prime(bits: u32) -> Option<BigUint> {
+    certified_random_prime(bits).map(|x| x.0)
+}
 
 /// Returns a random proven prime and its certificate.
 /// Port of `RandomPrimes.pm::random_proven_prime_with_cert`.
@@ -77,7 +90,9 @@ pub fn random_proven_prime(bits: u32) -> Option<BigUint> { certified_random_prim
 /// assert_eq!(c.verify(), Ok(true)); assert_eq!(p, c.n);
 /// ```
 #[must_use]
-pub fn random_proven_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> { certified_random_prime(bits) }
+pub fn random_proven_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
+    certified_random_prime(bits)
+}
 
 /// Draws at most `bits` random bits.
 /// Port of `reference/mpu/csprng.c::urandomb` and `PP.pm::urandomb`.

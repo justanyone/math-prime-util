@@ -89,10 +89,10 @@ impl std::io::Write for FailingWriter {
 #[test]
 #[should_panic(expected = "offsets must be even and increasing")]
 fn rejects_odd_offset() {
-    big::sieve_prime_cluster(&2_u8.into(), &5_u8.into(), &[1]);
+    let _ = big::sieve_prime_cluster(&2_u8.into(), &5_u8.into(), &[1]);
 }
 #[test]
 #[should_panic(expected = "offsets must be even and increasing")]
 fn rejects_duplicate_offset() {
-    big::sieve_prime_cluster(&2_u8.into(), &5_u8.into(), &[2, 2]);
+    let _ = big::sieve_prime_cluster(&2_u8.into(), &5_u8.into(), &[2, 2]);
 }

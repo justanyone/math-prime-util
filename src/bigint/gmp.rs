@@ -505,7 +505,10 @@ mod tests {
         #[cfg(not(feature = "bigint"))]
         assert_eq!(hard_composite.factor(), Err(hard_composite.clone()));
         #[cfg(feature = "bigint")]
-        assert_eq!(hard_composite.factor(), Ok(vec![mersenne(521), mersenne(607)]));
+        assert_eq!(
+            hard_composite.factor(),
+            Ok(vec![mersenne(521), mersenne(607)])
+        );
         for n in [9_u32, 15, 25, 49, 77, 101 * 103] {
             let n = int(n);
             let f = brent(&n, 10_000).unwrap();

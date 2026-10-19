@@ -1,0 +1,264 @@
+const PRIME_PRODUCT: u64 = 111_546_435;
+const A_CANDIDATES: [u8; 6] = [2, 3, 5, 7, 11, 13];
+
+fn big(x: u64) -> BigUint {
+    BigUint::from(x)
+}
+
+fn looks_prime(n: &BigUint) -> bool {
+    gcd(n, &big(PRIME_PRODUCT)) == big(1) && is_strong_pseudoprime(n, &[big(3)])
+}
+
+fn small_cert(bits: u32) -> Option<(BigUint, Vec<Proof>)> {
+    let n = random_nbit_prime(bits)?;
+    let proofs = vec![Proof::Small { n: n.clone() }];
+    Some((n, proofs))
+}
+
+/// Port of `RandomPrimes.pm::random_maurer_prime_with_cert`: returns the prime and its proofs.
+fn maurer(k: u32) -> Option<(BigUint, Vec<Proof>)> {
+    assert!(k >= 2, "bits must be >= 2");
+    if k <= 64 {
+        return small_cert(k);
+    }
+    let m = 20.0_f64;
+    let kf = f64::from(k);
+    let mut r = 0.5_f64;
+    if kf > 2.0 * m {
+        loop {
+            r = (crate::drand(1.0) - 1.0).exp2();
+            if kf * r < kf - m {
+                break;
+            }
+        }
+    }
+    // Truncation is intended: this is floor(r * k) with r * k in [1, k].
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let small_k = (r * kf).floor() as u32 + 1;
+    let (q, mut q_proofs) = maurer(small_k)?;
+    let i = (big(1) << (k - 2) as usize) / &q;
+    let loop_limit = 1_000_000_u64 + u64::from(k) * 1_000;
+    for _ in 0..loop_limit {
+        let r_val = &i + 1_u8 + urandomm(&i);
+        let nm1 = &r_val * &q * 2_u8;
+        let n = &nm1 + 1_u8;
+        if !looks_prime(&n) {
+            continue;
+        }
+        let two_q_plus_1 = &q * 2_u8 + 1_u8;
+        if q.bit(0) && q > big(2) && two_q_plus_1 > n.sqrt() {
+            let rq = &r_val * &q;
+            for a in A_CANDIDATES {
+                let a = big(u64::from(a));
+                if a.modpow(&r_val, &n) != nm1 && a.modpow(&rq, &n) == nm1 {
+                    if is_prob_prime(&n) == 0 {
+                        return None;
+                    }
+                    let mut proofs = vec![Proof::Bls3 {
+                        n: n.clone(),
+                        q: q.clone(),
+                        a,
+                    }];
+                    proofs.append(&mut q_proofs);
+                    return Some((n, proofs));
+                }
+            }
+        }
+    }
+    None
+}
+
+fn seed_plus_one(seed: &[u8]) -> Vec<u8> {
+    let mut s = seed.to_vec();
+    for byte in s.iter_mut().rev() {
+        *byte = byte.wrapping_add(1);
+        if *byte != 0 {
+            break;
+        }
+    }
+    s
+}
+
+/// Hashes `iterations + 1` consecutive seeds, newest block first (MPU's hex string order).
+fn hash_blocks(seed: &mut Vec<u8>, iterations: u32) -> BigUint {
+    let mut bytes: Vec<u8> = Vec::new();
+    for _ in 0..=iterations {
+        let mut block = sha256(seed).to_vec();
+        block.append(&mut bytes);
+        bytes = block;
+        *seed = seed_plus_one(seed);
+    }
+    BigUint::from_bytes_be(&bytes)
+}
+
+/// Port of `RandomPrimes.pm::_ST_Random_prime` (FIPS 186-4): prime, new seed, counter, proofs.
+fn shawe_taylor(k: u32, input_seed: &[u8]) -> Option<(BigUint, Vec<u8>, u64, Vec<Proof>)> {
+    assert!(k >= 2, "bits must be >= 2");
+    let k2 = big(1) << (k - 1) as usize;
+    if k < 33 {
+        let mut seed = input_seed.to_vec();
+        let mut counter = 0_u64;
+        let kmask = 0xFFFF_FFFF_u32 >> (32 - k);
+        let kstencil = (1_u32 << (k - 1)) | 1;
+        loop {
+            let seedp1 = seed_plus_one(&seed);
+            let (h0, h1) = (sha256(&seed), sha256(&seedp1));
+            let tail: [u8; 4] = std::array::from_fn(|j| h0[28 + j] ^ h1[28 + j]);
+            let c = BigUint::from((u32::from_be_bytes(tail) & kmask) | kstencil);
+            counter += 1;
+            seed = seed_plus_one(&seedp1);
+            if is_prob_prime(&c) != 0 {
+                let proofs = vec![Proof::Small { n: c.clone() }];
+                return Some((c, seed, counter, proofs));
+            }
+            if counter > 10_000 + 16 * u64::from(k) {
+                return None;
+            }
+        }
+    }
+    let (c0, mut seed, mut counter, c0_proofs) = shawe_taylor(k.div_ceil(2) + 1, input_seed)?;
+    let iterations = k.div_ceil(256) - 1;
+    let old_counter = counter;
+    let c02 = &c0 << 1_usize;
+    let x = hash_blocks(&mut seed, iterations);
+    let x = &k2 + x % &k2;
+    let mut t = (&x + &c02 - 1_u8) / &c02;
+    let limit = &k2 * 2_u8;
+    loop {
+        let mut c = &t * &c02 + 1_u8;
+        if c > limit {
+            t = (&k2 + &c02 - 1_u8) / &c02;
+            c = &t * &c02 + 1_u8;
+        }
+        counter += 1;
+        if looks_prime(&c) {
+            let a = hash_blocks(&mut seed, iterations);
+            let a = a % (&c - 3_u8) + 2_u8;
+            let z = a.modpow(&(&t << 1_usize), &c);
+            let zm1 = (&z + &c - 1_u8) % &c;
+            if gcd(&zm1, &c) == big(1) && z.modpow(&c0, &c) == big(1) {
+                if is_prob_prime(&c) == 0 {
+                    return None;
+                }
+                let mut proofs = vec![Proof::Pocklington {
+                    n: c.clone(),
+                    q: c0,
+                    a,
+                }];
+                proofs.extend(c0_proofs);
+                return Some((c, seed, counter, proofs));
+            }
+        } else {
+            for _ in 0..=iterations {
+                seed = seed_plus_one(&seed);
+            }
+        }
+        if counter > 10_000 + 16 * u64::from(k) + old_counter {
+            return None;
+        }
+        t += 1_u8;
+    }
+}
+
+fn with_cert(found: Option<(BigUint, Vec<Proof>)>) -> Option<(BigUint, Certificate)> {
+    let (n, proofs) = found?;
+    let certificate = Certificate {
+        n: n.clone(),
+        proofs,
+    };
+    Some((n, certificate))
+}
+
+/// Returns a random prime with exactly `bits` bits, built by Maurer's method.
+/// Port of `RandomPrimes.pm::random_maurer_prime`.
+/// # Panics
+/// Panics if `bits < 2`.
+/// ```
+/// use math_prime_util::bigint::random::random_maurer_prime;
+/// math_prime_util::srand(15);
+/// assert_eq!(random_maurer_prime(10).unwrap().bits(), 10);
+/// ```
+#[must_use]
+pub fn random_maurer_prime(bits: u32) -> Option<BigUint> {
+    maurer(bits).map(|x| x.0)
+}
+
+/// Returns a random Maurer prime and its verifiable certificate.
+/// Port of `RandomPrimes.pm::random_maurer_prime_with_cert`.
+/// # Panics
+/// Panics if `bits < 2`.
+/// ```
+/// use math_prime_util::bigint::random::random_maurer_prime_with_cert;
+/// math_prime_util::srand(15);
+/// let (p, c) = random_maurer_prime_with_cert(10).unwrap();
+/// assert_eq!(c.verify(), Ok(true)); assert_eq!(p, c.n);
+/// ```
+#[must_use]
+pub fn random_maurer_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
+    with_cert(maurer(bits))
+}
+
+/// Returns a random Shawe–Taylor prime with exactly `bits` bits.
+/// Port of `RandomPrimes.pm::random_shawe_taylor_prime`.
+/// # Panics
+/// Panics if `bits < 2`.
+/// ```
+/// use math_prime_util::bigint::random::random_shawe_taylor_prime;
+/// math_prime_util::srand(15);
+/// assert_eq!(random_shawe_taylor_prime(10).unwrap().bits(), 10);
+/// ```
+#[must_use]
+pub fn random_shawe_taylor_prime(bits: u32) -> Option<BigUint> {
+    random_shawe_taylor_prime_with_cert(bits).map(|x| x.0)
+}
+
+/// Returns a random Shawe–Taylor prime and its certificate.
+/// Port of `RandomPrimes.pm::random_shawe_taylor_prime_with_cert`.
+/// Up to 64 bits it gives the native answer.
+/// # Panics
+/// Panics if `bits < 2`.
+/// ```
+/// use math_prime_util::bigint::random::random_shawe_taylor_prime_with_cert;
+/// math_prime_util::srand(15);
+/// let (p, c) = random_shawe_taylor_prime_with_cert(10).unwrap();
+/// assert_eq!(c.verify(), Ok(true)); assert_eq!(p, c.n);
+/// ```
+#[must_use]
+pub fn random_shawe_taylor_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
+    assert!(bits >= 2, "bits must be >= 2");
+    if bits <= 64 {
+        return with_cert(small_cert(bits));
+    }
+    let seed = crate::random_bytes(64);
+    with_cert(shawe_taylor(bits, &seed).map(|(n, _, _, proofs)| (n, proofs)))
+}
+
+/// Returns a random proven prime with exactly `bits` bits.
+/// Port of `RandomPrimes.pm::random_proven_prime`.
+/// # Panics
+/// Panics if `bits < 2`.
+/// ```
+/// use math_prime_util::bigint::random::random_proven_prime;
+/// math_prime_util::srand(15);
+/// assert_eq!(random_proven_prime(10).unwrap().bits(), 10);
+/// ```
+#[must_use]
+pub fn random_proven_prime(bits: u32) -> Option<BigUint> {
+    random_proven_prime_with_cert(bits).map(|x| x.0)
+}
+
+/// Returns a random proven prime and its certificate.
+/// Port of `RandomPrimes.pm::random_proven_prime_with_cert` (the no-GMP path, Maurer).
+/// # Panics
+/// Panics if `bits < 2`.
+/// ```
+/// use math_prime_util::bigint::random::random_proven_prime_with_cert;
+/// math_prime_util::srand(15);
+/// let (p, c) = random_proven_prime_with_cert(10).unwrap();
+/// assert_eq!(c.verify(), Ok(true)); assert_eq!(p, c.n);
+/// ```
+#[must_use]
+pub fn random_proven_prime_with_cert(bits: u32) -> Option<(BigUint, Certificate)> {
+    random_maurer_prime_with_cert(bits)
+}
+

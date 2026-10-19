@@ -18,3 +18,9 @@ The all-feature test command has passed unit tests, bigint proving compatibility
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 38 bytes)
 - 2026-10-19T12:32:19Z launcher: no commit for 60 s; 575 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-bigint-proving-uses-the-factor-modul.md, src/bigint/proving.rs.
+All-feature tests appear stalled in the long-running iterator test beyond its over-60-second warning; the gate has emitted no failure, but the child test process is no longer visible. Next: stop waiting, document full-suite timeout/stall, a <<cut 28 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 4 bytes)
+Final: focused proving_paths passed, fmt check passed, and all clippy feature sets passed. The gate's all-feature test run passed unit and several integration groups but stalled in forsquarefreeint; I interrupted it before doc tests. Change <<cut 122 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 97 bytes)

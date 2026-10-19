@@ -17,3 +17,4 @@ About five minutes remain. Fifteen APIs remain after the allowed practicality ex
 Oracle generation completed both intervals. All 30 rows replay, and all four property/edge tests pass. Added an exact row-count check so an interrupted generation cannot pass with a partial fixture. STATUS already marks every task name complete, so it needs no change.
 All four clippy feature configurations passed. Added deterministic 0..12 checks for prime-power and Goldbach boundaries and zero-depth sieve behavior. Gate is building MSRV.
 All 30 oracle rows match; no wrong Perl values were found. Coverage binaries are absent, so 95 percent line coverage remains unmeasured. Full offline suite and gate are still running.
+MSRV build passed. Gate and the required final tools/test.sh suite are executing; the focused suite already passed on the complete fixture.

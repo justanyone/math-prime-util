@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use crate::{primes, rootint, sqrtint};
+use nth_prime_upper::{MAX_PRIME, MAX_PRIME_IDX};
 
 mod long_double;
 mod nth_prime_approx;
@@ -178,13 +179,22 @@ pub fn nth_prime(n: u64) -> Option<u64> {
     if let Some(&p) = usize::try_from(n - 1).ok().and_then(|i| SMALL.get(i)) {
         return Some(p);
     }
+    if n > MAX_PRIME_IDX {
+        return None;
+    }
+    if n == MAX_PRIME_IDX {
+        return Some(MAX_PRIME);
+    }
     // Rosser's bound: p_n < n (ln n + ln ln n) for n >= 6.
     #[allow(clippy::cast_precision_loss)]
     let fnn = n as f64;
     let ln = fnn.ln();
     let mut lo = SMALL[4] + 1;
+    // The float bound can exceed u64::MAX; `as` saturates there. Clamp
+    // to MAX_PRIME - 1 before the `+ 1`, so the addition cannot overflow.
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    let mut hi = (fnn * (ln + ln.ln())) as u64 + 1;
+    let mut hi = (fnn * (ln + ln.ln())) as u64;
+    hi = hi.min(MAX_PRIME - 1) + 1;
     while lo < hi {
         let mid = lo + (hi - lo) / 2;
         if prime_count(mid) < n {
@@ -247,6 +257,17 @@ mod tests {
             assert_eq!(nth_prime(n), Some(p));
         }
         assert_eq!(nth_prime(0), None);
+    }
+
+    #[test]
+    fn nth_prime_max_index_returns_max_prime() {
+        assert_eq!(nth_prime(MAX_PRIME_IDX), Some(MAX_PRIME));
+    }
+
+    #[test]
+    fn nth_prime_past_max_index_is_none() {
+        assert_eq!(nth_prime(MAX_PRIME_IDX + 1), None);
+        assert_eq!(nth_prime(u64::MAX), None);
     }
 
     #[test]

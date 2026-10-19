@@ -1,0 +1,2 @@
+- continue: reading current state of src/bigint/random.rs
+- plan: port Maurer (BLS3 chain) for real; ST via crate sha256 if present

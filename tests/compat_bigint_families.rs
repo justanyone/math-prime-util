@@ -9,8 +9,8 @@ fn list(v: Vec<BigUint>) -> Option<String> {
         None
     } else {
         Some(
-            v.iter()
-                .map(ToString::to_string)
+            v.into_iter()
+                .map(|n| n.to_string())
                 .collect::<Vec<_>>()
                 .join(" "),
         )

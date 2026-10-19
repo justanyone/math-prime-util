@@ -10,7 +10,7 @@ fn values(v: Vec<u64>) -> Vec<BigUint> {
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(32))]
     #[test]
-    fn native_agreement(n in 0_u64..300, width in 0_u64..20, k in 0_u32..5) {
+    fn native_agreement(n in 0_u64..10_000, width in 0_u64..20, k in 0_u32..5) {
         let lo = BigUint::from(n);
         let hi = BigUint::from(n + width);
         prop_assert_eq!(big::primes(&lo,&hi), values(native::primes(n,n+width)));

@@ -41,7 +41,7 @@ The phases are described in `PLAN.md` section 6.
 - [ ] Milestone 7: iterators and the for-family ported
 - [ ] Milestone 8: random primes and the random number generator ported
 - [ ] Milestone 9: primality proving, real functions and the bigint backend ported
-- [ ] Release 1.0.0 published on crates.io
+- [x] Release 1.0.0 published on crates.io (2026-10-18)
 
 ## Minimum Rust version
 

@@ -20,3 +20,4 @@ All 30 oracle rows match; no wrong Perl values were found. Coverage binaries are
 MSRV build passed. Gate and the required final tools/test.sh suite are executing; the focused suite already passed on the complete fixture.
 MSRV is green. The final full suite is still compiling, and gate waits for its build lock. No further implementation changes are planned; coverage measurement and the requested remote-host run are unavailable.
 Full compilation finished and the gate now runs compatibility tests. No oracle mismatches or regressions have been reported so far.
+The full gate continues through existing count compatibility tests. All new family tests passed. The only unmeasured acceptance check is touched-module line coverage; no LLVM coverage tools are installed.

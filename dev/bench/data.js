@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792340613741,
+  "lastUpdate": 1792373157497,
   "repoUrl": "https://github.com/justanyone/math-prime-util",
   "entries": {
     "Benchmark": [
@@ -472,6 +472,258 @@ window.BENCHMARK_DATA = {
           {
             "name": "arith/valuation",
             "value": 138,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitand",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitor",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitxor",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitnot",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitandnot",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "justanyone@users.noreply.github.com",
+            "name": "Kevin J. Rice",
+            "username": "justanyone"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b0944acf6194c10599ab0e58a78a1910ea402e80",
+          "message": "Merge pull request #124 from justanyone/chore/crates-io-publish-1-0-0\n\nAllow publishing to crates.io",
+          "timestamp": "2026-10-18T20:16:37-05:00",
+          "tree_id": "bafeaf6a07a66d63fd5b3359b116cd3f2c873f19",
+          "url": "https://github.com/justanyone/math-prime-util/commit/b0944acf6194c10599ab0e58a78a1910ea402e80"
+        },
+        "date": 1792373156629,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "arith/sopfr",
+            "value": 189,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/sopf",
+            "value": 184,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/kronecker",
+            "value": 15,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/chinese",
+            "value": 158,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "euler_phi",
+            "value": 197,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "moebius",
+            "value": 207,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "totient_range",
+            "value": 15744,
+            "range": "± 235",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "jordan_totient",
+            "value": 145,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "carmichael_lambda",
+            "value": 162,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "moebius_range",
+            "value": 34177,
+            "range": "± 65",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "mertens",
+            "value": 29764,
+            "range": "± 149",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "liouville",
+            "value": 196,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumliouville",
+            "value": 30468,
+            "range": "± 393",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "exp_mangoldt",
+            "value": 195,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumtotient",
+            "value": 28897,
+            "range": "± 59",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dedekind_psi",
+            "value": 185,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "inverse_totient",
+            "value": 225909,
+            "range": "± 875",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_totient",
+            "value": 22587,
+            "range": "± 60",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/divisor_sum",
+            "value": 207,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/aliquot_sum",
+            "value": 181,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/abundance",
+            "value": 182,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/ramanujan_tau",
+            "value": 150,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/chinese2",
+            "value": 95,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/is_primitive_root",
+            "value": 566,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/znorder",
+            "value": 615,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/znprimroot",
+            "value": 460,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/qnr",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/is_qr",
+            "value": 179,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/is_fundamental",
+            "value": 137,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/inverse_sigma0",
+            "value": 22057018,
+            "range": "± 207300",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/inverse_sigma0_count",
+            "value": 21203135,
+            "range": "± 187785",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/ramanujan_sum",
+            "value": 83,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/valuation",
+            "value": 178,
             "range": "± 0",
             "unit": "ns/iter"
           },

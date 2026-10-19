@@ -37,6 +37,8 @@ fn run<I: Iterator, B>(mut iter: I, f: impl FnMut(I::Item) -> ControlFlow<B>) ->
 mod lastfor;
 pub use lastfor::lastfor;
 mod prime_iterator;
+#[cfg(feature = "bigint")]
+pub use prime_iterator::BigPrimeIterator;
 pub use prime_iterator::{PrimeIterator, prime_iterator};
 mod prime_iterator_object;
 pub use prime_iterator_object::prime_iterator_object;

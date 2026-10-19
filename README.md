@@ -133,6 +133,8 @@ The free functions of `bigint::arith` (gcd, modular arithmetic, roots, symbols, 
 `bigint::primality` (the pseudoprime tests, BPSW, `lucas_sequence`, `next_prime`, `prev_prime`,
 `is_mersenne_prime`) take `&BigUint` and keep the MPU names; the families `bigint_arith` and
 `bigint_primality` replay MPU's pure Perl path on 65 to 1000 bit inputs against them.
+`bigint::counts` continues the counts, bounds and estimates, the `n`th prime, the prime stream, `forprimes` and
+`is_polygonal` past `u64::MAX` (family `bigint_counts`); the native functions keep returning `None` there.
 
 [`Int`]: src/bigint/mod.rs
 

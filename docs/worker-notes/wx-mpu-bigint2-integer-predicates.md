@@ -30,3 +30,5 @@ MSRV 1.85 passed. Started the one final whole-suite tools/test.sh run; gate is n
 Final review found no oracle disagreements and no input-validation panics. The generator is deterministic, and normal Rust tests replay committed fixtures without invoking Perl.
 
 Full-suite compilation is still running. The code and focused fixtures are complete; waiting for the prescribed gate and final suite results.
+
+The full gate suite has started executing tests after compilation. No failing tests have appeared so far; coverage remains unmeasured because the offline host lacks the tools.

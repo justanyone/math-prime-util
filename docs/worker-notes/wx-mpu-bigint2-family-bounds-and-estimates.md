@@ -12,3 +12,11 @@ Host restriction clarification is pending. Continue static review; the added fun
 Static review found PP prime_count_lower uses different formulas and truncation below the native range, so root sums through native counts cannot replay the PP oracle. Removed the three unverified prime-power functions and their rows; retai <<cut 71 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 47 bytes)
+Remaining implementation (no impracticality claim): almost_prime_count_approx, almost_prime_count_lower, almost_prime_count_upper, inverse_li, lucky_count_approx, lucky_count_lower, lucky_count_upper, nth_almost_prime_approx, nth_almost_pri <<cut 571 chars by kit>>
+Before extending prime-power sums, port the PP prime-count formulas for native-sized roots separately from the native dispatch. C uses ceil for the lower bound; PP truncates and has different empirical formulas. This is a compatibility diff <<cut 65 chars by kit>>
+Validation still required on aragog or wonko: tools/test.sh bigint_family_bounds, tools/test.sh, tools/gate.sh, and touched-module line coverage >=95%. No git write, network, or build occurred in this session. STATUS.md already has the thre <<cut 25 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 588 bytes)
+Final: retained three exact bigint perfect-power count functions, 45 generated oracle rows, compat replay, native-equivalence properties, and boundary tests. Formatting, Perl syntax, and whitespace checks pass. The other 32 functions and Ru <<cut 84 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 60 bytes)

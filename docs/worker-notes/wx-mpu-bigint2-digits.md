@@ -16,3 +16,4 @@ Gate MSRV build passed and full tests are executing. No upstream discrepancies a
 Full test execution continues; no failure has been reported. Coverage >=95% cannot be measured without cargo-llvm-cov, and aragog/wonko are inaccessible under the no-network rule.
 Waiting for existing count-family integration tests in the full gate; bigint digit focused tests remain green.
 Full suite is spending over a minute in the existing prime_count oracle. No bigint digit failure; waiting for gate completion.
+Gate has passed the count tests and is replaying factor fixtures. Full-suite execution remains in progress.

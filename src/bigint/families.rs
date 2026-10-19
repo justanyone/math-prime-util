@@ -315,8 +315,7 @@ pub fn next_chen_prime(n: &BigUint) -> Result<BigUint, BigUint> {
 }
 
 /// Return the smaller primes of the Goldbach pairs of `n`. Port of MPU
-/// `goldbach.c::goldbach_pairs`, by ascending prime trials. The order is the
-/// native one: primes below 11 ascend, then the rest descend.
+/// `goldbach.c::goldbach_pairs`, by ascending prime trials. The order ascends.
 /// ```
 /// use math_prime_util::bigint::families::goldbach_pairs;
 /// let got = goldbach_pairs(&22_u8.into());
@@ -345,8 +344,6 @@ pub fn goldbach_pairs(n: &BigUint) -> Vec<BigUint> {
         }
         p = primality::next_prime(&p);
     }
-    let small = pairs.iter().take_while(|p| **p < 11_u8.into()).count();
-    pairs[small..].reverse();
     pairs
 }
 

@@ -1,3 +1,4 @@
+//! BigUint family counts against MPU 0.75 (pure Perl) on inputs above 2^64.
 #![cfg(feature = "bigint")]
 use math_prime_util::bigint::family_counts as f;
 use num_bigint::BigUint;

@@ -1,3 +1,4 @@
+//! BigUint family counts agree with the native forms on the u64 range.
 #![cfg(feature = "bigint")]
 use math_prime_util::{
     almost_prime_count, bigint::family_counts as f, legendre_phi, mertens, omega_prime_count,

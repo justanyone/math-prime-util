@@ -43,7 +43,7 @@ killed); unviable mutants do not compile and are outside the score. Score =
 
 PR 92, 101 and 109 added the mutation-killing tests `tests/mutants_factor*.rs`
 and `tests/mutants_rest.rs`. The full `src/factor` run of the first batch
-(aragog, PR 109) tested 840 mutants: 605 caught, 202 missed, 33 timeouts
+(PR 109) tested 840 mutants: 605 caught, 202 missed, 33 timeouts
 (76 % killed before the group re-runs). PR 109 then reasoned or killed the
 survivors by group and left fifteen sites open.
 
@@ -60,32 +60,92 @@ in the commit text of `task/fx9-mpu-close-the-open-factor-mutation-survivors-202
 A whole-crate run takes days on the available hosts, so each module that had
 no run yet was sampled with one `--shard 0/N` slice (about twenty mutants
 per module, chosen by cargo-mutants' deterministic hash, not by hand) with
-`--timeout 300 -j 3`, running the module's own tests only (`--lib`,
-`compat_<module>`, `prop_<module>` and `mutants_rest`). A sample bounds the
-module score; it is not the module score.
+`--timeout 300 -j 6` (`iter`: `--timeout 1200`, because its baseline
+`compat_iter` run alone takes over five minutes on a loaded host), running
+the module's own tests only (`--lib`, `compat_<module>`, `prop_<module>` and
+`mutants_rest`). A sample bounds the module score; it is not the module
+score. The shard sizes were chosen so each sample has about twenty mutants.
+The run was made on 2026-10-18 on the tree of this branch before the test
+added below.
 
-The shards were prepared as follows (shard size chosen so each sample has
-about twenty mutants): `arith` 0/83, `combinat` 0/62, `families` 0/380,
-`iter` 0/24, `modular` 0/58, `count` 0/55, `random` 0/36. The run was started
-on jeltz on 2026-10-18 and stopped by host memory pressure during the `arith`
-baseline build, before any mutant was tested. No sampled number is recorded
-yet; the table below is to be filled by the next run.
+| Module | Shard | Tested | Caught | Timeout | Missed | Unviable | Sample score |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `arith` | 0/83 | 21 | 13 | 5 | 3 | 0 | 86 % |
+| `combinat` | 0/62 | 20 | 20 | 0 | 0 | 0 | 100 % |
+| `families` | 0/380 | 20 | 19 | 0 | 0 | 1 | 100 % |
+| `iter` | 0/24 | 20 | 6 | 0 | 6 | 8 | 50 % |
+| `modular` | 0/58 | 21 | 19 | 2 | 0 | 0 | 100 % |
+| `count` | 0/55 | 21 | 17 | 0 | 4 | 0 | 81 % |
+| `random` | 0/36 | 21 | 20 | 0 | 0 | 1 | 100 % |
+| **Total** | | **144** | **114** | **7** | **13** | **10** | **90 %** |
 
-| Module | Shard | Tested | Caught | Timeout | Missed | Sample kill rate |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| `arith` | 0/83 | - | - | - | - | - |
-| `combinat` | 0/62 | - | - | - | - | - |
-| `families` | 0/380 | - | - | - | - | - |
-| `iter` | 0/24 | - | - | - | - | - |
-| `modular` | 0/58 | - | - | - | - | - |
-| `count` | 0/55 | - | - | - | - | - |
-| `random` | 0/36 | - | - | - | - | - |
-
-Sampled total: none yet.
+Sample score = (caught + timeout) / (caught + timeout + missed); unviable
+mutants are outside it. Sampled total: 144 mutants tested, 121
+killed (114 caught, 7 timeouts), 13 missed, 10 unviable:
+**90 %** of the 134 scored mutants.
 
 ### Survivors of the samples, triaged
 
-None recorded yet: the sampled runs have not completed.
+`arith` (three missed, all in the Pollard rho walk of `factors::split`,
+`src/arith/mod.rs`; the batch product of 64 differences is only an
+accelerator, and the per-step fallback recomputes the gcd):
+
+- `src/arith/mod.rs:38:46`, `*` to `+` in the step closure: the walk becomes
+  `x -> 2x + c mod n`. A linear walk still meets itself modulo each prime
+  factor, so the split is the same and only slower. Equivalent in output.
+- `src/arith/mod.rs:47:83`, `%` to `/` in the batch product: the product
+  collapses to 0, `gcd(0, n) == n` and the fallback loop at line 57 finds the
+  same divisor one step at a time. Equivalent in output.
+- `src/arith/mod.rs:61:26`, `!=` to `==` in the fallback loop: the loop stops
+  at the first step with `d == 1`, the batch is not split and the next batch
+  of 64 steps starts one step later and splits it. Equivalent in output.
+
+The five `arith` timeouts (lines 27, 30, 47, 51 and 54 of the same walk) are
+mutants that make the walk never terminate and count as killed.
+
+`count` (four missed, all on `src/count/mod.rs:48`, the closed form
+`x - x / 2` for `Counter::phi(x, 1)`):
+
+- `src/count/mod.rs:48:22` `-` to `/`, `-` to `+`; `src/count/mod.rs:48:26`
+  `/` to `%`, `/` to `*`: the `a == 1` branch is not reachable from the public
+  functions. `legendre_phi` answers `a == 1` itself before it builds a
+  `Counter`, the recursion in `phi` stops at the `a == 4` table, and
+  `prime_count` sieves to at least 100, so `count` calls `phi(n, a)` with
+  `a = pi(n^(1/4)) >= 2`. Real gap in the unit tests: the test
+  `count::tests::phi_small_a_matches_brute_force` added with this change
+  checks `Counter::phi(x, a)` for `x <= 300` and `a <= 4` against a brute
+  force count and kills all four (the `*` mutant by an overflow panic, the
+  others by value).
+
+`modular` (two timeouts, counted as killed): `src/modular/mod.rs:21:21`
+(`%` to `/` in `addmod`) and `src/modular/mod.rs:27:14` (`>` to `>=` in
+`addmod_u`, which returns `n` instead of 0 when `a + b == n`) both make a
+property test loop without end.
+
+`iter` (six missed, all on `src/iter/forsquarefreeint.rs:39-40`, the segment
+bound of `SquarefreeIntegersIn::next`; the sieve runs in segments of
+`65_536 * 256` numbers so memory stays bounded, and a segment boundary is
+not visible in the output):
+
+- `src/iter/forsquarefreeint.rs:39:29` `-` to `/`, `39:34` `>` to `>=`,
+  `39:34` `>` to `==`, `39:43` `*` to `+`: the test that decides whether a
+  range is split into segments changes, so a range is split at another
+  length or not at all. Every segment end is still at most `end`, so the
+  same numbers come out in the same order. Equivalent in output; only the
+  memory of one segment changes.
+- `src/iter/forsquarefreeint.rs:40:35` `-` to `+`, `-` to `/`: the first
+  segment ends one or two numbers later; the next segment starts after it.
+  Equivalent in output.
+
+The two caught mutants on the same lines (`>` to `<` and `*` to `/`) make a
+segment reach past `end` and were caught by the range tests.
+
+Unviable (outside the score): `src/families/is_gaussian_prime.rs:50:5`
+(`norm -> Wide`) and `src/random/mod.rs:36:9` (`Stream::seeded -> Self`)
+have no `Default` for the return type; the eight `iter` mutants replace the
+`ControlFlow<B>` result of `run` (`src/iter/mod.rs:34:5`) and
+`forsquarefreeint` (`src/iter/forsquarefreeint.rs:18:5`) with constructors
+`ControlFlow` does not have.
 
 ## Running it
 

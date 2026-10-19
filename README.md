@@ -36,10 +36,13 @@ Mutation testing uses cargo-mutants 27.1.0: **22,282 candidates** in
 22 modules. The `factor` module has a full run (840 mutants, 76 %
 killed before survivor closure; the 56 remaining sites were re-run on
 2026-10-18 with 45 killed and 11 documented as equivalent or unreachable).
-The other modules have no measured score yet: a sampled run (one shard
-per module) is prepared but was stopped by host memory pressure on
-2026-10-18 before any mutant was tested. The nightly workflow runs the whole
-crate. Details and the survivor triage: [docs/mutation-testing.md](docs/mutation-testing.md).
+The other seven modules with a run (`arith`, `combinat`, `families`,
+`iter`, `modular`, `count`, `random`) are sampled, one shard of about
+twenty mutants each: **144 mutants tested, 121 killed, 13 missed, 10
+unviable** (90 % of the scored sample); every survivor is triaged and the
+one real gap has a test. The nightly workflow runs the whole crate.
+Details and the survivor triage:
+[docs/mutation-testing.md](docs/mutation-testing.md).
 
 ## Branches
 

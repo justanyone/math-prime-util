@@ -72,7 +72,7 @@ fn prime_power_sum(
     count: fn(&BigUint) -> BigUint,
     native: fn(u64) -> u64,
 ) -> BigUint {
-    if let Some(small) = n.to_u64() {
+    if let Ok(small) = u64::try_from(n) {
         return BigUint::from(native(small));
     }
     if *n <= BigUint::from(5_u8) {
@@ -145,4 +145,28 @@ pub fn prime_power_count_upper(n: &BigUint) -> BigUint {
         super::counts::prime_count_upper,
         crate::prime_power_count_upper,
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn prime_power_bounds_match_native_near_2_pow_60() {
+        for n in [(1_u64 << 60) - 1, 1 << 60, (1 << 60) + 12345, u64::MAX] {
+            let big = BigUint::from(n);
+            assert_eq!(
+                prime_power_count_approx(&big),
+                BigUint::from(crate::prime_power_count_approx(n))
+            );
+            assert_eq!(
+                prime_power_count_lower(&big),
+                BigUint::from(crate::prime_power_count_lower(n))
+            );
+            assert_eq!(
+                prime_power_count_upper(&big),
+                BigUint::from(crate::prime_power_count_upper(n))
+            );
+        }
+    }
 }

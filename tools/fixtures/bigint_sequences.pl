@@ -19,6 +19,7 @@ sub gen_bigint_sequences {
       $emit->($_, @$pq, $k) for qw(lucasu lucasv lucasuv);
     }
   }
+  $emit->($_, 1, 0, $big) for qw(lucasu lucasv lucasuv);
   # These products already exceed 64 bits at small indices. Indices above
   # 2^64 require impractical output storage in both MPU and Rust.
   for my $n (0, 1, 2, 3, 10, 50, 100, 500) {

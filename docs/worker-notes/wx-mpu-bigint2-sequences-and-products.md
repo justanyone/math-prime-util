@@ -8,3 +8,7 @@ Implemented all fourteen APIs, using signed Lucas results and Round Robin Froben
 The vendored MPU 0.75 loads offline. Added the bigint_sequences generator and replay test; generated fixtures via PERL5LIB=reference/mpu/lib to avoid the network bootstrap.
 Added native comparison properties for all APIs, wide arithmetic identities, repeat/concurrent call checks, and invalid-input tests. Rust execution is blocked by the explicit aragog/wonko-only build rule on this wowbagger checkout.
 About five minutes remain. The oracle generated 272 rows without errors outside intended invalid inputs. Added full-u64 powersum and floor_sum properties. Formatting is complete; build, gate, and coverage require an allowed host.
+Added above-2^64 Lucas indices for the practical P=1,Q=0 case; the fixture now has 275 rows. All fourteen names have implementations. Fibonacci/Lucas-number indices and prime-product bounds above 2^64 have impractical output sizes; small in <<cut 36 chars by kit>>
+Validation: offline MPU fixture generation, rustfmt --check, and git diff --check pass. tools/test.sh, tools/gate.sh, and coverage were not run: this host is wowbagger and the task permits builds/tests only on aragog or wonko. No network, g <<cut 39 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 27 bytes)

@@ -14,3 +14,4 @@ Formatting and whitespace checks pass. The first all-features filtered build sti
 Added a genuine 81-bit composite removal factor and checked every inverse-totient result at 2^64 by recomputing its totient.
 Validation is still compiling. Remaining work is gate completion and coverage measurement; no oracle disagreements have been observed yet because replay has not completed.
 Coverage blocker: cargo-llvm-cov is not installed on wonko; no network install attempted. Started an isolated library clippy build to get actionable diagnostics while the all-test build finishes.
+Five-minute checkpoint: fixed the one library clippy diagnostic (math notation needed code quotes). Oracle generation and formatting pass; explicit tests, full suite, and gate remain in progress. Coverage cannot run without cargo-llvm-cov.

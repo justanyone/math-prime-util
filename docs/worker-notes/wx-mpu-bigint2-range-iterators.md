@@ -2,3 +2,4 @@ Plan: add bigint range iterators, follow existing bigint and fixture patterns, a
 First inspect MPU C routines and repository test conventions. Implement feature-gated BigUint APIs with docs and focused coverage.
 Then add fixture generator/test/property files where the offline checkout permits.
 Run focused tests and gate; record any environment blockers here.
+Focused property and compat test commands returned successfully. The gate is blocked by concurrent cargo activity; next inspect gate output and fixture feasibility.

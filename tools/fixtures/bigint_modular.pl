@@ -7,8 +7,9 @@
 # Composite moduli are products of small primes (below 2^20) and one large prime,
 # so that both the Perl oracle and the port can factor them; group orders for
 # znorder, znprimroot, is_primitive_root and znlog are smooth for the same
-# reason. znlog in pure Perl is slow on large inputs, so its moduli stay at
-# 65 to 128 bits.
+# reason. znlog in pure Perl is slow on large inputs (up to a minute a call
+# at 500 bits), so most of its moduli stay at 65 to 128 bits and three rows
+# per size cover 200 to 500 bits, at the end of the file.
 use strict; use warnings;
 
 my $mod_lcg = 20_261_018;
@@ -177,8 +178,9 @@ sub gen_bigint_modular {
   }
   for my $n (0, 1, 2, 3, 4) {
     emit($fh, 'znprimroot', [$n], sub { znprimroot($n) });
-    emit($fh, 'znorder', [_mod_big(70), $n], sub { znorder("" . _mod_big(70), $n) });
-    emit($fh, 'is_primitive_root', [_mod_big(70), $n], sub { is_primitive_root("" . _mod_big(70), $n) });
+    my $a = _mod_big(70);
+    emit($fh, 'znorder', [$a, $n], sub { znorder("$a", $n) });
+    emit($fh, 'is_primitive_root', [$a, $n], sub { is_primitive_root("$a", $n) });
   }
   { my $n = $smooth{200};
     emit($fh, 'znorder', [0, $n], sub { znorder(0, "$n") });
@@ -265,7 +267,9 @@ sub gen_bigint_modular {
     }
   }
   emit($fh, 'factorialmod', [20, 0], sub { factorialmod(20, 0) });
-  emit($fh, 'factorialmod', [_mod_big(70), 1], sub { factorialmod("" . _mod_big(70), 1) });
+  { my $n = _mod_big(70);
+    emit($fh, 'factorialmod', [$n, 1], sub { factorialmod("$n", 1) });
+  }
 
   # --- binomialmod: large n, small k, prime and composite moduli
   my @binom_moduli = (map({ $prime{$_} } 65, 128, 333, 500), _mod_pow(2, 70), _mod_pow(3, 50),
@@ -284,8 +288,10 @@ sub gen_bigint_modular {
         emit($fh, 'binomialmod', [$n, $k, $m], sub { binomialmod($n, $k, "$m") });
       }
     }
-    emit($fh, 'binomialmod', [_mod_big(70), 5, 0], sub { binomialmod("" . _mod_big(70), 5, 0) });
-    emit($fh, 'binomialmod', [_mod_big(70), 5, 1], sub { binomialmod("" . _mod_big(70), 5, 1) });
+    for my $m (0, 1) {
+      my $n = _mod_big(70);
+      emit($fh, 'binomialmod', [$n, 5, $m], sub { binomialmod("$n", 5, $m) });
+    }
     my $n = _mod_big(100);
     my $k = _mod_big(80);
     emit($fh, 'binomialmod', [$n, $k, 2], sub { binomialmod("$n", "$k", 2) });
@@ -365,7 +371,7 @@ sub gen_bigint_modular {
       my $t = $p1 * $p2 - 1;
       last if vecall { $_ < 65536 } factor($t);
     }
-    my $q = _mod_prime($bits - 39);
+    my $q = _mod_prime($bits - 37);
     my $n = $p1 * $p2 * $q;
     emit($fh, 'is_quasi_carmichael', [$n], sub { is_quasi_carmichael("$n") });
     my $m = 3 * $p1 * $q;
@@ -376,6 +382,20 @@ sub gen_bigint_modular {
   for my $n ($prime{65}, $prime{200}, $prime{65} * $prime{65}, _mod_pow(2, 70), 9 * $prime{128},
              4 * $prime{128}, 121 * $prime{65}, 2 * $prime{65}, 35, 77, 1121, 0, 1, 34) {
     emit($fh, 'is_quasi_carmichael', [$n], sub { is_quasi_carmichael("$n") });
+  }
+
+  # --- znlog on the 200 to 500 bit smooth primes: last, so that the inputs
+  # above keep their values.
+  for my $bits (200, 333, 500) {
+    my $p = $smooth{$bits};
+    my $g = Math::BigInt->new(znprimroot("$p"));
+    my $h = ($g * $g) % $p;
+    my $x = _mod_big($bits - 1);
+    my $a = Math::BigInt->new(powmod("$g", "$x", "$p"));
+    emit($fh, 'znlog', [$a, $g, $p], sub { znlog("$a", "$g", "$p") });
+    my $b = Math::BigInt->new(powmod("$h", "$x", "$p"));
+    emit($fh, 'znlog', [$b, $h, $p], sub { znlog("$b", "$h", "$p") });
+    emit($fh, 'znlog', [$b, $g, $p], sub { znlog("$b", "$g", "$p") });
   }
 }
 

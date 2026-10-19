@@ -1,5 +1,8 @@
 //! Nth semiprime from MPU 0.75 `semi_primes.c`.
 
+use super::nth_semiprime_approx::nth_semiprime_approx;
+use crate::{is_semiprime, rootint, semi_primes, semiprime_count};
+
 /// Small semiprimes, as in `_semiprimelist` of MPU `semi_primes.c`.
 /// Entry 0 is a placeholder: there is no zeroth semiprime.
 pub(crate) const SEMIPRIME_LIST: [u32; 191] = [
@@ -20,47 +23,44 @@ pub(crate) const MAX_SEMI_PRIME: u64 = 18_446_744_073_709_551_601;
 /// Index of the largest semiprime (`MPU_MAX_SEMI_PRIME_IDX`, 64-bit).
 pub(crate) const MAX_SEMI_PRIME_IDX: u64 = 1_701_748_900_850_019_777;
 
-/// Tests whether `n` is a semiprime (a product of exactly two primes).
-///
-/// Trial division up to `sqrt(n)`. MPU `is_semiprime` in `semi_primes.c`
-/// uses the same test on its factor pattern.
-fn is_semiprime(n: u64) -> bool {
-    if n < 4 {
-        return false;
-    }
-    let mut d = 2u64;
-    // `d <= n / d` is `d * d <= n` without overflow near `u64::MAX`.
-    while d <= n / d {
-        if n % d == 0 {
-            let q = n / d;
-            return is_prime(d) && is_prime(q);
-        }
-        d += 1;
-    }
-    false
+/// Distance (in semiprimes) below which MPU walks instead of sieving
+/// (`SP_SIEVE_THRESH` in `semi_primes.c`).
+const SP_SIEVE_THRESH: u64 = 100;
+
+/// `nth_semiprime_approx` for an index that is known to be positive.
+fn approx(n: u64) -> u64 {
+    nth_semiprime_approx(n).unwrap_or(0)
 }
 
-/// Trial-division primality test used by [`is_semiprime`].
-fn is_prime(n: u64) -> bool {
-    if n < 2 {
-        return false;
-    }
-    let mut d = 2u64;
-    while d <= n / d {
-        if n % d == 0 {
-            return false;
+/// The first semiprime above `n` (`_next_semiprime` in MPU `semi_primes.c`).
+fn next_semiprime(mut n: u64) -> u64 {
+    loop {
+        n += 1;
+        if is_semiprime(n) {
+            return n;
         }
-        d += 1;
     }
-    true
+}
+
+/// The last semiprime below `n` (`_prev_semiprime` in MPU `semi_primes.c`).
+fn prev_semiprime(mut n: u64) -> u64 {
+    loop {
+        n -= 1;
+        if is_semiprime(n) {
+            return n;
+        }
+    }
 }
 
 /// Returns the `n`-th semiprime (1-based), or `None` when `n` is 0.
 ///
 /// Port of `nth_semiprime` in MPU `semi_primes.c`. Small indices come from
-/// the table. Larger indices use a linear scan with a trial-division test.
-/// This differs from MPU's interpolation and sieve method, so only the
-/// results match, not the path taken.
+/// the table. Past the table, [`nth_semiprime_approx`] gives a guess that
+/// successive interpolations against the exact [`semiprime_count`] bring
+/// within `16 * cbrt(n)` semiprimes; a sieve ([`semi_primes`]) then covers
+/// the remaining distance in blocks, and a short walk over [`is_semiprime`]
+/// lands on the exact index. An index past the largest 64-bit semiprime
+/// index returns `Some(0)`, as MPU does.
 ///
 /// # Examples
 ///
@@ -69,6 +69,7 @@ fn is_prime(n: u64) -> bool {
 ///
 /// assert_eq!(nth_semiprime(1), Some(4));
 /// assert_eq!(nth_semiprime(5), Some(14));
+/// assert_eq!(nth_semiprime(1234), Some(4497));
 /// assert_eq!(nth_semiprime(0), None);
 /// ```
 #[must_use]
@@ -76,9 +77,10 @@ pub fn nth_semiprime(n: u64) -> Option<u64> {
     if n == 0 {
         return None;
     }
-    let idx = usize::try_from(n).ok()?;
-    if idx < SEMIPRIME_LIST.len() {
-        return Some(u64::from(SEMIPRIME_LIST[idx]));
+    if let Ok(idx) = usize::try_from(n) {
+        if idx < SEMIPRIME_LIST.len() {
+            return Some(u64::from(SEMIPRIME_LIST[idx]));
+        }
     }
     // Overflow boundary of `nth_semiprime` in MPU `semi_primes.c`.
     if n >= MAX_SEMI_PRIME_IDX {
@@ -88,15 +90,142 @@ pub fn nth_semiprime(n: u64) -> Option<u64> {
             0
         });
     }
-    let mut count = SEMIPRIME_LIST.len() as u64 - 1;
-    let mut m = u64::from(*SEMIPRIME_LIST.last()?);
-    while count < n {
-        m += 1;
-        if is_semiprime(m) {
-            count += 1;
+
+    let mut guess = approx(n);
+    // Use exact counts until within this many semiprimes.
+    let sptol = 16 * rootint(n, 3);
+    let (mut ming, mut maxg) = (0u64, u64::MAX);
+    let mut spcnt = 0u64;
+    // Successive interpolations until the difference is small enough.
+    for _ in 2..20 {
+        while !is_semiprime(guess) {
+            guess += 1;
+        }
+        spcnt = semiprime_count(guess);
+        if n.abs_diff(spcnt) < sptol {
+            break;
+        }
+        let an = approx(n);
+        let ac = approx(spcnt);
+        // Keep the previous guesses as bounds so a new guess cannot overshoot.
+        if spcnt <= n && guess > ming {
+            ming = guess;
+        }
+        if spcnt >= n && guess < maxg {
+            maxg = guess;
+        }
+        if an >= ac {
+            guess = guess.saturating_add(an - ac).min(MAX_SEMI_PRIME);
+        } else {
+            guess = guess.saturating_sub(ac - an);
+        }
+        if guess <= ming {
+            guess = ming + sptol - 1;
+        }
+        if guess >= maxg {
+            guess = maxg - sptol + 1;
         }
     }
-    Some(m)
+
+    // With far enough to go, sieve for semiprimes in blocks. A block that
+    // cannot fit in the domain is MPU's `return 0`.
+    if n > spcnt && n - spcnt > SP_SIEVE_THRESH {
+        let Some(moved) = sieve_forward(n, guess, spcnt) else {
+            return Some(0);
+        };
+        (guess, spcnt) = moved;
+    } else if n < spcnt && spcnt - n > SP_SIEVE_THRESH {
+        let Some(moved) = sieve_backward(n, guess, spcnt) else {
+            return Some(0);
+        };
+        (guess, spcnt) = moved;
+    }
+
+    // Finally, walk over semiprimes to the exact spot.
+    while spcnt > n {
+        guess = prev_semiprime(guess);
+        spcnt -= 1;
+    }
+    while spcnt < n {
+        guess = next_semiprime(guess);
+        spcnt += 1;
+    }
+    Some(guess)
+}
+
+/// Width of the next sieve block from the estimated distance `hi - lo`,
+/// as computed in MPU `nth_semiprime`: 10 percent and 100 of slack, capped.
+fn block_range(hi: u64, lo: u64) -> u64 {
+    let range = hi.saturating_sub(lo);
+    if range > 113_636_272 {
+        125_000_000
+    } else {
+        range + range / 10 + 100
+    }
+}
+
+/// Sieve forwards from the semiprime `guess` (number `spcnt`) until the
+/// count reaches or passes `n`; returns the new guess and count. `None`
+/// stands for MPU's `return 0` when no block fits below the maximum.
+fn sieve_forward(n: u64, mut guess: u64, mut spcnt: u64) -> Option<(u64, u64)> {
+    while n > spcnt {
+        let range = block_range(approx(n), approx(spcnt)).min(MAX_SEMI_PRIME - guess);
+        if range == 0 {
+            return None;
+        }
+        let end = guess + range;
+        let block = semi_primes(guess + 1, end);
+        if block.is_empty() {
+            guess = end;
+            continue;
+        }
+        let count = block.len() as u64;
+        if spcnt + count <= n {
+            guess = block[block.len() - 1];
+            spcnt += count;
+        } else {
+            for &value in &block {
+                if spcnt >= n {
+                    break;
+                }
+                guess = value;
+                spcnt += 1;
+            }
+        }
+    }
+    Some((guess, spcnt))
+}
+
+/// Sieve backwards from the semiprime `guess` (number `spcnt`) until the
+/// count reaches or passes `n`; returns the new guess and count. `None`
+/// stands for MPU's `return 0` when no block fits above zero.
+fn sieve_backward(n: u64, mut guess: u64, mut spcnt: u64) -> Option<(u64, u64)> {
+    while n < spcnt {
+        let range = block_range(approx(spcnt), approx(n)).min(guess);
+        if range == 0 {
+            return None;
+        }
+        let beg = guess - range;
+        let block = semi_primes(beg, guess - 1);
+        if block.is_empty() {
+            guess = beg;
+            continue;
+        }
+        let count = block.len() as u64;
+        if spcnt - count >= n {
+            guess = block[0];
+            spcnt -= count;
+        } else {
+            for &value in block.iter().rev() {
+                if n >= spcnt {
+                    break;
+                }
+                guess = value;
+                spcnt -= 1;
+            }
+        }
+    }
+    Some((guess, spcnt))
 }
 
 #[cfg(test)]
@@ -112,14 +241,33 @@ mod tests {
     }
 
     #[test]
-    fn scan_past_table() {
-        assert!(is_semiprime(4) && is_semiprime(6) && !is_semiprime(8));
-        assert!(!is_semiprime(3) && !is_semiprime(1) && !is_semiprime(0));
-        assert!(!is_prime(0) && !is_prime(1) && is_prime(2));
-        assert_eq!(nth_semiprime(100), Some(u64::from(SEMIPRIME_LIST[100])));
+    fn past_table() {
         // 623 is the last table entry; 626 = 2 * 313 is the next semiprime.
         assert_eq!(nth_semiprime(190), Some(623));
         assert_eq!(nth_semiprime(191), Some(626));
+        assert_eq!(next_semiprime(623), 626);
+        assert_eq!(prev_semiprime(626), 623);
+        // MPU 0.75 values (tests/fixtures/families.tsv).
+        assert_eq!(nth_semiprime(1234), Some(4497));
+        assert_eq!(nth_semiprime(12345), Some(51019));
+        assert_eq!(nth_semiprime(123_456), Some(573_355));
+    }
+
+    #[test]
+    fn count_round_trip() {
+        for n in [200u64, 500, 999, 2000, 5000, 20_000, 70_000] {
+            let s = nth_semiprime(n).unwrap();
+            assert!(is_semiprime(s), "{s} is not a semiprime");
+            assert_eq!(semiprime_count(s), n);
+        }
+    }
+
+    #[test]
+    fn block_ranges() {
+        assert_eq!(block_range(100, 100), 100);
+        assert_eq!(block_range(100, 200), 100);
+        assert_eq!(block_range(1100, 100), 1200);
+        assert_eq!(block_range(200_000_000, 0), 125_000_000);
     }
 
     #[test]

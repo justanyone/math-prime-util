@@ -12,3 +12,4 @@ Review found no shared state in new library functions. Repeated-call tests cover
 The inverse_sigma exceptions are specific to PP BigInt arguments: ref(k) disables its native generator and falls back to forfactored over the interval. Broad intervals above 2^64 are impractical. Request these four omissions in the launcher commit message.
 Formatting and whitespace checks pass. The first all-features filtered build still owns Cargo lock, so gate and explicit integration-test run are queued.
 Added a genuine 81-bit composite removal factor and checked every inverse-totient result at 2^64 by recomputing its totient.
+Validation is still compiling. Remaining work is gate completion and coverage measurement; no oracle disagreements have been observed yet because replay has not completed.

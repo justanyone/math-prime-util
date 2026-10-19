@@ -7,7 +7,7 @@ use proptest::prelude::*;
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(24))]
     #[test]
-    fn native_stream(seed in any::<u64>(), n in 1_u64..10000, bits in 4_u32..20) {
+    fn native_stream(seed in any::<u64>(), n in 1_u64..(u64::MAX - 100), bits in 4_u32..=64) {
         macro_rules! same {
             ($big:expr, $native:expr) => {{
                 srand(seed); let got = $big;
@@ -87,7 +87,7 @@ fn semiprime_form() {
     for seed in 0..4 {
         srand(seed);
         let n = big::random_semiprime(65).unwrap();
-        let f = math_prime_util::bigint::factor::factor(&n);
+        let f = math_prime_util::bigint::factor::factor(&n).expect("factorization");
         assert_eq!(f.len(), 2);
         assert_eq!(f.iter().product::<BigUint>(), n);
         assert!(
@@ -96,7 +96,7 @@ fn semiprime_form() {
         );
         srand(seed);
         let n = big::random_unrestricted_semiprime(65).unwrap();
-        let f = math_prime_util::bigint::factor::factor(&n);
+        let f = math_prime_util::bigint::factor::factor(&n).expect("factorization");
         assert_eq!(f.len(), 2);
         assert_eq!(f.iter().product::<BigUint>(), n);
     }

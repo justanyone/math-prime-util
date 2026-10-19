@@ -10,3 +10,4 @@ Added all twelve APIs and fixture/property files. First focused offline test is 
 First focused run found a fixture generator array reference encoding issue; fixed the generator to flatten factors and regenerated, never edited TSV. Added missing test module docs.
 About five minutes remain. Focused replay exposed a PP safe-prime oracle error. Investigating the oracle exception; lint gate is running after formatting and fixture fixes.
 All four focused tests pass, including every generated row. Documented MPU075_PP_SAFE_INTERNAL. Gate restarted after correcting clippy conversion and comparison findings.
+Expanded native comparisons across 64-bit magnitudes and added prime-factor checks for 65-bit semiprimes. cargo-llvm-cov is absent, so coverage measurement is blocked offline; no package installation attempted.

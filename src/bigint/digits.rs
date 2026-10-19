@@ -228,7 +228,7 @@ pub fn is_happy(n: &BigUint, base: u32, exponent: u32) -> u64 {
     let mut checkpoint = BigUint::ZERO;
     while n > BigUint::from(1_u32) && n != checkpoint {
         if height.is_power_of_two() {
-            checkpoint = n.clone();
+            checkpoint.clone_from(&n);
         }
         n = todigits(&n, u64::from(base), None)
             .into_iter()

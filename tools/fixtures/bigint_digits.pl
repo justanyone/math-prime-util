@@ -16,7 +16,7 @@ sub gen_bigint_digits {
       }
       for my $len (undef, 0, 4, 140) {
         my @args = defined($len) ? ($n, $base, $len) : ($n, $base);
-        emit($fh, 'todigits', \@args, sub { todigits($n->copy, $base, defined($len) ? ($len) : ()) });
+        emit($fh, 'todigits', \@args, sub { join(' ', todigits($n->copy, $base, defined($len) ? ($len) : ())) });
         emit($fh, 'todigitstring', \@args, sub { todigitstring($n->copy, $base, defined($len) ? ($len) : ()) });
       }
       my @digits = todigits($n->copy, $base);

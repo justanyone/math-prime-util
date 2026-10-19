@@ -5,3 +5,5 @@ Run offline focused tests and the required gate; record blockers here.
 Implemented all twelve functions; retained native validation and Option conventions. Next add oracle and parity tests.
 Added fixture generator and native parity/round-trip/validation tests. Local Perl bootstrap is absent; using vendored PP offline instead.
 Vendored MPU PP generated bigint_digits.tsv offline. Focused tests are building; no dependencies or native APIs changed.
+Focused build found an unavailable direct num_traits import; replaced it with standard TryFrom. About five minutes remain; finishing validation and documenting host/coverage limits.
+First replay exposed empty-list fixture encoding, not arithmetic; generator now serializes digit lists explicitly. Fixed the clippy clone assignment warning.

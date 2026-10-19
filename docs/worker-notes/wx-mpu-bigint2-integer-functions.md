@@ -6,3 +6,4 @@ Confirmed host wonko. MPU PP rejects hclassno and integer_complexity above signe
 Inverse sigma range generation needs prime enumeration or interval factorization across bigint ranges; retain both native forms for this row.
 Implemented 16 additive functions, including sparse inverse totient enumeration. Next add fixtures and native comparisons.
 Added oracle generator, complete row replay, and native agreement properties. Local Perl environment lacks local::lib; use vendored PP source offline rather than bootstrap network.
+Offline PP fixture generation succeeded using reference/mpu/lib. Focused tests and gate compilation are running; all STATUS entries are already checked, so STATUS is unchanged.

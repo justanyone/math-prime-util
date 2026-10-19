@@ -1,5 +1,9 @@
 //! Additional modular helpers from MPU 0.75.
-use super::{BigInt, BigUint, add, allsqrtmod, big, chinese, divide, factor, factor_exp, gcd, is_one, is_prime, is_square, is_zero, kronecker, lucas_sequence, mul, one, pow, rootmod, roots_pk, sqrtint, sub, two, zero};
+use super::{
+    BigInt, BigUint, add, allsqrtmod, big, chinese, divide, factor, factor_exp, gcd, is_one,
+    is_prime, is_square, is_zero, kronecker, lucas_sequence, mul, one, pow, rootmod, roots_pk,
+    sqrtint, sub, two, zero,
+};
 
 /// Return `(a - b) mod n`. Return `None` for modulus zero.
 /// Port of `reference/mpu/mulmod.h::submod`.
@@ -77,9 +81,15 @@ pub fn lucasuvmod(p: &BigInt, q: &BigInt, k: &BigUint, n: &BigUint) -> (BigUint,
 /// assert!(is_qr(&2u8.into(), &7u8.into()));
 /// ```
 pub fn is_qr(a: &BigUint, n: &BigUint) -> bool {
-    if is_zero(n) { return false; }
-    if *n <= two() || a % n <= one() { return true; }
-    factor_exp(n).iter().all(|(p, e)| !roots_pk(&(a % n), p, *e).is_empty())
+    if is_zero(n) {
+        return false;
+    }
+    if *n <= two() || a % n <= one() {
+        return true;
+    }
+    factor_exp(n)
+        .iter()
+        .all(|(p, e)| !roots_pk(&(a % n), p, *e).is_empty())
 }
 
 /// Return the first prime quadratic nonresidue. Return `None` for zero.
@@ -89,18 +99,32 @@ pub fn is_qr(a: &BigUint, n: &BigUint) -> bool {
 /// assert_eq!(qnr(&7u8.into()), Some(3u8.into()));
 /// ```
 pub fn qnr(n: &BigUint) -> Option<BigUint> {
-    if is_zero(n) { return None; }
-    if *n <= two() { return Some(n.clone()); }
-    let symbol = |a: &BigUint, p: &BigUint| kronecker(&BigInt::from(a.clone()), &BigInt::from(p.clone()));
-    if symbol(&two(), n) == -1 { return Some(two()); }
+    if is_zero(n) {
+        return None;
+    }
+    if *n <= two() {
+        return Some(n.clone());
+    }
+    let symbol =
+        |a: &BigUint, p: &BigUint| kronecker(&BigInt::from(a.clone()), &BigInt::from(p.clone()));
+    if symbol(&two(), n) == -1 {
+        return Some(two());
+    }
     let mut n = n.clone();
     let mut e = 0;
-    while is_zero(&(&n % 2u8)) { n >>= 1usize; e += 1; }
-    if e >= 2 || is_one(&n) { return Some(two()); }
+    while is_zero(&(&n % 2u8)) {
+        n >>= 1usize;
+        e += 1;
+    }
+    if e >= 2 || is_one(&n) {
+        return Some(two());
+    }
     let factors = factor_exp(&n);
     let mut a = two();
     while a < n {
-        if factors.iter().any(|(p, _)| a < *p && symbol(&a, p) == -1) { return Some(a); }
+        if factors.iter().any(|(p, _)| a < *p && symbol(&a, p) == -1) {
+            return Some(a);
+        }
         a = super::super::primality::next_prime(&a);
     }
     None
@@ -115,14 +139,22 @@ pub fn qnr(n: &BigUint) -> Option<BigUint> {
 /// assert_eq!(cornacchia(&1u8.into(), &5u8.into()), Some((2u8.into(), 1u8.into())));
 /// ```
 pub fn cornacchia(d: &BigUint, n: &BigUint) -> Option<(BigUint, BigUint)> {
-    if is_zero(n) { return Some((zero(), zero())); }
-    if is_zero(d) { return is_square(n).then(|| (sqrtint(n), zero())); }
+    if is_zero(n) {
+        return Some((zero(), zero()));
+    }
+    if is_zero(d) {
+        return is_square(n).then(|| (sqrtint(n), zero()));
+    }
     if is_prime(n) {
-        if d == n { return Some((zero(), one())); }
+        if d == n {
+            return Some((zero(), one()));
+        }
         let r = super::sqrtmod(&sub(&zero(), d, n), n)?;
         let (mut a, mut b) = (n.clone(), std::cmp::max(r.clone(), n - r));
         let limit = sqrtint(n);
-        while b > limit { (a, b) = (b.clone(), a % &b); }
+        while b > limit {
+            (a, b) = (b.clone(), a % &b);
+        }
         let rest = n - &b * &b;
         if is_zero(&(&rest % d)) && is_square(&(&rest / d)) {
             return Some((b, sqrtint(&(&rest / d))));
@@ -133,7 +165,9 @@ pub fn cornacchia(d: &BigUint, n: &BigUint) -> Option<(BigUint, BigUint)> {
     let mut y = zero();
     while y <= limit {
         let rest = n - d * &y * &y;
-        if is_square(&rest) { return Some((sqrtint(&rest), y)); }
+        if is_square(&rest) {
+            return Some((sqrtint(&rest), y));
+        }
         y += 1u8;
     }
     None
@@ -151,20 +185,37 @@ fn fibonacci(k: &BigUint, n: &BigUint) -> BigUint {
 /// assert_eq!(pisano_period(&10u8.into()), 60u8.into());
 /// ```
 pub fn pisano_period(n: &BigUint) -> BigUint {
-    if *n <= one() { return n.clone(); }
+    if *n <= one() {
+        return n.clone();
+    }
     let mut k = one();
     for (p, e) in factor_exp(n) {
-        let base = if p == two() { big(3) } else if p == big(3) { big(8) }
-        else if p == big(5) { big(20) } else if p == big(7) { big(16) }
-        else if p < big(300) {
+        let base = if p == two() {
+            big(3)
+        } else if p == big(3) {
+            big(8)
+        } else if p == big(5) {
+            big(20)
+        } else if p == big(7) {
+            big(16)
+        } else if p < big(300) {
             let (mut a, mut b, mut j) = (one(), one(), one());
-            while !is_zero(&a) || !is_one(&b) { (a, b) = (b.clone(), add(&a, &b, &p)); j += 1u8; }
+            while !is_zero(&a) || !is_one(&b) {
+                (a, b) = (b.clone(), add(&a, &b, &p));
+                j += 1u8;
+            }
             j
         } else {
-            let mut j = if &p % 5u8 == one() || &p % 5u8 == big(4) { &p - 1u8 } else { &p + 1u8 };
+            let mut j = if &p % 5u8 == one() || &p % 5u8 == big(4) {
+                &p - 1u8
+            } else {
+                &p + 1u8
+            };
             for (q, e) in factor_exp(&j) {
                 for _ in 0..e {
-                    if !is_zero(&fibonacci(&(&j / &q), &p)) { break; }
+                    if !is_zero(&fibonacci(&(&j / &q), &p)) {
+                        break;
+                    }
                     j /= &q;
                 }
             }
@@ -174,7 +225,9 @@ pub fn pisano_period(n: &BigUint) -> BigUint {
         k = &k / gcd(&k, &part) * part;
     }
     let mut r = k.clone();
-    while fibonacci(&(&r - 1u8), n) != one() { r += &k; }
+    while fibonacci(&(&r - 1u8), n) != one() {
+        r += &k;
+    }
     r
 }
 
@@ -185,31 +238,51 @@ fn bounded_count(n: &BigUint) -> u64 {
 
 fn prime_roots(a: &BigUint, k: &BigUint, p: &BigUint) -> Vec<BigUint> {
     let a = a % p;
-    if *p == two() || is_zero(&a) { return vec![a]; }
-    let Some(r) = rootmod(&a, k, p) else { return vec![]; };
+    if *p == two() || is_zero(&a) {
+        return vec![a];
+    }
+    let Some(r) = rootmod(&a, k, p) else {
+        return vec![];
+    };
     let g = gcd(k, &(p - 1u8));
-    if is_one(&g) { return vec![r]; }
+    if is_one(&g) {
+        return vec![r];
+    }
     let count = bounded_count(&g);
     let mut candidate = two();
     let z = loop {
         let z = pow(&candidate, &((p - 1u8) / &g), p);
-        if !is_one(&z) { break z; }
+        if !is_one(&z) {
+            break z;
+        }
         candidate += 1u8;
     };
     let mut roots = Vec::new();
     let mut next = r;
-    for _ in 0..count { roots.push(next.clone()); next = mul(&next, &z, p); }
+    for _ in 0..count {
+        roots.push(next.clone());
+        next = mul(&next, &z, p);
+    }
     roots
 }
 
 // rootmod.c::_allrootmod_prime_power, with k prime.
 fn prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Vec<BigUint> {
-    if *k == two() { return roots_pk(a, p, e); }
-    if e == 1 { return prime_roots(a, k, p); }
+    if *k == two() {
+        return roots_pk(a, p, e);
+    }
+    if e == 1 {
+        return prime_roots(a, k, p);
+    }
     let n = p.pow(e);
     if is_zero(&(a % &n)) {
-        let t = (big(u64::from(e - 1)) / k + 1u8).iter_u32_digits().next().unwrap_or(0);
-        return (0..bounded_count(&p.pow(e - t))).map(|i| big(i) * p.pow(t)).collect();
+        let t = (big(u64::from(e - 1)) / k + 1u8)
+            .iter_u32_digits()
+            .next()
+            .unwrap_or(0);
+        return (0..bounded_count(&p.pow(e - t)))
+            .map(|i| big(i) * p.pow(t))
+            .collect();
     }
     if *k < big(u64::from(e)) {
         let k32 = k.iter_u32_digits().next().unwrap_or(0);
@@ -218,24 +291,38 @@ fn prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Vec<BigUint> {
             let roots = prime_power(&(a / pk), k, p, e - k32);
             let copies = bounded_count(&p.pow(k32 - 1));
             bounded_count(&(big(roots.len() as u64) * copies));
-            return roots.iter().flat_map(|r| (0..copies).map(|j| r * p + big(j) * p.pow(e - k32 + 1))).collect();
+            return roots
+                .iter()
+                .flat_map(|r| (0..copies).map(|j| r * p + big(j) * p.pow(e - k32 + 1)))
+                .collect();
         }
     }
-    if is_zero(&(a % p)) { return vec![]; }
+    if is_zero(&(a % p)) {
+        return vec![];
+    }
     let np = if k == p { &n * p } else { n.clone() };
     let ered = e.div_ceil(2) + u32::from(*p == two() && e >= 5);
     let mut result = Vec::new();
     for s in prime_power(a, k, p, ered) {
         let t = pow(&s, &(k - 1u8), &np);
-        let r = add(&s, &divide(&sub(a, &mul(&t, &s, &np), &np), &mul(k, &t, &np), &n), &n);
-        if k != p { result.push(r); }
-        else if pow(&r, k, &n) == a % &n {
+        let r = add(
+            &s,
+            &divide(&sub(a, &mul(&t, &s, &np), &np), &mul(k, &t, &np), &n),
+            &n,
+        );
+        if k != p {
+            result.push(r);
+        } else if pow(&r, k, &n) == a % &n {
             let count = bounded_count(k);
             bounded_count(&(big(result.len() as u64) + k));
-            for i in 0..count { result.push(mul(&r, &add(&mul(&big(i), &(&n / p), &n), &one(), &n), &n)); }
+            for i in 0..count {
+                result.push(mul(&r, &add(&mul(&big(i), &(&n / p), &n), &one(), &n), &n));
+            }
         }
     }
-    result.sort_unstable(); result.dedup(); result
+    result.sort_unstable();
+    result.dedup();
+    result
 }
 
 /// Return all `k`th roots modulo `n` in ascending order.
@@ -248,12 +335,26 @@ fn prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Vec<BigUint> {
 /// assert_eq!(allrootmod(&13u8.into(), &6u8.into(), &107u8.into()), vec![24u8.into(), 83u8.into()]);
 /// ```
 pub fn allrootmod(a: &BigUint, k: &BigUint, n: &BigUint) -> Vec<BigUint> {
-    if is_zero(n) { return vec![]; }
+    if is_zero(n) {
+        return vec![];
+    }
     let a = a % n;
-    if is_one(n) { return vec![zero()]; }
-    if is_zero(k) { return if is_one(&a) { (0..bounded_count(n)).map(big).collect() } else { vec![] }; }
-    if *n == two() || is_one(k) { return vec![a]; }
-    if *k == two() { return allsqrtmod(&a, n); }
+    if is_one(n) {
+        return vec![zero()];
+    }
+    if is_zero(k) {
+        return if is_one(&a) {
+            (0..bounded_count(n)).map(big).collect()
+        } else {
+            vec![]
+        };
+    }
+    if *n == two() || is_one(k) {
+        return vec![a];
+    }
+    if *k == two() {
+        return allsqrtmod(&a, n);
+    }
     let factors = factor_exp(n);
     let mut roots = vec![a];
     for prime in factor::factor(k) {
@@ -271,7 +372,11 @@ pub fn allrootmod(a: &BigUint, k: &BigUint, n: &BigUint) -> Vec<BigUint> {
             next.extend(rs);
         }
         roots = next;
-        if roots.is_empty() { break; }
+        if roots.is_empty() {
+            break;
+        }
     }
-    roots.sort_unstable(); roots.dedup(); roots
+    roots.sort_unstable();
+    roots.dedup();
+    roots
 }

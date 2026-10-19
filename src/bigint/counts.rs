@@ -66,34 +66,34 @@ fn digits(n: &BigUint) -> u32 {
 }
 
 /// Fraction bits of [`Real`].
-const FRAC: u32 = 256;
+pub(super) const FRAC: u32 = 256;
 
 /// A real number in fixed point: the value is `inner / 2^256`. The integer
 /// part is unbounded. Products and quotients truncate at the last bit, so
 /// each operation is exact to about 77 decimal digits.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct Real(BigInt);
+pub(super) struct Real(pub(super) BigInt);
 
 impl Real {
-    fn zero() -> Self {
+    pub(super) fn zero() -> Self {
         Self(BigInt::from(0))
     }
 
-    fn one() -> Self {
+    pub(super) fn one() -> Self {
         Self::from_u64(1)
     }
 
-    fn from_u64(n: u64) -> Self {
+    pub(super) fn from_u64(n: u64) -> Self {
         Self(BigInt::from(n) << FRAC)
     }
 
-    fn from_biguint(n: &BigUint) -> Self {
+    pub(super) fn from_biguint(n: &BigUint) -> Self {
         Self(BigInt::from(n.clone()) << FRAC)
     }
 
     /// A non-negative decimal literal such as `10.667`, exact as
     /// `Math::BigFloat` holds it (to the last bit of the fraction).
-    fn decimal(text: &str) -> Self {
+    pub(super) fn decimal(text: &str) -> Self {
         let mut digits = BigInt::from(0);
         let mut scale = 0;
         let mut fraction = false;
@@ -131,26 +131,26 @@ impl Real {
         })
     }
 
-    fn is_zero(&self) -> bool {
+    pub(super) fn is_zero(&self) -> bool {
         self.0.sign() == Sign::NoSign
     }
 
     /// The largest integer at most the value.
-    fn floor(&self) -> BigInt {
+    pub(super) fn floor(&self) -> BigInt {
         &self.0 >> FRAC
     }
 
     /// [`floor`](Self::floor) as an unsigned value; negatives give zero.
-    fn floor_uint(&self) -> BigUint {
+    pub(super) fn floor_uint(&self) -> BigUint {
         self.floor().to_biguint().unwrap_or_default()
     }
 
-    fn abs(&self) -> Self {
+    pub(super) fn abs(&self) -> Self {
         Self(BigInt::from(self.0.magnitude().clone()))
     }
 
     /// The nearest `double`, ties to even, as Perl converts a bigint to NV.
-    fn to_f64(&self) -> f64 {
+    pub(super) fn to_f64(&self) -> f64 {
         let magnitude = self.0.magnitude();
         let bits = magnitude.bits();
         if bits == 0 {
@@ -178,12 +178,12 @@ impl Real {
     }
 
     /// The square root of a non-negative value.
-    fn sqrt(&self) -> Self {
+    pub(super) fn sqrt(&self) -> Self {
         Self(BigInt::from((self.0.magnitude() << FRAC).sqrt()))
     }
 
     /// The natural logarithm of a positive value; zero and negatives give zero.
-    fn ln(&self) -> Self {
+    pub(super) fn ln(&self) -> Self {
         if self.0.sign() != Sign::Plus {
             return Self::zero();
         }
@@ -485,7 +485,7 @@ fn inverse_li_ld(lx: Ld) -> Ld {
 }
 
 /// The `t` with `li(t) = x` for `x > 3` by Halley's method in [`Real`].
-fn inverse_li_real(x: &Real) -> Real {
+pub(super) fn inverse_li_real(x: &Real) -> Real {
     let two = Real::from_u64(2);
     let l = x.ln();
     let mut t = x.clone() * (l.clone() + l.ln());
@@ -504,7 +504,7 @@ fn inverse_li_real(x: &Real) -> Real {
 
 /// The logarithmic integral of `x > 1` in [`Real`]: `Ei(ln x)` by the
 /// convergent series `gamma + ln y + sum of y^k / (k k!)`.
-fn li_real(x: &Real) -> Real {
+pub(super) fn li_real(x: &Real) -> Real {
     let y = x.ln();
     let mut power = Real::one();
     let mut sum = Real::zero();
@@ -520,7 +520,7 @@ fn li_real(x: &Real) -> Real {
 }
 
 /// A non-negative finite `double` truncated to an integer.
-fn f64_to_biguint(value: f64) -> BigUint {
+pub(super) fn f64_to_biguint(value: f64) -> BigUint {
     if value < 1.0 {
         return zero();
     }

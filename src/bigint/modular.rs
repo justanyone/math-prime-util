@@ -263,11 +263,11 @@ fn sqrt_prime_power(a: &BigUint, p: &BigUint, e: u32) -> Option<BigUint> {
 }
 
 /// A square root of `a` modulo `n`, or `None` when there is none. The
-///
-/// C reference: MPU 0.75 `rootmod.c::sqrtmod`.
 /// smaller of a root and its negative is returned; over a composite
 /// modulus the root is the combination of the smaller roots modulo each
 /// prime power, as on the native path.
+///
+/// C reference: MPU 0.75 `rootmod.c::sqrtmod`.
 ///
 /// Port of MPU 0.75 `PP.pm::sqrtmod` and `_sqrtmod_composite`.
 ///
@@ -569,9 +569,9 @@ fn cyclic_prime_power(n: &BigUint) -> Option<(BigUint, u32)> {
 }
 
 /// The least primitive root modulo `n`, or `None` when `n` is zero or no
+/// root exists.
 ///
 /// C reference: MPU 0.75 `util.c::znprimroot`.
-/// root exists.
 ///
 /// Port of MPU 0.75 `PP.pm::znprimroot`: `n` must be 1, 2, 4, `p^e` or
 /// `2 p^e` for an odd prime `p`, and each candidate is checked against the
@@ -624,9 +624,9 @@ pub fn znprimroot(n: &BigUint) -> Option<BigUint> {
 }
 
 /// Tests whether `a` is a primitive root modulo `n`; `None` when `n` is
+/// zero.
 ///
 /// C reference: MPU 0.75 `util.c::is_primitive_root`.
-/// zero.
 ///
 /// Port of MPU 0.75 `PP.pm::is_primitive_root`: cheap exclusions (even
 /// base and modulus, squares, non-units, moduli without primitive roots,
@@ -981,9 +981,9 @@ fn root_prime_power(a: &BigUint, k: &BigUint, p: &BigUint, e: u32) -> Option<Big
 }
 
 /// A `k`-th root of `a` modulo `n`, or `None` when there is none. For
+/// `k = 2` the smaller of a root and its negative is returned.
 ///
 /// C reference: MPU 0.75 `rootmod.c::rootmod`.
-/// `k = 2` the smaller of a root and its negative is returned.
 ///
 /// Port of MPU 0.75 `PP.pm::rootmod` by the native `rootmod.c` route: an
 /// integer root when `a` is a perfect power, Tonelli-Shanks `k`-th roots
@@ -1094,9 +1094,9 @@ fn roots_pk(a: &BigUint, p: &BigUint, k: u32) -> Vec<BigUint> {
 }
 
 /// All square roots of `a` modulo `n` in ascending order; empty when there
+/// is none.
 ///
 /// C reference: MPU 0.75 `rootmod.c::allsqrtmod`.
-/// is none.
 ///
 /// Port of MPU 0.75 `PP.pm::allsqrtmod`: the roots modulo each prime power
 /// of `n` (which must be factorable), combined by the Chinese remainder
@@ -1135,11 +1135,11 @@ pub fn allsqrtmod(a: &BigUint, n: &BigUint) -> Vec<BigUint> {
 }
 
 /// Solves simultaneous congruences `x = a_i mod n_i`, given as
-///
-/// C reference: MPU 0.75 `util.c::chinese`.
 /// `(residue, modulus)` pairs, and returns the least solution. An empty
 /// input gives zero. Returns `None` for a zero modulus or inconsistent
 /// congruences; the moduli need not be coprime.
+///
+/// C reference: MPU 0.75 `util.c::chinese`.
 ///
 /// Port of MPU 0.75 `PP.pm::chinese2`, Garner's form with the extended
 /// Euclidean algorithm at each step.
@@ -1195,10 +1195,10 @@ fn factorial_valuation(n: &BigUint, p: &BigUint) -> BigUint {
 }
 
 /// `n! mod m`, or `None` when `m` is zero or the product would need more
-///
-/// C reference: MPU 0.75 `factmod.c::factorialmod`.
 /// than 2^64 steps (`n`, or `m - n - 1` when Wilson's theorem turns the
 /// product around, above the `u64` range).
+///
+/// C reference: MPU 0.75 `factmod.c::factorialmod`.
 ///
 /// Port of MPU 0.75 `PP.pm::factorialmod` by the native `factmod.c` route:
 /// Wilson's theorem for `n` above `m / 2` with `m` prime, a zero short cut
@@ -1565,9 +1565,9 @@ pub fn is_carmichael(n: &BigUint) -> bool {
 }
 
 /// The number of quasi-Carmichael bases of `n`: the `b` with `p - b`
+/// dividing `n - b` for every prime `p` of the square-free `n`.
 ///
 /// C reference: MPU 0.75 `util.c::is_quasi_carmichael`.
-/// dividing `n - b` for every prime `p` of the square-free `n`.
 ///
 /// Port of MPU 0.75 `PP.pm::is_quasi_carmichael` by the native `util.c`
 /// route over the divisors of `n / spf - 1` (two primes) or of

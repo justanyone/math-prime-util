@@ -67,7 +67,14 @@ pub fn perfect_power_count_upper(n: &BigUint) -> BigUint {
     perfect_power_count(n)
 }
 
-fn prime_power_sum(n: &BigUint, count: fn(&BigUint) -> BigUint) -> BigUint {
+fn prime_power_sum(
+    n: &BigUint,
+    count: fn(&BigUint) -> BigUint,
+    native: fn(u64) -> u64,
+) -> BigUint {
+    if let Some(small) = n.to_u64() {
+        return BigUint::from(native(small));
+    }
     if *n <= BigUint::from(5_u8) {
         return if n.bits() == 0 {
             BigUint::from(0_u8)
@@ -95,7 +102,11 @@ fn prime_power_sum(n: &BigUint, count: fn(&BigUint) -> BigUint) -> BigUint {
 /// ```
 #[must_use]
 pub fn prime_power_count_approx(n: &BigUint) -> BigUint {
-    prime_power_sum(n, super::counts::prime_count_approx)
+    prime_power_sum(
+        n,
+        super::counts::prime_count_approx,
+        crate::prime_power_count_approx,
+    )
 }
 
 /// Return a lower bound for the number of prime powers at most `n`.
@@ -110,7 +121,11 @@ pub fn prime_power_count_approx(n: &BigUint) -> BigUint {
 /// ```
 #[must_use]
 pub fn prime_power_count_lower(n: &BigUint) -> BigUint {
-    prime_power_sum(n, super::counts::prime_count_lower)
+    prime_power_sum(
+        n,
+        super::counts::prime_count_lower,
+        crate::prime_power_count_lower,
+    )
 }
 
 /// Return an upper bound for the number of prime powers at most `n`.
@@ -125,5 +140,9 @@ pub fn prime_power_count_lower(n: &BigUint) -> BigUint {
 /// ```
 #[must_use]
 pub fn prime_power_count_upper(n: &BigUint) -> BigUint {
-    prime_power_sum(n, super::counts::prime_count_upper)
+    prime_power_sum(
+        n,
+        super::counts::prime_count_upper,
+        crate::prime_power_count_upper,
+    )
 }

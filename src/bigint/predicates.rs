@@ -1,8 +1,8 @@
 //! Integer predicates on arbitrary precision unsigned values.
 //!
 //! Factor-based tests return an unsplit cofactor as an error.
-use super::{arith, divisors, factor, primality};
-use num_bigint::BigUint;
+use super::{arith, divisors, factor, modular, primality};
+use num_bigint::{BigInt, BigUint};
 
 fn big(n: u64) -> BigUint {
     BigUint::from(n)
@@ -365,4 +365,130 @@ fn totpred(n: &BigUint, maxd: &BigUint) -> Result<bool, BigUint> {
         }
     }
     Ok(false)
+}
+
+/// Test whether `n` is a congruent number: the area of a right triangle with
+/// rational sides.
+///
+/// Port of MPU 0.75 `PP.pm::is_congruent_number`, the path MPU takes past
+/// 2^64. The square part is removed first, and `n = 5, 6, 7 (mod 8)` is
+/// congruent. Primes, twice a prime, and some products of two primes (or
+/// twice that) are then decided by the Lagrange, Bastien and Monsky filters.
+/// Every other `n` goes to Tunnell's count, which takes time linear in `n`:
+/// this is practical to about 2^40 only, as in MPU. Tunnell's test and the
+/// `5, 6, 7 (mod 8)` rule assume the weak Birch and Swinnerton-Dyer
+/// conjecture.
+///
+/// # Errors
+/// Returns the cofactor that could not be split.
+///
+/// ```
+/// use math_prime_util::bigint::predicates::is_congruent_number;
+/// use num_bigint::BigUint;
+/// assert_eq!(is_congruent_number(&BigUint::from(6_u8)), Ok(true));
+/// assert_eq!(is_congruent_number(&BigUint::from(3_u8)), Ok(false));
+/// // A prime p = 3 (mod 8) is not congruent; 2p is.
+/// let p: BigUint = "18446744073709551667".parse().unwrap();
+/// assert_eq!(is_congruent_number(&p), Ok(false));
+/// assert_eq!(is_congruent_number(&(p * 2_u8)), Ok(true));
+/// ```
+pub fn is_congruent_number(n: &BigUint) -> Result<bool, BigUint> {
+    if *n < big(13) {
+        return Ok(*n >= big(5) && *n <= big(7));
+    }
+    let n8 = n % 8_u8;
+    if n8 >= big(5) {
+        return Ok(true);
+    }
+    if !divisors::is_square_free(n)? {
+        let core: BigUint = factor::factor_exp(n)?
+            .into_iter()
+            .filter(|(_, e)| e % 2 == 1)
+            .map(|(p, _)| p)
+            .product();
+        return is_congruent_number(&core);
+    }
+    let half = n >> 1_usize;
+    let kr = |a: &BigUint, b: &BigUint| {
+        arith::kronecker(&BigInt::from(a.clone()), &BigInt::from(b.clone()))
+    };
+    if !n.bit(0) && primality::is_prime(&half) != 0 {
+        let p8 = &half % 8_u8;
+        if p8 == big(3) || p8 == big(7) {
+            return Ok(true);
+        }
+        if p8 == big(5) || &half % 16_u8 == big(9) {
+            return Ok(false);
+        }
+    } else if primality::is_prime(n) != 0 {
+        if n8 == big(3) {
+            return Ok(false);
+        }
+        if let Some(r) = modular::sqrtmod(&big(2), n) {
+            if kr(&(r + 1_u8), n) == -1 {
+                return Ok(false);
+            }
+        }
+    } else {
+        let f = factor::factor(n)?;
+        let (pair, q8) = if f.len() == 2 {
+            ((&f[0], &f[1]), 3)
+        } else if f.len() == 3 && f[0] == big(2) {
+            ((&f[1], &f[2]), 5)
+        } else {
+            return Ok(tunnell(n));
+        };
+        // Two odd primes p < q (n = pq or n = 2pq); `q8` is 3 or 5 (mod 8).
+        let (p, q) = pair;
+        let (pm, qm) = (p % 8_u8, q % 8_u8);
+        let (one, odd) = (big(1), big(q8));
+        if (pm == odd && qm == odd)
+            || (pm == one && qm == odd && kr(p, q) == -1)
+            || (pm == odd && qm == one && kr(q, p) == -1)
+        {
+            return Ok(false);
+        }
+    }
+    Ok(tunnell(n))
+}
+
+// Tunnell's count of MPU 0.75 `PP.pm::is_congruent_number` (general test).
+// Inputs that fit `u64` use the native loop; larger ones take impractical time.
+fn tunnell(n: &BigUint) -> bool {
+    if let Ok(small) = u64::try_from(n) {
+        return crate::combinat::is_congruent_number::tunnell(small);
+    }
+    let odd = n.bit(0);
+    let target = if odd { n.clone() } else { n >> 1_usize };
+    let mut sols = [big(0), big(0)];
+    let mut z = big(0);
+    let limz = arith::sqrtint(&(&target >> 3_usize));
+    while z <= limz {
+        let rem = &target - &z * &z * 8_u8;
+        let weight = |y_pos: bool| big(1) << (1 + usize::from(y_pos) + usize::from(z != big(0)));
+        let mut zsols = big(0);
+        if odd {
+            let mut y = big(0);
+            let limy = arith::sqrtint(&(&rem >> 1_usize));
+            while y <= limy {
+                if arith::is_square(&(&rem - &y * &y * 2_u8)) {
+                    zsols += weight(y != big(0));
+                }
+                y += 1_u8;
+            }
+        } else {
+            let mut x = big(1);
+            let limx = arith::sqrtint(&rem);
+            while x <= limx {
+                let y = &rem - &x * &x;
+                if arith::is_square(&y) {
+                    zsols += weight(y != big(0));
+                }
+                x += 2_u8;
+            }
+        }
+        sols[usize::from(z.bit(0))] += zsols;
+        z += 1_u8;
+    }
+    sols[0] == sols[1]
 }

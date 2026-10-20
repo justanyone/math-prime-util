@@ -64,15 +64,20 @@ NATIVE_ONLY = [
     ("not in MPU 0.75", NA,
      "Not in Math::Prime::Util 0.75, so there is nothing to port.",
      "is_higgs_prime"),
-    ("functions of one integer", NO,
-     "Functions and predicates of one integer, most built on its factorization. `bigint::factor`, "
-     "`bigint::divisors`, `bigint::functions` and `bigint::predicates` give the factorization, the divisor "
-     "functions and the other functions and predicates of one integer; these six are not ported.",
-     "hclassno integer_complexity inverse_sigma0 inverse_sigma0_count is_congruent_number is_pillai"),
-    ("Catalan pseudoprime test", NO,
-     "MPU's pure-Perl Catalan test needs memory that grows with `n`, so it gives no oracle past 2^64. "
-     "`bigint::primality` has the other pseudoprime tests and prime classes.",
-     "is_catalan_pseudoprime"),
+    ("rejected past 2^63 by MPU", NA,
+     "MPU 0.75 croaks (\"n must fit in native signed integer\") for `n` above 2^63-1, in its pure-Perl "
+     "path as in C, so there is no big-integer result to port. The native forms return `None` "
+     "(`hclassno`) or panic (`integer_complexity`) there; `tests/compat_bigint_oneint.rs` checks both "
+     "against the oracle.",
+     "hclassno integer_complexity"),
+    ("impractical past 2^64", NA,
+     "MPU 0.75 accepts a big `n`, but its pure-Perl path does not finish (each runs past a 30 s limit on a "
+     "65-bit input). `farey` first takes the totient sum up to `n`, and the sequence has about 0.3n^2 "
+     "terms. `is_catalan_pseudoprime` reduces to the full binomial(n-1, (n-1)/2), primes included. "
+     "`is_pillai` steps v = 8, 9, ... through v! mod n, so a prime `n` takes more than 2^64 steps; only "
+     "`n` below 23 or with a factor 2, 3, 5 or 7 returns at once (zero), which the native forms match at "
+     "the 64-bit edge.",
+     "farey is_catalan_pseudoprime is_pillai"),
     ("prime families: exact counts, nth values and lists", NO,
      "Past 2^64 each of these needs a sieve or a count up to the input or over a range in proportion to it, "
      "and MPU's pure-Perl path times out, runs out of memory or refuses the input there. "
@@ -91,10 +96,6 @@ NATIVE_ONLY = [
      "`is_lucky`, `is_ramanujan_prime`, `nth_twin_prime` and `nth_ramanujan_prime` against MPU just below 2^64.",
      "is_lucky is_ramanujan_prime lucky_count lucky_numbers nth_lucky nth_ramanujan_prime nth_twin_prime "
      "ramanujan_prime_count ramanujan_primes"),
-    ("Farey sequence", NO,
-     "The Farey sequence of order `n` has about 3n²/π² terms, so an order past `u32` is not practical in time "
-     "or space. `bigint::rational` has the other rational functions, `next_farey` among them.",
-     "farey farey_rank"),
 ]
 
 

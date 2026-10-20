@@ -1,7 +1,9 @@
 //! Arbitrary precision rational sequences from MPU 0.75 `rational.c`.
 
 use super::arith::{gcd, invmod};
-use num_bigint::BigUint;
+use super::sequences::floor_sum;
+use num_bigint::{BigInt, BigUint};
+use std::collections::HashMap;
 
 fn validate(num: &BigUint, den: &BigUint) {
     assert!(
@@ -285,4 +287,70 @@ pub fn next_farey(n: &BigUint, p: &BigUint, q: &BigUint) -> Option<(BigUint, Big
     let d = n - ((n - &r) % &q);
     let c = (&d * p + 1u8) / q;
     Some((c, d))
+}
+
+/// Return the number of fractions below `p / q` in the Farey sequence of
+/// order `n`.
+///
+/// Port of MPU 0.75 `PP.pm::farey_rank`, the path MPU takes for a fraction
+/// past 32 bits: Moebius inversion over floor sums,
+/// `1 + sum(mu(d) * sum(floor((p*m - 1) / q), m <= n/d), d <= n)`, grouped
+/// by `n/d`. The fraction can have any size and need not be reduced. `p >= q`
+/// gives the sequence length, less one for `p == q`. The order stays `u64`:
+/// past 2^64 MPU needs the Mertens function or the totient sum at `n`, which
+/// is not practical. Orders above 10^6 call [`mertens`](crate::mertens) once
+/// for each group, so keep them moderate.
+/// A zero order or denominator returns zero, as the native form does (MPU
+/// croaks).
+///
+/// ```
+/// use math_prime_util::bigint::rational::farey_rank;
+/// use num_bigint::BigUint;
+/// assert_eq!(farey_rank(9, &5_u8.into(), &9_u8.into()), BigUint::from(15_u8));
+/// // 1 / (2^64 + 1) is below every positive term of F_9.
+/// let q = (BigUint::from(1_u8) << 64_usize) + 1_u8;
+/// assert_eq!(farey_rank(9, &1_u8.into(), &q), BigUint::from(1_u8));
+/// ```
+#[must_use]
+pub fn farey_rank(n: u64, p: &BigUint, q: &BigUint) -> BigUint {
+    if n == 0 || *p == BigUint::ZERO || *q == BigUint::ZERO {
+        return BigUint::ZERO;
+    }
+    // The rank of 1/1 is the totient sum, one less than the length.
+    let (p, q, extra) = if p >= q {
+        (BigUint::from(1_u8), BigUint::from(1_u8), u8::from(p > q))
+    } else {
+        let g = gcd(p, q);
+        (p / &g, q / &g, 0)
+    };
+    let pm1 = &p - 1_u8;
+    // Mertens values at the group ends: a prefix table up to 10^6, as in MPU.
+    let table: Option<Vec<i64>> = (n <= 1_000_000).then(|| {
+        let mut m = vec![0_i64];
+        for mu in crate::moebius_range(1, n) {
+            m.push(m[m.len() - 1] + i64::from(mu));
+        }
+        m
+    });
+    let mut cache = HashMap::new();
+    let mut mert = |x: u64| match &table {
+        Some(t) => t[usize::try_from(x).unwrap_or_default()],
+        None => *cache.entry(x).or_insert_with(|| crate::mertens(x)),
+    };
+    let mut sum = BigInt::from(1_u8);
+    let mut lo = 1_u64;
+    loop {
+        let v = n / lo;
+        let hi = n / v;
+        let mdelta = mert(hi) - mert(lo - 1);
+        if mdelta != 0 {
+            sum += BigInt::from(mdelta) * BigInt::from(floor_sum(&BigUint::from(v), &q, &p, &pm1));
+        }
+        if hi == n {
+            break;
+        }
+        lo = hi + 1;
+    }
+    // A count, so the sign is never negative.
+    sum.into_parts().1 + extra
 }

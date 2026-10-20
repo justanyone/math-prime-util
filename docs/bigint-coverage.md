@@ -168,8 +168,8 @@ The fixture column counts the rows of `tests/fixtures/bigint_*.tsv`: MPU 0.75's 
 | `crootint` | `bigint::functions` | 36 |
 | `dedekind_psi` | `bigint::functions` | 9 |
 | `exp_mangoldt` | `bigint::functions` | 9 |
-| `inverse_sigma0` | `bigint::functions` | 0 |
-| `inverse_sigma0_count` | `bigint::functions` | 0 |
+| `inverse_sigma0` | `bigint::functions` | 14 |
+| `inverse_sigma0_count` | `bigint::functions` | 17 |
 | `inverse_totient` | `bigint::functions` | 8 |
 | `jordan_totient` | `bigint::functions` | 9 |
 | `liouville` | `bigint::functions` | 9 |
@@ -213,7 +213,7 @@ The fixture column counts the rows of `tests/fixtures/bigint_*.tsv`: MPU 0.75's 
 | `znorder` | `bigint::modular` | 121 |
 | `znprimroot` | `bigint::modular` | 20 |
 | `is_almost_prime` | `bigint::predicates` | 329 |
-| `is_congruent_number` | `bigint::predicates` | 0 |
+| `is_congruent_number` | `bigint::predicates` | 21 |
 | `is_cyclic` | `bigint::predicates` | 47 |
 | `is_fundamental` | `bigint::predicates` | 47 |
 | `is_omega_prime` | `bigint::predicates` | 329 |
@@ -277,7 +277,7 @@ The fixture column counts the rows of `tests/fixtures/bigint_*.tsv`: MPU 0.75's 
 | `calkin_wilf_n` | `bigint::rational` | 4 |
 | `contfrac` | `bigint::rational` | 4 |
 | `convergents` | `bigint::rational` | 4 |
-| `farey_rank` | `bigint::rational` | 0 |
+| `farey_rank` | `bigint::rational` | 72 |
 | `from_contfrac` | `bigint::rational` | 4 |
 | `next_calkin_wilf` | `bigint::rational` | 4 |
 | `next_farey` | `bigint::rational` | 4 |

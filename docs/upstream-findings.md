@@ -12,7 +12,7 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 7, probable 6, API difference or documentation only 8.
+Counts: confirmed 7, probable 6, API difference or documentation only 9.
 Entries 15 to 19 are numbered in the order they were found, not by section.
 
 ## Confirmed
@@ -372,6 +372,19 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
     the 1e-15 test), so the result depends on the type of `hi`; the port
     copies it. (f) Native `inverse_li(10^15)` is off by 44 against the exact
     value; the bigint form is exact.
+23. Lucky, Ramanujan and twin-prime indices past the C limits (PP, measured
+    2026-10-19 with a 25 s and 4 GB limit). XS passes `nth_twin_prime(n)`
+    and `nth_ramanujan_prime(n)` above 12975810317986308 to `PP.pm`, which
+    runs out of time or memory for an index just above that limit, and
+    croaks for `n = 2^64 - 1` and `2^64 - 2` (`Parameter '1.84467440737096e+19'`
+    and `'4.66023008177925e+19' must be a non-negative integer`: the float
+    `n + 200` or `48/19 * n` goes into an integer function). For those two
+    `n` the native forms return `None` (`native_top_lucky.tsv`,
+    `tests/compat_native_top_lucky.rs`). On
+    `Math::BigInt` input past 2^64, `is_lucky` croaks with `Parameter 'NaN'`
+    unless its mod 2, 6 or 63 pretest rejects `n` (then 0), and
+    `nth_ramanujan_prime` croaks the same way. These names have no `BigUint`
+    form (`n.a.` in `docs/bigint-coverage.md`).
 
 ## Checked, no defect found
 

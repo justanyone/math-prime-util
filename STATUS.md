@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 316 yes, 15 no, 97 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -104,8 +104,8 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `fubini` · bigint: yes, `bigint::combinat`
 - [x] `gcd` · bigint: yes, `bigint::arith`
 - [x] `gcdext` · bigint: yes, `bigint::arith`
-- [x] `goldbach_pair_count` · bigint: no, prime families: exact counts, nth values and lists
-- [x] `goldbach_pairs` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `goldbach_pair_count` · bigint: yes, `bigint::families`
+- [x] `goldbach_pairs` · bigint: yes, `bigint::families`
 - [x] `hammingweight` · bigint: n.a., bit operations
 - [x] `harmfrac` · bigint: yes, `bigint::combinat`
 - [x] `harmreal` · bigint: n.a., real functions
@@ -146,7 +146,7 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `is_harshad` · bigint: yes, `bigint::digits`
 - [-] `is_higgs_prime` · bigint: n.a., not in MPU 0.75 — not in Math::Prime::Util 0.75 (no source, no fixture; the Phase 0 list was wrong)
 - [x] `is_lucas_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_lucky` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `is_lucky` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `is_mersenne_prime` · bigint: yes, `bigint::primality`
 - [x] `is_odd` · bigint: n.a., integer operators
 - [x] `is_omega_prime` · bigint: yes, `bigint::predicates`
@@ -169,7 +169,7 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `is_pseudoprime` · bigint: yes, `bigint::primality`
 - [x] `is_qr` · bigint: yes, `bigint::modular::helpers`
 - [x] `is_quasi_carmichael` · bigint: yes, `bigint::modular`
-- [x] `is_ramanujan_prime` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `is_ramanujan_prime` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `is_rough` · bigint: yes, `bigint::predicates`
 - [x] `is_safe_prime` · bigint: yes, `bigint::primality`
 - [x] `is_semiprime` · bigint: yes, `bigint::predicates`
@@ -201,11 +201,11 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `lucasuvmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `lucasv` · bigint: yes, `bigint::sequences`
 - [x] `lucasvmod` · bigint: yes, `bigint::modular`
-- [x] `lucky_count` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `lucky_count` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `lucky_count_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `lucky_count_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `lucky_count_upper` · bigint: yes, `bigint::family_bounds`
-- [x] `lucky_numbers` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `lucky_numbers` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `mertens` · bigint: yes, `bigint::family_counts`
 - [x] `miller_rabin_random` · bigint: yes, `bigint::random`
 - [x] `minimal_goldbach_pair` · bigint: yes, `bigint::families`
@@ -233,7 +233,7 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `nth_almost_prime_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_almost_prime_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_calkin_wilf` · bigint: yes, `bigint::rational`
-- [x] `nth_lucky` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_lucky` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `nth_lucky_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_lucky_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_lucky_upper` · bigint: yes, `bigint::family_bounds`
@@ -252,7 +252,7 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `nth_prime_power_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_prime_power_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_prime_upper` · bigint: yes, `bigint::counts`
-- [x] `nth_ramanujan_prime` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_ramanujan_prime` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `nth_ramanujan_prime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_ramanujan_prime_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_ramanujan_prime_upper` · bigint: yes, `bigint::family_bounds`
@@ -260,7 +260,7 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `nth_semiprime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_stern_brocot` · bigint: yes, `bigint::rational`
 - [x] `nth_stern_diatomic` · bigint: yes, `bigint::rational`
-- [x] `nth_twin_prime` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_twin_prime` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `nth_twin_prime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `numtoperm` · bigint: yes, `bigint::combinat`
 - [x] `omega_prime_count` · bigint: yes, `bigint::family_counts`
@@ -314,11 +314,11 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `primorial` · bigint: yes, `bigint::sequences`
 - [x] `print_primes` · bigint: yes, `bigint::families`
 - [x] `qnr` · bigint: yes, `bigint::modular::helpers`
-- [x] `ramanujan_prime_count` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `ramanujan_prime_count` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `ramanujan_prime_count_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `ramanujan_prime_count_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `ramanujan_prime_count_upper` · bigint: yes, `bigint::family_bounds`
-- [x] `ramanujan_primes` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `ramanujan_primes` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `ramanujan_sum` · bigint: yes, `bigint::functions`
 - [x] `ramanujan_tau` · bigint: yes, `bigint::combinat`
 - [x] `rand` · bigint: n.a., generator state

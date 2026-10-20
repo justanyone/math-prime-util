@@ -78,9 +78,19 @@ NATIVE_ONLY = [
      "and MPU's pure-Perl path times out, runs out of memory or refuses the input there. "
      "`bigint::family_bounds` gives their bounds and estimates, `bigint::families` the next and previous "
      "members and the lists of short ranges, and `bigint::family_counts` the exact counts that are practical.",
-     "goldbach_pair_count goldbach_pairs is_lucky is_ramanujan_prime lucky_count lucky_numbers "
-     "nth_almost_prime nth_lucky nth_omega_prime nth_powerful nth_prime_power nth_ramanujan_prime "
-     "nth_semiprime nth_twin_prime powerful_numbers ramanujan_prime_count ramanujan_primes"),
+     "nth_almost_prime nth_omega_prime nth_powerful nth_prime_power nth_semiprime powerful_numbers"),
+    ("lucky, Ramanujan and twin-prime sieves", NA,
+     "MPU 0.75 itself cannot answer these past 2^64: its XS code takes native integers only, and its "
+     "pure-Perl path sieves from the start. `lucky_numbers`, `lucky_count` and `nth_lucky` sieve every lucky "
+     "number up to about the argument, `nth_twin_prime` lists the twin primes from 2, and "
+     "`is_ramanujan_prime`, `ramanujan_primes`, `ramanujan_prime_count` and `nth_ramanujan_prime` list the "
+     "Ramanujan primes from 2. Measured on 2^64 and nearby (25 s, 4 GB): `nth_ramanujan_prime` croaks (float "
+     "arithmetic on `Math::BigInt` gives NaN), `is_lucky` returns 0 at once only when its mod 2, 6 or 63 "
+     "pretest rejects `n` and croaks the same way for other `n`, and the others run out of time or memory. The "
+     "native forms answer to the `u64` limits of MPU's C code; `tests/compat_native_top_lucky.rs` checks "
+     "`is_lucky`, `is_ramanujan_prime`, `nth_twin_prime` and `nth_ramanujan_prime` against MPU just below 2^64.",
+     "is_lucky is_ramanujan_prime lucky_count lucky_numbers nth_lucky nth_ramanujan_prime nth_twin_prime "
+     "ramanujan_prime_count ramanujan_primes"),
     ("Farey sequence", NO,
      "The Farey sequence of order `n` has about 3n²/π² terms, so an order past `u32` is not practical in time "
      "or space. `bigint::rational` has the other rational functions, `next_farey` among them.",

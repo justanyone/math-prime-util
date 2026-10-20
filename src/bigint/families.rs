@@ -5,8 +5,11 @@
 //! These MPU names stay native (`u64` only) because MPU's own pure-Perl path
 //! is impractical for inputs past 2^64: `is_lucky`, `lucky_numbers`,
 //! `is_ramanujan_prime`, `ramanujan_primes` (they sieve or scan every value up
-//! to the argument), `goldbach_pairs` (it tests every prime from n/2 to n), and
-//! `powerful_numbers` (it generates every powerful number up to the high end).
+//! to the argument), and `powerful_numbers` (it generates every powerful
+//! number up to the high end). [`goldbach_pairs`] and [`goldbach_pair_count`]
+//! have a form here, as MPU's pure-Perl path answers odd `n` of any size at
+//! once; for even `n` past 2^64 it tests every prime from `n/2` to `n - 3` and
+//! does not finish, and so does this form.
 use num_bigint::BigUint;
 use std::io::{self, Write};
 
@@ -302,6 +305,85 @@ pub fn minimal_goldbach_pair(n: &BigUint) -> Option<BigUint> {
     None
 }
 
+/// Visit the smaller member of each Goldbach pair of `n`, in ascending order.
+/// Port of `PP.pm::goldbach_pairs`: an odd `n` (or 4) has the one pair
+/// `2 + (n - 2)` when `n - 2` is prime; an even `n` tests `n - p` for every
+/// prime `p` from 3 to `n/2`. PP walks the larger members from `n/2` up, which
+/// visits the same pairs.
+fn visit_goldbach(n: &BigUint, mut visit: impl FnMut(&BigUint)) {
+    if n < &4_u8.into() {
+        return;
+    }
+    if n.bit(0) || n == &4_u8.into() {
+        if primality::is_prob_prime(&(n - 2_u8)) != 0 {
+            visit(&2_u8.into());
+        }
+        return;
+    }
+    let half = n >> 1_usize;
+    let mut p = BigUint::from(3_u8);
+    while p <= half {
+        if primality::is_prob_prime(&(n - &p)) != 0 {
+            visit(&p);
+        }
+        p = primality::next_prime(&p);
+    }
+}
+
+/// Count the unordered prime pairs whose sum is `n`.
+///
+/// Up to `u64::MAX` the native [`goldbach_pair_count`](crate::goldbach_pair_count)
+/// answers. Above it this is `PP.pm::goldbach_pair_count`: an odd `n` counts
+/// one pair when `n - 2` is prime, at once; an even `n` tests every prime from
+/// `n/2` to `n - 3`, which does not finish in practical time past 2^64 (MPU's
+/// pure-Perl path does the same).
+/// ```
+/// use math_prime_util::bigint::families::goldbach_pair_count;
+/// use num_bigint::BigUint;
+/// assert_eq!(goldbach_pair_count(&22_u8.into()), 3_u8.into());
+/// // 2^64 + 13 is prime, so 2^64 + 15 = 2 + (2^64 + 13).
+/// let n = (BigUint::from(1_u8) << 64_usize) + 15_u8;
+/// assert_eq!(goldbach_pair_count(&n), 1_u8.into());
+/// ```
+#[must_use]
+pub fn goldbach_pair_count(n: &BigUint) -> BigUint {
+    if let Ok(small) = u64::try_from(n) {
+        return crate::goldbach_pair_count(small).into();
+    }
+    let mut count = BigUint::from(0_u8);
+    visit_goldbach(n, |_| count += 1_u8);
+    count
+}
+
+/// Return the smaller primes of all Goldbach pairs of `n`, in ascending order.
+/// Return an empty list if no pair exists.
+///
+/// Up to `u64::MAX` the native [`goldbach_pairs`](crate::goldbach_pairs)
+/// answers. Above it this is `PP.pm::goldbach_pairs`: an odd `n` gives `[2]`
+/// when `n - 2` is prime and `[]` otherwise, at once; an even `n` tests every
+/// prime from `n/2` to `n - 3`, which does not finish in practical time past
+/// 2^64 (MPU's pure-Perl path does the same).
+/// ```
+/// use math_prime_util::bigint::families::goldbach_pairs;
+/// use num_bigint::BigUint;
+/// assert_eq!(goldbach_pairs(&22_u8.into()), [3_u8, 5, 11].map(BigUint::from));
+/// let n = (BigUint::from(1_u8) << 64_usize) + 15_u8;
+/// assert_eq!(goldbach_pairs(&n), [BigUint::from(2_u8)]);
+/// assert!(goldbach_pairs(&(n + 2_u8)).is_empty());
+/// ```
+#[must_use]
+pub fn goldbach_pairs(n: &BigUint) -> Vec<BigUint> {
+    if let Ok(small) = u64::try_from(n) {
+        return crate::goldbach_pairs(small)
+            .into_iter()
+            .map(BigUint::from)
+            .collect();
+    }
+    let mut pairs = Vec::new();
+    visit_goldbach(n, |p| pairs.push(p.clone()));
+    pairs
+}
+
 /// Return the next Chen prime. Port of MPU `almost_primes.c::next_chen_prime`.
 /// # Errors
 /// Return an unresolved cofactor if factoring fails.
@@ -317,5 +399,25 @@ pub fn next_chen_prime(n: &BigUint) -> Result<BigUint, BigUint> {
             return Ok(p);
         }
         p = primality::next_prime(&p);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::visit_goldbach;
+    use num_bigint::BigUint;
+
+    /// The trial path that inputs past `u64::MAX` take, against the native sieve.
+    #[test]
+    fn goldbach_trial_path_matches_native() {
+        for n in 0_u64..3000 {
+            let mut pairs = Vec::new();
+            visit_goldbach(&n.into(), |p| pairs.push(p.clone()));
+            let native: Vec<BigUint> = crate::goldbach_pairs(n)
+                .into_iter()
+                .map(BigUint::from)
+                .collect();
+            assert_eq!(pairs, native, "goldbach_pairs({n})");
+        }
     }
 }

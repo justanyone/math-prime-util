@@ -1,6 +1,6 @@
 # math-prime-util: full port of Perl's Math::Prime::Util to Rust
 
-Status: plan v1, 2026-10-16. Nothing below is built yet.
+Status: plan v1, 2026-10-16. Every phase below is done; 1.2.0 (2026-10-20) is the final release of the port.
 
 ## 1. What is being ported
 
@@ -59,7 +59,7 @@ Done: the crates.io login (1.0.0 published 2026-10-18) and `libgmp-dev` on the b
   phase 2 to claim the name and get the pipeline proven; `0.x` while the API
   moves; `1.0.0` when all 428 functions are ported and the API is frozen.
   Result: 0.1.0 was skipped; 1.0.0 shipped on 2026-10-18, 1.1.0 (add-only `BigUint`
-  forms behind the `bigint` feature) on 2026-10-19 and 1.2.0 (`BigUint` forms of 232 more names) on 2026-10-19. Changes per version: `CHANGELOG.md`.
+  forms behind the `bigint` feature) on 2026-10-19 and 1.2.0 (`BigUint` forms of 242 more names) on 2026-10-20. Changes per version: `CHANGELOG.md`.
 
 ## 4. Toolchain isolation ("virtual environments")
 
@@ -157,8 +157,8 @@ through the Rust compat tests.
 | → | **publish 1.0.0** when STATUS.md shows 428/428 (done 2026-10-18) | | |
 | 10 | Bigint coverage: `BigUint` forms of 82 names in `bigint::{arith, primality, factor, divisors, modular, counts, proving}`, audit of all 428 names (`docs/bigint-coverage.md`) | bigint fixtures (MPU pure-Perl path) | 82 |
 | → | **publish 1.1.0** (done 2026-10-19) | | |
-| 11 | `BigUint` forms of the names that were native only in 1.1.0 (board rows `MPU-BIGINT2-*`): 232 ported, 26 stay native only with a reason | bigint fixtures | 232 |
-| → | **publish 1.2.0** (done 2026-10-19) | | |
+| 11 | `BigUint` forms of the names that were native only in 1.1.0 (board rows `MPU-BIGINT2-*`): 242 ported; for the other 104 a `BigUint` form does not apply, each with a reason; none stays native only | bigint fixtures | 242 |
+| → | **publish 1.2.0** (done 2026-10-20) | | |
 
 Threading: MPU's C uses pthread locks only around its shared sieve cache. The
 Rust port uses `OnceLock`/`Mutex` for the same cache and is `Send + Sync`

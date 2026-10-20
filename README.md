@@ -9,7 +9,7 @@ Status: **version 1.2.0** (changes: [CHANGELOG.md](CHANGELOG.md)). All 428 expor
 `is_higgs_prime`, which does not exist in 0.75. With the cargo feature `bigint`, 314 of them also
 take `BigUint` (see [What works with and without `bigint`](#what-works-with-and-without-bigint)).
 See [STATUS.md](STATUS.md) for the per-function checklist and [PLAN.md](PLAN.md) for the phases.
-Ongoing work lands on `dev-002`.
+The port is complete: version 1.2.0 is the final release of the port, and the code lives on `main`.
 
 ## Goals
 
@@ -50,9 +50,9 @@ Details and the survivor triage:
 
 ## Branches
 
-Work lands on a numbered integration branch (`dev-001`, `dev-002`, and so on). Small task branches are cut from it
-and merged back by pull request. After every 100 merges the integration branch is merged to `main`, deleted, and the
-next number starts from `main`. `main` carries releases only. The rotation is `tools/rotate_dev.py` in the SkyBuild kit.
+The port is finished, so `main` is the only long-lived branch and it carries the releases. During the port, work landed on
+numbered integration branches (`dev-001`, `dev-002`) that were merged to `main` and retired; no further integration
+branch is cut. Fixes after 1.2.0 are small task branches merged to `main` by pull request.
 
 ## Milestones
 

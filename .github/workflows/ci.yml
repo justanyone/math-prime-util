@@ -113,9 +113,99 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
       - run: sudo apt-get install -y libgmp-dev
-      - run: cargo bench --all-features -- --output-format bencher | tee bench.txt
+      - name: Benchmark base and head on this runner
+        shell: bash
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          # Base rule: judge a push against the commit it replaced (github.event.before), so a push to a
+          # dev branch is not measured against the last release. A new branch (all-zero "before") or a
+          # force push (commit missing) falls back to the merge base with main.
+          if [ "${BEFORE#0000000000000000000000000000000000000000}" != "$BEFORE" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            BEFORE=$(git merge-base origin/main "$GITHUB_SHA")
+          fi
+          echo "Base commit: $BEFORE"
+          mkdir -p "$RUNNER_TEMP/base"
+          git archive "$BEFORE" | tar -x -C "$RUNNER_TEMP/base"
+          # Shared runners differ by more than 10 % on identical code, and one runner drifts by 10 % over
+          # an hour. So build both trees, then run the two binaries of each bench file back to back
+          # (base, then head) and let both write to one criterion directory.
+          export CRITERION_HOME="$RUNNER_TEMP/criterion"
+          (cd "$RUNNER_TEMP/base" && CARGO_TARGET_DIR="$RUNNER_TEMP/base-target" cargo bench --all-features --no-run --message-format=json > "$RUNNER_TEMP/base.json")
+          cargo bench --all-features --no-run --message-format=json > "$RUNNER_TEMP/head.json"
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+          import time
+
+          temp = pathlib.Path(os.environ["RUNNER_TEMP"])
+          root = pathlib.Path(os.environ["CRITERION_HOME"])
+
+          def benches(name):
+              found = {}
+              for line in (temp / name).read_text().splitlines():
+                  if not line.startswith("{"):
+                      continue
+                  msg = json.loads(line)
+                  if msg.get("reason") == "compiler-artifact" and msg.get("executable") and "bench" in msg["target"]["kind"]:
+                      found[msg["target"]["name"]] = msg["executable"]
+              return found
+
+          base, head = benches("base.json"), benches("head.json")
+
+          def lower_bound(path):
+              # Lower bound of the 95 % interval of the mean change (0.10 = 10 % slower).
+              return json.loads(path.read_text())["mean"]["confidence_interval"]["lower_bound"]
+
+          def run_pair(name, exe, only=None):
+              # Base first, then head: the two measurements of one bench are minutes apart.
+              # --baseline-lenient skips benches that the base does not have.
+              filt = ["--bench"] + ([only] if only else [])
+              if name in base:
+                  subprocess.run([base[name], *filt, "--save-baseline", "base"], cwd=temp / "base", check=True)
+              return subprocess.run([exe, *filt, "--baseline-lenient", "base", "--output-format", "bencher"],
+                                    stdout=subprocess.PIPE, text=True, check=True).stdout
+
+          suspects = []
+          with open("bench.txt", "w") as out:
+              for name, exe in sorted(head.items()):
+                  started = time.time()
+                  text = run_pair(name, exe)  # also feeds the history chart (bencher output)
+                  sys.stdout.write(text)
+                  out.write(text)
+                  for path in sorted(root.glob("**/change/estimates.json")):
+                      if path.stat().st_mtime >= started and lower_bound(path) > 0.10:
+                          suspects.append((name, exe, path))
+
+          # A shared runner still shows a 10 % shift on a few of the 270 benches now and then. A bench counts as
+          # slower only when two more base/head pairs of that bench keep the lower bound above 10 %.
+          failures = []
+          for name, exe, path in suspects:
+              ident = str(path.parent.parent.relative_to(root))
+              lower = lower_bound(path)
+              for attempt in (1, 2):
+                  run_pair(name, exe, "^" + re.escape(ident) + "$")
+                  lower = lower_bound(path)
+                  print(f"{ident}: repeat {attempt}, change lower bound {lower:.1%}")
+                  if lower <= 0.10:
+                      break
+              if lower > 0.10:
+                  failures.append((ident, lower))
+          if failures:
+              for ident, lower in failures:
+                  print(f"::error::{ident} is slower (change lower bound {lower:.1%})")
+              sys.exit(1)
+          print("No benchmark has a change lower bound above 10%.")
+          PY
       - uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: cargo

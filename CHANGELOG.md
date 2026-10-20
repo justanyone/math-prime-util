@@ -37,6 +37,7 @@ All notable changes to this crate are listed here. The format follows
 ### Changed
 
 - `forsquarefreeint` on a short range near `u64::MAX` sieves primes in bounded blocks and factors the range.
+- The CI bench job runs the base commit and the head on one runner and reports a benchmark as slower only when the lower bound of its change estimate is above 10 %.
 
 ## [1.1.0] - 2026-10-19
 

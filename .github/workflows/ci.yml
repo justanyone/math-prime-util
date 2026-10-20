@@ -191,9 +191,11 @@ jobs:
           failures = []
           for name, exe, path in suspects:
               ident = str(path.parent.parent.relative_to(root))
+              # The directory name is a sanitized form of the id; the filter needs the real id.
+              full_id = json.loads((path.parent.parent / "new" / "benchmark.json").read_text())["full_id"]
               lower = lower_bound(path)
               for attempt in (1, 2):
-                  run_pair(name, exe, "^" + re.escape(ident) + "$")
+                  run_pair(name, exe, "^" + re.escape(full_id) + "$")
                   lower = lower_bound(path)
                   print(f"{ident}: repeat {attempt}, change lower bound {lower:.1%}")
                   if lower <= 0.10:

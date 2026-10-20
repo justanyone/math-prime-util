@@ -72,87 +72,26 @@ NATIVE_ONLY = [
      "either. The native forms return MPU C's boundary values there (0 and the largest 64-bit prime); "
      "`bigint::family_nth` returns `None` for `nth_almost_prime(2, n)` and `nth_omega_prime(1, n)` past them.",
      "nth_prime_power nth_semiprime"),
-    ("growing results", NO,
-     "The value outgrows 64 or 128 bits quickly, where MPU returns a big integer; the native forms stop at "
-     "their fixed width. A `BigUint` result form is not ported.",
-     " consecutive_integer_lcm fibonacci floor_sum "
-     "frobenius_number lucas_number lucasu lucasuv lucasv "
-     " pn_primorial powersum primorial "
-     " vecprefixsum vecprod vecsum"),
     ("functions of one integer", NO,
-     "Functions and predicates of one integer, most built on its factorization. `bigint::factor` and "
-     "`bigint::divisors` give the factorization and the main divisor functions; these are not ported.",
-     " hclassno integer_complexity inverse_sigma0 "
-     "inverse_sigma0_count is_congruent_number "
-     " is_pillai "
-     " "
-     " "
-     ""),
-    ("modular helpers", NO,
-     "Modular helpers with a `u64` modulus. `bigint::arith` and `bigint::modular` carry `addmod`, `mulmod`, "
-     "`powmod`, `invmod`, `sqrtmod`, `rootmod`, `chinese`, `lucasumod` and `lucasvmod`; these are not ported.",
-     "allrootmod chinese2 cornacchia is_qr lucasuvmod muladdmod mulsubmod negmod pisano_period qnr submod"),
-    ("other primality tests", NO,
-     "Further pseudoprime tests and prime classes. `bigint::primality` has the tests MPU's pure-Perl path "
-     "uses (Fermat, Euler, strong, the Lucas family, BPSW, Lucas-Lehmer); these are not ported.",
-     "is_catalan_pseudoprime is_chen_prime is_delicate_prime is_frobenius_khashin_pseudoprime "
-     "is_frobenius_pseudoprime is_frobenius_underwood_pseudoprime is_gaussian_prime is_perrin_pseudoprime "
-     "is_safe_prime"),
-    ("other factoring methods", NO,
-     "Further factoring methods. `bigint::factor` has trial division, Pollard rho and Brent, p-1, p+1, HOLF, "
-     "SQUFOF and ECM; these three keep the `u64` form.",
-     "cheb_factor fermat_factor lehman_factor"),
-    ("prime families, counts and sums", NO,
-     "Counts, sums, `n`th values, lists and next or previous members take `u64`. Past 2^64 only the "
-     "plain-prime functions of `bigint::counts` continue (prime count bounds and estimates, `nth_prime` and "
-     "its bounds, `forprimes`, `prime_iterator`); the family forms are not ported, and exact counts that far "
-     "would take impractical run time.",
-     "almost_prime_count almost_prime_count_approx almost_prime_count_lower almost_prime_count_upper "
-     "almost_primes goldbach_pair_count goldbach_pairs inverse_li is_lucky is_ramanujan_prime legendre_phi "
-     "lucky_count lucky_count_approx lucky_count_lower lucky_count_upper lucky_numbers mertens "
-     "minimal_goldbach_pair next_chen_prime next_perfect_power next_prime_power "
-     "nth_almost_prime_approx nth_almost_prime_lower nth_almost_prime_upper nth_lucky nth_lucky_approx "
-     "nth_lucky_lower nth_lucky_upper nth_perfect_power nth_perfect_power_approx "
-     "nth_perfect_power_lower nth_perfect_power_upper nth_powerfree "
-     "nth_prime_power_approx nth_prime_power_lower nth_prime_power_upper nth_ramanujan_prime "
-     "nth_ramanujan_prime_approx nth_ramanujan_prime_lower nth_ramanujan_prime_upper "
-     "nth_semiprime_approx nth_twin_prime nth_twin_prime_approx omega_prime_count omega_primes "
-     "perfect_power_count perfect_power_count_approx perfect_power_count_lower perfect_power_count_upper "
-     "powerfree_count powerfree_part_sum powerfree_sum powerful_count prev_perfect_power "
-     "prev_prime_power prime_count prime_power_count prime_power_count_approx prime_power_count_lower "
-     "prime_power_count_upper prime_powers primes print_primes ramanujan_prime_count "
-     "ramanujan_prime_count_approx ramanujan_prime_count_lower ramanujan_prime_count_upper ramanujan_primes "
-     "rough_count semi_primes semiprime_count semiprime_count_approx sieve_prime_cluster sieve_range "
-     "smooth_count sum_primes sumliouville sumpowerful sumtotient twin_prime_count twin_prime_count_approx "
-     "twin_primes"),
-    ("range iterators", NO,
-     "Closure iterators over `u64` ranges. Above 2^64, `forprimes`, `forcomposites` and `foroddcomposites` "
-     "(`bigint::counts`) continue and `bigint::divisors::divisors` lists divisors; these are not ported.",
-     "foralmostprimes fordivisors forfactored forsemiprimes forsquarefree forsquarefreeint"),
-    ("random big integers", NO,
-     "Random integers and random primes stop at 64 bits (`u128` for `miller_rabin_random`). MPU's big forms, "
-     "such as `random_nbit_prime(512)`, are not ported.",
-     "miller_rabin_random random_factored_integer random_maurer_prime random_maurer_prime_with_cert "
-     "random_nbit_prime random_ndigit_prime random_prime random_proven_prime random_proven_prime_with_cert "
-     "random_safe_prime random_semiprime random_shawe_taylor_prime random_shawe_taylor_prime_with_cert "
-     "random_strong_prime random_unrestricted_semiprime urandomb urandomm urandomr"),
-    ("rationals", NO,
-     "Continued fractions and the Calkin-Wilf, Stern-Brocot and Farey functions take `u64` or `u32` "
-     "numerators, denominators and orders; these are not ported.",
-     " farey farey_rank "
-     ""),
-    ("digits", NO,
-     "Digit functions on `i128` or `u64`. num-bigint's `to_radix_be`, `to_str_radix`, `from_radix_be` and "
-     "`parse_bytes` cover base conversion on `BigUint`; the other digit functions are not ported.",
-     " "
-     ""),
-    ("sets of i64", NO,
-     "Sets and sorted vectors of `i64` (`vecmax` and `vecmin` need `Copy`). Rust's `sort`, `dedup` and "
-     "`BTreeSet` do plain set work on `BigUint`; the MPU forms are not ported.",
-     "is_sidon_set is_sumfree_set setbinop setcontains setcontainsany setdelta setinsert setintersect "
-     "setinvert set_is_disjoint set_is_equal set_is_proper_intersection set_is_proper_subset "
-     "set_is_proper_superset set_is_subset set_is_superset setminus setremove setunion sumset toset vecfreq "
-     "vecmax vecmex vecmin vecpmex vecrsort vecrsorti vecsingleton vecsort vecsorti vecuniq"),
+     "Functions and predicates of one integer, most built on its factorization. `bigint::factor`, "
+     "`bigint::divisors`, `bigint::functions` and `bigint::predicates` give the factorization, the divisor "
+     "functions and the other functions and predicates of one integer; these six are not ported.",
+     "hclassno integer_complexity inverse_sigma0 inverse_sigma0_count is_congruent_number is_pillai"),
+    ("Catalan pseudoprime test", NO,
+     "MPU's pure-Perl Catalan test needs memory that grows with `n`, so it gives no oracle past 2^64. "
+     "`bigint::primality` has the other pseudoprime tests and prime classes.",
+     "is_catalan_pseudoprime"),
+    ("prime families: exact counts, nth values and lists", NO,
+     "Past 2^64 each of these needs a sieve or a count up to the input or over a range in proportion to it, "
+     "and MPU's pure-Perl path times out, runs out of memory or refuses the input there. "
+     "`bigint::family_bounds` gives their bounds and estimates, `bigint::families` the next and previous "
+     "members and the lists of short ranges, and `bigint::family_counts` the exact counts that are practical.",
+     "goldbach_pair_count goldbach_pairs is_lucky is_ramanujan_prime lucky_count lucky_numbers "
+     "nth_lucky nth_ramanujan_prime nth_twin_prime ramanujan_prime_count ramanujan_primes"),
+    ("Farey sequence", NO,
+     "The Farey sequence of order `n` has about 3n²/π² terms, so an order past `u32` is not practical in time "
+     "or space. `bigint::rational` has the other rational functions, `next_farey` among them.",
+     "farey farey_rank"),
 ]
 
 

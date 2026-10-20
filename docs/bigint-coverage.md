@@ -399,24 +399,24 @@ Each group gives the value, the reason, and the names. `n.a.` groups come first.
 
 ### functions of one integer
 
-`no`, 6 names. Functions and predicates of one integer, most built on its factorization. `bigint::factor` and `bigint::divisors` give the factorization and the main divisor functions; these are not ported.
+`no`, 6 names. Functions and predicates of one integer, most built on its factorization. `bigint::factor`, `bigint::divisors`, `bigint::functions` and `bigint::predicates` give the factorization, the divisor functions and the other functions and predicates of one integer; these six are not ported.
 
 `hclassno`, `integer_complexity`, `inverse_sigma0`, `inverse_sigma0_count`, `is_congruent_number`, `is_pillai`
 
-### other primality tests
+### Catalan pseudoprime test
 
-`no`, 1 names. Further pseudoprime tests and prime classes. `bigint::primality` has the tests MPU's pure-Perl path uses (Fermat, Euler, strong, the Lucas family, BPSW, Lucas-Lehmer); these are not ported.
+`no`, 1 names. MPU's pure-Perl Catalan test needs memory that grows with `n`, so it gives no oracle past 2^64. `bigint::primality` has the other pseudoprime tests and prime classes.
 
 `is_catalan_pseudoprime`
 
-### prime families, counts and sums
+### prime families: exact counts, nth values and lists
 
-`no`, 11 names. Counts, sums, `n`th values, lists and next or previous members take `u64`. Past 2^64 only the plain-prime functions of `bigint::counts` continue (prime count bounds and estimates, `nth_prime` and its bounds, `forprimes`, `prime_iterator`); the family forms are not ported, and exact counts that far would take impractical run time.
+`no`, 11 names. Past 2^64 each of these needs a sieve or a count up to the input or over a range in proportion to it, and MPU's pure-Perl path times out, runs out of memory or refuses the input there. `bigint::family_bounds` gives their bounds and estimates, `bigint::families` the next and previous members and the lists of short ranges, and `bigint::family_counts` the exact counts that are practical.
 
 `goldbach_pair_count`, `goldbach_pairs`, `is_lucky`, `is_ramanujan_prime`, `lucky_count`, `lucky_numbers`, `nth_lucky`, `nth_ramanujan_prime`, `nth_twin_prime`, `ramanujan_prime_count`, `ramanujan_primes`
 
-### rationals
+### Farey sequence
 
-`no`, 2 names. Continued fractions and the Calkin-Wilf, Stern-Brocot and Farey functions take `u64` or `u32` numerators, denominators and orders; these are not ported.
+`no`, 2 names. The Farey sequence of order `n` has about 3n²/π² terms, so an order past `u32` is not practical in time or space. `bigint::rational` has the other rational functions, `next_farey` among them.
 
 `farey`, `farey_rank`

@@ -401,9 +401,10 @@ pub fn inverse_totient(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
 /// use num_bigint::BigUint;
 /// let r = inverse_sigma0(&4_u8.into(), &1_u8.into(), &10_u8.into()).unwrap();
 /// assert_eq!(r, [6_u8, 8, 10].map(BigUint::from));
-/// // Each p^4 has five divisors: 89^4 and 97^4 fall in [2^24, 2^27].
+/// // Each p^4 has five divisors; p = 67 to 107 put p^4 in [2^24, 2^27].
 /// let r = inverse_sigma0(&5_u8.into(), &(1_u32 << 24).into(), &(1_u32 << 27).into()).unwrap();
-/// assert_eq!(r.len(), 7);
+/// assert_eq!(r.len(), 10);
+/// assert_eq!(r[0], BigUint::from(67_u32).pow(4));
 /// ```
 pub fn inverse_sigma0(k: &BigUint, lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint> {
     let mut out = Sigma0Out::List(Vec::new());

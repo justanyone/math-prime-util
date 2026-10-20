@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 318 yes, 17 no, 93 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -75,8 +75,8 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `factorial` · bigint: yes, `bigint::arith`
 - [x] `factorialmod` · bigint: yes, `bigint::modular`
 - [x] `falling_factorial` · bigint: yes, `bigint::combinat`
-- [x] `farey` · bigint: no, rationals
-- [x] `farey_rank` · bigint: no, rationals
+- [x] `farey` · bigint: n.a., impractical past 2^64
+- [x] `farey_rank` · bigint: yes, `bigint::rational`
 - [x] `fdivrem` · bigint: n.a., integer operators
 - [x] `fermat_factor` · bigint: yes, `bigint::factor`
 - [x] `fibonacci` · bigint: yes, `bigint::sequences`
@@ -109,13 +109,13 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `hammingweight` · bigint: n.a., bit operations
 - [x] `harmfrac` · bigint: yes, `bigint::combinat`
 - [x] `harmreal` · bigint: n.a., real functions
-- [x] `hclassno` · bigint: no, functions of one integer
+- [x] `hclassno` · bigint: n.a., rejected past 2^63 by MPU
 - [x] `holf_factor` · bigint: yes, `bigint::factor`
-- [x] `integer_complexity` · bigint: no, functions of one integer
+- [x] `integer_complexity` · bigint: n.a., rejected past 2^63 by MPU
 - [x] `inverse_li` · bigint: yes, `bigint::family_bounds`
 - [x] `inverse_li_nv` · bigint: n.a., real functions
-- [x] `inverse_sigma0` · bigint: no, functions of one integer
-- [x] `inverse_sigma0_count` · bigint: no, functions of one integer
+- [x] `inverse_sigma0` · bigint: yes, `bigint::functions`
+- [x] `inverse_sigma0_count` · bigint: yes, `bigint::functions`
 - [x] `inverse_totient` · bigint: yes, `bigint::functions`
 - [x] `invmod` · bigint: yes, `bigint::arith`
 - [x] `irand` · bigint: n.a., generator state
@@ -126,10 +126,10 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `is_almost_prime` · bigint: yes, `bigint::predicates`
 - [x] `is_bpsw_prime` · bigint: yes, `bigint::primality`
 - [x] `is_carmichael` · bigint: yes, `bigint::modular`
-- [x] `is_catalan_pseudoprime` · bigint: no, other primality tests
+- [x] `is_catalan_pseudoprime` · bigint: n.a., impractical past 2^64
 - [x] `is_chen_prime` · bigint: yes, `bigint::primality`
 - [x] `is_congruent` · bigint: n.a., integer operators
-- [x] `is_congruent_number` · bigint: no, functions of one integer
+- [x] `is_congruent_number` · bigint: yes, `bigint::predicates`
 - [x] `is_cyclic` · bigint: yes, `bigint::predicates`
 - [x] `is_delicate_prime` · bigint: yes, `bigint::primality`
 - [x] `is_divisible` · bigint: n.a., integer operators
@@ -154,7 +154,7 @@ BigUint field: 314 yes, 26 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `is_perfect_number` · bigint: yes, `bigint::predicates`
 - [x] `is_perfect_power` · bigint: yes, `bigint::predicates`
 - [x] `is_perrin_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_pillai` · bigint: no, functions of one integer
+- [x] `is_pillai` · bigint: n.a., impractical past 2^64
 - [x] `is_polygonal` · bigint: yes, `bigint::counts`
 - [x] `is_power` · bigint: yes, `bigint::arith`
 - [x] `is_powerfree` · bigint: yes, `bigint::predicates`

@@ -381,3 +381,207 @@ pub fn inverse_totient(n: &BigUint) -> Result<Vec<BigUint>, BigUint> {
     result.sort_unstable();
     Ok(result)
 }
+
+/// Return the integers in `lo..=hi` with exactly `k` divisors, in ascending
+/// order.
+///
+/// Port of MPU 0.75 `PP.pm::inverse_sigma0` and `_inverse_sigma0_generate`,
+/// the path MPU takes past 2^64. `k = 1` and `k = 2` give 1 and the primes.
+/// A wide range (`lo <= hi / 2`) is built from the prime signatures that `k`
+/// allows, with a native prime sieve and count below 2^64. A narrow range is
+/// factored value by value, so keep it short. Wide ranges past 2^64 are
+/// practical only when the signatures of `k` are sparse, such as prime `k`.
+/// `k = 0` gives an empty list (MPU's `[]`); the native form returns `None`.
+///
+/// # Errors
+/// Return the cofactor that could not be split.
+///
+/// ```
+/// use math_prime_util::bigint::functions::inverse_sigma0;
+/// use num_bigint::BigUint;
+/// let r = inverse_sigma0(&4_u8.into(), &1_u8.into(), &10_u8.into()).unwrap();
+/// assert_eq!(r, [6_u8, 8, 10].map(BigUint::from));
+/// // Each p^4 has five divisors: 89^4 and 97^4 fall in [2^24, 2^27].
+/// let r = inverse_sigma0(&5_u8.into(), &(1_u32 << 24).into(), &(1_u32 << 27).into()).unwrap();
+/// assert_eq!(r.len(), 7);
+/// ```
+pub fn inverse_sigma0(k: &BigUint, lo: &BigUint, hi: &BigUint) -> Result<Vec<BigUint>, BigUint> {
+    let mut out = Sigma0Out::List(Vec::new());
+    sigma0_search(k, lo, hi, &mut out)?;
+    let Sigma0Out::List(mut list) = out else {
+        unreachable!("list output")
+    };
+    list.sort_unstable();
+    Ok(list)
+}
+
+/// Return how many integers in `lo..=hi` have exactly `k` divisors.
+///
+/// Port of MPU 0.75 `PP.pm::inverse_sigma0_count`; see [`inverse_sigma0`]
+/// for the method and its limits. Prime counts below 2^64 use the native
+/// [`prime_count`](crate::prime_count).
+///
+/// # Errors
+/// Return the cofactor that could not be split.
+///
+/// ```
+/// use math_prime_util::bigint::functions::inverse_sigma0_count;
+/// use num_bigint::BigUint;
+/// // n = p^2 below 2^70: one for each prime up to 2^35.
+/// let hi = BigUint::from(1_u8) << 70_usize;
+/// let c = inverse_sigma0_count(&3_u8.into(), &1_u8.into(), &hi).unwrap();
+/// assert_eq!(c, BigUint::from(1_480_206_279_u32));
+/// ```
+pub fn inverse_sigma0_count(k: &BigUint, lo: &BigUint, hi: &BigUint) -> Result<BigUint, BigUint> {
+    let mut out = Sigma0Out::Count(BigUint::ZERO);
+    sigma0_search(k, lo, hi, &mut out)?;
+    let Sigma0Out::Count(count) = out else {
+        unreachable!("count output")
+    };
+    Ok(count)
+}
+
+enum Sigma0Out {
+    List(Vec<BigUint>),
+    Count(BigUint),
+}
+
+/// Primes in `lo..=hi`: the native sieve below 2^64, else `bigint::families`.
+fn primes_between(lo: &BigUint, hi: &BigUint) -> Vec<BigUint> {
+    match (u64::try_from(lo), u64::try_from(hi)) {
+        (Ok(a), Ok(b)) => crate::primes(a, b).into_iter().map(BigUint::from).collect(),
+        _ => super::families::primes(lo, hi),
+    }
+}
+
+/// Number of primes in `lo..=hi`: the native count below 2^64.
+fn prime_count_between(lo: &BigUint, hi: &BigUint) -> Result<BigUint, BigUint> {
+    if lo > hi {
+        return Ok(BigUint::ZERO);
+    }
+    match (u64::try_from(lo), u64::try_from(hi)) {
+        (Ok(a), Ok(b)) => Ok(BigUint::from(
+            crate::prime_count(b) - crate::prime_count(a.max(1) - 1),
+        )),
+        _ => super::family_counts::prime_count(lo, hi),
+    }
+}
+
+// `PP.pm::inverse_sigma0` and `inverse_sigma0_count`: the early returns, then
+// the signature generator for wide ranges or a factored scan for narrow ones.
+fn sigma0_search(
+    k: &BigUint,
+    lo: &BigUint,
+    hi: &BigUint,
+    out: &mut Sigma0Out,
+) -> Result<(), BigUint> {
+    let one = BigUint::from(1_u8);
+    if k.bits() == 0 || *hi < one {
+        return Ok(());
+    }
+    if *k == one {
+        if *lo <= one {
+            sigma0_emit(out, &one);
+        }
+        return Ok(());
+    }
+    if *k == BigUint::from(2_u8) {
+        match out {
+            Sigma0Out::List(list) => list.extend(primes_between(lo, hi)),
+            Sigma0Out::Count(count) => *count += prime_count_between(lo, hi)?,
+        }
+        return Ok(());
+    }
+    let lo = lo.max(&one);
+    if lo > hi || k > hi {
+        return Ok(());
+    }
+    if let (Ok(k), true) = (u64::try_from(k), *lo <= hi >> 1_usize) {
+        let mut minsum = BTreeMap::new();
+        return sigma0_generate(&one, &BigUint::from(2_u8), k, (lo, hi), &mut minsum, out);
+    }
+    let mut n = lo.clone();
+    while n <= *hi {
+        let tau: BigUint = factor_exp(&n)?
+            .iter()
+            .map(|(_, e)| BigUint::from(e + 1))
+            .product();
+        if tau == *k {
+            sigma0_emit(out, &n);
+        }
+        n += 1_u8;
+    }
+    Ok(())
+}
+
+fn sigma0_emit(out: &mut Sigma0Out, n: &BigUint) {
+    match out {
+        Sigma0Out::List(list) => list.push(n.clone()),
+        Sigma0Out::Count(count) => *count += 1_u8,
+    }
+}
+
+// `PP.pm::_inverse_sigma0_generate`: `n` so far, the least prime left, and the
+// divisor count `rem` still to place. Each divisor `d` of `rem` puts `p^(d-1)`.
+fn sigma0_generate(
+    n: &BigUint,
+    pmin: &BigUint,
+    rem: u64,
+    range: (&BigUint, &BigUint),
+    minsum: &mut BTreeMap<u64, u64>,
+    out: &mut Sigma0Out,
+) -> Result<(), BigUint> {
+    let (low, high) = range;
+    if rem == 1 {
+        if n >= low {
+            sigma0_emit(out, n);
+        }
+        return Ok(());
+    }
+    let exp = |e: u64| u32::try_from(e).unwrap_or(u32::MAX);
+    let ds: Vec<u64> = crate::divisors(rem, None)
+        .into_iter()
+        .filter(|&d| d >= 2)
+        .collect();
+    let maxpow = high / n;
+    if ds.len() == 1 {
+        // `rem` is prime: the last exponent is rem - 1 on one prime.
+        let e = exp(rem - 1);
+        let minpow = if n >= low {
+            BigUint::from(1_u8)
+        } else {
+            (low + n - 1_u8) / n
+        };
+        let (plo, phi) = if e == 1 {
+            (minpow, maxpow)
+        } else {
+            (crootint(&minpow, e), rootint(&maxpow, e))
+        };
+        let plo = plo.max(pmin.clone());
+        if plo > phi {
+            return Ok(());
+        }
+        match out {
+            Sigma0Out::List(list) => {
+                list.extend(primes_between(&plo, &phi).into_iter().map(|p| n * p.pow(e)));
+            }
+            Sigma0Out::Count(count) => *count += prime_count_between(&plo, &phi)?,
+        }
+        return Ok(());
+    }
+    for d in ds {
+        let (e, next) = (d - 1, rem / d);
+        let least = *minsum
+            .entry(next)
+            .or_insert_with(|| crate::factor(next).iter().map(|f| f - 1).sum());
+        let phi = rootint(&maxpow, exp(e.saturating_add(least)));
+        if *pmin > phi {
+            continue;
+        }
+        for p in primes_between(pmin, &phi) {
+            let v = n * p.pow(exp(e));
+            sigma0_generate(&v, &(p + 1_u8), next, range, minsum, out)?;
+        }
+    }
+    Ok(())
+}

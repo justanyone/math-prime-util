@@ -71,15 +71,20 @@ NATIVE_ONLY = [
      "frobenius_number lucas_number lucasu lucasuv lucasv "
      " pn_primorial powersum primorial "
      " vecprefixsum vecprod vecsum"),
-    ("functions of one integer", NO,
-     "Functions and predicates of one integer, most built on its factorization. `bigint::factor` and "
-     "`bigint::divisors` give the factorization and the main divisor functions; these are not ported.",
-     " hclassno integer_complexity inverse_sigma0 "
-     "inverse_sigma0_count is_congruent_number "
-     " is_pillai "
-     " "
-     " "
-     ""),
+    ("rejected past 2^63 by MPU", NA,
+     "MPU 0.75 croaks (\"n must fit in native signed integer\") for `n` above 2^63-1, in its pure-Perl "
+     "path as in C, so there is no big-integer result to port. The native forms return `None` "
+     "(`hclassno`) or panic (`integer_complexity`) there; `tests/compat_bigint_oneint.rs` checks both "
+     "against the oracle.",
+     "hclassno integer_complexity"),
+    ("impractical past 2^64", NA,
+     "MPU 0.75 accepts a big `n`, but its pure-Perl path does not finish (each runs past a 30 s limit on a "
+     "65-bit input). `farey` first takes the totient sum up to `n`, and the sequence has about 0.3n^2 "
+     "terms. `is_catalan_pseudoprime` reduces to the full binomial(n-1, (n-1)/2), primes included. "
+     "`is_pillai` steps v = 8, 9, ... through v! mod n, so a prime `n` takes more than 2^64 steps; only "
+     "`n` below 23 or with a factor 2, 3, 5 or 7 returns at once (zero), which the native forms match at "
+     "the 64-bit edge.",
+     "farey is_catalan_pseudoprime is_pillai"),
     ("modular helpers", NO,
      "Modular helpers with a `u64` modulus. `bigint::arith` and `bigint::modular` carry `addmod`, `mulmod`, "
      "`powmod`, `invmod`, `sqrtmod`, `rootmod`, `chinese`, `lucasumod` and `lucasvmod`; these are not ported.",
@@ -87,7 +92,7 @@ NATIVE_ONLY = [
     ("other primality tests", NO,
      "Further pseudoprime tests and prime classes. `bigint::primality` has the tests MPU's pure-Perl path "
      "uses (Fermat, Euler, strong, the Lucas family, BPSW, Lucas-Lehmer); these are not ported.",
-     "is_catalan_pseudoprime is_chen_prime is_delicate_prime is_frobenius_khashin_pseudoprime "
+     "is_chen_prime is_delicate_prime is_frobenius_khashin_pseudoprime "
      "is_frobenius_pseudoprime is_frobenius_underwood_pseudoprime is_gaussian_prime is_perrin_pseudoprime "
      "is_safe_prime"),
     ("other factoring methods", NO,
@@ -128,11 +133,6 @@ NATIVE_ONLY = [
      "random_nbit_prime random_ndigit_prime random_prime random_proven_prime random_proven_prime_with_cert "
      "random_safe_prime random_semiprime random_shawe_taylor_prime random_shawe_taylor_prime_with_cert "
      "random_strong_prime random_unrestricted_semiprime urandomb urandomm urandomr"),
-    ("rationals", NO,
-     "Continued fractions and the Calkin-Wilf, Stern-Brocot and Farey functions take `u64` or `u32` "
-     "numerators, denominators and orders; these are not ported.",
-     " farey farey_rank "
-     ""),
     ("digits", NO,
      "Digit functions on `i128` or `u64`. num-bigint's `to_radix_be`, `to_str_radix`, `from_radix_be` and "
      "`parse_bytes` cover base conversion on `BigUint`; the other digit functions are not ported.",

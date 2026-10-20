@@ -9,16 +9,19 @@
 //! returns the native answer, so below `2^64` the two agree.
 //!
 //! Above, the `n`th value is the least `x` whose exact count reaches `n`,
-//! found by bisection. The counts follow `PP.pm`: almost primes first take
-//! out the powers of two that every member must have (`_kap_reduce_nth`,
-//! `_kap_reduce_count`), and the counts then enumerate products of small
-//! primes with a native prime count at each leaf (`_kapc_count`,
-//! `_omega_prime_count_rec`, `_powerful_count_recurse`). The run time grows
-//! with the number of such products: a large `k` with a small index takes
-//! milliseconds, an index of a few hundred million takes minutes, and MPU's
-//! Perl path has the same shape. A count that would need a prime count
-//! beyond `2^64` is not tried; the `n`th functions return `None` there,
-//! where MPU's Perl path does not return.
+//! found by interpolation and bisection on the count. The counts follow
+//! `PP.pm`: almost primes first take out the powers of two that every member
+//! must have (`_kap_reduce_nth`, `_kap_reduce_count`), and the counts then
+//! enumerate products of small primes with a native prime count at each
+//! leaf (`_kapc_count`, `_omega_prime_count_rec`, `_powerful_count_recurse`).
+//! The run time grows with the number of such products, as in MPU's Perl
+//! path: a large `k` with a small index takes milliseconds
+//! (`nth_almost_prime(64, 10^6)`, `nth_powerful(100, 60)`), an index just
+//! past the native range for a mid-size `k` takes seconds
+//! (`nth_omega_prime(15, 299179)`), and a small `k` with a large index does
+//! not finish. A count that would need a prime count beyond `2^64` is not
+//! tried: the `n`th functions return `None` there, where MPU's Perl path
+//! does not return.
 //!
 //! `nth_semiprime` and `nth_prime_power` have no `BigUint` form: past the
 //! native range MPU finds them from exact semiprime and prime power counts,
@@ -36,7 +39,12 @@
 //!     Some("32589158477190044730".into())
 //! );
 //! ```
-#![allow(clippy::cast_possible_truncation)]
+// Sieve indices fit `usize`; a double only starts the `u128` root search.
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss
+)]
 
 use super::arith::rootint;
 use super::counts::nth_prime;
@@ -51,9 +59,10 @@ const MAX_PRIME_IDX: u64 = 425_656_284_035_217_743;
 /// The largest square-free sieve held in memory; above it each test factors.
 const SIEVE_LIMIT: u64 = 1 << 24;
 
-/// OEIS A078843 as in `PP.pm` `_kap_reduce_nth`: below index
-/// `A078843[k]`, the `n`th `(k + 1)`-almost prime is twice the `n`th
-/// `k`-almost prime.
+/// OEIS A078843 as in `PP.pm` `_kap_reduce_nth`: `A078843[k]` counts the
+/// `k`-almost primes up to `3^k`. Below that index the `n`th `k`-almost
+/// prime is even (an odd one is at least `3^k`), twice the `n`th
+/// `(k - 1)`-almost prime.
 const A078843: [u64; 61] = [
     1,
     2,
@@ -310,7 +319,7 @@ fn kap_count(k: u32, x: &BigUint) -> Option<BigUint> {
 /// [`nth_almost_prime`](crate::nth_almost_prime) answers where its index
 /// and result fit `u64`. Above, the reduction `_kap_reduce_nth` writes the
 /// value as `2^r` times an almost prime with `k - r` factors when the index
-/// is small for `k`; otherwise a bisection with the exact count finds it,
+/// is small for `k`; otherwise a search on the exact count finds it,
 /// between [`nth_almost_prime_lower`] and [`nth_almost_prime_upper`].
 /// `k = 1` is [`nth_prime`].
 ///
@@ -434,7 +443,7 @@ fn omega_count(k: u32, x: &BigUint) -> Option<BigUint> {
 ///
 /// Port of MPU 0.75 `PP.pm` `nth_omega_prime`. The native
 /// [`nth_omega_prime`](crate::nth_omega_prime) answers where its index and
-/// result fit `u64`. Above, a bisection from `pn_primorial(k)` with the
+/// result fit `u64`. Above, a search from `pn_primorial(k)` on the
 /// exact count (`_omega_prime_count_rec`) finds the value. `k = 1` is
 /// `nth_prime_power`.
 ///
@@ -553,7 +562,8 @@ impl Wide for BigUint {
         self / d
     }
     fn cquot(&self, d: &Self) -> Self {
-        (self + d - 1_u8) / d
+        let q = self / d;
+        if &q * d == *self { q } else { q + 1_u8 }
     }
     fn times_pow(&self, v: &Self, r: u32) -> Self {
         self * v.pow(r)
@@ -708,7 +718,10 @@ pub fn powerful_numbers(lo: &BigUint, hi: &BigUint, k: u32) -> Vec<BigUint> {
     }
     if let Some(h) = small(hi) {
         let l = small(&lo).unwrap_or(h);
-        return crate::powerful_numbers(l, h, k).into_iter().map(big).collect();
+        return crate::powerful_numbers(l, h, k)
+            .into_iter()
+            .map(big)
+            .collect();
     }
     if k <= 1 {
         let mut out = Vec::new();
@@ -720,21 +733,21 @@ pub fn powerful_numbers(lo: &BigUint, hi: &BigUint, k: u32) -> Vec<BigUint> {
         return out;
     }
     if u64::from(k) >= hi.bits() {
-        return if lo == big(1) { vec![big(1)] } else { Vec::new() };
+        return if lo == big(1) {
+            vec![big(1)]
+        } else {
+            Vec::new()
+        };
     }
     let sf = SquareFree::new(small(&rootint(hi, k + 1)).unwrap_or(u64::MAX));
-    let mut out = match (u128::try_from(&lo), u128::try_from(hi)) {
-        (Ok(l), Ok(h)) => {
-            let mut out = Vec::new();
-            powerful_gen(&l, &h, k, &sf, &1, 2 * k - 1, &mut out);
-            out.iter().map(Wide::wide).collect()
-        }
-        _ => {
-            let mut out = Vec::new();
-            powerful_gen(&lo, hi, k, &sf, &big(1), 2 * k - 1, &mut out);
-            out
-        }
-    };
+    let mut out = Vec::new();
+    if let (Ok(l), Ok(h)) = (u128::try_from(&lo), u128::try_from(hi)) {
+        let mut words = Vec::new();
+        powerful_gen(&l, &h, k, &sf, &1, 2 * k - 1, &mut words);
+        out.extend(words.iter().map(Wide::wide));
+    } else {
+        powerful_gen(&lo, hi, k, &sf, &big(1), 2 * k - 1, &mut out);
+    }
     out.sort_unstable();
     out
 }
@@ -750,9 +763,16 @@ mod tests {
         for k in 3..20_u32 {
             let n = A078843[k as usize + 1];
             let twice = |n| crate::nth_almost_prime(k, n).map(|v| v * 2);
-            assert_eq!(crate::nth_almost_prime(k + 1, n - 1), twice(n - 1), "k = {k}");
+            assert_eq!(
+                crate::nth_almost_prime(k + 1, n - 1),
+                twice(n - 1),
+                "k = {k}"
+            );
             assert_ne!(crate::nth_almost_prime(k + 1, n), twice(n), "k = {k}");
-            assert_eq!(kap_reduce_nth(k + 1, &big(n - 1)), 1 + kap_reduce_nth(k, &big(n - 1)));
+            assert_eq!(
+                kap_reduce_nth(k + 1, &big(n - 1)),
+                1 + kap_reduce_nth(k, &big(n - 1))
+            );
         }
         // A078843[8] = 64 <= 100 < A078843[9] = 103.
         assert_eq!(kap_reduce_nth(70, &big(100)), 62);
@@ -765,8 +785,14 @@ mod tests {
         for x in [0_u64, 1, 7, 8, 100, 1000, 65_536, 1_000_003] {
             let b = big(x);
             for k in 0..6 {
-                assert_eq!(kap_count(k, &b), Some(big(crate::almost_prime_count(u64::from(k), x))));
-                assert_eq!(omega_count(k, &b), Some(big(crate::omega_prime_count(k, x))));
+                assert_eq!(
+                    kap_count(k, &b),
+                    Some(big(crate::almost_prime_count(u64::from(k), x)))
+                );
+                assert_eq!(
+                    omega_count(k, &b),
+                    Some(big(crate::omega_prime_count(k, x)))
+                );
             }
             for k in 2..6 {
                 assert_eq!(powerful_count(&b, k), big(crate::powerful_count(x, k)));
@@ -820,14 +846,26 @@ mod tests {
     #[test]
     fn least_reaching_widens_and_bisects() {
         let id = |x: &BigUint| Some(x.clone());
-        assert_eq!(least_reaching(big(0), big(0), None, &big(37), id, None), Some(big(37)));
-        assert_eq!(least_reaching(big(5), big(6), None, &big(6), id, None), Some(big(6)));
-        assert_eq!(least_reaching(big(5), big(8), None, &big(7), |_| None, None), None);
+        assert_eq!(
+            least_reaching(big(0), big(0), None, &big(37), id, None),
+            Some(big(37))
+        );
+        assert_eq!(
+            least_reaching(big(5), big(6), None, &big(6), id, None),
+            Some(big(6))
+        );
+        assert_eq!(
+            least_reaching(big(5), big(8), None, &big(7), |_| None, None),
+            None
+        );
         // Interpolation on a count of slope 1/3 lands on the answer.
         let third = |x: &BigUint| Some(x / 3_u8);
         for n in [1_u64, 2, 1000, 123_456_789] {
             let want = big(3 * n);
-            assert_eq!(least_reaching(big(0), big(7), Some(big(0)), &big(n), third, None), Some(want));
+            assert_eq!(
+                least_reaching(big(0), big(7), Some(big(0)), &big(n), third, None),
+                Some(want)
+            );
         }
     }
 }

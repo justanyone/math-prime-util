@@ -64,6 +64,14 @@ NATIVE_ONLY = [
     ("not in MPU 0.75", NA,
      "Not in Math::Prime::Util 0.75, so there is nothing to port.",
      "is_higgs_prime"),
+    ("nth semiprime and prime power past 2^64", NA,
+     "MPU 0.75 finds these from exact semiprime and prime power counts. Past the native range (an index above "
+     "`MPU_MAX_SEMI_PRIME_IDX` or `MPU_MAX_PRIME_IDX`) those counts need prime counts near or past 2^64, and "
+     "MPU's own Perl path does not return: `nth_prime_power(425656284035217744)` gave no result in 30 "
+     "minutes, and `nth_semiprime(1701748900850019778)` none in 10 minutes. A `BigUint` form could not finish "
+     "either. The native forms return MPU C's boundary values there (0 and the largest 64-bit prime); "
+     "`bigint::family_nth` returns `None` for `nth_almost_prime(2, n)` and `nth_omega_prime(1, n)` past them.",
+     "nth_prime_power nth_semiprime"),
     ("growing results", NO,
      "The value outgrows 64 or 128 bits quickly, where MPU returns a big integer; the native forms stop at "
      "their fixed width. A `BigUint` result form is not ported.",
@@ -102,15 +110,15 @@ NATIVE_ONLY = [
      "almost_prime_count almost_prime_count_approx almost_prime_count_lower almost_prime_count_upper "
      "almost_primes goldbach_pair_count goldbach_pairs inverse_li is_lucky is_ramanujan_prime legendre_phi "
      "lucky_count lucky_count_approx lucky_count_lower lucky_count_upper lucky_numbers mertens "
-     "minimal_goldbach_pair next_chen_prime next_perfect_power next_prime_power nth_almost_prime "
+     "minimal_goldbach_pair next_chen_prime next_perfect_power next_prime_power "
      "nth_almost_prime_approx nth_almost_prime_lower nth_almost_prime_upper nth_lucky nth_lucky_approx "
-     "nth_lucky_lower nth_lucky_upper nth_omega_prime nth_perfect_power nth_perfect_power_approx "
-     "nth_perfect_power_lower nth_perfect_power_upper nth_powerfree nth_powerful nth_prime_power "
+     "nth_lucky_lower nth_lucky_upper nth_perfect_power nth_perfect_power_approx "
+     "nth_perfect_power_lower nth_perfect_power_upper nth_powerfree "
      "nth_prime_power_approx nth_prime_power_lower nth_prime_power_upper nth_ramanujan_prime "
-     "nth_ramanujan_prime_approx nth_ramanujan_prime_lower nth_ramanujan_prime_upper nth_semiprime "
+     "nth_ramanujan_prime_approx nth_ramanujan_prime_lower nth_ramanujan_prime_upper "
      "nth_semiprime_approx nth_twin_prime nth_twin_prime_approx omega_prime_count omega_primes "
      "perfect_power_count perfect_power_count_approx perfect_power_count_lower perfect_power_count_upper "
-     "powerfree_count powerfree_part_sum powerfree_sum powerful_count powerful_numbers prev_perfect_power "
+     "powerfree_count powerfree_part_sum powerfree_sum powerful_count prev_perfect_power "
      "prev_prime_power prime_count prime_power_count prime_power_count_approx prime_power_count_lower "
      "prime_power_count_upper prime_powers primes print_primes ramanujan_prime_count "
      "ramanujan_prime_count_approx ramanujan_prime_count_lower ramanujan_prime_count_upper ramanujan_primes "

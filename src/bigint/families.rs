@@ -5,8 +5,8 @@
 //! These MPU names stay native (`u64` only) because MPU's own pure-Perl path
 //! is impractical for inputs past 2^64: `is_lucky`, `lucky_numbers`,
 //! `is_ramanujan_prime`, `ramanujan_primes` (they sieve or scan every value up
-//! to the argument), `goldbach_pairs` (it tests every prime from n/2 to n), and
-//! `powerful_numbers` (it generates every powerful number up to the high end).
+//! to the argument), and `goldbach_pairs` (it tests every prime from n/2 to n).
+//! `powerful_numbers` is in [`super::family_nth`].
 use num_bigint::BigUint;
 use std::io::{self, Write};
 

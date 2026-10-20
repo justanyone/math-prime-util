@@ -51,7 +51,8 @@ All notable changes to this crate are listed here. The format follows
 - `forsquarefreeint` on a short range near `u64::MAX` sieves primes in bounded blocks and factors the range.
 - The CI bench job runs the base commit and the head of each bench back to back on one runner and reports a
   benchmark as slower only when the lower bound of its change estimate is above 10 % in the first run and in
-  two repeats.
+  two repeats, and the head adds more than 1 ns to the mean time. A bench of less than a few ns moves by one or
+  two CPU cycles when its code is placed at another address.
 
 ## [1.1.0] - 2026-10-19
 

@@ -35,6 +35,9 @@ pub mod family_bounds;
 pub mod family_counts;
 #[cfg(feature = "bigint")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
+pub mod family_nth;
+#[cfg(feature = "bigint")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint")))]
 pub mod functions;
 #[cfg(feature = "gmp")]
 mod gmp;

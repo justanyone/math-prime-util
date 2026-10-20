@@ -174,7 +174,7 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
 - Upstream test: `is(semiprime_count("18446744073709551610","18446744073709551622"), 2, "semiprime_count across 2^64");`
 - Status: confirmed (reachable in 0.75; the walk branch is in MPU).
 
-### 23. `powerful_numbers` (PP, `PP.pm`) dies past 2^64 when a product of two native integers passes 2^64; `nth_powerful(n, 2)` dies for `n >= 2^64`
+### 24. `powerful_numbers` (PP, `PP.pm`) dies past 2^64 when a product of two native integers passes 2^64; `nth_powerful(n, 2)` dies for `n >= 2^64`
 
 - Function and input: `powerful_numbers(2^64, 2^64 + 1000000, 3)`,
   `powerful_numbers(2^64, 2^65, 20)`, `powerful_numbers(2^100, 2^100 + 100000, 4)`;

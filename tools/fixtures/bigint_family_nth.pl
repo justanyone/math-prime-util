@@ -13,7 +13,7 @@
 #
 # powerful_numbers: PP.pm `_pcg` multiplies two native integers with Perl's
 # `*`, so a product past 2^64 turns into a float and the call dies
-# (docs/upstream-findings.md entry 23). Where it dies, the row holds what the
+# (docs/upstream-findings.md entry 24). Where it dies, the row holds what the
 # function is defined to return: the integers of the interval that pass
 # is_powerful, or, for a wide interval, every product of prime powers p^e
 # with e >= k in it (`powerful_by_definition` below); a comment line before
@@ -22,7 +22,7 @@
 # Not here: nth_semiprime and nth_prime_power past the native range (also
 # nth_almost_prime(2, n) and nth_omega_prime(1, n)) need prime counts near or
 # past 2^64 and do not return; nth_powerful(n, 2) for n >= 2^64 dies (a NaN
-# from PP.pm's estimate, entry 23) and its value is past what a count reaches.
+# from PP.pm's estimate, entry 24) and its value is past what a count reaches.
 use strict;
 use warnings;
 
@@ -131,6 +131,6 @@ sub direct_comment {
   return if defined $r && $r eq join(' ', map { "$_" } @want);
   my $why = defined $r ? "returns [$r]" : 'dies: ' . ($@ =~ s/ at \S+ line \d+.*//sr);
   chomp $why;
-  print $fh "# upstream finding 23: PP powerful_numbers($lo, $hi, $k) $why\n";
+  print $fh "# upstream finding 24: PP powerful_numbers($lo, $hi, $k) $why\n";
 }
 1;

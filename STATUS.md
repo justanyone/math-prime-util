@@ -8,7 +8,7 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 320 yes, 6 no, 102 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 324 yes, 0 no, 104 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
 - [x] `abundance` · bigint: yes, `bigint::functions`
@@ -228,7 +228,7 @@ BigUint field: 320 yes, 6 no, 102 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `next_prime` · bigint: yes, `bigint::primality`
 - [x] `next_prime_power` · bigint: yes, `bigint::families`
 - [x] `next_stern_brocot` · bigint: yes, `bigint::rational`
-- [x] `nth_almost_prime` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_almost_prime` · bigint: yes, `bigint::family_nth`
 - [x] `nth_almost_prime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_almost_prime_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_almost_prime_upper` · bigint: yes, `bigint::family_bounds`
@@ -237,17 +237,17 @@ BigUint field: 320 yes, 6 no, 102 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `nth_lucky_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_lucky_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_lucky_upper` · bigint: yes, `bigint::family_bounds`
-- [x] `nth_omega_prime` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_omega_prime` · bigint: yes, `bigint::family_nth`
 - [x] `nth_perfect_power` · bigint: yes, `bigint::family_counts`
 - [x] `nth_perfect_power_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_perfect_power_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_perfect_power_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_powerfree` · bigint: yes, `bigint::family_counts`
-- [x] `nth_powerful` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_powerful` · bigint: yes, `bigint::family_nth`
 - [x] `nth_prime` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_approx` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_lower` · bigint: yes, `bigint::counts`
-- [x] `nth_prime_power` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_prime_power` · bigint: n.a., nth semiprime and prime power past 2^64
 - [x] `nth_prime_power_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_prime_power_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_prime_power_upper` · bigint: yes, `bigint::family_bounds`
@@ -256,7 +256,7 @@ BigUint field: 320 yes, 6 no, 102 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `nth_ramanujan_prime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_ramanujan_prime_lower` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_ramanujan_prime_upper` · bigint: yes, `bigint::family_bounds`
-- [x] `nth_semiprime` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `nth_semiprime` · bigint: n.a., nth semiprime and prime power past 2^64
 - [x] `nth_semiprime_approx` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_stern_brocot` · bigint: yes, `bigint::rational`
 - [x] `nth_stern_diatomic` · bigint: yes, `bigint::rational`
@@ -282,7 +282,7 @@ BigUint field: 320 yes, 6 no, 102 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `powerfree_part_sum` · bigint: yes, `bigint::family_counts`
 - [x] `powerfree_sum` · bigint: yes, `bigint::family_counts`
 - [x] `powerful_count` · bigint: yes, `bigint::family_counts`
-- [x] `powerful_numbers` · bigint: no, prime families: exact counts, nth values and lists
+- [x] `powerful_numbers` · bigint: yes, `bigint::family_nth`
 - [x] `powersum` · bigint: yes, `bigint::sequences`
 - [x] `powint` · bigint: n.a., integer operators
 - [x] `powmod` · bigint: yes, `bigint::arith`

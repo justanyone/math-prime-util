@@ -78,12 +78,14 @@ NATIVE_ONLY = [
      "`n` below 23 or with a factor 2, 3, 5 or 7 returns at once (zero), which the native forms match at "
      "the 64-bit edge.",
      "farey is_catalan_pseudoprime is_pillai"),
-    ("prime families: exact counts, nth values and lists", NO,
-     "Past 2^64 each of these needs a sieve or a count up to the input or over a range in proportion to it, "
-     "and MPU's pure-Perl path times out, runs out of memory or refuses the input there. "
-     "`bigint::family_bounds` gives their bounds and estimates, `bigint::families` the next and previous "
-     "members and the lists of short ranges, and `bigint::family_counts` the exact counts that are practical.",
-     "nth_almost_prime nth_omega_prime nth_powerful nth_prime_power nth_semiprime powerful_numbers"),
+    ("nth semiprime and prime power past 2^64", NA,
+     "MPU 0.75 finds these from exact semiprime and prime power counts. Past the native range (an index above "
+     "`MPU_MAX_SEMI_PRIME_IDX` or `MPU_MAX_PRIME_IDX`) those counts need prime counts near or past 2^64, and "
+     "MPU's own Perl path does not return: `nth_prime_power(425656284035217744)` gave no result in 30 "
+     "minutes, and `nth_semiprime(1701748900850019778)` none in 10 minutes. A `BigUint` form could not finish "
+     "either. The native forms return MPU C's boundary values there (0 and the largest 64-bit prime); "
+     "`bigint::family_nth` returns `None` for `nth_almost_prime(2, n)` and `nth_omega_prime(1, n)` past them.",
+     "nth_prime_power nth_semiprime"),
     ("lucky, Ramanujan and twin-prime sieves", NA,
      "MPU 0.75 itself cannot answer these past 2^64: its XS code takes native integers only, and its "
      "pure-Perl path sieves from the start. `lucky_numbers`, `lucky_count` and `nth_lucky` sieve every lucky "

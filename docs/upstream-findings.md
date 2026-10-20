@@ -12,8 +12,8 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 7, probable 6, API difference or documentation only 9.
-Entries 15 to 19 are numbered in the order they were found, not by section.
+Counts: confirmed 8, probable 6, API difference or documentation only 11.
+Entries 15 to 24 are numbered in the order they were found, not by section.
 
 ## Confirmed
 
@@ -173,6 +173,40 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
   entry), so `replay_bigint_family_counts` asserts the correct value.
 - Upstream test: `is(semiprime_count("18446744073709551610","18446744073709551622"), 2, "semiprime_count across 2^64");`
 - Status: confirmed (reachable in 0.75; the walk branch is in MPU).
+
+### 24. `powerful_numbers` (PP, `PP.pm`) dies past 2^64 when a product of two native integers passes 2^64; `nth_powerful(n, 2)` dies for `n >= 2^64`
+
+- Function and input: `powerful_numbers(2^64, 2^64 + 1000000, 3)`,
+  `powerful_numbers(2^64, 2^65, 20)`, `powerful_numbers(2^100, 2^100 + 100000, 4)`;
+  `nth_powerful(2^64, 2)`.
+- Perl 0.75 value: the three lists die with `Parameter '1.84467440737096e+19'
+  must be an integer` (and `1.89535253532865e+19`, `1.85304617017301e+19`);
+  `nth_powerful` dies with `Parameter 'NaN' must be an integer`. The comment
+  lines of `bigint_family_nth.tsv` give the PP result for each fixture interval.
+- Correct value: `[2^64]` for the first; the 13 values of the second are in
+  `bigint_family_nth.tsv` (2^64, 18953525353286467584 = 2^26 * 3^24, ...).
+- Location: `PP.pm` `sub _pcg` lines 2231 and 2236: `$m * Mpowint($_,$r)` and
+  `$m * Mpowint($v,$r)` use Perl's `*`, so when both factors are native and
+  the product passes 2^64 it becomes a double; the next `Mdivint` or the final
+  `Mvecsorti` (line 2264) rejects it. A product that is a `Math::BigInt`
+  already (one factor past 2^64) works, which is why
+  `powerful_numbers(2^64 - 100, 2^64 + 100, 2)` returns `[2^64]`. Fix:
+  `Mmulint($m, Mpowint(...))`. `sub nth_powerful` line 2130 raises a
+  `Math::BigInt` index to the power `5/3`, which is `NaN`.
+- How verified: run today with XS and no GMP (`MPU_NO_GMP=1`); the same with
+  `MPU_NO_XS=1`. The fixture rows for such intervals hold the integers of the
+  interval that pass `is_powerful`, or for a wide interval every product of
+  prime powers `p^e` (`e >= k`) in it, computed in Perl by the generator.
+- Port: `bigint::family_nth::powerful_numbers` multiplies in `u128` or
+  `BigUint`; `bigint::family_nth::nth_powerful` searches with the exact count
+  and needs no estimate.
+- Test that skips the row: none; `bigint_family_nth_oracle` in
+  `tests/compat_bigint_family_nth.rs` replays the definition rows, and the
+  oracle has no `nth_powerful` row with `k = 2` and `n >= 2^64` (its value is
+  near `n^2 / 4.7`, past what an exact count reaches).
+- Upstream test: `is_deeply(powerful_numbers("18446744073709551616","18446744073709551616",3), ["18446744073709551616"], "powerful_numbers at 2^64, k=3");`
+- Status: confirmed (reachable in 0.75 with any interval past 2^64 whose
+  generation multiplies two native values past 2^64).
 
 ## Probable
 

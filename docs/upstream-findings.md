@@ -12,8 +12,8 @@ values are the frozen fixtures plus a reading of the C source in
 tree with `MPU_NO_XS=1`. Entries 1 to 3 were checked against upstream master
 (`205c790`, 2026-10-17): the code at issue is unchanged there.
 
-Counts: confirmed 6, probable 6, API difference or documentation only 8.
-Entries 15 to 19 are numbered in the order they were found, not by section.
+Counts: confirmed 8, probable 6, API difference or documentation only 11.
+Entries 15 to 24 are numbered in the order they were found, not by section.
 
 ## Confirmed
 
@@ -151,6 +151,62 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
   oracle lists.
 - Upstream test: `is_deeply([allsqrtmod(17, "9223372036854775808")], [qw/405959429219100393 4205726589208287511 5017645447646488297 8817412607635675415/], "allsqrtmod 17 mod 2^63");`
 - Status: confirmed (reachable in 0.75; the overflowing line is in MPU).
+
+### 20. `semiprime_count` (PP, `PP.pm`) with a range that starts below 2^64 and reaches 2^64 counts nothing past 2^64 - 1
+
+- Function and input: `semiprime_count(18446744073709551610, 18446744073709551622)`
+  (`bigint_family_counts.tsv`, the first `semiprime_count` row).
+- Perl 0.75 value: `0`.
+- Correct value: `2`. The semiprimes in the range are 18446744073709551617 and
+  18446744073709551619 (`is_semiprime` is true for both).
+- Location: `PP.pm` `sub semiprime_count`, the walk branch (lines 4572 to 4578):
+  `validate_integer_nonneg($lo)` leaves a start that fits in 64 bits as a
+  native integer, and `$lo++` at 2^64 - 1 becomes a floating point number, so
+  every later `Mis_semiprime($lo)` is false. A start of 2^64 or more stays a
+  `Math::BigInt` and counts 2.
+- How verified: PP run today (`MPU_NO_XS=1`, no GMP); starts at 2^64 - 6 to
+  2^64 - 1 give 0, starts at 2^64 and above give 2, 2, 1 and 1 for the shrinking
+  ranges (2^64, 2^64 + 1, 2^64 + 2 and 2^64 + 3 as starts). `almost_prime_count(2, ...)` summed over the same window gives 2.
+- Port: `bigint::family_counts::semiprime_count` walks with `BigUint`.
+- Test that skips the row: the generator `tools/fixtures/bigint_family_counts.pl`
+  writes the correct count of 2 for this row (the fixture comment names this
+  entry), so `replay_bigint_family_counts` asserts the correct value.
+- Upstream test: `is(semiprime_count("18446744073709551610","18446744073709551622"), 2, "semiprime_count across 2^64");`
+- Status: confirmed (reachable in 0.75; the walk branch is in MPU).
+
+### 24. `powerful_numbers` (PP, `PP.pm`) dies past 2^64 when a product of two native integers passes 2^64; `nth_powerful(n, 2)` dies for `n >= 2^64`
+
+- Function and input: `powerful_numbers(2^64, 2^64 + 1000000, 3)`,
+  `powerful_numbers(2^64, 2^65, 20)`, `powerful_numbers(2^100, 2^100 + 100000, 4)`;
+  `nth_powerful(2^64, 2)`.
+- Perl 0.75 value: the three lists die with `Parameter '1.84467440737096e+19'
+  must be an integer` (and `1.89535253532865e+19`, `1.85304617017301e+19`);
+  `nth_powerful` dies with `Parameter 'NaN' must be an integer`. The comment
+  lines of `bigint_family_nth.tsv` give the PP result for each fixture interval.
+- Correct value: `[2^64]` for the first; the 13 values of the second are in
+  `bigint_family_nth.tsv` (2^64, 18953525353286467584 = 2^26 * 3^24, ...).
+- Location: `PP.pm` `sub _pcg` lines 2231 and 2236: `$m * Mpowint($_,$r)` and
+  `$m * Mpowint($v,$r)` use Perl's `*`, so when both factors are native and
+  the product passes 2^64 it becomes a double; the next `Mdivint` or the final
+  `Mvecsorti` (line 2264) rejects it. A product that is a `Math::BigInt`
+  already (one factor past 2^64) works, which is why
+  `powerful_numbers(2^64 - 100, 2^64 + 100, 2)` returns `[2^64]`. Fix:
+  `Mmulint($m, Mpowint(...))`. `sub nth_powerful` line 2130 raises a
+  `Math::BigInt` index to the power `5/3`, which is `NaN`.
+- How verified: run today with XS and no GMP (`MPU_NO_GMP=1`); the same with
+  `MPU_NO_XS=1`. The fixture rows for such intervals hold the integers of the
+  interval that pass `is_powerful`, or for a wide interval every product of
+  prime powers `p^e` (`e >= k`) in it, computed in Perl by the generator.
+- Port: `bigint::family_nth::powerful_numbers` multiplies in `u128` or
+  `BigUint`; `bigint::family_nth::nth_powerful` searches with the exact count
+  and needs no estimate.
+- Test that skips the row: none; `bigint_family_nth_oracle` in
+  `tests/compat_bigint_family_nth.rs` replays the definition rows, and the
+  oracle has no `nth_powerful` row with `k = 2` and `n >= 2^64` (its value is
+  near `n^2 / 4.7`, past what an exact count reaches).
+- Upstream test: `is_deeply(powerful_numbers("18446744073709551616","18446744073709551616",3), ["18446744073709551616"], "powerful_numbers at 2^64, k=3");`
+- Status: confirmed (reachable in 0.75 with any interval past 2^64 whose
+  generation multiplies two native values past 2^64).
 
 ## Probable
 
@@ -325,6 +381,44 @@ Entries 15 to 19 are numbered in the order they were found, not by section.
     `stub_method_oracle` in `tests/compat_bigint_factor.rs` checks the
     port's C-method results as valid splits and equal to the oracle where
     both sides split.
+21. `setinsert`, `setinvert`, `setcontains` and `set_is_proper_intersection`
+    (PP) assume their set arguments are sorted and unique and give
+    undefined results otherwise (for example `setinsert` of the unsorted list
+    `2^100+3,0,2^100,2^100+3,1` into the empty set returns 5 and an unsorted
+    list with a duplicate). The port sorts and de-duplicates first. 53 rows
+    of `bigint_sets.tsv` with such an argument are skipped by
+    `bigint_sets_oracle` in `tests/compat_bigint_sets.rs`; the rows with
+    valid sets all replay.
+22. Family bounds above 2^64 (`bigint_family_bounds.tsv`, PP under
+    `MPU_NO_GMP=1`). In `PP.pm`: (a) `lucky_count_{approx,lower,upper}`
+    above 2^64, `nth_prime_power_*` above about 2^59 and several
+    `nth_almost_prime_*` rows die or return `NaN`, because a `Math::BigFloat`
+    goes into an integer function; the port runs the search the source
+    states and the tests check it by definition. (b) The fitted search range
+    of `lucky_count_*` misses the answer near 2^64 (the search then returns
+    an end of the range, an invalid bound); the port widens the range.
+    (c) `toint` of a double goes through a 15 digit string, so a result of
+    16 or more digits ends in zeros; the port copies this where PP does.
+    (d) The exponents of `nth_perfect_power_*` are the doubles 1.33333333333333
+    and 1.2; the port uses exact rational exponents, so results agree to 15
+    digits only. (e) `ramanujan_prime_count_approx` exits its search early
+    only if `hi` is a native integer (`Math::BigInt` division never meets
+    the 1e-15 test), so the result depends on the type of `hi`; the port
+    copies it. (f) Native `inverse_li(10^15)` is off by 44 against the exact
+    value; the bigint form is exact.
+23. Lucky, Ramanujan and twin-prime indices past the C limits (PP, measured
+    2026-10-19 with a 25 s and 4 GB limit). XS passes `nth_twin_prime(n)`
+    and `nth_ramanujan_prime(n)` above 12975810317986308 to `PP.pm`, which
+    runs out of time or memory for an index just above that limit, and
+    croaks for `n = 2^64 - 1` and `2^64 - 2` (`Parameter '1.84467440737096e+19'`
+    and `'4.66023008177925e+19' must be a non-negative integer`: the float
+    `n + 200` or `48/19 * n` goes into an integer function). For those two
+    `n` the native forms return `None` (`native_top_lucky.tsv`,
+    `tests/compat_native_top_lucky.rs`). On
+    `Math::BigInt` input past 2^64, `is_lucky` croaks with `Parameter 'NaN'`
+    unless its mod 2, 6 or 63 pretest rejects `n` (then 0), and
+    `nth_ramanujan_prime` croaks the same way. These names have no `BigUint`
+    form (`n.a.` in `docs/bigint-coverage.md`).
 
 ## Checked, no defect found
 
@@ -395,3 +489,12 @@ areas left open there were checked today as follows.
 
 Not checked against PP: `config.tsv`, `ramanujan_tau` above 300, and the
 rows listed as timeouts above.
+
+### MPU075_PP_SAFE_INTERNAL: seeded bigint safe prime
+
+MPU 0.75, pure Perl, no GMP: `csrand("bigint-random-fixed-seed-2026");
+Math::Prime::Util::PP::random_safe_prime(65)` raises
+`random safe prime internal failure`. The check is in
+`RandomPrimes.pm::_random_safe_prime_large`. The bigint_random fixture records
+ERROR. Its replay skips value equality for this named row and checks the correct
+65-bit safe prime form: both p and (p-1)/2 must pass primality tests.

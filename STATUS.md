@@ -8,23 +8,23 @@ the `BigUint` form (a `pub fn` of that name under `src/bigint/`); `no` means nat
 a `BigUint` form does not apply. After `no` and `n.a.` comes the reason group of
 [docs/bigint-coverage.md](docs/bigint-coverage.md), which gives each reason.
 
-BigUint field: 82 yes, 258 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
+BigUint field: 324 yes, 0 no, 104 n.a. (reasons: [docs/bigint-coverage.md](docs/bigint-coverage.md)).
 
 - [x] `absint` · bigint: n.a., integer operators
-- [x] `abundance` · bigint: no, functions of one integer
+- [x] `abundance` · bigint: yes, `bigint::functions`
 - [x] `add1int` · bigint: n.a., integer operators
 - [x] `addint` · bigint: n.a., integer operators
 - [x] `addmod` · bigint: yes, `bigint::arith`
-- [x] `aliquot_sum` · bigint: no, functions of one integer
-- [x] `allrootmod` · bigint: no, modular helpers
+- [x] `aliquot_sum` · bigint: yes, `bigint::functions`
+- [x] `allrootmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `allsqrtmod` · bigint: yes, `bigint::modular`
-- [x] `almost_prime_count` · bigint: no, prime families, counts and sums
-- [x] `almost_prime_count_approx` · bigint: no, prime families, counts and sums
-- [x] `almost_prime_count_lower` · bigint: no, prime families, counts and sums
-- [x] `almost_prime_count_upper` · bigint: no, prime families, counts and sums
-- [x] `almost_primes` · bigint: no, prime families, counts and sums
-- [x] `bell_number` · bigint: no, growing results
-- [x] `bernfrac` · bigint: no, growing results
+- [x] `almost_prime_count` · bigint: yes, `bigint::family_counts`
+- [x] `almost_prime_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `almost_prime_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `almost_prime_count_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `almost_primes` · bigint: yes, `bigint::families`
+- [x] `bell_number` · bigint: yes, `bigint::combinat`
+- [x] `bernfrac` · bigint: yes, `bigint::combinat`
 - [x] `bernreal` · bigint: n.a., real functions
 - [x] `bestrational` · bigint: n.a., real functions
 - [x] `binomial` · bigint: yes, `bigint::arith`
@@ -40,25 +40,25 @@ BigUint field: 82 yes, 258 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `bitset` · bigint: n.a., bit operations
 - [x] `bittest` · bigint: n.a., bit operations
 - [x] `bitxor` · bigint: n.a., bit operations
-- [x] `calkin_wilf_n` · bigint: no, rationals
+- [x] `calkin_wilf_n` · bigint: yes, `bigint::rational`
 - [x] `carmichael_lambda` · bigint: yes, `bigint::divisors`
-- [x] `catalan_number` · bigint: no, growing results
+- [x] `catalan_number` · bigint: yes, `bigint::combinat`
 - [x] `cdivint` · bigint: n.a., integer operators
 - [x] `cdivrem` · bigint: n.a., integer operators
-- [x] `cheb_factor` · bigint: no, other factoring methods
+- [x] `cheb_factor` · bigint: yes, `bigint::factor`
 - [x] `chebyshev_psi` · bigint: n.a., real functions
 - [x] `chebyshev_theta` · bigint: n.a., real functions
 - [x] `chinese` · bigint: yes, `bigint::modular`
-- [x] `chinese2` · bigint: no, modular helpers
+- [x] `chinese2` · bigint: yes, `bigint::modular::helpers`
 - [x] `cmpint` · bigint: n.a., integer operators
-- [x] `consecutive_integer_lcm` · bigint: no, growing results
-- [x] `contfrac` · bigint: no, rationals
-- [x] `convergents` · bigint: no, rationals
-- [x] `cornacchia` · bigint: no, modular helpers
-- [x] `crootint` · bigint: no, functions of one integer
+- [x] `consecutive_integer_lcm` · bigint: yes, `bigint::sequences`
+- [x] `contfrac` · bigint: yes, `bigint::rational`
+- [x] `convergents` · bigint: yes, `bigint::rational`
+- [x] `cornacchia` · bigint: yes, `bigint::modular::helpers`
+- [x] `crootint` · bigint: yes, `bigint::functions`
 - [x] `csrand` · bigint: n.a., generator state
-- [x] `dedekind_psi` · bigint: no, functions of one integer
-- [x] `digital_root` · bigint: no, digits
+- [x] `dedekind_psi` · bigint: yes, `bigint::functions`
+- [x] `digital_root` · bigint: yes, `bigint::digits`
 - [x] `divint` · bigint: n.a., integer operators
 - [x] `divisors` · bigint: yes, `bigint::divisors`
 - [x] `divisor_sum` · bigint: yes, `bigint::divisors`
@@ -68,232 +68,232 @@ BigUint field: 82 yes, 258 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `ecm_factor` · bigint: yes, `bigint::factor`
 - [x] `entropy_bytes` · bigint: n.a., generator state
 - [x] `euler_phi` · bigint: yes, `bigint::divisors`
-- [x] `exp_mangoldt` · bigint: no, functions of one integer
+- [x] `exp_mangoldt` · bigint: yes, `bigint::functions`
 - [x] `ExponentialIntegral` · bigint: n.a., real functions
 - [x] `factor` · bigint: yes, `bigint::factor`
 - [x] `factor_exp` · bigint: yes, `bigint::factor`
 - [x] `factorial` · bigint: yes, `bigint::arith`
 - [x] `factorialmod` · bigint: yes, `bigint::modular`
-- [x] `falling_factorial` · bigint: no, growing results
-- [x] `farey` · bigint: no, rationals
-- [x] `farey_rank` · bigint: no, rationals
+- [x] `falling_factorial` · bigint: yes, `bigint::combinat`
+- [x] `farey` · bigint: n.a., impractical past 2^64
+- [x] `farey_rank` · bigint: yes, `bigint::rational`
 - [x] `fdivrem` · bigint: n.a., integer operators
-- [x] `fermat_factor` · bigint: no, other factoring methods
-- [x] `fibonacci` · bigint: no, growing results
-- [x] `floor_sum` · bigint: no, growing results
-- [x] `foralmostprimes` · bigint: no, range iterators
+- [x] `fermat_factor` · bigint: yes, `bigint::factor`
+- [x] `fibonacci` · bigint: yes, `bigint::sequences`
+- [x] `floor_sum` · bigint: yes, `bigint::sequences`
+- [x] `foralmostprimes` · bigint: yes, `bigint::iter`
 - [x] `forcomb` · bigint: n.a., combinatorial enumeration
 - [x] `forcomp` · bigint: n.a., combinatorial enumeration
 - [x] `forcomposites` · bigint: yes, `bigint::counts`
 - [x] `forderange` · bigint: n.a., combinatorial enumeration
-- [x] `fordivisors` · bigint: no, range iterators
-- [x] `forfactored` · bigint: no, range iterators
+- [x] `fordivisors` · bigint: yes, `bigint::iter`
+- [x] `forfactored` · bigint: yes, `bigint::iter`
 - [x] `formultiperm` · bigint: n.a., generic over the element type
 - [x] `foroddcomposites` · bigint: yes, `bigint::counts`
 - [x] `forpart` · bigint: n.a., combinatorial enumeration
 - [x] `forperm` · bigint: n.a., combinatorial enumeration
 - [x] `forprimes` · bigint: yes, `bigint::counts`
-- [x] `forsemiprimes` · bigint: no, range iterators
+- [x] `forsemiprimes` · bigint: yes, `bigint::iter`
 - [x] `forsetproduct` · bigint: n.a., generic over the element type
-- [x] `forsquarefree` · bigint: no, range iterators
-- [x] `forsquarefreeint` · bigint: no, range iterators
-- [x] `frobenius_number` · bigint: no, growing results
-- [x] `from_contfrac` · bigint: no, rationals
-- [x] `fromdigits` · bigint: no, digits
-- [x] `fromzeckendorf` · bigint: no, digits
-- [x] `fubini` · bigint: no, growing results
+- [x] `forsquarefree` · bigint: yes, `bigint::iter`
+- [x] `forsquarefreeint` · bigint: yes, `bigint::iter`
+- [x] `frobenius_number` · bigint: yes, `bigint::sequences`
+- [x] `from_contfrac` · bigint: yes, `bigint::rational`
+- [x] `fromdigits` · bigint: yes, `bigint::digits`
+- [x] `fromzeckendorf` · bigint: yes, `bigint::digits`
+- [x] `fubini` · bigint: yes, `bigint::combinat`
 - [x] `gcd` · bigint: yes, `bigint::arith`
 - [x] `gcdext` · bigint: yes, `bigint::arith`
-- [x] `goldbach_pair_count` · bigint: no, prime families, counts and sums
-- [x] `goldbach_pairs` · bigint: no, prime families, counts and sums
+- [x] `goldbach_pair_count` · bigint: yes, `bigint::families`
+- [x] `goldbach_pairs` · bigint: yes, `bigint::families`
 - [x] `hammingweight` · bigint: n.a., bit operations
-- [x] `harmfrac` · bigint: no, growing results
+- [x] `harmfrac` · bigint: yes, `bigint::combinat`
 - [x] `harmreal` · bigint: n.a., real functions
-- [x] `hclassno` · bigint: no, functions of one integer
+- [x] `hclassno` · bigint: n.a., rejected past 2^63 by MPU
 - [x] `holf_factor` · bigint: yes, `bigint::factor`
-- [x] `integer_complexity` · bigint: no, functions of one integer
-- [x] `inverse_li` · bigint: no, prime families, counts and sums
+- [x] `integer_complexity` · bigint: n.a., rejected past 2^63 by MPU
+- [x] `inverse_li` · bigint: yes, `bigint::family_bounds`
 - [x] `inverse_li_nv` · bigint: n.a., real functions
-- [x] `inverse_sigma0` · bigint: no, functions of one integer
-- [x] `inverse_sigma0_count` · bigint: no, functions of one integer
-- [x] `inverse_totient` · bigint: no, functions of one integer
+- [x] `inverse_sigma0` · bigint: yes, `bigint::functions`
+- [x] `inverse_sigma0_count` · bigint: yes, `bigint::functions`
+- [x] `inverse_totient` · bigint: yes, `bigint::functions`
 - [x] `invmod` · bigint: yes, `bigint::arith`
 - [x] `irand` · bigint: n.a., generator state
 - [x] `irand32` · bigint: n.a., generator state
 - [x] `irand64` · bigint: n.a., generator state
 - [x] `is_aks_prime` · bigint: yes, `bigint::proving`
 - [x] `is_almost_extra_strong_lucas_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_almost_prime` · bigint: no, functions of one integer
+- [x] `is_almost_prime` · bigint: yes, `bigint::predicates`
 - [x] `is_bpsw_prime` · bigint: yes, `bigint::primality`
 - [x] `is_carmichael` · bigint: yes, `bigint::modular`
-- [x] `is_catalan_pseudoprime` · bigint: no, other primality tests
-- [x] `is_chen_prime` · bigint: no, other primality tests
+- [x] `is_catalan_pseudoprime` · bigint: n.a., impractical past 2^64
+- [x] `is_chen_prime` · bigint: yes, `bigint::primality`
 - [x] `is_congruent` · bigint: n.a., integer operators
-- [x] `is_congruent_number` · bigint: no, functions of one integer
-- [x] `is_cyclic` · bigint: no, functions of one integer
-- [x] `is_delicate_prime` · bigint: no, other primality tests
+- [x] `is_congruent_number` · bigint: yes, `bigint::predicates`
+- [x] `is_cyclic` · bigint: yes, `bigint::predicates`
+- [x] `is_delicate_prime` · bigint: yes, `bigint::primality`
 - [x] `is_divisible` · bigint: n.a., integer operators
 - [x] `is_euler_plumb_pseudoprime` · bigint: yes, `bigint::primality`
 - [x] `is_euler_pseudoprime` · bigint: yes, `bigint::primality`
 - [x] `is_even` · bigint: n.a., integer operators
 - [x] `is_extra_strong_lucas_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_frobenius_khashin_pseudoprime` · bigint: no, other primality tests
-- [x] `is_frobenius_pseudoprime` · bigint: no, other primality tests
-- [x] `is_frobenius_underwood_pseudoprime` · bigint: no, other primality tests
-- [x] `is_fundamental` · bigint: no, functions of one integer
-- [x] `is_gaussian_prime` · bigint: no, other primality tests
-- [x] `is_happy` · bigint: no, digits
-- [x] `is_harshad` · bigint: no, digits
+- [x] `is_frobenius_khashin_pseudoprime` · bigint: yes, `bigint::primality`
+- [x] `is_frobenius_pseudoprime` · bigint: yes, `bigint::primality`
+- [x] `is_frobenius_underwood_pseudoprime` · bigint: yes, `bigint::primality`
+- [x] `is_fundamental` · bigint: yes, `bigint::predicates`
+- [x] `is_gaussian_prime` · bigint: yes, `bigint::primality`
+- [x] `is_happy` · bigint: yes, `bigint::digits`
+- [x] `is_harshad` · bigint: yes, `bigint::digits`
 - [-] `is_higgs_prime` · bigint: n.a., not in MPU 0.75 — not in Math::Prime::Util 0.75 (no source, no fixture; the Phase 0 list was wrong)
 - [x] `is_lucas_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_lucky` · bigint: no, prime families, counts and sums
+- [x] `is_lucky` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
 - [x] `is_mersenne_prime` · bigint: yes, `bigint::primality`
 - [x] `is_odd` · bigint: n.a., integer operators
-- [x] `is_omega_prime` · bigint: no, functions of one integer
-- [x] `is_palindrome` · bigint: no, digits
-- [x] `is_perfect_number` · bigint: no, functions of one integer
-- [x] `is_perfect_power` · bigint: no, functions of one integer
-- [x] `is_perrin_pseudoprime` · bigint: no, other primality tests
-- [x] `is_pillai` · bigint: no, functions of one integer
+- [x] `is_omega_prime` · bigint: yes, `bigint::predicates`
+- [x] `is_palindrome` · bigint: yes, `bigint::digits`
+- [x] `is_perfect_number` · bigint: yes, `bigint::predicates`
+- [x] `is_perfect_power` · bigint: yes, `bigint::predicates`
+- [x] `is_perrin_pseudoprime` · bigint: yes, `bigint::primality`
+- [x] `is_pillai` · bigint: n.a., impractical past 2^64
 - [x] `is_polygonal` · bigint: yes, `bigint::counts`
 - [x] `is_power` · bigint: yes, `bigint::arith`
-- [x] `is_powerfree` · bigint: no, functions of one integer
-- [x] `is_powerful` · bigint: no, functions of one integer
-- [x] `is_practical` · bigint: no, functions of one integer
+- [x] `is_powerfree` · bigint: yes, `bigint::predicates`
+- [x] `is_powerful` · bigint: yes, `bigint::predicates`
+- [x] `is_practical` · bigint: yes, `bigint::predicates`
 - [x] `is_prime` · bigint: yes, `bigint::primality`
-- [x] `is_prime_power` · bigint: no, functions of one integer
+- [x] `is_prime_power` · bigint: yes, `bigint::predicates`
 - [x] `is_primitive_root` · bigint: yes, `bigint::modular`
 - [x] `is_prob_prime` · bigint: yes, `bigint::primality`
 - [x] `is_provable_prime` · bigint: yes, `bigint::proving`
 - [x] `is_provable_prime_with_cert` · bigint: yes, `bigint::proving`
 - [x] `is_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_qr` · bigint: no, modular helpers
+- [x] `is_qr` · bigint: yes, `bigint::modular::helpers`
 - [x] `is_quasi_carmichael` · bigint: yes, `bigint::modular`
-- [x] `is_ramanujan_prime` · bigint: no, prime families, counts and sums
-- [x] `is_rough` · bigint: no, functions of one integer
-- [x] `is_safe_prime` · bigint: no, other primality tests
-- [x] `is_semiprime` · bigint: no, functions of one integer
-- [x] `is_sidon_set` · bigint: no, sets of i64
-- [x] `is_smooth` · bigint: no, functions of one integer
+- [x] `is_ramanujan_prime` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `is_rough` · bigint: yes, `bigint::predicates`
+- [x] `is_safe_prime` · bigint: yes, `bigint::primality`
+- [x] `is_semiprime` · bigint: yes, `bigint::predicates`
+- [x] `is_sidon_set` · bigint: yes, `bigint::sets`
+- [x] `is_smooth` · bigint: yes, `bigint::predicates`
 - [x] `is_square` · bigint: yes, `bigint::arith`
 - [x] `is_square_free` · bigint: yes, `bigint::divisors`
 - [x] `is_strong_lucas_pseudoprime` · bigint: yes, `bigint::primality`
 - [x] `is_strong_pseudoprime` · bigint: yes, `bigint::primality`
-- [x] `is_sumfree_set` · bigint: no, sets of i64
-- [x] `is_sum_of_squares` · bigint: no, functions of one integer
-- [x] `is_totient` · bigint: no, functions of one integer
-- [x] `jordan_totient` · bigint: no, functions of one integer
+- [x] `is_sumfree_set` · bigint: yes, `bigint::sets`
+- [x] `is_sum_of_squares` · bigint: yes, `bigint::predicates`
+- [x] `is_totient` · bigint: yes, `bigint::predicates`
+- [x] `jordan_totient` · bigint: yes, `bigint::functions`
 - [x] `kronecker` · bigint: yes, `bigint::arith`
 - [x] `LambertW` · bigint: n.a., real functions
 - [x] `lastfor` · bigint: n.a., combinatorial enumeration
 - [x] `lcm` · bigint: yes, `bigint::arith`
-- [x] `legendre_phi` · bigint: no, prime families, counts and sums
-- [x] `lehman_factor` · bigint: no, other factoring methods
-- [x] `liouville` · bigint: no, functions of one integer
+- [x] `legendre_phi` · bigint: yes, `bigint::family_counts`
+- [x] `lehman_factor` · bigint: yes, `bigint::factor`
+- [x] `liouville` · bigint: yes, `bigint::functions`
 - [x] `LogarithmicIntegral` · bigint: n.a., real functions
 - [x] `logint` · bigint: yes, `bigint::arith`
 - [x] `lshiftint` · bigint: n.a., integer operators
-- [x] `lucas_number` · bigint: no, growing results
+- [x] `lucas_number` · bigint: yes, `bigint::sequences`
 - [x] `lucas_sequence` · bigint: yes, `bigint::primality`
-- [x] `lucasu` · bigint: no, growing results
+- [x] `lucasu` · bigint: yes, `bigint::sequences`
 - [x] `lucasumod` · bigint: yes, `bigint::modular`
-- [x] `lucasuv` · bigint: no, growing results
-- [x] `lucasuvmod` · bigint: no, modular helpers
-- [x] `lucasv` · bigint: no, growing results
+- [x] `lucasuv` · bigint: yes, `bigint::sequences`
+- [x] `lucasuvmod` · bigint: yes, `bigint::modular::helpers`
+- [x] `lucasv` · bigint: yes, `bigint::sequences`
 - [x] `lucasvmod` · bigint: yes, `bigint::modular`
-- [x] `lucky_count` · bigint: no, prime families, counts and sums
-- [x] `lucky_count_approx` · bigint: no, prime families, counts and sums
-- [x] `lucky_count_lower` · bigint: no, prime families, counts and sums
-- [x] `lucky_count_upper` · bigint: no, prime families, counts and sums
-- [x] `lucky_numbers` · bigint: no, prime families, counts and sums
-- [x] `mertens` · bigint: no, prime families, counts and sums
-- [x] `miller_rabin_random` · bigint: no, random big integers
-- [x] `minimal_goldbach_pair` · bigint: no, prime families, counts and sums
+- [x] `lucky_count` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `lucky_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `lucky_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `lucky_count_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `lucky_numbers` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `mertens` · bigint: yes, `bigint::family_counts`
+- [x] `miller_rabin_random` · bigint: yes, `bigint::random`
+- [x] `minimal_goldbach_pair` · bigint: yes, `bigint::families`
 - [x] `modint` · bigint: n.a., integer operators
 - [x] `moebius` · bigint: yes, `bigint::divisors`
 - [x] `muladdint` · bigint: n.a., integer operators
-- [x] `muladdmod` · bigint: no, modular helpers
+- [x] `muladdmod` · bigint: yes, `bigint::modular::helpers`
 - [x] `mulint` · bigint: n.a., integer operators
 - [x] `mulmod` · bigint: yes, `bigint::arith`
 - [x] `mulsubint` · bigint: n.a., integer operators
-- [x] `mulsubmod` · bigint: no, modular helpers
-- [x] `mult_digital_root` · bigint: no, digits
-- [x] `multifactorial` · bigint: no, growing results
+- [x] `mulsubmod` · bigint: yes, `bigint::modular::helpers`
+- [x] `mult_digital_root` · bigint: yes, `bigint::digits`
+- [x] `multifactorial` · bigint: yes, `bigint::combinat`
 - [x] `negint` · bigint: n.a., integer operators
-- [x] `negmod` · bigint: no, modular helpers
-- [x] `next_calkin_wilf` · bigint: no, rationals
-- [x] `next_chen_prime` · bigint: no, prime families, counts and sums
-- [x] `next_farey` · bigint: no, rationals
-- [x] `next_perfect_power` · bigint: no, prime families, counts and sums
+- [x] `negmod` · bigint: yes, `bigint::modular::helpers`
+- [x] `next_calkin_wilf` · bigint: yes, `bigint::rational`
+- [x] `next_chen_prime` · bigint: yes, `bigint::families`
+- [x] `next_farey` · bigint: yes, `bigint::rational`
+- [x] `next_perfect_power` · bigint: yes, `bigint::families`
 - [x] `next_prime` · bigint: yes, `bigint::primality`
-- [x] `next_prime_power` · bigint: no, prime families, counts and sums
-- [x] `next_stern_brocot` · bigint: no, rationals
-- [x] `nth_almost_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_almost_prime_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_almost_prime_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_almost_prime_upper` · bigint: no, prime families, counts and sums
-- [x] `nth_calkin_wilf` · bigint: no, rationals
-- [x] `nth_lucky` · bigint: no, prime families, counts and sums
-- [x] `nth_lucky_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_lucky_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_lucky_upper` · bigint: no, prime families, counts and sums
-- [x] `nth_omega_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_perfect_power` · bigint: no, prime families, counts and sums
-- [x] `nth_perfect_power_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_perfect_power_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_perfect_power_upper` · bigint: no, prime families, counts and sums
-- [x] `nth_powerfree` · bigint: no, prime families, counts and sums
-- [x] `nth_powerful` · bigint: no, prime families, counts and sums
+- [x] `next_prime_power` · bigint: yes, `bigint::families`
+- [x] `next_stern_brocot` · bigint: yes, `bigint::rational`
+- [x] `nth_almost_prime` · bigint: yes, `bigint::family_nth`
+- [x] `nth_almost_prime_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_almost_prime_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_almost_prime_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_calkin_wilf` · bigint: yes, `bigint::rational`
+- [x] `nth_lucky` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `nth_lucky_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_lucky_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_lucky_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_omega_prime` · bigint: yes, `bigint::family_nth`
+- [x] `nth_perfect_power` · bigint: yes, `bigint::family_counts`
+- [x] `nth_perfect_power_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_perfect_power_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_perfect_power_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_powerfree` · bigint: yes, `bigint::family_counts`
+- [x] `nth_powerful` · bigint: yes, `bigint::family_nth`
 - [x] `nth_prime` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_approx` · bigint: yes, `bigint::counts`
 - [x] `nth_prime_lower` · bigint: yes, `bigint::counts`
-- [x] `nth_prime_power` · bigint: no, prime families, counts and sums
-- [x] `nth_prime_power_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_prime_power_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_prime_power_upper` · bigint: no, prime families, counts and sums
+- [x] `nth_prime_power` · bigint: n.a., nth semiprime and prime power past 2^64
+- [x] `nth_prime_power_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_prime_power_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_prime_power_upper` · bigint: yes, `bigint::family_bounds`
 - [x] `nth_prime_upper` · bigint: yes, `bigint::counts`
-- [x] `nth_ramanujan_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_ramanujan_prime_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_ramanujan_prime_lower` · bigint: no, prime families, counts and sums
-- [x] `nth_ramanujan_prime_upper` · bigint: no, prime families, counts and sums
-- [x] `nth_semiprime` · bigint: no, prime families, counts and sums
-- [x] `nth_semiprime_approx` · bigint: no, prime families, counts and sums
-- [x] `nth_stern_brocot` · bigint: no, rationals
-- [x] `nth_stern_diatomic` · bigint: no, rationals
-- [x] `nth_twin_prime` · bigint: no, prime families, counts and sums
-- [x] `nth_twin_prime_approx` · bigint: no, prime families, counts and sums
-- [x] `numtoperm` · bigint: no, growing results
-- [x] `omega_prime_count` · bigint: no, prime families, counts and sums
-- [x] `omega_primes` · bigint: no, prime families, counts and sums
-- [x] `partitions` · bigint: no, growing results
-- [x] `partitionsq` · bigint: no, growing results
+- [x] `nth_ramanujan_prime` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `nth_ramanujan_prime_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_ramanujan_prime_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_ramanujan_prime_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_semiprime` · bigint: n.a., nth semiprime and prime power past 2^64
+- [x] `nth_semiprime_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `nth_stern_brocot` · bigint: yes, `bigint::rational`
+- [x] `nth_stern_diatomic` · bigint: yes, `bigint::rational`
+- [x] `nth_twin_prime` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `nth_twin_prime_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `numtoperm` · bigint: yes, `bigint::combinat`
+- [x] `omega_prime_count` · bigint: yes, `bigint::family_counts`
+- [x] `omega_primes` · bigint: yes, `bigint::families`
+- [x] `partitions` · bigint: yes, `bigint::combinat`
+- [x] `partitionsq` · bigint: yes, `bigint::combinat`
 - [x] `pbrent_factor` · bigint: yes, `bigint::factor`
-- [x] `perfect_power_count` · bigint: no, prime families, counts and sums
-- [x] `perfect_power_count_approx` · bigint: no, prime families, counts and sums
-- [x] `perfect_power_count_lower` · bigint: no, prime families, counts and sums
-- [x] `perfect_power_count_upper` · bigint: no, prime families, counts and sums
-- [x] `permtonum` · bigint: no, growing results
+- [x] `perfect_power_count` · bigint: yes, `bigint::family_counts`
+- [x] `perfect_power_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `perfect_power_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `perfect_power_count_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `permtonum` · bigint: yes, `bigint::combinat`
 - [x] `Pi` · bigint: n.a., already any size
-- [x] `pisano_period` · bigint: no, modular helpers
+- [x] `pisano_period` · bigint: yes, `bigint::modular::helpers`
 - [x] `pminus1_factor` · bigint: yes, `bigint::factor`
-- [x] `pn_primorial` · bigint: no, growing results
-- [x] `powerfree_count` · bigint: no, prime families, counts and sums
-- [x] `powerfree_part` · bigint: no, functions of one integer
-- [x] `powerfree_part_sum` · bigint: no, prime families, counts and sums
-- [x] `powerfree_sum` · bigint: no, prime families, counts and sums
-- [x] `powerful_count` · bigint: no, prime families, counts and sums
-- [x] `powerful_numbers` · bigint: no, prime families, counts and sums
-- [x] `powersum` · bigint: no, growing results
+- [x] `pn_primorial` · bigint: yes, `bigint::sequences`
+- [x] `powerfree_count` · bigint: yes, `bigint::family_counts`
+- [x] `powerfree_part` · bigint: yes, `bigint::functions`
+- [x] `powerfree_part_sum` · bigint: yes, `bigint::family_counts`
+- [x] `powerfree_sum` · bigint: yes, `bigint::family_counts`
+- [x] `powerful_count` · bigint: yes, `bigint::family_counts`
+- [x] `powerful_numbers` · bigint: yes, `bigint::family_nth`
+- [x] `powersum` · bigint: yes, `bigint::sequences`
 - [x] `powint` · bigint: n.a., integer operators
 - [x] `powmod` · bigint: yes, `bigint::arith`
 - [x] `pplus1_factor` · bigint: yes, `bigint::factor`
-- [x] `prev_perfect_power` · bigint: no, prime families, counts and sums
+- [x] `prev_perfect_power` · bigint: yes, `bigint::families`
 - [x] `prev_prime` · bigint: yes, `bigint::primality`
-- [x] `prev_prime_power` · bigint: no, prime families, counts and sums
+- [x] `prev_prime_power` · bigint: yes, `bigint::families`
 - [x] `prho_factor` · bigint: yes, `bigint::factor`
 - [x] `prime_bigomega` · bigint: yes, `bigint::divisors`
 - [x] `prime_certificate` · bigint: yes, `bigint::proving`
-- [x] `prime_count` · bigint: no, prime families, counts and sums
+- [x] `prime_count` · bigint: yes, `bigint::family_counts`
 - [x] `prime_count_approx` · bigint: yes, `bigint::counts`
 - [x] `prime_count_lower` · bigint: yes, `bigint::counts`
 - [x] `prime_count_upper` · bigint: yes, `bigint::counts`
@@ -302,110 +302,110 @@ BigUint field: 82 yes, 258 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `prime_iterator_object` · bigint: yes, `bigint::counts`
 - [x] `prime_memfree` · bigint: n.a., configuration
 - [x] `prime_omega` · bigint: yes, `bigint::divisors`
-- [x] `prime_power_count` · bigint: no, prime families, counts and sums
-- [x] `prime_power_count_approx` · bigint: no, prime families, counts and sums
-- [x] `prime_power_count_lower` · bigint: no, prime families, counts and sums
-- [x] `prime_power_count_upper` · bigint: no, prime families, counts and sums
-- [x] `prime_powers` · bigint: no, prime families, counts and sums
+- [x] `prime_power_count` · bigint: yes, `bigint::family_counts`
+- [x] `prime_power_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `prime_power_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `prime_power_count_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `prime_powers` · bigint: yes, `bigint::families`
 - [x] `prime_precalc` · bigint: n.a., configuration
-- [x] `primes` · bigint: no, prime families, counts and sums
+- [x] `primes` · bigint: yes, `bigint::families`
 - [x] `prime_set_config` · bigint: n.a., configuration
-- [x] `prime_signature` · bigint: no, functions of one integer
-- [x] `primorial` · bigint: no, growing results
-- [x] `print_primes` · bigint: no, prime families, counts and sums
-- [x] `qnr` · bigint: no, modular helpers
-- [x] `ramanujan_prime_count` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_prime_count_approx` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_prime_count_lower` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_prime_count_upper` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_primes` · bigint: no, prime families, counts and sums
-- [x] `ramanujan_sum` · bigint: no, functions of one integer
-- [x] `ramanujan_tau` · bigint: no, growing results
+- [x] `prime_signature` · bigint: yes, `bigint::functions`
+- [x] `primorial` · bigint: yes, `bigint::sequences`
+- [x] `print_primes` · bigint: yes, `bigint::families`
+- [x] `qnr` · bigint: yes, `bigint::modular::helpers`
+- [x] `ramanujan_prime_count` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `ramanujan_prime_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `ramanujan_prime_count_lower` · bigint: yes, `bigint::family_bounds`
+- [x] `ramanujan_prime_count_upper` · bigint: yes, `bigint::family_bounds`
+- [x] `ramanujan_primes` · bigint: n.a., lucky, Ramanujan and twin-prime sieves
+- [x] `ramanujan_sum` · bigint: yes, `bigint::functions`
+- [x] `ramanujan_tau` · bigint: yes, `bigint::combinat`
 - [x] `rand` · bigint: n.a., generator state
 - [x] `random_bytes` · bigint: n.a., generator state
-- [x] `random_factored_integer` · bigint: no, random big integers
-- [x] `random_maurer_prime` · bigint: no, random big integers
-- [x] `random_maurer_prime_with_cert` · bigint: no, random big integers
-- [x] `random_nbit_prime` · bigint: no, random big integers
-- [x] `random_ndigit_prime` · bigint: no, random big integers
-- [x] `random_prime` · bigint: no, random big integers
-- [x] `random_proven_prime` · bigint: no, random big integers
-- [x] `random_proven_prime_with_cert` · bigint: no, random big integers
-- [x] `random_safe_prime` · bigint: no, random big integers
-- [x] `random_semiprime` · bigint: no, random big integers
-- [x] `random_shawe_taylor_prime` · bigint: no, random big integers
-- [x] `random_shawe_taylor_prime_with_cert` · bigint: no, random big integers
-- [x] `random_strong_prime` · bigint: no, random big integers
-- [x] `random_unrestricted_semiprime` · bigint: no, random big integers
+- [x] `random_factored_integer` · bigint: yes, `bigint::random`
+- [x] `random_maurer_prime` · bigint: yes, `bigint::random`
+- [x] `random_maurer_prime_with_cert` · bigint: yes, `bigint::random`
+- [x] `random_nbit_prime` · bigint: yes, `bigint::random`
+- [x] `random_ndigit_prime` · bigint: yes, `bigint::random`
+- [x] `random_prime` · bigint: yes, `bigint::random`
+- [x] `random_proven_prime` · bigint: yes, `bigint::random`
+- [x] `random_proven_prime_with_cert` · bigint: yes, `bigint::random`
+- [x] `random_safe_prime` · bigint: yes, `bigint::random`
+- [x] `random_semiprime` · bigint: yes, `bigint::random`
+- [x] `random_shawe_taylor_prime` · bigint: yes, `bigint::random`
+- [x] `random_shawe_taylor_prime_with_cert` · bigint: yes, `bigint::random`
+- [x] `random_strong_prime` · bigint: yes, `bigint::random`
+- [x] `random_unrestricted_semiprime` · bigint: yes, `bigint::random`
 - [x] `randperm` · bigint: n.a., generator state
 - [x] `rashiftint` · bigint: n.a., integer operators
-- [x] `remove_factors` · bigint: no, functions of one integer
-- [x] `remove_factors_exp` · bigint: no, functions of one integer
-- [x] `reverse_digits` · bigint: no, digits
+- [x] `remove_factors` · bigint: yes, `bigint::functions`
+- [x] `remove_factors_exp` · bigint: yes, `bigint::functions`
+- [x] `reverse_digits` · bigint: yes, `bigint::digits`
 - [x] `RiemannR` · bigint: n.a., real functions
 - [x] `RiemannZeta` · bigint: n.a., real functions
-- [x] `rising_factorial` · bigint: no, growing results
+- [x] `rising_factorial` · bigint: yes, `bigint::combinat`
 - [x] `rootint` · bigint: yes, `bigint::arith`
 - [x] `rootmod` · bigint: yes, `bigint::modular`
-- [x] `rough_count` · bigint: no, prime families, counts and sums
+- [x] `rough_count` · bigint: yes, `bigint::family_counts`
 - [x] `rshiftint` · bigint: n.a., integer operators
-- [x] `semiprime_count` · bigint: no, prime families, counts and sums
-- [x] `semiprime_count_approx` · bigint: no, prime families, counts and sums
-- [x] `semi_primes` · bigint: no, prime families, counts and sums
-- [x] `setbinop` · bigint: no, sets of i64
-- [x] `setcontains` · bigint: no, sets of i64
-- [x] `setcontainsany` · bigint: no, sets of i64
-- [x] `setdelta` · bigint: no, sets of i64
-- [x] `setinsert` · bigint: no, sets of i64
-- [x] `setintersect` · bigint: no, sets of i64
-- [x] `setinvert` · bigint: no, sets of i64
-- [x] `set_is_disjoint` · bigint: no, sets of i64
-- [x] `set_is_equal` · bigint: no, sets of i64
-- [x] `set_is_proper_intersection` · bigint: no, sets of i64
-- [x] `set_is_proper_subset` · bigint: no, sets of i64
-- [x] `set_is_proper_superset` · bigint: no, sets of i64
-- [x] `set_is_subset` · bigint: no, sets of i64
-- [x] `set_is_superset` · bigint: no, sets of i64
-- [x] `setminus` · bigint: no, sets of i64
-- [x] `setremove` · bigint: no, sets of i64
-- [x] `setunion` · bigint: no, sets of i64
+- [x] `semiprime_count` · bigint: yes, `bigint::family_counts`
+- [x] `semiprime_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `semi_primes` · bigint: yes, `bigint::families`
+- [x] `setbinop` · bigint: yes, `bigint::sets`
+- [x] `setcontains` · bigint: yes, `bigint::sets`
+- [x] `setcontainsany` · bigint: yes, `bigint::sets`
+- [x] `setdelta` · bigint: yes, `bigint::sets`
+- [x] `setinsert` · bigint: yes, `bigint::sets`
+- [x] `setintersect` · bigint: yes, `bigint::sets`
+- [x] `setinvert` · bigint: yes, `bigint::sets`
+- [x] `set_is_disjoint` · bigint: yes, `bigint::sets`
+- [x] `set_is_equal` · bigint: yes, `bigint::sets`
+- [x] `set_is_proper_intersection` · bigint: yes, `bigint::sets`
+- [x] `set_is_proper_subset` · bigint: yes, `bigint::sets`
+- [x] `set_is_proper_superset` · bigint: yes, `bigint::sets`
+- [x] `set_is_subset` · bigint: yes, `bigint::sets`
+- [x] `set_is_superset` · bigint: yes, `bigint::sets`
+- [x] `setminus` · bigint: yes, `bigint::sets`
+- [x] `setremove` · bigint: yes, `bigint::sets`
+- [x] `setunion` · bigint: yes, `bigint::sets`
 - [x] `shuffle` · bigint: n.a., generator state
-- [x] `sieve_prime_cluster` · bigint: no, prime families, counts and sums
-- [x] `sieve_range` · bigint: no, prime families, counts and sums
+- [x] `sieve_prime_cluster` · bigint: yes, `bigint::families`
+- [x] `sieve_range` · bigint: yes, `bigint::families`
 - [x] `signint` · bigint: n.a., integer operators
-- [x] `smooth_count` · bigint: no, prime families, counts and sums
-- [x] `sopf` · bigint: no, functions of one integer
-- [x] `sopfr` · bigint: no, functions of one integer
+- [x] `smooth_count` · bigint: yes, `bigint::family_counts`
+- [x] `sopf` · bigint: yes, `bigint::functions`
+- [x] `sopfr` · bigint: yes, `bigint::functions`
 - [x] `sqrtint` · bigint: yes, `bigint::arith`
 - [x] `sqrtmod` · bigint: yes, `bigint::modular`
-- [x] `squarefree_kernel` · bigint: no, functions of one integer
+- [x] `squarefree_kernel` · bigint: yes, `bigint::functions`
 - [x] `squfof_factor` · bigint: yes, `bigint::factor`
 - [x] `srand` · bigint: n.a., generator state
-- [x] `stern_brocot_n` · bigint: no, rationals
-- [x] `stirling` · bigint: no, growing results
+- [x] `stern_brocot_n` · bigint: yes, `bigint::rational`
+- [x] `stirling` · bigint: yes, `bigint::combinat`
 - [x] `sub1int` · bigint: n.a., integer operators
-- [x] `subfactorial` · bigint: no, growing results
+- [x] `subfactorial` · bigint: yes, `bigint::combinat`
 - [x] `subint` · bigint: n.a., integer operators
-- [x] `submod` · bigint: no, modular helpers
+- [x] `submod` · bigint: yes, `bigint::modular::helpers`
 - [x] `sumdigits` · bigint: n.a., already any size
-- [x] `sumliouville` · bigint: no, prime families, counts and sums
-- [x] `sumpowerful` · bigint: no, prime families, counts and sums
-- [x] `sum_primes` · bigint: no, prime families, counts and sums
-- [x] `sumset` · bigint: no, sets of i64
-- [x] `sumtotient` · bigint: no, prime families, counts and sums
+- [x] `sumliouville` · bigint: yes, `bigint::family_counts`
+- [x] `sumpowerful` · bigint: yes, `bigint::family_counts`
+- [x] `sum_primes` · bigint: yes, `bigint::family_counts`
+- [x] `sumset` · bigint: yes, `bigint::sets`
+- [x] `sumtotient` · bigint: yes, `bigint::family_counts`
 - [x] `tdivrem` · bigint: n.a., integer operators
-- [x] `todigits` · bigint: no, digits
-- [x] `todigitstring` · bigint: no, digits
-- [x] `toint` · bigint: no, digits
-- [x] `toset` · bigint: no, sets of i64
-- [x] `tozeckendorf` · bigint: no, digits
+- [x] `todigits` · bigint: yes, `bigint::digits`
+- [x] `todigitstring` · bigint: yes, `bigint::digits`
+- [x] `toint` · bigint: yes, `bigint::digits`
+- [x] `toset` · bigint: yes, `bigint::sets`
+- [x] `tozeckendorf` · bigint: yes, `bigint::digits`
 - [x] `trial_factor` · bigint: yes, `bigint::factor`
-- [x] `twin_prime_count` · bigint: no, prime families, counts and sums
-- [x] `twin_prime_count_approx` · bigint: no, prime families, counts and sums
-- [x] `twin_primes` · bigint: no, prime families, counts and sums
-- [x] `urandomb` · bigint: no, random big integers
-- [x] `urandomm` · bigint: no, random big integers
-- [x] `urandomr` · bigint: no, random big integers
+- [x] `twin_prime_count` · bigint: yes, `bigint::family_counts`
+- [x] `twin_prime_count_approx` · bigint: yes, `bigint::family_bounds`
+- [x] `twin_primes` · bigint: yes, `bigint::families`
+- [x] `urandomb` · bigint: yes, `bigint::random`
+- [x] `urandomm` · bigint: yes, `bigint::random`
+- [x] `urandomr` · bigint: yes, `bigint::random`
 - [x] `valuation` · bigint: yes, `bigint::arith`
 - [x] `vecall` · bigint: n.a., generic over the element type
 - [x] `vecany` · bigint: n.a., generic over the element type
@@ -413,26 +413,26 @@ BigUint field: 82 yes, 258 no, 88 n.a. (reasons: [docs/bigint-coverage.md](docs/
 - [x] `vecextract` · bigint: n.a., generic over the element type
 - [x] `vecfirst` · bigint: n.a., generic over the element type
 - [x] `vecfirstidx` · bigint: n.a., generic over the element type
-- [x] `vecfreq` · bigint: no, sets of i64
-- [x] `vecmax` · bigint: no, sets of i64
-- [x] `vecmex` · bigint: no, sets of i64
-- [x] `vecmin` · bigint: no, sets of i64
+- [x] `vecfreq` · bigint: yes, `bigint::sets`
+- [x] `vecmax` · bigint: yes, `bigint::sets`
+- [x] `vecmex` · bigint: yes, `bigint::sets`
+- [x] `vecmin` · bigint: yes, `bigint::sets`
 - [x] `vecnone` · bigint: n.a., generic over the element type
 - [x] `vecnotall` · bigint: n.a., generic over the element type
 - [x] `vecpairwise` · bigint: n.a., generic over the element type
-- [x] `vecpmex` · bigint: no, sets of i64
-- [x] `vecprefixsum` · bigint: no, growing results
-- [x] `vecprod` · bigint: no, growing results
+- [x] `vecpmex` · bigint: yes, `bigint::sets`
+- [x] `vecprefixsum` · bigint: yes, `bigint::sequences`
+- [x] `vecprod` · bigint: yes, `bigint::sequences`
 - [x] `vecreduce` · bigint: n.a., generic over the element type
-- [x] `vecrsort` · bigint: no, sets of i64
-- [x] `vecrsorti` · bigint: no, sets of i64
+- [x] `vecrsort` · bigint: yes, `bigint::sets`
+- [x] `vecrsorti` · bigint: yes, `bigint::sets`
 - [x] `vecsample` · bigint: n.a., generator state
-- [x] `vecsingleton` · bigint: no, sets of i64
+- [x] `vecsingleton` · bigint: yes, `bigint::sets`
 - [x] `vecslide` · bigint: n.a., generic over the element type
-- [x] `vecsort` · bigint: no, sets of i64
-- [x] `vecsorti` · bigint: no, sets of i64
-- [x] `vecsum` · bigint: no, growing results
-- [x] `vecuniq` · bigint: no, sets of i64
+- [x] `vecsort` · bigint: yes, `bigint::sets`
+- [x] `vecsorti` · bigint: yes, `bigint::sets`
+- [x] `vecsum` · bigint: yes, `bigint::sequences`
+- [x] `vecuniq` · bigint: yes, `bigint::sets`
 - [x] `vecwindow` · bigint: n.a., generic over the element type
 - [x] `verify_prime` · bigint: yes, `bigint::proving`
 - [x] `znlog` · bigint: yes, `bigint::modular`

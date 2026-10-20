@@ -64,87 +64,40 @@ NATIVE_ONLY = [
     ("not in MPU 0.75", NA,
      "Not in Math::Prime::Util 0.75, so there is nothing to port.",
      "is_higgs_prime"),
-    ("growing results", NO,
-     "The value outgrows 64 or 128 bits quickly, where MPU returns a big integer; the native forms stop at "
-     "their fixed width. A `BigUint` result form is not ported.",
-     "bell_number bernfrac catalan_number consecutive_integer_lcm falling_factorial fibonacci floor_sum "
-     "frobenius_number fubini harmfrac lucas_number lucasu lucasuv lucasv multifactorial numtoperm partitions "
-     "partitionsq permtonum pn_primorial powersum primorial ramanujan_tau rising_factorial stirling "
-     "subfactorial vecprefixsum vecprod vecsum"),
-    ("functions of one integer", NO,
-     "Functions and predicates of one integer, most built on its factorization. `bigint::factor` and "
-     "`bigint::divisors` give the factorization and the main divisor functions; these are not ported.",
-     "abundance aliquot_sum crootint dedekind_psi exp_mangoldt hclassno integer_complexity inverse_sigma0 "
-     "inverse_sigma0_count inverse_totient is_almost_prime is_congruent_number is_cyclic is_fundamental "
-     "is_omega_prime is_perfect_number is_perfect_power is_pillai is_powerfree is_powerful is_practical "
-     "is_prime_power is_rough is_semiprime is_smooth is_sum_of_squares is_totient jordan_totient liouville "
-     "powerfree_part prime_signature ramanujan_sum remove_factors remove_factors_exp sopf sopfr "
-     "squarefree_kernel"),
-    ("modular helpers", NO,
-     "Modular helpers with a `u64` modulus. `bigint::arith` and `bigint::modular` carry `addmod`, `mulmod`, "
-     "`powmod`, `invmod`, `sqrtmod`, `rootmod`, `chinese`, `lucasumod` and `lucasvmod`; these are not ported.",
-     "allrootmod chinese2 cornacchia is_qr lucasuvmod muladdmod mulsubmod negmod pisano_period qnr submod"),
-    ("other primality tests", NO,
-     "Further pseudoprime tests and prime classes. `bigint::primality` has the tests MPU's pure-Perl path "
-     "uses (Fermat, Euler, strong, the Lucas family, BPSW, Lucas-Lehmer); these are not ported.",
-     "is_catalan_pseudoprime is_chen_prime is_delicate_prime is_frobenius_khashin_pseudoprime "
-     "is_frobenius_pseudoprime is_frobenius_underwood_pseudoprime is_gaussian_prime is_perrin_pseudoprime "
-     "is_safe_prime"),
-    ("other factoring methods", NO,
-     "Further factoring methods. `bigint::factor` has trial division, Pollard rho and Brent, p-1, p+1, HOLF, "
-     "SQUFOF and ECM; these three keep the `u64` form.",
-     "cheb_factor fermat_factor lehman_factor"),
-    ("prime families, counts and sums", NO,
-     "Counts, sums, `n`th values, lists and next or previous members take `u64`. Past 2^64 only the "
-     "plain-prime functions of `bigint::counts` continue (prime count bounds and estimates, `nth_prime` and "
-     "its bounds, `forprimes`, `prime_iterator`); the family forms are not ported, and exact counts that far "
-     "would take impractical run time.",
-     "almost_prime_count almost_prime_count_approx almost_prime_count_lower almost_prime_count_upper "
-     "almost_primes goldbach_pair_count goldbach_pairs inverse_li is_lucky is_ramanujan_prime legendre_phi "
-     "lucky_count lucky_count_approx lucky_count_lower lucky_count_upper lucky_numbers mertens "
-     "minimal_goldbach_pair next_chen_prime next_perfect_power next_prime_power nth_almost_prime "
-     "nth_almost_prime_approx nth_almost_prime_lower nth_almost_prime_upper nth_lucky nth_lucky_approx "
-     "nth_lucky_lower nth_lucky_upper nth_omega_prime nth_perfect_power nth_perfect_power_approx "
-     "nth_perfect_power_lower nth_perfect_power_upper nth_powerfree nth_powerful nth_prime_power "
-     "nth_prime_power_approx nth_prime_power_lower nth_prime_power_upper nth_ramanujan_prime "
-     "nth_ramanujan_prime_approx nth_ramanujan_prime_lower nth_ramanujan_prime_upper nth_semiprime "
-     "nth_semiprime_approx nth_twin_prime nth_twin_prime_approx omega_prime_count omega_primes "
-     "perfect_power_count perfect_power_count_approx perfect_power_count_lower perfect_power_count_upper "
-     "powerfree_count powerfree_part_sum powerfree_sum powerful_count powerful_numbers prev_perfect_power "
-     "prev_prime_power prime_count prime_power_count prime_power_count_approx prime_power_count_lower "
-     "prime_power_count_upper prime_powers primes print_primes ramanujan_prime_count "
-     "ramanujan_prime_count_approx ramanujan_prime_count_lower ramanujan_prime_count_upper ramanujan_primes "
-     "rough_count semi_primes semiprime_count semiprime_count_approx sieve_prime_cluster sieve_range "
-     "smooth_count sum_primes sumliouville sumpowerful sumtotient twin_prime_count twin_prime_count_approx "
-     "twin_primes"),
-    ("range iterators", NO,
-     "Closure iterators over `u64` ranges. Above 2^64, `forprimes`, `forcomposites` and `foroddcomposites` "
-     "(`bigint::counts`) continue and `bigint::divisors::divisors` lists divisors; these are not ported.",
-     "foralmostprimes fordivisors forfactored forsemiprimes forsquarefree forsquarefreeint"),
-    ("random big integers", NO,
-     "Random integers and random primes stop at 64 bits (`u128` for `miller_rabin_random`). MPU's big forms, "
-     "such as `random_nbit_prime(512)`, are not ported.",
-     "miller_rabin_random random_factored_integer random_maurer_prime random_maurer_prime_with_cert "
-     "random_nbit_prime random_ndigit_prime random_prime random_proven_prime random_proven_prime_with_cert "
-     "random_safe_prime random_semiprime random_shawe_taylor_prime random_shawe_taylor_prime_with_cert "
-     "random_strong_prime random_unrestricted_semiprime urandomb urandomm urandomr"),
-    ("rationals", NO,
-     "Continued fractions and the Calkin-Wilf, Stern-Brocot and Farey functions take `u64` or `u32` "
-     "numerators, denominators and orders; these are not ported.",
-     "calkin_wilf_n contfrac convergents farey farey_rank from_contfrac next_calkin_wilf next_farey "
-     "next_stern_brocot nth_calkin_wilf nth_stern_brocot nth_stern_diatomic stern_brocot_n"),
-    ("digits", NO,
-     "Digit functions on `i128` or `u64`. num-bigint's `to_radix_be`, `to_str_radix`, `from_radix_be` and "
-     "`parse_bytes` cover base conversion on `BigUint`; the other digit functions are not ported.",
-     "digital_root fromdigits fromzeckendorf is_happy is_harshad is_palindrome mult_digital_root "
-     "reverse_digits todigits todigitstring toint tozeckendorf"),
-    ("sets of i64", NO,
-     "Sets and sorted vectors of `i64` (`vecmax` and `vecmin` need `Copy`). Rust's `sort`, `dedup` and "
-     "`BTreeSet` do plain set work on `BigUint`; the MPU forms are not ported.",
-     "is_sidon_set is_sumfree_set setbinop setcontains setcontainsany setdelta setinsert setintersect "
-     "setinvert set_is_disjoint set_is_equal set_is_proper_intersection set_is_proper_subset "
-     "set_is_proper_superset set_is_subset set_is_superset setminus setremove setunion sumset toset vecfreq "
-     "vecmax vecmex vecmin vecpmex vecrsort vecrsorti vecsingleton vecsort vecsorti vecuniq"),
+    ("rejected past 2^63 by MPU", NA,
+     "MPU 0.75 croaks (\"n must fit in native signed integer\") for `n` above 2^63-1, in its pure-Perl "
+     "path as in C, so there is no big-integer result to port. The native forms return `None` "
+     "(`hclassno`) or panic (`integer_complexity`) there; `tests/compat_bigint_oneint.rs` checks both "
+     "against the oracle.",
+     "hclassno integer_complexity"),
+    ("impractical past 2^64", NA,
+     "MPU 0.75 accepts a big `n`, but its pure-Perl path does not finish (each runs past a 30 s limit on a "
+     "65-bit input). `farey` first takes the totient sum up to `n`, and the sequence has about 0.3n^2 "
+     "terms. `is_catalan_pseudoprime` reduces to the full binomial(n-1, (n-1)/2), primes included. "
+     "`is_pillai` steps v = 8, 9, ... through v! mod n, so a prime `n` takes more than 2^64 steps; only "
+     "`n` below 23 or with a factor 2, 3, 5 or 7 returns at once (zero), which the native forms match at "
+     "the 64-bit edge.",
+     "farey is_catalan_pseudoprime is_pillai"),
+    ("nth semiprime and prime power past 2^64", NA,
+     "MPU 0.75 finds these from exact semiprime and prime power counts. Past the native range (an index above "
+     "`MPU_MAX_SEMI_PRIME_IDX` or `MPU_MAX_PRIME_IDX`) those counts need prime counts near or past 2^64, and "
+     "MPU's own Perl path does not return: `nth_prime_power(425656284035217744)` gave no result in 30 "
+     "minutes, and `nth_semiprime(1701748900850019778)` none in 10 minutes. A `BigUint` form could not finish "
+     "either. The native forms return MPU C's boundary values there (0 and the largest 64-bit prime); "
+     "`bigint::family_nth` returns `None` for `nth_almost_prime(2, n)` and `nth_omega_prime(1, n)` past them.",
+     "nth_prime_power nth_semiprime"),
+    ("lucky, Ramanujan and twin-prime sieves", NA,
+     "MPU 0.75 itself cannot answer these past 2^64: its XS code takes native integers only, and its "
+     "pure-Perl path sieves from the start. `lucky_numbers`, `lucky_count` and `nth_lucky` sieve every lucky "
+     "number up to about the argument, `nth_twin_prime` lists the twin primes from 2, and "
+     "`is_ramanujan_prime`, `ramanujan_primes`, `ramanujan_prime_count` and `nth_ramanujan_prime` list the "
+     "Ramanujan primes from 2. Measured on 2^64 and nearby (25 s, 4 GB): `nth_ramanujan_prime` croaks (float "
+     "arithmetic on `Math::BigInt` gives NaN), `is_lucky` returns 0 at once only when its mod 2, 6 or 63 "
+     "pretest rejects `n` and croaks the same way for other `n`, and the others run out of time or memory. The "
+     "native forms answer to the `u64` limits of MPU's C code; `tests/compat_native_top_lucky.rs` checks "
+     "`is_lucky`, `is_ramanujan_prime`, `nth_twin_prime` and `nth_ramanujan_prime` against MPU just below 2^64.",
+     "is_lucky is_ramanujan_prime lucky_count lucky_numbers nth_lucky nth_ramanujan_prime nth_twin_prime "
+     "ramanujan_prime_count ramanujan_primes"),
 ]
 
 
@@ -251,6 +204,14 @@ def coverage_doc(names, cls):
         lines += [f"### {title}", "", f"`{value}`, {len(members)} names. {reason}", "",
                   ", ".join(f"`{n}`" for n in members), ""]
     return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def bigint_names():
+    names = set()
+    for path in (ROOT / "src" / "bigint").rglob("*.rs"):
+        for match in BIGINT_LINE.finditer(path.read_text()):
+            names.add(match.group(1))
+    return names
 
 
 def main():

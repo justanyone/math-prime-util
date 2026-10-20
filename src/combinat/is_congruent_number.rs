@@ -39,7 +39,8 @@ pub fn is_congruent_number(mut n: u64) -> bool {
     tunnell(n)
 }
 
-fn tunnell(n: u64) -> bool {
+/// Tunnell's count for a square-free `n`; shared with `bigint::predicates`.
+pub(crate) fn tunnell(n: u64) -> bool {
     let mut solutions = [0u128; 2];
     let odd = n % 2 == 1;
     let target = if odd { n } else { n / 2 };

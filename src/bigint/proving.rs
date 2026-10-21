@@ -2909,3 +2909,9 @@ mod tests {
         assert!(!test_anr(2, &(smallval() + 2_u8), 5));
     }
 }
+
+#[cfg(all(test, feature = "bigint"))]
+mod mutation_regressions {
+    include!("../../tests/mutants_proving_random.rs");
+    proving_cases!();
+}

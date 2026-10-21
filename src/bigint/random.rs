@@ -304,6 +304,11 @@ pub fn urandomm(modulus: &BigUint) -> BigUint {
     if let Ok(n) = u64::try_from(modulus) {
         return crate::urandomm(n).into();
     }
+    urandomm_with(modulus, urandomb)
+}
+
+/// Rejection sampling from `reference/mpu/lib/Math/Prime/Util/PP.pm::urandomm`.
+fn urandomm_with(modulus: &BigUint, mut draw: impl FnMut(u32) -> BigUint) -> BigUint {
     // PP estimates log2(n) from its decimal length, then adds a full byte.
     let digits = modulus.to_str_radix(10).len();
     let bytes = (digits * 3322 / 1000 + 15) >> 3;
@@ -311,7 +316,7 @@ pub fn urandomm(modulus: &BigUint) -> BigUint {
     let max = (BigUint::from(1_u8) << bits) - 1_u8;
     let overflow = &max - &max % modulus;
     loop {
-        let r = urandomb(bits);
+        let r = draw(bits);
         if r < overflow {
             return r % modulus;
         }
@@ -552,17 +557,25 @@ pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
         let (r, f) = crate::random_factored_integer(n);
         return (r.into(), f.into_iter().map(BigUint::from).collect());
     }
+    random_factored_integer_with(n, urandomm)
+}
+
+/// Kalai sampling from `reference/mpu/lib/Math/Prime/Util/PP.pm::random_factored_integer`.
+fn random_factored_integer_with(
+    n: &BigUint,
+    mut draw: impl FnMut(&BigUint) -> BigUint,
+) -> (BigUint, Vec<BigUint>) {
     loop {
         let mut s = n.clone();
         let mut factors = Vec::new();
         while s > BigUint::from(1_u8) {
-            s = urandomm(&s) + 1_u8;
+            s = draw(&s) + 1_u8;
             if s > BigUint::from(1_u8) && is_prob_prime(&s) != 0 {
                 factors.push(s.clone());
             }
         }
         let r: BigUint = factors.iter().product();
-        if &r <= n && urandomm(n) < r {
+        if &r <= n && draw(n) < r {
             factors.sort_unstable();
             return (r, factors);
         }
@@ -707,4 +720,10 @@ mod tests {
             assert_eq!(n.bits(), 256);
         }
     }
+}
+
+#[cfg(all(test, feature = "bigint"))]
+mod mutation_regressions {
+    include!("../../tests/mutants_proving_random.rs");
+    random_cases!();
 }

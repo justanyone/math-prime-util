@@ -352,6 +352,15 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
     if low > high || high < &2_u8.into() {
         return None;
     }
+    random_prime_with(low, high, urandomm)
+}
+
+/// Interval bins from `reference/mpu/lib/Math/Prime/Util/RandomPrimes.pm::random_prime`.
+fn random_prime_with(
+    low: &BigUint,
+    high: &BigUint,
+    mut draw: impl FnMut(&BigUint) -> BigUint,
+) -> Option<BigUint> {
     let mut lo = low.max(&2_u8.into()).clone();
     let mut hi = high.clone();
     if high - low <= 1_000_000_000_u64.into() {
@@ -378,7 +387,7 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
         if &nparts * &binsize == range {
             nparts -= 1_u8;
         }
-        let part = urandomm(&(&nparts + 1_u8));
+        let part = draw(&(&nparts + 1_u8));
         lo += (&binsize * &part) << 1_usize;
         range = if part < nparts {
             binsize
@@ -387,7 +396,7 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
         };
     }
     loop {
-        let n = &lo + (urandomm(&range) << 1_usize);
+        let n = &lo + (draw(&range) << 1_usize);
         if n == BigUint::from(1_u8) {
             return Some(2_u8.into());
         }

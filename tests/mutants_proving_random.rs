@@ -50,6 +50,29 @@ macro_rules! proving_cases {
 macro_rules! random_cases {
     () => {
         #[test]
+        fn prime_sampler_last_bin_has_exact_width() {
+            let low = num_bigint::BigUint::from(1_u8) << 66_u8;
+            let high = &low << 1_u8;
+            let binsize = num_bigint::BigUint::from(1_u8) << 32_u8;
+            let bin_low = &high - (&binsize << 1_u8) + 1_u8;
+            let prime = crate::bigint::primality::next_prime(&(&bin_low - 1_u8));
+            let offset = (&prime - &bin_low) >> 1_u8;
+            let mut calls = 0;
+            let result = super::random_prime_with(&low, &high, |bound| {
+                calls += 1;
+                if calls == 1 {
+                    assert_eq!(*bound, num_bigint::BigUint::from(1_u8) << 33_u8);
+                    bound - 1_u8
+                } else {
+                    assert_eq!(*bound, binsize);
+                    offset.clone()
+                }
+            });
+            assert_eq!(calls, 2);
+            assert_eq!(result, Some(prime));
+        }
+
+        #[test]
         fn miller_rabin_lowest_draw_is_base_two() {
             let n = (num_bigint::BigUint::from(1_u8) << 127_u8) - 1_u8;
             assert_eq!(

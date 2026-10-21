@@ -10,3 +10,4 @@ Nine focused unit tests and the integration test passed. The gate found a missin
 The mutation baseline failed after exhausting the filesystem quota. Clippy found duplicate module loading and an unnecessary private Option; fixing both before the final gate.
 - 2026-10-21T01:13:36Z launcher: no commit for 61 s; 425 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit.md, src/bigint/proving.rs, src/bigint/random.rs, tests/mutants_proving_random.rs.
 Focused tests pass after the clippy fixes. Restarted the exact-site mutation run with nice 15, two jobs, offline Cargo, and a shared target directory to avoid another copied-target quota failure.
+About five minutes remain. All four clippy feature sets passed; MSRV and full tests are running. The corrected mutation rerun selects all fourteen sites. Strengthened BLS trial-factor output and zero-product early-return tests.

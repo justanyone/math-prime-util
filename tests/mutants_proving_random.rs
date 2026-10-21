@@ -36,6 +36,9 @@ macro_rules! proving_cases {
         fn bls_keeps_trial_factors_even_when_bound_already_holds() {
             let proofs = super::bls75(&109_u8.into()).expect("BLS proof");
             assert!(matches!(&proofs[0], super::Proof::Bls5 { q, .. } if *q == vec![3_u8.into()]));
+            // Trial division must expose the large prime cofactor.
+            let proofs = super::bls75(&1_028_456_449_u64.into()).expect("BLS proof");
+            assert!(matches!(&proofs[0], super::Proof::Bls5 { q, .. } if *q == vec![3_u8.into(), 5_231_u32.into()]));
             let proofs = super::bls75(&19_u8.into()).expect("BLS proof");
             let cert = super::Certificate { n: 19_u8.into(), proofs };
             assert_eq!(cert.verify(), Ok(true));

@@ -228,6 +228,29 @@ macro_rules! private_estimate_tests {
     };
     (real) => {
         #[test]
+        fn harmonic_expansion_stops_before_consuming_negligible_tail() {
+            // PP.pm::harmreal stops once a term is below the working precision.
+            // At n > 2002 the tail cannot change f64, but continuing wastes work.
+            for (n, expected_terms) in [(2003_u64, 7), (1_000_000, 4), (u64::MAX, 2)] {
+                let visited = std::cell::Cell::new(0);
+                let denominators = [
+                    -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0,
+                    -276.0, 65520.0, -12.0,
+                ]
+                .into_iter()
+                .inspect(|_| visited.set(visited.get() + 1));
+                let x = n as f64;
+                let correction = super::harmonic_correction(x * x, denominators);
+                assert_eq!(visited.get(), expected_terms, "n={n}");
+                assert_eq!(
+                    (correction + 1.0 / (2.0 * x) + super::EULER + x.ln()).to_bits(),
+                    crate::harmreal(n).to_bits(),
+                    "n={n}",
+                );
+            }
+        }
+
+        #[test]
         fn harmonic_asymptotic_boundary() {
             let exact: f64 = (1..=2003).map(|n| 1.0 / f64::from(n)).sum();
             assert!((crate::harmreal(2003) - exact).abs() < 2e-14);

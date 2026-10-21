@@ -753,12 +753,23 @@ pub fn harmreal(n: u64) -> f64 {
     }
     let n = n as f64;
     let n2 = n * n;
+    let h = harmonic_correction(
+        n2,
+        [
+            -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0, -276.0,
+            65520.0, -12.0,
+        ],
+    );
+    h + 1.0 / (2.0 * n) + EULER + n.ln()
+}
+
+/// MPU 0.75 `lib/Math/Prime/Util/PP.pm`, `harmreal` asymptotic correction.
+/// Taking the denominators as an iterator lets tests check that negligible
+/// terms stop the expansion even when evaluating them would leave f64 unchanged.
+fn harmonic_correction(n2: f64, denominators: impl IntoIterator<Item = f64>) -> f64 {
     let mut nt = n2;
     let mut h = 0.0;
-    for d in [
-        -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0, -276.0,
-        65520.0, -12.0,
-    ] {
+    for d in denominators {
         let term: f64 = 1.0 / (d * nt);
         if term.abs() < 1e-44 {
             break;
@@ -766,7 +777,7 @@ pub fn harmreal(n: u64) -> f64 {
         h += term;
         nt *= n2;
     }
-    h + 1.0 / (2.0 * n) + EULER + n.ln()
+    h
 }
 
 #[cfg(test)]

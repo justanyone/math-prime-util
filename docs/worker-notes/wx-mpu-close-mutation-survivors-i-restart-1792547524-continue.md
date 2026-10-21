@@ -47,3 +47,7 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Full offline suites remain in progress at the long prime_count oracle case. Final mutation result is reliable: 12 caught, harmonic equivalent missed. No numerical production fix was indicated. Remaining acceptance items are the equivalent s <<cut 102 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 77 bytes)
+Gate advanced past compatibility tests into property tests with no failures. Awaiting final full-suite and documentation results; no source changes since the successful 12/13 mutation rerun.
+Final: tools/gate.sh completed successfully; all clippy feature sets, MSRV, tests, and docs passed. The targeted mutant run confirmed 12 caught and the equivalent harmonic cutoff missed. The task stays PARTIAL because literal 13/13 and exac <<cut 91 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 67 bytes)

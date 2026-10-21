@@ -7,3 +7,4 @@ Exact selectors mapped for all fourteen original mutations. First mutation invoc
 Focused mutation_regressions: 9 passed. Selector preflight found only 3 of 14 due to filtering; investigating before accepting mutation evidence. Gate progressing through feature clippy checks.
 - 2026-10-21T01:33:59Z launcher: no commit for 60 s; 181 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-primality-proving-and-t2030.md.
 - 2026-10-21T01:35:01Z launcher: no commit for 62 s; 244 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-primality-proving-and-t2030.md.
+Nine focused tests pass. Short location-only selector avoids the long-pattern filtering problem; rerun includes the fourteen targets plus alternative operators at their exact locations. Final gate passed all clippy configurations and is building MSRV.

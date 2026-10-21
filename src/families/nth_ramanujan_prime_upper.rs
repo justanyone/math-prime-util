@@ -386,11 +386,12 @@ mod tests {
 }
 
 #[cfg(test)]
+#[macro_use]
+#[path = "../../tests/mutants_estimates.rs"]
+mod estimate_mutation_cases;
+
+#[cfg(test)]
 mod estimate_mutation_tests {
-    use crate as math_prime_util;
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/mutants_estimates.rs"
-    ));
+    public_estimate_tests!();
     private_estimate_tests!(ramanujan);
 }

@@ -17,3 +17,4 @@ Final source now omits the equivalent guard. Formatting passes; focused tests re
 MSRV build passed. The required gate is now running the full suite against the final source.
 Validation continues offline: baseline mutation build and full-suite compilation are active. No external services or fixture generators were used.
 Final all-features clippy requested after guard removal. Builds are sharing the available CPU; no verification result is being inferred from compilation alone.
+Still waiting for compiler completion. Exact mutation selection remains fourteen, including the now-removed equivalent guard in the isolated snapshot.

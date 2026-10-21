@@ -52,3 +52,6 @@ Final: tools/gate.sh completed successfully; all clippy feature sets, MSRV, test
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 67 bytes)
 - 2026-10-21T02:08:53Z launcher: about 60 s to the time limit of 14 minutes; 788 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792547524-continue.md, src/families/lucky.rs, src/families/nth_almost_prime.rs, src/families/nth_ramanujan_prime_upper.rs, src/real/mod.rs, tests/mutants_estimates.rs.
+Stopping before the session deadline: gate is green and 12 of 13 exact mutants are caught. The standalone tools/test.sh invocation is still running with buffered output, although the gate full suite passed. No containers are required. Outst <<cut 116 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 91 bytes)

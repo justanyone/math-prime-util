@@ -15,3 +15,5 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Mutation baseline passed; first three mutants survive (harmonic cutoff, unreachable lucky n=7, and lucky division-to-multiplication seed). Added geometric public-estimate ordering checks across native scales to probe bad seed brackets.
 The new scale sweep is running; the first mutation pass remains on its original copied test file, so a final pass must include the completed test file.
 All five lucky mutants survived the first targeted run. This confirms current public-result tests do not distinguish their search seeds; it does not by itself prove all mutated bounds valid. Retain explicit unresolved status rather than claiming kills.
+Added exact-rank checks at indices 1e6 and 1e7 for k=3 and k=4: small independent-sieve cases can stop within the 20,000 tolerance without entering the correction branches.
+Gate has passed formatting and clippy in all four feature configurations plus the MSRV build; all-features full tests are compiling/running.

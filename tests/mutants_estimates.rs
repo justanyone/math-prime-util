@@ -209,3 +209,20 @@ fn lucky_estimates_keep_their_order_across_native_scales() {
         n += n / 8;
     }
 }
+
+#[test]
+fn almost_prime_interpolation_preserves_exact_rank_at_large_indices() {
+    // MPU inverse_interpolate.c::interpolate_with_approx uses tolerance 20,000.
+    // Large indices exercise corrections that small brute-force cases miss.
+    for k in [3, 4] {
+        for n in [1_000_000, 10_000_000] {
+            let value = nth_almost_prime(k, n).expect("index fits the native range");
+            assert!(math_prime_util::is_almost_prime(u64::from(k), value));
+            assert_eq!(math_prime_util::almost_prime_count(u64::from(k), value), n);
+            assert_eq!(
+                math_prime_util::almost_prime_count(u64::from(k), value - 1),
+                n - 1
+            );
+        }
+    }
+}

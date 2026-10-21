@@ -47,14 +47,18 @@ fn nth_almost_prime_matches_brute_force_for_large_n() {
     // Large n drives the interpolation path in interpolate_approx.
     let omega = omega_table(4_000_000);
     for &(k, n) in &[
-        (2u32, 1usize),
+        (2u8, 1usize),
         (2, 1_000),
         (2, 100_000),
         (2, 500_000),
         (3, 200_000),
     ] {
-        let expected = brute_nth_almost(&omega, k as u8, n);
-        assert_eq!(nth_almost_prime(k, n as u64), Some(expected), "k={k} n={n}");
+        let expected = brute_nth_almost(&omega, k, n);
+        assert_eq!(
+            nth_almost_prime(u32::from(k), n as u64),
+            Some(expected),
+            "k={k} n={n}"
+        );
     }
 }
 
@@ -98,4 +102,25 @@ fn harmonic_numbers_at_small_and_split_sizes() {
     assert!((harmreal(1) - 1.0).abs() < 1e-15);
     assert!((harmreal(10) - 2.928_968_253_968_254).abs() < 1e-12);
     assert!((harmreal(2002) - harmreal(2001) - 1.0 / 2002.0).abs() < 1e-12);
+}
+
+#[test]
+fn lucky_bounds_at_large_fit_transitions() {
+    // MPU lucky_numbers.c::_simple_lucky_count_approx changes fits here.
+    for n in [1_000_001, 10_000_000, 10_000_001, 100_000_000, 100_000_001] {
+        let exact = lucky_count(n);
+        assert!(lucky_count_lower(n) <= exact, "n={n}");
+        assert!(lucky_count_upper(n) >= exact, "n={n}");
+    }
+}
+
+#[test]
+fn harmonic_asymptotic_matches_direct_sum() {
+    let mut sum = 0.0;
+    for n in 1..=10_000 {
+        sum += 1.0 / f64::from(n);
+        if [2003, 2048, 4096, 10_000].contains(&n) {
+            assert!((harmreal(n as u64) - sum).abs() < 1e-12);
+        }
+    }
 }

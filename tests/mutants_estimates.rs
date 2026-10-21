@@ -231,7 +231,7 @@ macro_rules! private_estimate_tests {
         fn harmonic_expansion_stops_before_consuming_negligible_tail() {
             // PP.pm::harmreal stops once a term is below the working precision.
             // At n > 2002 the tail cannot change f64, but continuing wastes work.
-            for (n, expected_terms) in [(2003_u64, 7), (1_000_000, 4), (u64::MAX, 2)] {
+            for (n, expected_terms) in [(2003_u64, 6), (1_000_000, 4), (u64::MAX, 2)] {
                 let visited = std::cell::Cell::new(0);
                 let denominators = [
                     -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0,

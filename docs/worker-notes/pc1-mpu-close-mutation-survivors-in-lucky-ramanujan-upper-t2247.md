@@ -4,3 +4,7 @@ Run focused tests, the requested four-file mutation check, and the repository ga
 Record equivalent mutants explicitly; do not claim READY or force an observable API change for a test.
 
 Reviewed inherited regressions and MPU PP.pm::harmreal: cutoff is a performance contract, numerically equivalent under f64; focused tests started.
+
+Extracted the unchanged PP.pm harmonic correction loop into an iterator helper; the new test checks early termination without changing numerical results. Corrected its expected first-cutoff term analytically (term 6 at n=2003).
+
+All 37 focused estimate tests pass. Starting the 13 requested mutation cases (harmreal cutoff now in harmonic_correction); repository gate runs separately. The listed Ramanujan comparison is at 15360, not the equivalent 306 branch.

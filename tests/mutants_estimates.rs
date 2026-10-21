@@ -197,6 +197,34 @@ macro_rules! private_estimate_tests {
             assert_eq!(value, 94_999);
             assert_eq!(*visits.borrow(), [100_000, 89_999, 94_999]);
         }
+
+        #[test]
+        fn almost_interpolation_upper_bracket_step() {
+            // MPU inverse_interpolate.c, interpolate_with_approx: an overshoot
+            // with span > tol - 1 must retreat from max by exactly tol - 1.
+            let visits = std::cell::RefCell::new(Vec::new());
+            let value = super::interpolate_approx_with(
+                100_000,
+                |n| match n {
+                    120_000 => 140_000,
+                    80_000 => 50_000,
+                    _ => 100_000,
+                },
+                |x| {
+                    visits.borrow_mut().push(x);
+                    if x < 70_000 {
+                        80_000
+                    } else if x < 100_000 {
+                        100_000
+                    } else {
+                        120_000
+                    }
+                },
+                |_| true,
+            );
+            assert_eq!(value, 80_001);
+            assert_eq!(*visits.borrow(), [100_000, 60_000, 80_001]);
+        }
     };
     (real) => {
         #[test]

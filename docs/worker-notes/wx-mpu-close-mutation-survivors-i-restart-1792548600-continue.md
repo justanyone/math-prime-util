@@ -5,3 +5,4 @@ Run focused tests, cargo-mutants, and the repository gate offline.
 Test macros now exist; focused helper checks are compiling. Checking exact branch values and interpolation traces before the mutation run.
 Focused tests pass (33). Started the exact 13-mutant selection and offline gate. Harmonic cutoff and prime index 306 appear output-equivalent; record rather than fabricate kills.
 The C reference confirms all selected branch constants. Index 306 is 2017 on both exact and bound paths. Lucky helper tests check numerical fidelity; they do not assume estimates themselves are bounds.
+All 13 requested mutations were selected. Default and bigint clippy passes; GMP and mutation baseline builds remain in progress. No production bound bug has been established.

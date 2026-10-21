@@ -146,3 +146,11 @@ fn almost_prime_interpolation_preserves_rank() {
         assert_eq!(almost_prime_count(u64::from(k), value - 1), n - 1);
     }
 }
+
+// MPU ramanujan_primes.c: ramanujan_axler. These adjacent inputs
+// skip index 306, where the private prime-bound comparison differs.
+#[test]
+fn ramanujan_small_prime_index_transition() {
+    assert_eq!(nth_ramanujan_prime_upper(132), nth_prime(305));
+    assert_eq!(nth_ramanujan_prime_upper(133), nth_prime_upper(307));
+}

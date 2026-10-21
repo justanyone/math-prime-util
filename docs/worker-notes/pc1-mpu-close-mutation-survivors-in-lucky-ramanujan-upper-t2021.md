@@ -17,3 +17,5 @@ The new scale sweep is running; the first mutation pass remains on its original 
 All five lucky mutants survived the first targeted run. This confirms current public-result tests do not distinguish their search seeds; it does not by itself prove all mutated bounds valid. Retain explicit unresolved status rather than claiming kills.
 Added exact-rank checks at indices 1e6 and 1e7 for k=3 and k=4: small independent-sieve cases can stop within the 20,000 tolerance without entering the correction branches.
 Gate has passed formatting and clippy in all four feature configurations plus the MSRV build; all-features full tests are compiling/running.
+First complete run: exactly 13 requested mutants, 3 Ramanujan mutants caught and 10 missed. Fixed test-only u32/u64 call mismatch and overflow in the geometric input generator; these are not production defects.
+Final focused suite rerun and second 13-mutant run launched with completed tests. About five minutes remain in the worker budget; priority is completing validation and leaving precise unresolved findings.

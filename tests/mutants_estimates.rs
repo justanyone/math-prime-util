@@ -206,7 +206,7 @@ fn lucky_estimates_keep_their_order_across_native_scales() {
             assert!(lower <= approx, "n={x}: lower={lower}, approx={approx}");
             assert!(approx <= upper, "n={x}: approx={approx}, upper={upper}");
         }
-        n += n / 8;
+        n = n.saturating_add(n / 8);
     }
 }
 

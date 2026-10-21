@@ -2,11 +2,10 @@
 //! and almost-prime estimate helpers. Each test uses the public API and
 //! checks values that a flipped comparison or operator would change.
 
-use math_prime_util::families::lucky::{
-    lucky_count, lucky_count_lower, lucky_count_upper, nth_lucky,
+use math_prime_util::families::{
+    lucky_count, lucky_count_lower, lucky_count_upper, nth_almost_prime, nth_lucky,
+    nth_ramanujan_prime_upper,
 };
-use math_prime_util::families::nth_almost_prime::nth_almost_prime;
-use math_prime_util::families::nth_ramanujan_prime_upper::nth_ramanujan_prime_upper;
 use math_prime_util::real::harmreal;
 
 #[test]

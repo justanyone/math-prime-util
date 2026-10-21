@@ -27,3 +27,6 @@ Verification still running; no additional production changes. The boundary and t
 Final mutation baseline passed. Harmonic equivalence survives again; extra 306 threshold also survives as expected. Gate MSRV compiler is now running.
 About five minutes remain. All 36 final focused tests pass; waiting for final mutant and gate outcomes, then recording exact remaining blockers without marking READY.
 Thirteen-mutation run completed: 9 caught, 4 missed (harmonic and three wide-upper-bracket mutations). That copy predates the newly added wide-bracket trace. Re-running the same thirteen against final tests to confirm all three new kills. Extra boundary run caught task line 146; inherited claim of two task equivalents was incorrect (306 was not a listed survivor).
+Final 13-mutation confirmation is running with the new wide-bracket test included. No production correctness bug has been demonstrated; harmonic comparison is equivalent, not an incorrect bound.
+Verified the real nth-prime comparison boundary: at n=15360, normal bound=168432; < -> <= bound=168418 (from mutation failure); exact prime=168281 (independent sieve). Both bounds hold; this mutant changes tightness, not correctness.
+The inherited 306 mutant is equivalent but is NOT one of the thirteen task mutations. Only harmreal is presently established equivalent among the requested mutations.

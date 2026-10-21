@@ -21,3 +21,4 @@ Boundary classification for the 13 requested mutations:
 No production defect has been established. The all-13-killed criterion includes equivalent or public-unreachable mutations and cannot be honestly claimed from public integration tests alone.
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 56 bytes)
+Final tests are written and formatted. Keeping the equivalent/unreachable mutation classifications explicit while waiting for the reduced-resource mutation sweep and whole-suite gate.

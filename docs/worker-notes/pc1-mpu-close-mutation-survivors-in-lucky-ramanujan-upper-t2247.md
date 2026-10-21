@@ -53,3 +53,5 @@ No incorrect unmutated bound was established; no numerical algorithm fix was war
 Mutation debug outcomes confirm all 13 requested mutants caught, zero missed. Detailed boundary classifications recorded above. Waiting for the final gate result; no READY marking.
 
 Final cargo-mutants result: 13 mutants tested in 4 minutes, 13 caught, exit 0. git diff --check passed. Compact gate remains in the full-suite count oracle; all earlier stages (fmt, four clippy configurations, MSRV build) passed.
+
+The full gate suite passed the long count oracle and advanced into family compatibility tests. Mutation confirmation is complete; full gate final status is still pending.

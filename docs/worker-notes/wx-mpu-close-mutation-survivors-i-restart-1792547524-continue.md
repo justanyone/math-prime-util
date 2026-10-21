@@ -26,3 +26,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Measured the requested nth-prime boundary: original upper(15360)=168432. Added that check and both sides of Axler 3999654659, plus the final negative coefficient. Started a second exact-13 offline mutant run with one worker, no target copy, <<cut 125 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 100 bytes)
+The harmonic cutoff is an equivalent output mutation, so the literal all-13-killed criterion cannot honestly be claimed. Preserve C semantics rather than change correct numerical code just to alter a mutation score. A second full offline to <<cut 87 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 63 bytes)

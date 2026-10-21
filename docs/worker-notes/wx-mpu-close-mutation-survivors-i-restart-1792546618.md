@@ -6,3 +6,4 @@ Inspected existing test helpers; missing explicit upper Hasse and acceptance equ
 Added upper Hasse rejection, product-equals-limit acceptance, and first semiprime-weight selection tests. Focused offline test build is running.
 Reference confirms Hasse interval and inclusive product limit. Preparing exact mutation selectors; no new production bug found so far.
 Focused build still running. Existing helper locations mapped; mutation run will restrict tests to mutation_regressions.
+Launched exact fourteen-mutant rerun with nice 15 and jobs 2, offline. Gate running in parallel.

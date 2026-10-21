@@ -29,3 +29,7 @@ Final audit found that sharing CARGO_TARGET_DIR between concurrent mutation work
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 83 bytes)
 - 2026-10-21T01:19:40Z launcher: about 60 s to the time limit of 14 minutes; 789 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit.md, src/bigint/proving.rs, src/bigint/random.rs, tests/mutants_proving_random.rs.
+Stopping with the implementation and nine regression tests on disk. No existing test files or dependencies changed. Earlier focused tests passed and all four clippy sets plus MSRV passed; do not accept any shared-target mutation count. Fina <<cut 73 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 49 bytes)
+Final clean focused run: all nine regression tests passed after stopping the mutation workers.

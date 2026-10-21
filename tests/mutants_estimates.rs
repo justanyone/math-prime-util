@@ -89,7 +89,7 @@ macro_rules! private_estimate_tests {
         }
         #[test]
         fn mutation_nth_prime_upper_boundary() {
-            assert_eq!(super::nth_prime_upper(306), 2_029);
+            assert_eq!(super::nth_prime_upper(306), 2_017);
         }
     };
     (almost) => {
@@ -97,14 +97,30 @@ macro_rules! private_estimate_tests {
         fn mutation_interpolation_bracket_repairs() {
             // Exact count is the identity. Deliberately poor estimates force
             // the same bracket repair paths as the C callback algorithm.
-            for estimate in [
-                |n: u64| if n == 100_000 { 50_000 } else { 200_000 },
-                |n: u64| if n == 100_000 { 150_000 } else { 0 },
+            for (estimate, expected) in [
+                (
+                    (|n: u64| if n == 100_000 { 50_000 } else { 200_000 }) as fn(u64) -> u64,
+                    vec![50_000, 69_999, 89_998],
+                ),
+                (
+                    (|n: u64| if n == 100_000 { 150_000 } else { 0 }) as fn(u64) -> u64,
+                    vec![150_000, 130_001, 110_002],
+                ),
             ] {
+                let guesses = std::cell::RefCell::new(Vec::new());
                 assert_eq!(
-                    super::interpolate_approx_with(100_000, estimate, |x| x, |_| true),
+                    super::interpolate_approx_with(
+                        100_000,
+                        estimate,
+                        |x| {
+                            guesses.borrow_mut().push(x);
+                            x
+                        },
+                        |_| true,
+                    ),
                     100_000
                 );
+                assert_eq!(*guesses.borrow(), expected);
             }
         }
     };

@@ -13,3 +13,5 @@ Resolution detail: inverse_interpolate.c::interpolate_with_approx recomputes exa
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 225 bytes)
 Mutation baseline passed; first three mutants survive (harmonic cutoff, unreachable lucky n=7, and lucky division-to-multiplication seed). Added geometric public-estimate ordering checks across native scales to probe bad seed brackets.
+The new scale sweep is running; the first mutation pass remains on its original copied test file, so a final pass must include the completed test file.
+All five lucky mutants survived the first targeted run. This confirms current public-result tests do not distinguish their search seeds; it does not by itself prove all mutated bounds valid. Retain explicit unresolved status rather than claiming kills.

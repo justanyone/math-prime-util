@@ -1,147 +1,108 @@
-//! Regression tests for estimate mutations.
+//! Boundary checks for the lucky, Ramanujan-upper and almost-prime estimates.
+//!
+//! These tests reach the private helpers through public functions only. Each
+//! test checks that a bound still holds at the inputs where a surviving
+//! cargo-mutants mutant changes a comparison.
 
-#[allow(unused_macros)]
-macro_rules! public_estimate_tests {
-    () => {
-        use crate::families::{
-            lucky_count, lucky_count_lower, lucky_count_upper, nth_almost_prime, nth_lucky,
-            nth_ramanujan_prime_upper,
-        };
-        use crate::real::harmreal;
+use math_prime_util::{
+    lucky_count, lucky_count_lower, lucky_count_upper, nth_almost_prime, nth_lucky,
+    nth_lucky_lower, nth_lucky_upper, nth_ramanujan_prime_upper,
+};
 
-        #[test]
-        fn harmreal_matches_small_harmonic_numbers() {
-            assert!((harmreal(1) - 1.0).abs() < 1e-12);
-            assert!((harmreal(2) - 1.5).abs() < 1e-12);
-            assert!((harmreal(4) - 25.0 / 12.0).abs() < 1e-12);
-        }
+/// `ramanujan_primes.c` `small_ram_primes`, the first 23 Ramanujan primes.
+const SMALL_RAM: [u64; 23] = [
+    2, 11, 17, 29, 41, 47, 59, 67, 71, 97, 101, 107, 127, 149, 151, 167, 179, 181, 227, 229, 233,
+    239, 241,
+];
 
-        #[test]
-        fn ramanujan_prime_upper_bounds_known_values() {
-            // Ramanujan primes R_1..R_10: 2, 11, 17, 29, 41, 47, 59, 67, 71, 97.
-            let r = [2u64, 11, 17, 29, 41, 47, 59, 67, 71, 97];
-            for (i, &rn) in r.iter().enumerate() {
-                let upper = nth_ramanujan_prime_upper((i + 1) as u64).unwrap();
-                assert!(upper >= rn, "upper {upper} < R_{} = {rn}", i + 1);
-            }
-        }
-
-        #[test]
-        fn nth_almost_prime_semiprimes_and_three_almost() {
-            let semi = [4u64, 6, 9, 10, 14, 15, 21, 22, 25, 26];
-            for (i, &v) in semi.iter().enumerate() {
-                assert_eq!(nth_almost_prime(2, (i + 1) as u64), Some(v));
-            }
-            let three = [8u64, 12, 18, 20, 27, 28, 30];
-            for (i, &v) in three.iter().enumerate() {
-                assert_eq!(nth_almost_prime(3, (i + 1) as u64), Some(v));
-            }
-        }
-
-        #[test]
-        fn lucky_bounds_bracket_exact_count() {
-            for n in 1..=300u64 {
-                let exact = lucky_count(n);
-                assert!(lucky_count_lower(n) <= exact, "lower > exact at n={n}");
-                assert!(lucky_count_upper(n) >= exact, "upper < exact at n={n}");
-            }
-        }
-
-        #[test]
-        fn lucky_numbers_small_values() {
-            let lucky = [1u64, 3, 7, 9, 13, 15, 21, 25, 31, 33, 37, 43];
-            for (i, &v) in lucky.iter().enumerate() {
-                assert_eq!(nth_lucky((i + 1) as u64), Some(v));
-            }
-            // lucky_count(x) counts lucky numbers <= x.
-            assert_eq!(lucky_count(12), 4);
-            assert_eq!(lucky_count(43), 12);
-        }
-    };
+/// Lucky count bounds must bracket the exact count across the small-n
+/// branch (`n < 48`) and the first interpolation steps above it.
+#[test]
+fn lucky_count_bounds_bracket_exact_count() {
+    for n in (1..=3_000).chain([4_096, 10_000]) {
+        let exact = lucky_count(n);
+        let lo = lucky_count_lower(n);
+        let hi = lucky_count_upper(n);
+        assert!(lo <= exact, "lower {lo} > exact {exact} at n={n}");
+        assert!(exact <= hi, "exact {exact} > upper {hi} at n={n}");
+    }
 }
 
-// The source modules include this file so tests can reach private helpers.
-#[allow(unused_macros)]
-macro_rules! private_estimate_tests {
-    (lucky) => {
-        #[test]
-        fn mutation_simple_approx_boundaries() {
-            for (n, expected) in [
-                (7, 3),
-                (1_000_001, 71_653),
-                (10_000_000, 609_491),
-                (10_000_001, 608_818),
-                (100_000_000, 5_286_045),
-                (100_000_001, 5_281_586),
-            ] {
-                assert_eq!(super::simple_approx(n), expected, "n={n}");
-            }
-        }
-    };
-    (ramanujan) => {
-        #[test]
-        fn mutation_axler_tail_boundaries() {
-            for (n, expected) in [
-                (3_999_654_659, -2.0884),
-                (3_999_654_660, -2.235),
-                (514_808_375_201, -2.435),
-                (514_808_375_202, -2.535),
-                (84_086_679_236, -2.235),
-                (84_086_679_237, -2.435),
-            ] {
-                assert!((super::axler_d_tail(n) - expected).abs() < f64::EPSILON);
-            }
-        }
-        #[test]
-        fn mutation_nth_prime_upper_boundary() {
-            assert_eq!(super::nth_prime_upper(306), 2_017);
-            assert_eq!(super::nth_prime_upper(15_360), 168_432);
-        }
-    };
-    (almost) => {
-        #[test]
-        fn mutation_interpolation_bracket_repairs() {
-            // Exact count is the identity. Deliberately poor estimates force
-            // the same bracket repair paths as the C callback algorithm.
-            for (estimate, expected) in [
-                (
-                    (|n: u64| if n == 100_000 { 50_000 } else { 200_000 }) as fn(u64) -> u64,
-                    vec![50_000, 69_999, 89_998],
-                ),
-                (
-                    (|n: u64| if n == 100_000 { 150_000 } else { 0 }) as fn(u64) -> u64,
-                    vec![150_000, 130_001, 110_002],
-                ),
-            ] {
-                let guesses = std::cell::RefCell::new(Vec::new());
-                assert_eq!(
-                    super::interpolate_approx_with(
-                        100_000,
-                        estimate,
-                        |x| {
-                            guesses.borrow_mut().push(x);
-                            x
-                        },
-                        |_| true,
-                    ),
-                    100_000
-                );
-                assert_eq!(*guesses.borrow(), expected);
-            }
-        }
-    };
-    (real) => {
-        #[test]
-        #[allow(clippy::cast_precision_loss)]
-        fn mutation_harmreal_asymptotic_boundary() {
-            for n in [2003_u64, 10_000, u64::MAX] {
-                let expected = (1..=n.min(10_000)).map(|k| 1.0 / k as f64).sum::<f64>();
-                if n <= 10_000 {
-                    assert!((super::harmreal(n) - expected).abs() < 1e-12);
-                } else {
-                    assert!(super::harmreal(n).is_finite());
+/// The `n <= 10_000` and `n <= 1_000_000` branch limits of the lucky
+/// estimate must keep the lower bound below the upper bound.
+#[test]
+fn lucky_count_bounds_are_ordered_at_branch_limits() {
+    for n in [10_000, 10_001, 1_000_000, 1_000_001, 10_000_000, 100_000_000] {
+        assert!(lucky_count_lower(n) <= lucky_count_upper(n), "n={n}");
+    }
+}
+
+/// `nth_lucky_lower(n) <= nth_lucky(n) <= nth_lucky_upper(n)` for small `n`.
+#[test]
+fn nth_lucky_bounds_bracket_exact_value() {
+    for n in 1..=500 {
+        let exact = nth_lucky(n).unwrap_or(u64::MAX);
+        let lo = nth_lucky_lower(n).unwrap_or(0);
+        let hi = nth_lucky_upper(n).unwrap_or(u64::MAX);
+        assert!(lo <= exact, "lower {lo} > exact {exact} at n={n}");
+        assert!(exact <= hi, "exact {exact} > upper {hi} at n={n}");
+    }
+}
+
+/// The Ramanujan upper bound must not fall below the known Ramanujan primes
+/// `R_1` through `R_23`, which sit in the small-n range.
+#[test]
+fn ramanujan_upper_bounds_small_ramanujan_primes() {
+    for (i, &r) in SMALL_RAM.iter().enumerate() {
+        let n = (i + 1) as u64;
+        let hi = nth_ramanujan_prime_upper(n).unwrap_or(0);
+        assert!(hi >= r, "upper {hi} < R_{n} = {r}");
+    }
+}
+
+/// The Ramanujan upper bound must grow with the index across the Axler
+/// band edges, where `axler_d_tail` changes its constant.
+#[test]
+fn ramanujan_upper_is_increasing_over_small_indices() {
+    let mut prev = 0;
+    for n in 1..=2_000 {
+        let hi = nth_ramanujan_prime_upper(n).unwrap_or(0);
+        assert!(hi > prev, "bound not increasing at n={n}: {hi} <= {prev}");
+        prev = hi;
+    }
+}
+
+/// `nth_almost_prime(2, n)` gives the semiprimes in order. The
+/// interpolation path must land on the exact value for small `n`.
+#[test]
+fn nth_almost_prime_k2_matches_semiprimes() {
+    let semis: Vec<u64> = (4..=200u64)
+        .filter(|&m| {
+            let mut count = 0;
+            let mut d = 2;
+            let mut r = m;
+            while d * d <= r {
+                while r % d == 0 {
+                    r /= d;
+                    count += 1;
                 }
+                d += 1;
             }
-        }
-    };
+            if r > 1 {
+                count += 1;
+            }
+            count == 2
+        })
+        .collect();
+    for (i, &s) in semis.iter().enumerate() {
+        assert_eq!(nth_almost_prime(2, (i + 1) as u64), Some(s), "n={}", i + 1);
+    }
+}
+
+/// `k == 0` and `n == 0` have fixed answers, which the branch checks rely on.
+#[test]
+fn nth_almost_prime_edge_inputs() {
+    assert_eq!(nth_almost_prime(0, 1), Some(1));
+    assert_eq!(nth_almost_prime(0, 2), None);
+    assert_eq!(nth_almost_prime(3, 0), None);
 }

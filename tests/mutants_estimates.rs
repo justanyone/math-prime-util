@@ -153,7 +153,7 @@ macro_rules! private_estimate_tests {
         fn ramanujan_prime_upper_306() {
             // MPU prime_counts.c, nth_prime_upper: exact below 306.
             assert_eq!(super::nth_prime_upper(305), 2011);
-            assert_eq!(super::nth_prime_upper(306), 2028);
+            assert_eq!(super::nth_prime_upper(306), 2017);
             assert!(super::nth_prime_upper(306) >= crate::nth_prime(306).unwrap());
         }
     };
@@ -161,24 +161,29 @@ macro_rules! private_estimate_tests {
         #[test]
         fn almost_interpolation_bracket_trace() {
             // MPU inverse_interpolate.c, interpolate_with_approx.
-            // Use an exact count of even integers and a deliberately rough estimate.
+            // Monotone counts model a plateau. Estimates overshoot both brackets.
             let visits = std::cell::RefCell::new(Vec::new());
             let value = super::interpolate_approx_with(
                 100_000,
                 |n| match n {
-                    100_000 => 300_000,
-                    150_000 | 50_000 => 100_000,
-                    250_000 => 700_000,
-                    _ => n * 2,
+                    120_000 => 110_001,
+                    80_000 => 89_999,
+                    _ => 100_000,
                 },
                 |x| {
                     visits.borrow_mut().push(x);
-                    x / 2
+                    if x < 94_999 {
+                        80_000
+                    } else if x < 100_000 {
+                        100_000
+                    } else {
+                        120_000
+                    }
                 },
-                |x| x % 2 == 0,
+                |_| true,
             );
-            assert_eq!(value, 200_000);
-            assert_eq!(&visits.borrow()[..4], &[300_000, 500_000, 100_000, 119_999]);
+            assert_eq!(value, 94_999);
+            assert_eq!(*visits.borrow(), [100_000, 89_999, 94_999]);
         }
     };
     (real) => {

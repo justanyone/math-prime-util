@@ -9,3 +9,5 @@ Focused build still running. Existing helper locations mapped; mutation run will
 Launched exact fourteen-mutant rerun with nice 15 and jobs 2, offline. Gate running in parallel.
 All twelve focused regression tests passed. Checking whether the original factored-integer > mutation mapped to a redundant primality guard or to the product-limit branch.
 Mutation preflight selected fourteen entries. Gate passed default clippy and is checking bigint.
+Checking original task-base source to avoid mapping the product-bound survivor to a different > guard after helper extraction.
+Gate passed default, bigint, and GMP clippy; all-features clippy running. Mutation baseline compiling offline in its isolated scratch directory.

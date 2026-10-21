@@ -44,3 +44,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Independent byte sieve gives p_15360=168281, below both original 168432 and mutant 168418; that comparison mutant preserves a valid, tighter bound. Full gate tests are at the slow prime_count oracle case; no failures reported. No further co <<cut 21 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -3 bytes)
+Full offline suites remain in progress at the long prime_count oracle case. Final mutation result is reliable: 12 caught, harmonic equivalent missed. No numerical production fix was indicated. Remaining acceptance items are the equivalent s <<cut 102 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 77 bytes)

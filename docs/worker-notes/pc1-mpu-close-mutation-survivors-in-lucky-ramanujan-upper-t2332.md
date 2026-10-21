@@ -22,3 +22,4 @@ No incorrect unmutated bound established; existing helper extraction permits beh
 37 focused tests are green. Gate has advanced through clippy into compilation for later stages. Exact 13-site fresh mutation run is building with the corrected test module filter; awaiting results.
 Gate passed all four clippy feature configurations and MSRV build and is executing the full suite. Mutation run remains in progress; no green marker or 13/13 claim made yet for this continuation.
 Fresh mutation checkpoint: first five mutants caught, zero misses/timeouts/unviable. Gate running the long count compatibility oracle; waiting without source changes.
+Fresh exact four-file cargo-mutants run complete: 13 tested, 13 caught, zero missed/timeouts/unviable, exit 0. Corrected focused run passed 37 tests. Full gate is the only remaining validation and is still running its count oracle.

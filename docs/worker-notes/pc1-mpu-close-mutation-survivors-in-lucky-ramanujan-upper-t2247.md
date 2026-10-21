@@ -14,3 +14,7 @@ Mutation runner found exactly 13 requested cases. Clippy default and bigint pass
 Boundary arithmetic: changing either lucky division to multiplication yields a negative factor (saturating to zero), so its lower bound stays valid but useless. Reversed branch comparisons give smaller lower estimates at 1000001 and 10000001 (70861 vs 70936; 600795 vs 602729). No original wrong bound identified. Full tools/test.sh started as required.
 
 All four clippy feature sets passed; gate is building MSRV. Mutation baseline builds all test targets before applying its focused runtime filter, so compilation is longer than the focused test run. No live services or external files changed.
+
+Triage of the other cases: lucky n=7 changes only the estimate (3 to 2); both public count bounds use independent small-input formulas. Axler threshold/sign tests enforce MPU coefficients; the huge exact R_n boundary is not computed, so no unsupported claim of a violated bound is made. Almost-prime synthetic plateau traces verify bracket guards and retreat arithmetic; no unmutated bug found.
+
+BLOCKER: mutation baseline and full-suite compilation failed with disk quota exceeded. Focused 37-test run and all four clippy feature sets passed. Checking task-created build artifacts, then narrowing mutation build to --lib and disabling debug info if space permits.

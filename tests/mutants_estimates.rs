@@ -259,7 +259,7 @@ macro_rules! private_estimate_tests {
 
         #[test]
         fn harmonic_cutoff_only_discards_unrepresentable_corrections() {
-            // MPU real.c's asymptotic harmonic expansion. Compare the complete
+            // MPU PP.pm::harmreal's asymptotic expansion. Compare the complete
             // finite expansion with its cutoff, including the first asymptotic
             // input and inputs where the cutoff moves to an earlier term.
             // This documents why < -> == at the cutoff cannot be killed by a

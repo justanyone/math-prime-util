@@ -30,3 +30,8 @@ Thirteen-mutation run completed: 9 caught, 4 missed (harmonic and three wide-upp
 Final 13-mutation confirmation is running with the new wide-bracket test included. No production correctness bug has been demonstrated; harmonic comparison is equivalent, not an incorrect bound.
 Verified the real nth-prime comparison boundary: at n=15360, normal bound=168432; < -> <= bound=168418 (from mutation failure); exact prime=168281 (independent sieve). Both bounds hold; this mutant changes tightness, not correctness.
 The inherited 306 mutant is equivalent but is NOT one of the thirteen task mutations. Only harmreal is presently established equivalent among the requested mutations.
+FINAL MUTATION CONFIRMATION: all thirteen requested locations selected across the four files; 12 caught, 1 missed, 0 unviable, 41 seconds. Only src/real/mod.rs:763:23 (< -> ==) survives. Final tests include wide-bracket and 15360 boundary c <<cut 5 chars by kit>>
+Command: cargo mutants --no-config --copy-target=false --jobs 1 --timeout 60 --build-timeout 180 -C --offline -C --lib [four --file filters and thirteen location/operator regex alternatives] -- estimate_mutation_tests. Output: /tmp/estimate <<cut 41 chars by kit>>
+No source algorithm changed and no existing test file outside this task's tests/mutants_estimates.rs was edited. STATUS functions were already ticked. Strict 13/13 acceptance remains impossible for the equivalent f64 harmonic mutant without <<cut 69 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 44 bytes)

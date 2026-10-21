@@ -22,3 +22,4 @@ Mutation build invokes all test targets even though execution is filtered; this 
 Build command confirmed cargo test --no-run (all targets); execution filter does not restrict its compile phase. Waiting for current run rather than adding more competing builds.
 First mutation run finished: 1 missed, 4 caught, 7 unviable. Restarted all thirteen exact mapped task mutations with -C --lib and one job, avoiding expensive integration-test compilation. The original almost-prime <= survivor maps to span <= 19999 (now 172), and minus to max - 19999 (now 175).
 Added the missing wide upper-bracket trace (100000 -> 60000 -> 80001), directly exercising max - 19999 and its + and / mutants. This complements the inherited narrow-span midpoint trace.
+All four clippy configurations passed. Gate now waits for MSRV build; final focused verification includes all new tests. Thirteen-mutation run uses isolated output and lib-only compilation.

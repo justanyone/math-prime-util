@@ -25,3 +25,4 @@ Final tests are written and formatted. Keeping the equivalent/unreachable mutati
 Final all-feature Clippy passes after the last test addition. The second sweep confirms the harmonic and n=7 lucky mutants survive; the gate is still in its full test step.
 - 2026-10-21T01:45:25Z launcher: no commit for 61 s; 456 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792546450-continue.md, tests/mutants_estimates.rs.
 Monitoring offline mutation and gate runs; no further code changes. Boundary classifications remain in these notes.
+Monitoring offline mutation and gate runs; no further code changes. Boundary classifications remain in these notes.

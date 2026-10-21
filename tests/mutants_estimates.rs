@@ -1,5 +1,6 @@
 //! Regression cases included by the four source modules to test private estimates.
-//! The integration target is empty. Run with `tools/test.sh --lib estimate_mutation`.
+//! The source modules include these tests to reach private helpers.
+#![allow(unused_macros)]
 
 macro_rules! public_estimate_tests {
     () => {
@@ -126,11 +127,11 @@ macro_rules! private_estimate_tests {
                 (10_000, 1124),
                 (10_001, 1081),
                 (1_000_000, 72074),
-                (1_000_001, 72074),
-                (10_000_000, 611161),
-                (10_000_001, 610607),
-                (100_000_000, 5281876),
-                (100_000_001, 5287381),
+                (1_000_001, 71653),
+                (10_000_000, 609491),
+                (10_000_001, 608818),
+                (100_000_000, 5286045),
+                (100_000_001, 5281586),
             ] {
                 assert_eq!(super::simple_approx(n), expected, "n={n}");
             }

@@ -117,10 +117,39 @@ fn lucky_bounds_at_large_fit_transitions() {
 #[test]
 fn harmonic_asymptotic_matches_direct_sum() {
     let mut sum = 0.0;
-    for n in 1..=10_000 {
+    for n in 1_u32..=10_000 {
         sum += 1.0 / f64::from(n);
         if [2003, 2048, 4096, 10_000].contains(&n) {
-            assert!((harmreal(n as u64) - sum).abs() < 1e-12);
+            assert!((harmreal(u64::from(n)) - sum).abs() < 1e-12);
         }
     }
+}
+
+#[test]
+fn ramanujan_upper_at_axler_tail_boundaries() {
+    // Indices from MPU prime_counts.c::ramanujan_axler with C = 0.
+    // ramanujan_primes.c::nth_ramanujan_prime_upper selects D = -2.0884
+    // through 3_999_654_659, then D = -2.235.
+    for (n, index) in [
+        (512_000_001, 1_057_141_056),
+        (3_999_654_658, 8_234_647_401),
+        (3_999_654_659, 8_234_647_403),
+        (3_999_654_660, 8_234_549_410),
+    ] {
+        assert_eq!(
+            nth_ramanujan_prime_upper(n),
+            math_prime_util::nth_prime_upper(index),
+            "n={n}, Axler index={index}"
+        );
+    }
+}
+
+#[test]
+fn ramanujan_upper_at_prime_bound_transition() {
+    // MPU prime_counts.c::ramanujan_axler(7140, 0.1212, 0.7973)
+    // truncates to 15360. nth_prime_upper switches formula at this index.
+    assert_eq!(
+        nth_ramanujan_prime_upper(7140),
+        math_prime_util::nth_prime_upper(15_360)
+    );
 }

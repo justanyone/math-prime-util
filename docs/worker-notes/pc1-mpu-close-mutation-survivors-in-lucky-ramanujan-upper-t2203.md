@@ -18,3 +18,4 @@ Almost-prime tests assert bracket visits against monotone counts and the returne
 The 306 threshold was an inherited extra case; the actual task threshold is 15360. Added C-formula boundary values 168432 and 168444 at 15360 and 15361, with exact-prime upper-bound checks.
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 36 bytes)
+Mutation build invokes all test targets even though execution is filtered; this is slower than expected. Final focused tests and full suite are queued behind the gate build lock.

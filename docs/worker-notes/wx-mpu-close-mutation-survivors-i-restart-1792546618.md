@@ -38,3 +38,4 @@ Final tail-boundary mutation rerun active; final focused tests and clippy repeat
 Main worktree run finished: 12 caught, one missed, with the extra overflow-subtraction mutant included. Separate max-minus-one run caught both generated operators. Corrected remainder/division boundary verification is pending.
 Final focused tests passed: 13/13. Awaiting the last two exact urandomm mutation outcomes and gate completion before final reporting.
 Final clippy passed after the tail-boundary adjustment. No new public functions, dependencies, fixtures, or existing test-file edits were introduced by this restart.
+- 2026-10-21T01:50:36Z launcher: about 60 s to the time limit of 14 minutes; 790 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792546618.md, src/bigint/random.rs, tests/mutants_proving_random.rs.

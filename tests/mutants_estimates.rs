@@ -152,6 +152,8 @@ macro_rules! private_estimate_tests {
         #[test]
         fn ramanujan_prime_upper_306() {
             // MPU prime_counts.c, nth_prime_upper: exact below 306.
+            // The < -> <= mutant is equivalent: the analytic branch already
+            // returns the exact prime at 306, so both branches return 2017.
             assert_eq!(super::nth_prime_upper(305), 2011);
             assert_eq!(super::nth_prime_upper(306), 2017);
             assert!(super::nth_prime_upper(306) >= crate::nth_prime(306).unwrap());
@@ -192,6 +194,37 @@ macro_rules! private_estimate_tests {
             let exact: f64 = (1..=2003).map(|n| 1.0 / f64::from(n)).sum();
             assert!((crate::harmreal(2003) - exact).abs() < 2e-14);
             assert!(crate::harmreal(u64::MAX).is_finite());
+        }
+
+        #[test]
+        fn harmonic_cutoff_only_discards_unrepresentable_corrections() {
+            // MPU real.c's asymptotic harmonic expansion. Compare the complete
+            // finite expansion with its cutoff, including the first asymptotic
+            // input and inputs where the cutoff moves to an earlier term.
+            // This documents why < -> == at the cutoff cannot be killed by a
+            // numerical assertion: adding the omitted terms leaves f64 intact.
+            for n in [2001_u64, 2003, 10_000, 1_000_000, 1_000_000_000, u64::MAX] {
+                let x = n as f64;
+                let square = x * x;
+                let mut power = square;
+                let mut full = 0.0;
+                let mut cut = 0.0;
+                let mut stopped = false;
+                for denominator in [
+                    -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0,
+                    -276.0, 65520.0, -12.0,
+                ] {
+                    let term: f64 = 1.0 / (denominator * power);
+                    stopped |= term.abs() < 1e-44;
+                    full += term;
+                    if !stopped {
+                        cut += term;
+                    }
+                    power *= square;
+                }
+                assert!(stopped, "n={n}");
+                assert_eq!(cut.to_bits(), full.to_bits(), "n={n}");
+            }
         }
     };
 }

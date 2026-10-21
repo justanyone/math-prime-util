@@ -27,6 +27,8 @@ macro_rules! proving_cases {
             let f = [1_u8.into(), 0_u8.into(), 1_u8.into()];
             for (a, b) in [(vec![], vec![1_u8.into()]), (vec![1_u8.into()], vec![])] {
                 assert!(pm.mul(&a, &b, &f).is_empty());
+                // A zero product needs no polynomial reduction.
+                assert!(pm.mul(&a, &b, &[]).is_empty());
             }
         }
 

@@ -8,3 +8,4 @@ The reference and NOTICE stay at the base commit. Claiming the patch was applied
 All fixture overrides stay in place because the patched oracle is unavailable. No fixture was regenerated.
 Do not source perl-env.sh: it can run curl to bootstrap dependencies. Run offline Rust checks next.
 Verified exactly eight upstream notes. Focused Rust tests and the gate are running offline.
+Gate formatting passed. Clippy waits for the test build lock. Exact reference patch remains blocked offline.

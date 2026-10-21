@@ -11,3 +11,4 @@ The mutation baseline failed after exhausting the filesystem quota. Clippy found
 - 2026-10-21T01:13:36Z launcher: no commit for 61 s; 425 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit.md, src/bigint/proving.rs, src/bigint/random.rs, tests/mutants_proving_random.rs.
 Focused tests pass after the clippy fixes. Restarted the exact-site mutation run with nice 15, two jobs, offline Cargo, and a shared target directory to avoid another copied-target quota failure.
 About five minutes remain. All four clippy feature sets passed; MSRV and full tests are running. The corrected mutation rerun selects all fourteen sites. Strengthened BLS trial-factor output and zero-product early-return tests.
+Added the BLS prime 1,028,456,449 with n−1 = 2^16 × 3 × 5231. Its certificate must retain the large cofactor after trial division, distinguishing both BLS survivors. Full validation is still waiting on Cargo build locks.

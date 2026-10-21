@@ -14,3 +14,4 @@ The mutation runner is building integration targets for its baseline despite the
 Mutation baseline failed before testing: disk quota exceeded while compiling integration targets in the copied target directory. Retrying once with no target copy, bigint only, --lib for build and test, and debug/incremental output disabled.
 The main gate reached the bigint certificate compatibility tests. The smaller mutation retry has started; no source or regression assertion has failed.
 The reduced mutation build is still running. The gate continues through compatibility tests without a failure. The separate tools/test.sh full run remains active.
+Reduced mutation baseline passed: 28 s build, all 14 focused tests pass. The 13 selected mutants are now running with nice 15 and two jobs. No network was used.

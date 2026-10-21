@@ -26,3 +26,18 @@ The second expected equivalent survivor is confirmed: nth_prime_upper < to <= at
 Initial mutation summary: 10 caught, 2 equivalent missed, 1 unviable (span addition). Inspecting that build failure before deciding whether to rerun it.
 The unviable span-addition mutant failed in unrelated integration-target linking (rust-lld bus error), not Rust compilation. Rerunning only that mutant with --cargo-arg=--lib and two build jobs.
 Gate clippy checks are complete and gate tests are progressing. The narrowed span-addition mutation rerun is building without integration targets.
+Span-addition rerun: baseline passed; 1 mutant caught. Combined result: 11 caught, 2 equivalent-output survivors, no remaining unviable cases.
+Focused command: tools/test.sh --lib estimate_mutation (33 passed). Whole suite: tools/test.sh. Gate: tools/gate.sh. All runs are offline.
+MissedMutant: src/real/mod.rs:763:23: replace < with == in harmreal
+CaughtMutant: src/families/lucky.rs:337:25: replace / with * in simple_approx
+CaughtMutant: src/families/lucky.rs:338:17: replace <= with > in simple_approx
+CaughtMutant: src/families/lucky.rs:339:25: replace / with * in simple_approx
+CaughtMutant: src/families/lucky.rs:340:17: replace <= with > in simple_approx
+CaughtMutant: src/families/nth_ramanujan_prime_upper.rs:121:17: replace > with >= in axler_d_tail
+CaughtMutant: src/families/nth_ramanujan_prime_upper.rs:124:9: delete - in axler_d_tail
+MissedMutant: src/families/nth_ramanujan_prime_upper.rs:146:10: replace < with <= in nth_prime_upper
+CaughtMutant: src/families/nth_almost_prime.rs:161:29: replace >= with < in interpolate_approx_with
+CaughtMutant: src/families/lucky.rs:327:10: replace < with <= in simple_approx
+CaughtMutant: src/families/nth_almost_prime.rs:166:18: replace <= with > in interpolate_approx_with
+CaughtMutant on focused --lib rerun: src/families/nth_almost_prime.rs:167:28: replace - with + in interpolate_approx_with
+CaughtMutant: src/families/nth_almost_prime.rs:167:28: replace - with / in interpolate_approx_with

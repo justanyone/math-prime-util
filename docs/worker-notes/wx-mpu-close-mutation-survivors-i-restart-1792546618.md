@@ -39,3 +39,20 @@ Main worktree run finished: 12 caught, one missed, with the extra overflow-subtr
 Final focused tests passed: 13/13. Awaiting the last two exact urandomm mutation outcomes and gate completion before final reporting.
 Final clippy passed after the tail-boundary adjustment. No new public functions, dependencies, fixtures, or existing test-file edits were introduced by this restart.
 - 2026-10-21T01:50:36Z launcher: about 60 s to the time limit of 14 minutes; 790 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792546618.md, src/bigint/random.rs, tests/mutants_proving_random.rs.
+Final verification: all thirteen behavioral target mutations are caught; zero target mutations remain missed. Runs used nice 15, jobs 2, offline bigint library tests.
+Caught: src/bigint/proving.rs:896:17: replace + with - in check_ecpp
+Caught: src/bigint/proving.rs:897:10: replace + with * in check_ecpp
+Caught: src/bigint/proving.rs:1079:20: replace % with + in bls75
+Caught: src/bigint/proving.rs:1081:27: replace % with / in bls75
+Caught: src/bigint/proving.rs:1179:36: replace * with + in curve_orders
+Caught: src/bigint/proving.rs:1223:25: replace || with && in PolyMod<'_>::mul
+Caught: src/bigint/random.rs:316:45: replace - with + in urandomm_with
+Caught: src/bigint/random.rs:317:32: replace % with / in urandomm_with
+Caught: src/bigint/random.rs:395:19: replace - with + in random_prime_with
+Caught: src/bigint/random.rs:587:20: replace && with || in random_factored_integer_with
+Caught: src/bigint/random.rs:587:31: replace < with <= in random_factored_integer_with
+Caught: src/bigint/random.rs:618:38: replace + with - in miller_rabin_random_with
+Caught: src/bigint/random.rs:682:14: replace <= with > in random_unrestricted_semiprime
+Original random.rs:560 > to >= is equivalent because is_prob_prime(1) == 0. Its redundant guard was removed. No new correctness bug was found.
+Final checks: 13 focused regressions passed, rustfmt passed, final all-targets/all-features clippy passed, and MSRV passed. tools/gate.sh and tools/test.sh full suite are still active; gate has not printed green.
+Stopping with all implementation and regression work written. Remaining validation: collect full-suite/gate results, including docs. No git writes or network actions were performed.

@@ -7,3 +7,4 @@ Focused tests compiling; first mutant regex matched nothing because mutation nam
 Started targeted cargo-mutants on the four files and gate. Existing STATUS entries are already checked; no checklist changes needed.
 33 focused tests passed. Mutation run with target copying raced against gate compilation; restarted without copying target and corrected moved interpolation locations (13 selected).
 Added executable evidence that the harmonic cutoff and full finite expansion give identical f64 corrections; documented index 306 equivalence beside its existing boundary assertion.
+The inherited refactor moved mutation locations; verifying both subtraction sites and both nth-prime threshold sites to avoid silently omitting the original survivor.

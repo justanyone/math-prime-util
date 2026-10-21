@@ -19,6 +19,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 
 ### 1. `is_smooth` (XS, `util.c`) returns 0 when the cofactor is a prime at most `k`
 
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
+
 - Function and input: `is_smooth(4294967297, 4294967296)`; 4294967297 = 641 x 6700417.
 - Perl 0.75 value: `0` (`factor.tsv` line 24083).
 - Correct value: `1`. Every prime factor is at most `k`; here `n <= k` holds as well.
@@ -37,6 +39,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 
 ### 2. `abundance` (XS, `XS.xs`) wraps results below -2^63
 
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
+
 - Function and input: `abundance(18446744073709551557)` (a prime).
 - Perl 0.75 value: `60` (`arith.tsv` line 8419).
 - Correct value: `-18446744073709551556` (the aliquot sum of a prime is 1).
@@ -52,6 +56,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 - Upstream test: `is(abundance("18446744073709551557"), "-18446744073709551556", "abundance large prime");`
 
 ### 3. `is_power(n, k)` (PP, `PP.pm`): the `@rootmask` table rejects true k-th powers
+
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
 
 - Function and input: `is_power(33**13, 13)` with a bigint `n`; also `is_power(1, 15)`.
 - Perl 0.75 value: PP gives `0` for both. XS gives `1` for `is_power(1, 15)`
@@ -75,6 +81,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 
 ### 4. `ramanujan_primes` and `ramanujan_prime_count` (PP) are wrong for bounds 2 and 3
 
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
+
 - Function and input: `ramanujan_primes(2)`, `ramanujan_primes(3)`,
   `ramanujan_prime_count(2)`, `ramanujan_prime_count(3)`.
 - Perl 0.75 value: XS gives `2`, `2`, `1`, `1` (`families.tsv` lines 1242,
@@ -90,6 +98,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 - Upstream test: `is(ramanujan_prime_count(2), 1); is(ramanujan_prime_count(3), 1); is_deeply(ramanujan_primes(3), [2]);`
 
 ### 18. `is_aks_prime` (PP, `PP.pm`) dies for every input above 2^64 that passes its trivial tests
+
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
 
 - Function and input: `is_aks_prime(18446744073709551617)` (2^64 + 1), also
   2^64 + 3 and 2^128 + 1 (`bigint_proving.tsv` lines 268, 269, 271).
@@ -114,6 +124,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 - Status: confirmed (reachable in 0.75; the dying line is in MPU).
 
 ### 19. `allsqrtmod` and `rootmod` (PP, `PP.pm`) on moduli with a factor 2^k, 33 <= k <= 63: an overflow gives wrong roots
+
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
 
 - Function and input: `allsqrtmod(17, 2^63)` and `rootmod(17, 2, 2^63)`;
   in the fixture `allsqrtmod(18174344979715097060, 2^65)` and
@@ -154,6 +166,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 
 ### 20. `semiprime_count` (PP, `PP.pm`) with a range that starts below 2^64 and reaches 2^64 counts nothing past 2^64 - 1
 
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
+
 - Function and input: `semiprime_count(18446744073709551610, 18446744073709551622)`
   (`bigint_family_counts.tsv`, the first `semiprime_count` row).
 - Perl 0.75 value: `0`.
@@ -175,6 +189,8 @@ Entries 15 to 24 are numbered in the order they were found, not by section.
 - Status: confirmed (reachable in 0.75; the walk branch is in MPU).
 
 ### 24. `powerful_numbers` (PP, `PP.pm`) dies past 2^64 when a product of two native integers passes 2^64; `nth_powerful(n, 2)` dies for `n >= 2^64`
+
+Fixed upstream in ecb0492c, 2026-10-21 (credited to Kevin Rice).
 
 - Function and input: `powerful_numbers(2^64, 2^64 + 1000000, 3)`,
   `powerful_numbers(2^64, 2^65, 20)`, `powerful_numbers(2^100, 2^100 + 100000, 4)`;

@@ -9,3 +9,8 @@ Focused tests exposed two incorrect hand-computed expectations; corrected them. 
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 80 bytes)
 All 25 focused in-crate checks pass. Started cargo-mutants offline on exactly the 13 listed mutations across the four files, mapping interpolation lines to the extracted callback body. No public API change or dependency change.
+Boundary assessment: lucky < to <= at 7 changes the private estimate 3 to 2, but public lucky bounds use the exact table there. Both lucky / to * mutants make their estimate zero and weaken the lower seed; the two range-comparison mutants c <<cut 195 chars by kit>>
+Boundary assessment: nth_prime_upper < to <= at 306 selects the exact prime 2017 instead of the binary-search result 2017. Harmreal < to == only adds terms too small to change the accumulated f64 correction (below 1e-44 versus a correction  <<cut 87 chars by kit>>
+Boundary assessment: deleting the minus on Axler -2.435 increases the upper bound (non-tight). Switching the strict threshold at 514808375201 uses the next coefficient at that endpoint; its private coefficient differs, but exact R at that e <<cut 219 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 427 bytes)

@@ -28,3 +28,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Final audit found that sharing CARGO_TARGET_DIR between concurrent mutation workers can replace test artifacts while the gate runs. Discard all mutation counts from shared-target runs. Stopped those runs and am rerunning the focused suite a <<cut 108 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 83 bytes)
+- 2026-10-21T01:19:40Z launcher: about 60 s to the time limit of 14 minutes; 789 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit.md, src/bigint/proving.rs, src/bigint/random.rs, tests/mutants_proving_random.rs.

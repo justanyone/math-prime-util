@@ -34,3 +34,5 @@ Final all-features clippy passed after the thirteenth regression. Mutation worke
 Mutation worker logs now contain completed failures for targeted expressions. Checking test failure summaries to distinguish caught mutants from build errors.
 Confirmed five targeted mutants caught by assertion failures, not build failures: both ECPP checks, both BLS75 arithmetic sites, and curve_orders.
 Mutation evidence exposed one missing tail threshold case: overflow remainder changed to division survived. Tightened the power-of-two draw to exactly the first rejected value, then launched both exact urandomm mutations again.
+Final tail-boundary mutation rerun active; final focused tests and clippy repeated after that single-expression test change.
+Main worktree run finished: 12 caught, one missed, with the extra overflow-subtraction mutant included. Separate max-minus-one run caught both generated operators. Corrected remainder/division boundary verification is pending.

@@ -16,3 +16,9 @@ The main gate reached the bigint certificate compatibility tests. The smaller mu
 The reduced mutation build is still running. The gate continues through compatibility tests without a failure. The separate tools/test.sh full run remains active.
 Reduced mutation baseline passed: 28 s build, all 14 focused tests pass. The 13 selected mutants are now running with nice 15 and two jobs. No network was used.
 The reduced offline cargo-mutants rerun completed successfully. I will record its exact kill count and wait for the required gate and full-suite results.
+Mutation rerun result: 13 mutants tested in 2m; 13 caught; no survivors or timeouts.
+Rerun used CARGO_NET_OFFLINE=true, nice -n 15, cargo mutants --features bigint -j 2 --copy-target false -C=--lib, both requested files, and an exact operator/location regex.
+The tests cover check_ecpp + to - and + to *, both bls75 remainder changes, curve_orders * to +, and PolyMod::mul || to &&.
+They also cover urandomm subtraction and remainder, final-bin subtraction, factored acceptance && and <, MR base addition, and the semiprime <= comparison.
+The original random_factored_integer s > 1 to s >= 1 mutant is equivalent: s=1 fails is_prob_prime. The inherited source removes this redundant guard; no test can distinguish it.
+No correctness bug was found. No dependency, fixture, build tooling, credential, or service was changed.

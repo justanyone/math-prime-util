@@ -154,3 +154,17 @@ fn ramanujan_small_prime_index_transition() {
     assert_eq!(nth_ramanujan_prime_upper(132), nth_prime(305));
     assert_eq!(nth_ramanujan_prime_upper(133), nth_prime_upper(307));
 }
+
+// MPU inverse_interpolate.c: interpolate_with_approx. Larger ranks
+// exercise corrections beyond the 20,000-count stopping tolerance.
+#[test]
+fn almost_prime_interpolation_large_ranks() {
+    for k in [3, 4] {
+        for n in [10_000_000, 100_000_000] {
+            let value = nth_almost_prime(k, n).expect("in range");
+            assert!(is_almost_prime(u64::from(k), value));
+            assert_eq!(almost_prime_count(u64::from(k), value), n);
+            assert_eq!(almost_prime_count(u64::from(k), value - 1), n - 1);
+        }
+    }
+}

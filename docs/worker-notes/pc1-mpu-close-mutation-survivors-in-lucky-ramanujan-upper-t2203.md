@@ -8,3 +8,4 @@ Started targeted cargo-mutants on the four files and gate. Existing STATUS entri
 33 focused tests passed. Mutation run with target copying raced against gate compilation; restarted without copying target and corrected moved interpolation locations (13 selected).
 Added executable evidence that the harmonic cutoff and full finite expansion give identical f64 corrections; documented index 306 equivalence beside its existing boundary assertion.
 The inherited refactor moved mutation locations; verifying both subtraction sites and both nth-prime threshold sites to avoid silently omitting the original survivor.
+34 focused tests passed after adding the harmonic equivalence regression; mutation baselines are still compiling, gate has reached clippy-gmp.

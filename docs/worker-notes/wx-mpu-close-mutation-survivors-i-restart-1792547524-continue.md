@@ -32,3 +32,9 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Second mutant run confirms the harmonic < to == mutation survives, consistent with f64 equivalence. Remaining mutants continue. Correction to the bound assessment: the requested Axler threshold is 3999654659; exact Ramanujan-prime evaluatio <<cut 97 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 73 bytes)
+Exact-13 offline rerun finished in three minutes: 12 caught, 1 missed (harmreal cutoff). All five lucky, all three Ramanujan, and all four interpolation survivors are now killed. No unviable or timeout results. The nth-prime 15360 compariso <<cut 132 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 107 bytes)
+Gate and tools/test.sh full suites are still running offline; no failure is reported so far. All mutation test bodies remain in tests/mutants_estimates.rs. Existing test files and STATUS.md were not edited (the named public functions were a <<cut 16 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -8 bytes)

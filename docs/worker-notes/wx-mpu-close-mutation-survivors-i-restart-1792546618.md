@@ -29,3 +29,5 @@ The /tmp disk-quota failure is recorded, not counted as a mutation kill. Worktre
 Found a selector mapping error: original random.rs:311 mutates max - 1, not overflow subtraction. Added a power-of-two modulus test for that exact boundary; will verify its current 316:45 mutation separately.
 Launched an additional exact max-minus-one mutation check against the new power-of-two regression. This corrects the original urandomm selector rather than claiming an unrelated kill.
 All code and tests are written. Started final clippy and the mandated tools/test.sh whole-suite run. Mutation outcomes and gate completion remain to collect.
+All thirteen final focused regressions passed. The whole-suite gate has advanced past the long count tests into later integration groups.
+Final all-features clippy passed after the thirteenth regression. Mutation workers are active; exact result logs are being checked before reporting kills.

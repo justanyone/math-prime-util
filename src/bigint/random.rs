@@ -304,6 +304,11 @@ pub fn urandomm(modulus: &BigUint) -> BigUint {
     if let Ok(n) = u64::try_from(modulus) {
         return crate::urandomm(n).into();
     }
+    urandomm_with(modulus, urandomb)
+}
+
+/// Rejection sampling from `reference/mpu/lib/Math/Prime/Util/PP.pm::urandomm`.
+fn urandomm_with(modulus: &BigUint, mut draw: impl FnMut(u32) -> BigUint) -> BigUint {
     // PP estimates log2(n) from its decimal length, then adds a full byte.
     let digits = modulus.to_str_radix(10).len();
     let bytes = (digits * 3322 / 1000 + 15) >> 3;
@@ -311,7 +316,7 @@ pub fn urandomm(modulus: &BigUint) -> BigUint {
     let max = (BigUint::from(1_u8) << bits) - 1_u8;
     let overflow = &max - &max % modulus;
     loop {
-        let r = urandomb(bits);
+        let r = draw(bits);
         if r < overflow {
             return r % modulus;
         }
@@ -347,6 +352,15 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
     if low > high || high < &2_u8.into() {
         return None;
     }
+    random_prime_with(low, high, urandomm)
+}
+
+/// Interval bins from `reference/mpu/lib/Math/Prime/Util/RandomPrimes.pm::random_prime`.
+fn random_prime_with(
+    low: &BigUint,
+    high: &BigUint,
+    mut draw: impl FnMut(&BigUint) -> BigUint,
+) -> Option<BigUint> {
     let mut lo = low.max(&2_u8.into()).clone();
     let mut hi = high.clone();
     if high - low <= 1_000_000_000_u64.into() {
@@ -373,7 +387,7 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
         if &nparts * &binsize == range {
             nparts -= 1_u8;
         }
-        let part = urandomm(&(&nparts + 1_u8));
+        let part = draw(&(&nparts + 1_u8));
         lo += (&binsize * &part) << 1_usize;
         range = if part < nparts {
             binsize
@@ -382,7 +396,7 @@ pub fn random_prime(low: &BigUint, high: &BigUint) -> Option<BigUint> {
         };
     }
     loop {
-        let n = &lo + (urandomm(&range) << 1_usize);
+        let n = &lo + (draw(&range) << 1_usize);
         if n == BigUint::from(1_u8) {
             return Some(2_u8.into());
         }
@@ -552,17 +566,25 @@ pub fn random_factored_integer(n: &BigUint) -> (BigUint, Vec<BigUint>) {
         let (r, f) = crate::random_factored_integer(n);
         return (r.into(), f.into_iter().map(BigUint::from).collect());
     }
+    random_factored_integer_with(n, urandomm)
+}
+
+/// Kalai sampling from `reference/mpu/lib/Math/Prime/Util/PP.pm::random_factored_integer`.
+fn random_factored_integer_with(
+    n: &BigUint,
+    mut draw: impl FnMut(&BigUint) -> BigUint,
+) -> (BigUint, Vec<BigUint>) {
     loop {
         let mut s = n.clone();
         let mut factors = Vec::new();
         while s > BigUint::from(1_u8) {
-            s = urandomm(&s) + 1_u8;
-            if s > BigUint::from(1_u8) && is_prob_prime(&s) != 0 {
+            s = draw(&s) + 1_u8;
+            if is_prob_prime(&s) != 0 {
                 factors.push(s.clone());
             }
         }
         let r: BigUint = factors.iter().product();
-        if &r <= n && urandomm(n) < r {
+        if &r <= n && draw(n) < r {
             factors.sort_unstable();
             return (r, factors);
         }
@@ -583,13 +605,22 @@ pub fn miller_rabin_random(n: &BigUint, bases: u64) -> Option<u8> {
     if let Ok(n) = u64::try_from(n) {
         return crate::miller_rabin_random(u128::from(n), bases);
     }
+    Some(miller_rabin_random_with(n, bases, urandomm))
+}
+
+/// Base sampling from `reference/mpu/lib/Math/Prime/Util/PP.pm::miller_rabin_random`.
+fn miller_rabin_random_with(
+    n: &BigUint,
+    bases: u64,
+    mut draw: impl FnMut(&BigUint) -> BigUint,
+) -> u8 {
     for _ in 0..bases {
-        let base = urandomm(&(n - 2_u8)) + 2_u8;
+        let base = draw(&(n - 2_u8)) + 2_u8;
         if !is_strong_pseudoprime(n, &[base]) {
-            return Some(0);
+            return 0;
         }
     }
-    Some(1)
+    1
 }
 
 /// Draws a semiprime with no balance rule for its two prime factors.
@@ -707,4 +738,9 @@ mod tests {
             assert_eq!(n.bits(), 256);
         }
     }
+}
+
+#[cfg(all(test, feature = "bigint"))]
+mod mutation_regressions {
+    super::super::proving::mutation_cases::random_cases!();
 }

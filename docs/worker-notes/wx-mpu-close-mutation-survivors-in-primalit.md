@@ -25,3 +25,6 @@ Audit rejected the apparent 14 catches: duplicated --lib made the test command f
 Final validation uses a corrected Cargo invocation and real baseline. No existing test file was edited, no dependency was added, and STATUS entries were already checked. No production arithmetic bug was found; changes expose deterministic d <<cut 34 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)
+Final audit found that sharing CARGO_TARGET_DIR between concurrent mutation workers can replace test artifacts while the gate runs. Discard all mutation counts from shared-target runs. Stopped those runs and am rerunning the focused suite a <<cut 108 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 83 bytes)

@@ -116,7 +116,7 @@ macro_rules! random_cases {
             let result = super::urandomm_with(&n, |bits| {
                 calls += 1;
                 if calls == 1 {
-                    (num_bigint::BigUint::from(1_u8) << bits) - 1_u8
+                    (num_bigint::BigUint::from(1_u8) << bits) - &n
                 } else {
                     0_u8.into()
                 }

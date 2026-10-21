@@ -23,3 +23,4 @@ No production defect has been established. The all-13-killed criterion includes 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 56 bytes)
 Final tests are written and formatted. Keeping the equivalent/unreachable mutation classifications explicit while waiting for the reduced-resource mutation sweep and whole-suite gate.
 Final all-feature Clippy passes after the last test addition. The second sweep confirms the harmonic and n=7 lucky mutants survive; the gate is still in its full test step.
+- 2026-10-21T01:45:25Z launcher: no commit for 61 s; 456 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792546450-continue.md, tests/mutants_estimates.rs.

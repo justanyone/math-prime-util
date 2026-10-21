@@ -579,7 +579,7 @@ fn random_factored_integer_with(
         let mut factors = Vec::new();
         while s > BigUint::from(1_u8) {
             s = draw(&s) + 1_u8;
-            if s > BigUint::from(1_u8) && is_prob_prime(&s) != 0 {
+            if is_prob_prime(&s) != 0 {
                 factors.push(s.clone());
             }
         }

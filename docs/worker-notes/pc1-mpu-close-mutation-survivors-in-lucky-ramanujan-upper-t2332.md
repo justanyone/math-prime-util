@@ -20,3 +20,4 @@ Boundary assessment retained from prior verified work:
 - Almost-prime four mutations: wrong retreat policy, wrong bracket side, addition outside bracket, and division retreat caught by synthetic monotone count traces; interpolation progress rather than an approximate-bound contract.
 No incorrect unmutated bound established; existing helper extraction permits behavioral tests without changing numerical formulas. No existing test file edited.
 37 focused tests are green. Gate has advanced through clippy into compilation for later stages. Exact 13-site fresh mutation run is building with the corrected test module filter; awaiting results.
+Gate passed all four clippy feature configurations and MSRV build and is executing the full suite. Mutation run remains in progress; no green marker or 13/13 claim made yet for this continuation.

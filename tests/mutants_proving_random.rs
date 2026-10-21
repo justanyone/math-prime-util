@@ -52,7 +52,7 @@ macro_rules! random_cases {
                     assert_eq!(*bound, &n - 2_u8);
                     0_u8.into()
                 }),
-                Some(1)
+                1
             );
         }
 

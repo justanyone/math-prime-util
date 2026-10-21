@@ -2912,7 +2912,7 @@ mod tests {
 
 #[cfg(all(test, feature = "bigint"))]
 #[path = "../../tests/mutants_proving_random.rs"]
-mod mutation_cases;
+pub(super) mod mutation_cases;
 
 #[cfg(all(test, feature = "bigint"))]
 mod mutation_regressions {

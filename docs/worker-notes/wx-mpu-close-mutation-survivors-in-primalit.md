@@ -7,3 +7,4 @@ Added private draw adapters and tests for the rejected tail, strict Kalai accept
 The first focused build found that shared tests need a crate alias when included as unit tests. Added the alias and a controlled Miller–Rabin base-zero regression; focused tests are rerunning.
 - 2026-10-21T01:11:04Z launcher: no commit for 61 s; 273 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit.md, src/bigint/proving.rs, src/bigint/random.rs, tests/mutants_proving_random.rs.
 Nine focused unit tests and the integration test passed. The gate found a missing crate doc on the shared test file; changed its loading to a path module so the required crate doc is valid. No arithmetic bug has been found.
+The mutation baseline failed after exhausting the filesystem quota. Clippy found duplicate module loading and an unnecessary private Option; fixing both before the final gate.

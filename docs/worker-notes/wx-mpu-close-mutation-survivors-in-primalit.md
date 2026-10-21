@@ -21,3 +21,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The broad mutation baseline did eventually pass (81 s build, 36 s test). Interrupted it and restarted all fourteen targets with --lib builds and a skipped, already-passing baseline. The gate has advanced past MSRV into full tests.
 Added a controlled last-bin prime test: seeded samples almost never choose the last of 2^33 bins. The helper keeps public sampling unchanged and checks the exact residual width.
 The fourteen-site run reports 14 caught in 60 seconds. Auditing the mutation test logs before accepting that result. The final focused suite now passes nine tests, including the explicit last-bin case.
+Audit rejected the apparent 14 catches: duplicated --lib made the test command fail. Restarting with --lib only in Cargo arguments and a real baseline; the earlier counts are invalid.

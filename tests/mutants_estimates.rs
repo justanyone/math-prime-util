@@ -46,7 +46,13 @@ fn brute_nth_almost(omega: &[u8], k: u8, n: usize) -> u64 {
 fn nth_almost_prime_matches_brute_force_for_large_n() {
     // Large n drives the interpolation path in interpolate_approx.
     let omega = omega_table(4_000_000);
-    for &(k, n) in &[(2u32, 1usize), (2, 1_000), (2, 100_000), (2, 500_000), (3, 200_000)] {
+    for &(k, n) in &[
+        (2u32, 1usize),
+        (2, 1_000),
+        (2, 100_000),
+        (2, 500_000),
+        (3, 200_000),
+    ] {
         let expected = brute_nth_almost(&omega, k as u8, n);
         assert_eq!(nth_almost_prime(k, n as u64), Some(expected), "k={k} n={n}");
     }

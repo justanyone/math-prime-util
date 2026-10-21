@@ -11,3 +11,10 @@ The inherited refactor moved mutation locations; verifying both subtraction site
 34 focused tests passed after adding the harmonic equivalence regression; mutation baselines are still compiling, gate has reached clippy-gmp.
 Corrected prior interpretation: the task names nth_prime_upper line 146 (15360 threshold), whereas the inherited test only covers line 130 (306). Adding the missing true threshold case if mutation confirms the gap.
 Mutation baseline passed; harmonic < -> == confirmed MISSED. Reviewed the actual 15360 threshold and the C formula coefficients to add its missing boundary test.
+Boundary review: lucky n=7 changes the helper from 3 to 2 under < -> <=, but callers use the helper only above their small exact branches; the direct private test kills this externally masked change.
+Lucky division/comparison mutants change the approximation bands; a downward approximate lower bound may remain valid but become non-tight. The tests pin C compatibility as well as checking exact small bounds.
+Axler tail tests pin C's strict threshold and negative constant; changing to the next coefficient earlier or making a coefficient positive changes the approximation. Exact Ramanujan values at the multi-billion threshold are not available in <<cut 76 chars by kit>>
+Almost-prime tests assert bracket visits against monotone counts and the returned inverse. Final exact correction can mask bracket mutations; the trace verifies C's interpolation behavior rather than assuming every changed estimate breaks a <<cut 7 chars by kit>>
+The 306 threshold was an inherited extra case; the actual task threshold is 15360. Added C-formula boundary values 168432 and 168444 at 15360 and 15361, with exact-prime upper-bound checks.
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 36 bytes)

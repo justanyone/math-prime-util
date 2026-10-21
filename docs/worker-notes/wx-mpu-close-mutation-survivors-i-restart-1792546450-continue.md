@@ -34,3 +34,4 @@ Monitoring offline mutation and gate runs; no further code changes. Boundary cla
 Monitoring offline mutation and gate runs; no further code changes. Boundary classifications remain in these notes.
 The full offline project gate is green, including full tests and docs. Final all-feature Clippy and all eleven focused tests pass. Mutation sweep is still finishing; do not mark this task READY.
 Measured partial mutation result: 12 of 13 tested, 2 caught, 10 missed, no timeouts or unviable mutants. Both caught mutants are the Ramanujan tail coefficient regressions. One interpolation arithmetic mutation is still running. No production defect was found; equivalent/public-unreachable mutations remain a scope constraint.
+- 2026-10-21T01:51:03Z launcher: about 60 s to the time limit of 14 minutes; 794 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792546450-continue.md, tests/mutants_estimates.rs.

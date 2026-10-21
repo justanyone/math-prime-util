@@ -12,6 +12,15 @@ macro_rules! proving_cases {
         }
 
         #[test]
+        fn ecpp_rejects_order_above_hasse_bound() {
+            // The point has order 33. A claimed order of 66 exceeds 61.
+            assert!(!super::check_ecpp(
+                &47_u8.into(), &2.into(), &2.into(), &66_u8.into(),
+                &11_u8.into(), &2_u8.into(), &22_u8.into(),
+            ));
+        }
+
+        #[test]
         fn sextic_twist_orders_are_exact() {
             // 4*7 = 1^2 + 3*3^2. All six twists have these orders.
             assert_eq!(
@@ -111,6 +120,31 @@ macro_rules! random_cases {
             assert_eq!(result, (2_u8.into(), vec![2_u8.into()]));
             assert_eq!(draws.next(), None);
         }
+        #[test]
+        fn factored_sampler_accepts_product_equal_to_limit() {
+            let mut draws = [4_u8, 1, 0, 9].into_iter();
+            let result = super::random_factored_integer_with(&10_u8.into(), |_| {
+                draws.next().expect("unexpected draw").into()
+            });
+            assert_eq!(result, (10_u8.into(), vec![2_u8.into(), 5_u8.into()]));
+            assert_eq!(draws.next(), None);
+        }
+
+        #[test]
+        fn semiprime_first_weight_selects_two() {
+            let probability = 1.912_183_974_522_43 / 65.0 + 0.195_56 / 2.0;
+            let seed = (0..1000)
+                .find(|&seed| {
+                    crate::srand(seed);
+                    crate::drand(1.0) <= probability
+                })
+                .expect("a draw in the first weight");
+            crate::srand(seed);
+            let n = super::random_unrestricted_semiprime(65).expect("semiprime");
+            assert_eq!(n.bits(), 65);
+            assert!(!n.bit(0), "the selected prime factor must be two");
+        }
+
         #[cfg(feature = "bigint")]
         #[test]
         fn seeded_large_random_results_replay() {

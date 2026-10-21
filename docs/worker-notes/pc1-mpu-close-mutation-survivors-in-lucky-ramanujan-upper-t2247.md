@@ -28,3 +28,4 @@ Compact validation is running: cleared only worktree target cache; no source beh
 Compact mutant retry exposed a duplicated --lib argument (build and test options both supplied it); remove the duplicate and rerun with the build option alone.
 
 Corrected the duplicate --lib invocation; fresh focused mutation baseline is compiling. Gate compact retry is progressing independently.
+- 2026-10-21T03:55:50Z launcher: no commit for 60 s; 490 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2247.md, src/real/mod.rs, tests/mutants_estimates.rs.

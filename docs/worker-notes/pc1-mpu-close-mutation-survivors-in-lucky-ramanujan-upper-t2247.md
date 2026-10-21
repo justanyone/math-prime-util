@@ -22,3 +22,7 @@ BLOCKER: mutation baseline and full-suite compilation failed with disk quota exc
 Disk use is dominated by task-local debug artifacts (deps plus incremental); no files outside the worktree will be removed. Validation will be retried with debug symbols and incremental compilation disabled.
 
 Stopped the full-suite attempt after quota exhaustion; removed only task-local incremental cache, then cleaned task-local target for a compact gate retry. Retrying exactly 13 mutants with --lib at build time, no debug symbols, and no incremental cache.
+
+Compact validation is running: cleared only worktree target cache; no source behavior or dependencies changed. Mutation selection remains exactly 13; gate restart includes the required full suite.
+
+Compact mutant retry exposed a duplicated --lib argument (build and test options both supplied it); remove the duplicate and rerun with the build option alone.

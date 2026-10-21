@@ -23,3 +23,6 @@ Build command confirmed cargo test --no-run (all targets); execution filter does
 First mutation run finished: 1 missed, 4 caught, 7 unviable. Restarted all thirteen exact mapped task mutations with -C --lib and one job, avoiding expensive integration-test compilation. The original almost-prime <= survivor maps to span <= 19999 (now 172), and minus to max - 19999 (now 175).
 Added the missing wide upper-bracket trace (100000 -> 60000 -> 80001), directly exercising max - 19999 and its + and / mutants. This complements the inherited narrow-span midpoint trace.
 All four clippy configurations passed. Gate now waits for MSRV build; final focused verification includes all new tests. Thirteen-mutation run uses isolated output and lib-only compilation.
+Verification still running; no additional production changes. The boundary and trace tests are saved in tests/mutants_estimates.rs.
+Final mutation baseline passed. Harmonic equivalence survives again; extra 306 threshold also survives as expected. Gate MSRV compiler is now running.
+About five minutes remain. All 36 final focused tests pass; waiting for final mutant and gate outcomes, then recording exact remaining blockers without marking READY.

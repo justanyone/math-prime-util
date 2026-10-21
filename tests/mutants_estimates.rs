@@ -192,3 +192,20 @@ fn fourth_almost_primes_match_independent_factor_counts() {
         );
     }
 }
+
+#[test]
+fn lucky_estimates_keep_their_order_across_native_scales() {
+    // The simple fit only seeds inverse interpolation. Exercise seeds at
+    // geometric scales and adjacent integers rather than just decimal edges.
+    let mut n = 9_001_u64;
+    while n < 18_000_000_000_000_000_000 {
+        for x in [n - 1, n, n + 1] {
+            let lower = lucky_count_lower(x);
+            let approx = lucky_count_approx(x);
+            let upper = lucky_count_upper(x);
+            assert!(lower <= approx, "n={x}: lower={lower}, approx={approx}");
+            assert!(approx <= upper, "n={x}: approx={approx}, upper={upper}");
+        }
+        n += n / 8;
+    }
+}

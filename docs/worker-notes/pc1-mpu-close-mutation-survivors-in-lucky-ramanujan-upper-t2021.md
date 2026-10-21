@@ -12,3 +12,4 @@ Resolution detail: PP.pm::harmreal tiny-term cutoff discards terms below 1e-44. 
 Resolution detail: inverse_interpolate.c::interpolate_with_approx recomputes exact_count at every guess and after exhausting 18 iterations. The final forward/backward scan restores the exact rank, so changed guesses can remain exact-answer  <<cut 139 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 225 bytes)
+Mutation baseline passed; first three mutants survive (harmonic cutoff, unreachable lucky n=7, and lucky division-to-multiplication seed). Added geometric public-estimate ordering checks across native scales to probe bad seed brackets.

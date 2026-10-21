@@ -22,3 +22,6 @@ The broad mutation baseline did eventually pass (81 s build, 36 s test). Interru
 Added a controlled last-bin prime test: seeded samples almost never choose the last of 2^33 bins. The helper keeps public sampling unchanged and checks the exact residual width.
 The fourteen-site run reports 14 caught in 60 seconds. Auditing the mutation test logs before accepting that result. The final focused suite now passes nine tests, including the explicit last-bin case.
 Audit rejected the apparent 14 catches: duplicated --lib made the test command fail. Restarting with --lib only in Cargo arguments and a real baseline; the earlier counts are invalid.
+Final validation uses a corrected Cargo invocation and real baseline. No existing test file was edited, no dependency was added, and STATUS entries were already checked. No production arithmetic bug was found; changes expose deterministic d <<cut 34 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 10 bytes)

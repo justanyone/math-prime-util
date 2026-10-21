@@ -9,3 +9,5 @@ Started offline cargo-mutants with nice 15, jobs 2, the two requested source fil
 Source review matches the reference rejection, bin-width, Hasse, and strict-acceptance formulas. No correctness bug has been demonstrated. The new test also checks one acceptance draw and no prime factors for limit one.
 Focused suite now passes all 14 tests. The gate has passed formatting, all four clippy feature sets, and the MSRV build; it is running the full test suite.
 History confirms the removed guard was s > 1 before is_prob_prime(s), not a product guard. The >= mutant is equivalent because is_prob_prime(1) is zero. There is no reachable killing input for that mutant.
+Confirmed the 14th reported mutant is equivalent (s > 1 versus s >= 1 before a primality predicate that rejects 1). Started the required single tools/test.sh full-suite run. Mutation baseline is still running.
+The mutation runner is building integration targets for its baseline despite the focused test argument. I am allowing the offline build to finish; the main full-suite build is also active.

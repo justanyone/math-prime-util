@@ -12,3 +12,4 @@ Mutation baseline failed before testing any mutant: copied target plus all test 
 Gate has passed fmt, all four clippy feature sets, and the MSRV build; its all-features test stage is running.
 Retry now runs offline with debug/incremental output disabled. No production source has changed; the tests preserve the C algorithms and do not add observability hooks solely to kill equivalent mutants.
 At the tested large lucky fit transitions, the bounds still bracket the exact count. The initial estimate is a search bracket; a changed bracket can leave the final inverse result unchanged. No bound violation has been observed.
+Mutation baseline passes after reducing build output. The harmreal termination mutant survives. Full gate tests continue; no source changes are justified by the current evidence.

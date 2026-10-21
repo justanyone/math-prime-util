@@ -13,3 +13,4 @@ Checking original task-base source to avoid mapping the product-bound survivor t
 Gate passed default, bigint, and GMP clippy; all-features clippy running. Mutation baseline compiling offline in its isolated scratch directory.
 Confirmed original random.rs:560 > to >= is equivalent: is_prob_prime(1) is zero. Removed the redundant s > 1 guard; this survivor cannot be killed by any reachable input. Thirteen behavioral mutations remain.
 Progress checkpoint: added three passing regressions; removed one equivalent mutation site. Waiting for mutation baseline and MSRV build; no new correctness bug found.
+Final source now omits the equivalent guard. Formatting passes; focused tests rerun after the source change. Mutation baseline and MSRV build are still active.

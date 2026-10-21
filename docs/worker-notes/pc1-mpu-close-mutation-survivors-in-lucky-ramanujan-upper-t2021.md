@@ -42,3 +42,7 @@ About five minutes remain: final focused suite is green (13/13); targeted mutati
 Validation still running in prime_count_oracle; no new implementation changes. Final report will retain the ten missed mutants and the required unresolved full-domain bound checks.
 - 2026-10-21T01:30:18Z launcher: no commit for 60 s; 485 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2021.md, tests/mutants_estimates.rs.
 Minute update: final gate is still running the prime-count oracle test; earlier gate has progressed into bigint property tests. No gate failure has been observed, but green is not yet printed.
+Stronger formal resolution of lucky:337 and lucky:339: their reached input intervals are respectively 1,000,000<n<=10,000,000 and 10,000,000<n<=100,000,000. Replacing logn/305 or logn/304 with multiplication makes the factor negative throug <<cut 289 chars by kit>>
+Stronger formal resolution of real:763: the first correction has magnitude a=1/(12*n^2), and is never below 1e-44 for any native n. For a later term with denominator d and power n^(2j+2), j>=1, being below 1e-44 implies its ratio to a is at <<cut 501 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 740 bytes)

@@ -81,9 +81,8 @@ fn nth_lucky_returns_lucky_values() {
     }
 }
 
-// MPU lucky_numbers.c: _simple_lucky_count_approx, composed with the
-// lower/upper midpoint used by lucky_count_approx. Pin both sides of
-// each fit change. Bounds alone cannot detect a looser valid estimate.
+// MPU lucky_numbers.c: lucky_count_approx. Invert the public nth
+// estimate by bisection, independently of the fitted search brackets.
 #[test]
 fn lucky_estimate_fit_boundaries() {
     for n in [
@@ -96,24 +95,43 @@ fn lucky_estimate_fit_boundaries() {
         100_000_001,
         4_000_000_000,
     ] {
+        let (mut lo, mut hi) = (0, n);
+        while hi - lo > 1 {
+            let mid = lo + (hi - lo) / 2;
+            if nth_lucky_approx(mid).expect("in range") < n {
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        }
+        assert_eq!(lucky_count_approx(n), hi, "n={n}");
+    }
+}
+
+// MPU ramanujan_primes.c: ramanujan_axler and nth_ramanujan_prime_upper.
+// Pin the strict coefficient switch and its immediate neighbours.
+#[test]
+fn ramanujan_tail_coefficient_boundary() {
+    for n in [3_999_654_658_u64, 3_999_654_659, 3_999_654_660] {
+        let d = if n > 3_999_654_659 { -2.235 } else { -2.0884 };
         let x = n as f64;
-        let logn = x.ln();
-        let factor = if n <= 10_000_000 {
-            1.035_23 - logn / 305.0
-        } else if n <= 100_000_000 {
-            1.034_32 - logn / 304.0
-        } else {
-            1.036_13 - logn / (100.0 * logn.ln())
-        };
-        let simple = (factor * x / logn) as u64;
-        let lower = (0.99 * simple as f64) as u64;
-        let a = if n < 10_017_000 {
-            0.580_03 - 3.00e-9 * (x - 7000.0)
-        } else {
-            0.55
-        };
-        let upper = (x / (1.065 * logn - a - 3.1 / logn - 2.85 / (logn * logn))) as u64;
-        assert_eq!(lucky_count_approx(n), (lower + upper) / 2, "n={n}");
+        let l = x.ln();
+        let ll = l.ln();
+        let t = 2.0_f64.ln();
+        let numerator = t * l * ll * ll - (2.0 * t * t + t) * l * ll
+            + (t * t * t + 2.0 * t * t + d) * l
+            - t * t * ll
+            + t * t * t
+            + t * t;
+        let denominator = l.powi(4) + l.powi(3) * ll - l.powi(3) * t - l * l * t;
+        let index =
+            (2.0 * x * (1.0 + t / l - (t * ll - t * t - t) / (l * l) + numerator / denominator))
+                as u64;
+        assert_eq!(
+            nth_ramanujan_prime_upper(n),
+            nth_prime_upper(index),
+            "n={n}"
+        );
     }
 }
 
@@ -124,7 +142,7 @@ fn almost_prime_interpolation_preserves_rank() {
     for (k, n) in [(3, 100_000), (4, 100_000), (3, 1_000_000), (4, 1_000_000)] {
         let value = nth_almost_prime(k, n).expect("in range");
         assert!(is_almost_prime(u64::from(k), value));
-        assert_eq!(almost_prime_count(k, value), n, "k={k}, n={n}");
-        assert_eq!(almost_prime_count(k, value - 1), n - 1);
+        assert_eq!(almost_prime_count(u64::from(k), value), n, "k={k}, n={n}");
+        assert_eq!(almost_prime_count(u64::from(k), value - 1), n - 1);
     }
 }

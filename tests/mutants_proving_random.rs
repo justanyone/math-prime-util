@@ -110,6 +110,22 @@ macro_rules! random_cases {
         }
 
         #[test]
+        fn modulus_power_of_two_rejects_final_block() {
+            let n = num_bigint::BigUint::from(1_u8) << 64_u8;
+            let mut calls = 0;
+            let result = super::urandomm_with(&n, |bits| {
+                calls += 1;
+                if calls == 1 {
+                    (num_bigint::BigUint::from(1_u8) << bits) - 1_u8
+                } else {
+                    0_u8.into()
+                }
+            });
+            assert_eq!(calls, 2);
+            assert_eq!(result, 0_u8.into());
+        }
+
+        #[test]
         fn factored_sampler_checks_product_and_strict_acceptance() {
             // First reject r > n without drawing an acceptance value.
             // Then reject draw == r, and finally accept draw == r - 1.

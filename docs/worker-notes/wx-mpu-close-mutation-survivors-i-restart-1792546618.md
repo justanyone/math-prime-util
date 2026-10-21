@@ -26,3 +26,4 @@ About five minutes remain. The initial mutation baseline passed after 292 second
 Waiting for final mutation outcomes. Focused tests, final clippy, and MSRV have passed; the full gate remains active.
 Corrected mutation baseline passed in 38 seconds, but worker log creation failed with disk quota exceeded in /tmp. Restarted using task-local target scratch/output paths; no external files were deleted.
 The /tmp disk-quota failure is recorded, not counted as a mutation kill. Worktree-local verification is running with the same thirteen selectors.
+Found a selector mapping error: original random.rs:311 mutates max - 1, not overflow subtraction. Added a power-of-two modulus test for that exact boundary; will verify its current 316:45 mutation separately.

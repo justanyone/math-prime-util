@@ -13,3 +13,4 @@ Confirmed the 14th reported mutant is equivalent (s > 1 versus s >= 1 before a p
 The mutation runner is building integration targets for its baseline despite the focused test argument. I am allowing the offline build to finish; the main full-suite build is also active.
 Mutation baseline failed before testing: disk quota exceeded while compiling integration targets in the copied target directory. Retrying once with no target copy, bigint only, --lib for build and test, and debug/incremental output disabled.
 The main gate reached the bigint certificate compatibility tests. The smaller mutation retry has started; no source or regression assertion has failed.
+The reduced mutation build is still running. The gate continues through compatibility tests without a failure. The separate tools/test.sh full run remains active.

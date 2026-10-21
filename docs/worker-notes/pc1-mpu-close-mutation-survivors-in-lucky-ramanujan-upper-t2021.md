@@ -37,3 +37,5 @@ Per-mutant disposition from first pass (all source line numbers unchanged):
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 68 bytes)
 Leaving source algorithms unchanged: no existing production bound violation has been demonstrated. Notes distinguish MPU result mismatches, provably unreachable call domains, and unresolved validity/performance questions.
 Second run again reports the same ten survivors so far, including new large-index and geometric tests. Launched the single explicit whole-suite tools/test.sh run; required final gate continues.
+Final targeted confirmation complete: 13 tested in 70 seconds, 3 caught, 10 missed. Acceptance remains PARTIAL; no READY marker or production algorithm change is justified by this evidence.
+About five minutes remain: final focused suite is green (13/13); targeted mutation run confirms 3 catches and 10 misses. Full gate and explicit whole suite are waiting on the expensive prime_count oracle case; no completion claim will be made before their results.

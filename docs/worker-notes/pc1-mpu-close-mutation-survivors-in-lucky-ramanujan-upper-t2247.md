@@ -49,3 +49,5 @@ Boundary classification of the 13 requested cases:
 - almost-prime max - 19999 to +: trace test catches an estimate outside the bracket.
 - almost-prime max - 19999 to /: trace test catches the wrong retreat and resulting trace.
 No incorrect unmutated bound was established; no numerical algorithm fix was warranted.
+
+Mutation debug outcomes confirm all 13 requested mutants caught, zero missed. Detailed boundary classifications recorded above. Waiting for the final gate result; no READY marking.

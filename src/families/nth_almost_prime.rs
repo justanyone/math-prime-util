@@ -204,6 +204,7 @@ fn interpolate_approx_with(
 
 #[cfg(test)]
 #[macro_use]
+#[allow(clippy::duplicate_mod)]
 #[path = "../../tests/mutants_estimates.rs"]
 mod estimate_mutation_cases;
 

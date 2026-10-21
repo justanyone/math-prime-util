@@ -14,3 +14,6 @@ Boundary assessment: nth_prime_upper < to <= at 306 selects the exact prime 2017
 Boundary assessment: deleting the minus on Axler -2.435 increases the upper bound (non-tight). Switching the strict threshold at 514808375201 uses the next coefficient at that endpoint; its private coefficient differs, but exact R at that e <<cut 219 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 427 bytes)
+Gate found missing crate documentation after include! removed the test file inner docs. Changed the test hook to a path module with documented, reusable test macros. This keeps test bodies in the new file and avoids changing existing test f <<cut 5 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -18 bytes)

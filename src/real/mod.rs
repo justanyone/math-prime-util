@@ -771,6 +771,7 @@ pub fn harmreal(n: u64) -> f64 {
 
 #[cfg(test)]
 #[macro_use]
+#[allow(clippy::duplicate_mod)]
 #[path = "../../tests/mutants_estimates.rs"]
 mod estimate_mutation_cases;
 

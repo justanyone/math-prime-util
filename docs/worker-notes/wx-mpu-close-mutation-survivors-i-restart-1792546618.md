@@ -36,3 +36,5 @@ Confirmed five targeted mutants caught by assertion failures, not build failures
 Mutation evidence exposed one missing tail threshold case: overflow remainder changed to division survived. Tightened the power-of-two draw to exactly the first rejected value, then launched both exact urandomm mutations again.
 Final tail-boundary mutation rerun active; final focused tests and clippy repeated after that single-expression test change.
 Main worktree run finished: 12 caught, one missed, with the extra overflow-subtraction mutant included. Separate max-minus-one run caught both generated operators. Corrected remainder/division boundary verification is pending.
+Final focused tests passed: 13/13. Awaiting the last two exact urandomm mutation outcomes and gate completion before final reporting.
+Final clippy passed after the tail-boundary adjustment. No new public functions, dependencies, fixtures, or existing test-file edits were introduced by this restart.

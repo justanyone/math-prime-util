@@ -10,3 +10,4 @@
 - 2026-10-21T01:26:41Z launcher: no commit for 60 s; 364 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit-continue.md.
 - 2026-10-21T01:27:43Z launcher: no commit for 61 s; 426 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit-continue.md.
 - 2026-10-21T01:28:43Z launcher: no commit for 60 s; 486 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-in-primalit-continue.md.
+- gate.sh: == gate: green (837 lib + doctests). cargo-mutants rerun not done here.

@@ -55,3 +55,4 @@ Mutation debug outcomes confirm all 13 requested mutants caught, zero missed. De
 Final cargo-mutants result: 13 mutants tested in 4 minutes, 13 caught, exit 0. git diff --check passed. Compact gate remains in the full-suite count oracle; all earlier stages (fmt, four clippy configurations, MSRV build) passed.
 
 The full gate suite passed the long count oracle and advanced into family compatibility tests. Mutation confirmation is complete; full gate final status is still pending.
+- 2026-10-21T04:00:55Z launcher: about 60 s to the time limit of 14 minutes; 795 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2247.md, src/real/mod.rs, tests/mutants_estimates.rs.

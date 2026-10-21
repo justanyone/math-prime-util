@@ -34,3 +34,18 @@ About five minutes remain. Corrected mutant baseline passed (33 seconds); indivi
 - 2026-10-21T03:57:21Z launcher: no commit for 60 s; 581 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2247.md, src/real/mod.rs, tests/mutants_estimates.rs.
 
 Mutation debug log confirms caught cases while buffered summary waits to flush. Compact target is about 573 MiB; quota blocker resolved. Gate has reached the full test suite, currently count compatibility tests.
+Boundary classification of the 13 requested cases:
+- harmreal < to ==: numerically equivalent in its u64 asymptotic domain; now killed by checking the actual correction iterator stops consuming terms.
+- lucky n < 7 to <=: changes estimate at 7 from 3 to 2; public small-input bounds use independent formulas.
+- lucky /305 to *305: negative estimate factor becomes zero; propagated lower bound remains valid but non-tight.
+- lucky <=10000000 to >: at 1000001 the lower estimate decreases from 70936 to 70861; no lower-bound violation there.
+- lucky /304 to *304: likewise zero, a valid but useless lower bound at the checked transition.
+- lucky <=100000000 to >: at 10000001 the lower estimate decreases from 602729 to 600795; no lower-bound violation there.
+- Axler >3999654659 to >=: changes the coefficient at equality; exact R_3999654659 was not computed, so the test enforces MPU's threshold without claiming a demonstrated bound violation.
+- Axler delete minus on -2.0884: increases the Axler index and loosens its upper estimate; regression verifies MPU's intended coefficient.
+- nth_prime_upper <15360 to <=: both branches remain above the exact prime; the test enforces MPU's selected upper estimate (168432).
+- almost-prime >= span to <: synthetic plateau test catches the wrong retreat policy; this is interpolation progress, not an approximate bound contract.
+- almost-prime guess <= min to >: synthetic plateau test catches the wrong bracket side.
+- almost-prime max - 19999 to +: trace test catches an estimate outside the bracket.
+- almost-prime max - 19999 to /: trace test catches the wrong retreat and resulting trace.
+No incorrect unmutated bound was established; no numerical algorithm fix was warranted.

@@ -51,3 +51,4 @@ Gate advanced past compatibility tests into property tests with no failures. Awa
 Final: tools/gate.sh completed successfully; all clippy feature sets, MSRV, tests, and docs passed. The targeted mutant run confirmed 12 caught and the equivalent harmonic cutoff missed. The task stays PARTIAL because literal 13/13 and exac <<cut 91 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 67 bytes)
+- 2026-10-21T02:08:53Z launcher: about 60 s to the time limit of 14 minutes; 788 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792547524-continue.md, src/families/lucky.rs, src/families/nth_almost_prime.rs, src/families/nth_ramanujan_prime_upper.rs, src/real/mod.rs, tests/mutants_estimates.rs.

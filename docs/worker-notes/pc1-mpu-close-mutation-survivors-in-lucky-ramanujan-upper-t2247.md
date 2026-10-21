@@ -18,3 +18,7 @@ All four clippy feature sets passed; gate is building MSRV. Mutation baseline bu
 Triage of the other cases: lucky n=7 changes only the estimate (3 to 2); both public count bounds use independent small-input formulas. Axler threshold/sign tests enforce MPU coefficients; the huge exact R_n boundary is not computed, so no unsupported claim of a violated bound is made. Almost-prime synthetic plateau traces verify bracket guards and retreat arithmetic; no unmutated bug found.
 
 BLOCKER: mutation baseline and full-suite compilation failed with disk quota exceeded. Focused 37-test run and all four clippy feature sets passed. Checking task-created build artifacts, then narrowing mutation build to --lib and disabling debug info if space permits.
+
+Disk use is dominated by task-local debug artifacts (deps plus incremental); no files outside the worktree will be removed. Validation will be retried with debug symbols and incremental compilation disabled.
+
+Stopped the full-suite attempt after quota exhaustion; removed only task-local incremental cache, then cleaned task-local target for a compact gate retry. Retrying exactly 13 mutants with --lib at build time, no debug symbols, and no incremental cache.

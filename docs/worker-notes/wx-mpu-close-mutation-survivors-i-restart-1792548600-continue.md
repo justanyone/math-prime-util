@@ -43,3 +43,4 @@ CaughtMutant on focused --lib rerun: src/families/nth_almost_prime.rs:167:28: re
 CaughtMutant: src/families/nth_almost_prime.rs:167:28: replace - with / in interpolate_approx_with
 - 2026-10-21T02:21:20Z launcher: no commit for 60 s; 546 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792548600-continue.md, tests/mutants_estimates.rs.
 About five minutes remain. Mutation verification is complete (11 caught, 2 equivalent). Gate and whole-suite runs have passed prime-count tests and continue through compatibility fixtures.
+Gate has reached property tests after compatibility fixtures. No validation failure has been reported; waiting for whole-suite and documentation completion.

@@ -19,3 +19,21 @@ Added exact-rank checks at indices 1e6 and 1e7 for k=3 and k=4: small independen
 Gate has passed formatting and clippy in all four feature configurations plus the MSRV build; all-features full tests are compiling/running.
 First complete run: exactly 13 requested mutants, 3 Ramanujan mutants caught and 10 missed. Fixed test-only u32/u64 call mismatch and overflow in the geometric input generator; these are not production defects.
 Final focused suite rerun and second 13-mutant run launched with completed tests. About five minutes remain in the worker budget; priority is completing validation and leaving precise unresolved findings.
+Per-mutant disposition from first pass (all source line numbers unchanged):
+- real:763 (< to ==): missed; added harmonic direct-sum checks pass. Precision-equivalence argument needs a complete rounding proof before formal closure.
+- lucky:327 (< to <=): formally unreachable through public callers (simple_lower only calls simple_approx above 9000). The changed direct result at 7 is not a public-bound defect.
+- lucky:337 (/ to *): missed; negative fit saturates to zero, weakening the lower search endpoint. No wrong public bound observed at tested boundaries.
+- lucky:338 (<= to >): missed; changes fitted search endpoint. Public bound validity across the full affected range remains unproved.
+- lucky:339 (/ to *): missed; negative fit saturates to zero, weakening the lower search endpoint. No wrong public bound observed at tested boundaries.
+- lucky:340 (<= to >): missed; changes fitted search endpoint. Public bound validity across the full affected range remains unproved.
+- ramanujan-upper:121 (> to >=): caught at n=3,999,654,659. Mutant returns 205,925,882,256 versus C-compatible 205,928,435,147. Whether the smaller mutant remains an upper bound for the actual Ramanujan prime is not established by equality  <<cut 8 chars by kit>>
+- ramanujan-upper:124 (delete minus): caught at n=512,000,001. Mutant returns 24,178,264,828 versus 24,166,874,695: a looser upper bound, not a demonstrated bound violation.
+- ramanujan-upper:146 (< to <=): caught at n=7140, Axler index 15360. Mutant returns 168418 versus 168432. Equality test establishes MPU formula mismatch, not failure to bound the exact Ramanujan prime.
+- nth-almost:155 (>= to <): midpoint arm is unreachable with span<=19,999. Finite lower/upper bracket counts differ by at least 40,000; one unset endpoint also cannot create such a narrow bracket for a reached k=3/4 interpolation call. Muta <<cut 108 chars by kit>>
+- nth-almost:157 (<= to >): missed; exchanges interpolation fallback directions. Exact correction preserves rank for terminating executions; worst-case runtime remains unverified.
+- nth-almost:160 (- to +): missed; can leave the bracket and overflow. Needs a reaching input or proof of unreachability; not formally resolved.
+- nth-almost:160 (- to /): missed; can leave the bracket and lengthen final exact scan. Needs a reaching input or proof of unreachability; not formally resolved.
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 68 bytes)
+Leaving source algorithms unchanged: no existing production bound violation has been demonstrated. Notes distinguish MPU result mismatches, provably unreachable call domains, and unresolved validity/performance questions.
+Second run again reports the same ten survivors so far, including new large-index and geometric tests. Launched the single explicit whole-suite tools/test.sh run; required final gate continues.

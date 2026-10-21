@@ -82,6 +82,8 @@ macro_rules! private_estimate_tests {
         #[test]
         fn mutation_axler_tail_boundaries() {
             for (n, expected) in [
+                (3_999_654_659, -2.0884),
+                (3_999_654_660, -2.235),
                 (514_808_375_201, -2.435),
                 (514_808_375_202, -2.535),
                 (84_086_679_236, -2.235),
@@ -93,6 +95,7 @@ macro_rules! private_estimate_tests {
         #[test]
         fn mutation_nth_prime_upper_boundary() {
             assert_eq!(super::nth_prime_upper(306), 2_017);
+            assert_eq!(super::nth_prime_upper(15_360), 0);
         }
     };
     (almost) => {

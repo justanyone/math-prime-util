@@ -17,3 +17,9 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Gate found missing crate documentation after include! removed the test file inner docs. Changed the test hook to a path module with documented, reusable test macros. This keeps test bodies in the new file and avoids changing existing test f <<cut 5 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -18 bytes)
+Correction after inspecting mutation diffs: the requested Ramanujan endpoints are 3999654659 and nth index 15360, not the extra 514808375201 and 306 cases initially tested. The deleted minus is on -2.0884. Added the actual coefficient endpo <<cut 136 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 111 bytes)
+About five minutes remain. First mutant run caught eight, missed three Ramanujan cases, and failed internally on disk quota before a reliable total. Correcting boundary coverage and rerunning without target copies; gate is running with the  <<cut 54 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 30 bytes)

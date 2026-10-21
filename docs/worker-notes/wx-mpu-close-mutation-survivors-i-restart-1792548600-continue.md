@@ -21,3 +21,4 @@ almost:157 <= to >: changes bracket repair. The trace test verifies the C interp
 almost:160 minus to plus: changes bracket span. The narrow synthetic plateau exercises midpoint repair; real almost-prime counts need not reach this branch with tolerance 20000.
 almost:160 minus to divide: changes bracket span and midpoint repair. The same trace exposes it.
 No production arithmetic change was made: no actual bound defect was demonstrated. Two equivalent-output survivors prevent the literal 13-kill criterion.
+Recorded all 13 boundary assessments. Cargo-mutants confirms the harmonic equivalent mutant survives. Builds continue; full-suite wrapper is holding the shared build lock.

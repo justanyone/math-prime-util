@@ -1,1 +1,2 @@
 - Plan: add tests/mutants_estimates.rs killing the 13 listed survivors; check bounds in lucky, nth_ramanujan_prime_upper, nth_almost_prime, real harmreal.
+- Found prior WIP: tests/mutants_estimates.rs wired via #[path] into 4 src modules. Running focused tests now.

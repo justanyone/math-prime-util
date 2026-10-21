@@ -35,3 +35,5 @@ Command: cargo mutants --no-config --copy-target=false --jobs 1 --timeout 60 --b
 No source algorithm changed and no existing test file outside this task's tests/mutants_estimates.rs was edited. STATUS functions were already ticked. Strict 13/13 acceptance remains impossible for the equivalent f64 harmonic mutant without <<cut 69 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 44 bytes)
+Mutation verification is complete (12 caught, only equivalent harmreal missed). Gate/full-suite testing is progressing beyond count fixtures into factor fixtures; no failures reported so far.
+tools/test.sh completed successfully, including 837 doctests. Gate formatting, clippy for default/bigint/gmp/all-features, and MSRV passed; its test stage is in property tests.

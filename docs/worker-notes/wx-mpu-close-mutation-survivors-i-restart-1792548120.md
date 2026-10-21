@@ -22,3 +22,4 @@ The tests cover check_ecpp + to - and + to *, both bls75 remainder changes, curv
 They also cover urandomm subtraction and remainder, final-bin subtraction, factored acceptance && and <, MR base addition, and the semiprime <= comparison.
 The original random_factored_integer s > 1 to s >= 1 mutant is equivalent: s=1 fails is_prob_prime. The inherited source removes this redundant guard; no test can distinguish it.
 No correctness bug was found. No dependency, fixture, build tooling, credential, or service was changed.
+tools/gate.sh finished successfully. Checking for its required green marker and the separate tools/test.sh result before finishing.

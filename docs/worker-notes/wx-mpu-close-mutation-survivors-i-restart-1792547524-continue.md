@@ -38,3 +38,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 Gate and tools/test.sh full suites are still running offline; no failure is reported so far. All mutation test bodies remain in tests/mutants_estimates.rs. Existing test files and STATUS.md were not edited (the named public functions were a <<cut 16 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -8 bytes)
+The nth-prime boundary mutant returns 168418 instead of 168432: it tightens the bound by 14. Both arise from the existing C upper-bound constructions. The surviving harmonic mutant changes termination work, not its f64 value; literal 13/13  <<cut 74 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 50 bytes)

@@ -158,6 +158,16 @@ macro_rules! private_estimate_tests {
             assert_eq!(super::nth_prime_upper(306), 2017);
             assert!(super::nth_prime_upper(306) >= crate::nth_prime(306).unwrap());
         }
+
+        #[test]
+        fn ramanujan_prime_upper_15360() {
+            // MPU prime_counts.c, nth_prime_upper: at 15360 the formula uses
+            // c = 4.80 and d = -51.5928 instead of inverting prime_count_lower.
+            for (n, expected) in [(15_360, 168_432), (15_361, 168_444)] {
+                assert_eq!(super::nth_prime_upper(n), expected, "n={n}");
+                assert!(expected >= crate::nth_prime(n).unwrap(), "n={n}");
+            }
+        }
     };
     (almost) => {
         #[test]

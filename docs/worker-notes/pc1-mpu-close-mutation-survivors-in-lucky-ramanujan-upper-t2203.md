@@ -10,3 +10,4 @@ Added executable evidence that the harmonic cutoff and full finite expansion giv
 The inherited refactor moved mutation locations; verifying both subtraction sites and both nth-prime threshold sites to avoid silently omitting the original survivor.
 34 focused tests passed after adding the harmonic equivalence regression; mutation baselines are still compiling, gate has reached clippy-gmp.
 Corrected prior interpretation: the task names nth_prime_upper line 146 (15360 threshold), whereas the inherited test only covers line 130 (306). Adding the missing true threshold case if mutation confirms the gap.
+Mutation baseline passed; harmonic < -> == confirmed MISSED. Reviewed the actual 15360 threshold and the C formula coefficients to add its missing boundary test.

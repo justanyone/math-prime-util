@@ -8,3 +8,15 @@ Selected all 13 original sites (harmonic cutoff and interpolation moved after he
 Recovered prior run evidence: all 13 requested mutants were caught; no incorrect unmutated bound was established. Harmonic termination needs a consumption test; other approximation changes loosen bounds or alter interpolation progress. Fresh confirmation currently selects 17 (13 requested plus regex substring matches); inspecting extras.
 Focused tests completed successfully. Gate passed fmt and default clippy, now checking bigint. Started a second mutation run constrained explicitly to the four task files and 13 anchored names, using a lib-only compact build; this avoids cargo-mutants including unrelated struct-field mutations.
 Correction: filename filter selected no private tests; use --lib estimate_mutation_tests. Stopped both pending incorrect-filter mutation runs, reran focused tests with the module filter, and restarted the exact 13 mutants on the four files. Full gate remains valid because it runs all tests without a filter.
+Corrected focused run: 37 tests passed, zero failed, including private helper regressions.
+Boundary assessment retained from prior verified work:
+- harmreal cutoff: omitted terms do not change f64; consumption test kills wasted evaluation.
+- lucky <7: at 7 estimate changes 3 to 2; public small bounds use separate formulas.
+- lucky /305 and /304 changed to multiplication: zero lower estimate remains valid but useless at checked inputs.
+- lucky <=10000000 and <=100000000 changed to >: lower bounds at 1000001 and 10000001 decrease (70936 to 70861 and 602729 to 600795); still valid, less tight.
+- Axler >3999654659 changed to >=: coefficient changes at equality; MPU threshold verified, exact enormous Ramanujan prime not computed, no demonstrated bound violation.
+- Axler minus deletion: raises index, loosens upper bound; coefficient regression enforces MPU.
+- nth_prime_upper <15360 changed to <=: both branches exceed the exact prime; intended estimate is 168432.
+- Almost-prime four mutations: wrong retreat policy, wrong bracket side, addition outside bracket, and division retreat caught by synthetic monotone count traces; interpolation progress rather than an approximate-bound contract.
+No incorrect unmutated bound established; existing helper extraction permits behavioral tests without changing numerical formulas. No existing test file edited.
+37 focused tests are green. Gate has advanced through clippy into compilation for later stages. Exact 13-site fresh mutation run is building with the corrected test module filter; awaiting results.

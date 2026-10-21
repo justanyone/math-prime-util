@@ -37,3 +37,4 @@ No source algorithm changed and no existing test file outside this task's tests/
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 44 bytes)
 Mutation verification is complete (12 caught, only equivalent harmreal missed). Gate/full-suite testing is progressing beyond count fixtures into factor fixtures; no failures reported so far.
 tools/test.sh completed successfully, including 837 doctests. Gate formatting, clippy for default/bigint/gmp/all-features, and MSRV passed; its test stage is in property tests.
+Full suite remains green; waiting for gate to finish its repeated property tests and documentation build. No further code changes needed.

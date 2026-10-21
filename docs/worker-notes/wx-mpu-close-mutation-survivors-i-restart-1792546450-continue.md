@@ -7,3 +7,4 @@ Focused tests now cover independent lucky inversion, exact almost-prime ranks, a
 Nine focused integration tests pass. Started the exact 13-mutant offline sweep on the four requested files and the offline project gate.
 Confirmed adjacent Ramanujan indices 132 and 133 map to prime indices 305 and 307, so the private n=306 comparison cannot affect these public boundary calls. Added regression checks for that transition.
 The harmonic comparison mutant survives as expected. Added separate large-rank almost-prime cases to reach interpolation corrections; checking their runtime before the final sweep.
+Mutation sweep stopped after five reported survivors: disk quota exceeded while writing its log. Formatting, all four Clippy configurations, and MSRV passed; gate tests are running. Public lucky inverse checks survive the four fit mutations because the search recovers the same result.

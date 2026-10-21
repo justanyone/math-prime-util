@@ -22,3 +22,5 @@ almost:160 minus to plus: changes bracket span. The narrow synthetic plateau exe
 almost:160 minus to divide: changes bracket span and midpoint repair. The same trace exposes it.
 No production arithmetic change was made: no actual bound defect was demonstrated. Two equivalent-output survivors prevent the literal 13-kill criterion.
 Recorded all 13 boundary assessments. Cargo-mutants confirms the harmonic equivalent mutant survives. Builds continue; full-suite wrapper is holding the shared build lock.
+The second expected equivalent survivor is confirmed: nth_prime_upper < to <= at 306. Remaining mutation cases and offline whole-suite/gate checks are still running.
+Initial mutation summary: 10 caught, 2 equivalent missed, 1 unviable (span addition). Inspecting that build failure before deciding whether to rerun it.

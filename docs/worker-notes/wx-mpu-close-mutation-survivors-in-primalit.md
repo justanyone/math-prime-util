@@ -18,3 +18,4 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The final focused run passed all eight tests, including the added BLS cofactor and zero-polynomial cases. The mutation baseline builds every integration binary by default; limiting its Cargo build to --lib for the remaining validation attem <<cut 3 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -20 bytes)
+The broad mutation baseline did eventually pass (81 s build, 36 s test). Interrupted it and restarted all fourteen targets with --lib builds and a skipped, already-passing baseline. The gate has advanced past MSRV into full tests.

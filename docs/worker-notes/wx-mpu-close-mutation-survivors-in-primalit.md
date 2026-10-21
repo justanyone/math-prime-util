@@ -3,3 +3,4 @@ Add deterministic regression cases in tests/mutants_proving_random.rs.
 Check certificate bounds and seeded random boundaries against the reference.
 Run focused tests, the offline gate, and a targeted mutation rerun where available.
 The reference matches the existing arithmetic. Exact random rejection boundaries need controlled draws; private test hooks will retain the public stream behavior.
+Added private draw adapters and tests for the rejected tail, strict Kalai acceptance, sextic twist orders, and asymmetric zero polynomial operands. Focused unit tests are compiling.

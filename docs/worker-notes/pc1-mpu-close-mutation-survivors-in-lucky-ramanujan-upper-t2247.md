@@ -32,3 +32,5 @@ Corrected the duplicate --lib invocation; fresh focused mutation baseline is com
 
 About five minutes remain. Corrected mutant baseline passed (33 seconds); individual mutants are running. Keeping the tested implementation unchanged while the compact gate completes.
 - 2026-10-21T03:57:21Z launcher: no commit for 60 s; 581 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2247.md, src/real/mod.rs, tests/mutants_estimates.rs.
+
+Mutation debug log confirms caught cases while buffered summary waits to flush. Compact target is about 573 MiB; quota blocker resolved. Gate has reached the full test suite, currently count compatibility tests.

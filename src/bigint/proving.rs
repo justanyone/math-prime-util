@@ -2911,8 +2911,10 @@ mod tests {
 }
 
 #[cfg(all(test, feature = "bigint"))]
+#[path = "../../tests/mutants_proving_random.rs"]
+mod mutation_cases;
+
+#[cfg(all(test, feature = "bigint"))]
 mod mutation_regressions {
-    use crate as math_prime_util;
-    include!("../../tests/mutants_proving_random.rs");
-    proving_cases!();
+    super::mutation_cases::proving_cases!();
 }

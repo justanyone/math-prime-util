@@ -1,4 +1,4 @@
-// Regression tests for exact certificate and rejection-sampling boundaries.
+//! Regression tests for exact certificate and rejection-sampling boundaries.
 #[allow(unused_macros)]
 macro_rules! proving_cases {
     () => {
@@ -83,39 +83,43 @@ macro_rules! random_cases {
             assert_eq!(result, (2_u8.into(), vec![2_u8.into()]));
             assert_eq!(draws.next(), None);
         }
+        #[cfg(feature = "bigint")]
+        #[test]
+        fn seeded_large_random_results_replay() {
+            use crate::bigint::random::{
+                miller_rabin_random, random_prime, random_unrestricted_semiprime,
+            };
+            use num_bigint::BigUint;
+            let low = BigUint::from(1_u8) << 66_u8;
+            let high = &low + (BigUint::from(1_u8) << 66_u8);
+            crate::srand(17);
+            let prime = random_prime(&low, &high).expect("prime");
+            assert!(prime >= low && prime <= high);
+            crate::srand(17);
+            // This interval has 2^65 odd candidates in 2^33 equal bins.
+            let bins = BigUint::from(1_u8) << 33_u8;
+            let part = crate::bigint::random::urandomm(&bins);
+            let bin_low = &low + 1_u8 + (part << 33_u8);
+            let bin_size = BigUint::from(1_u8) << 32_u8;
+            let expected = loop {
+                let candidate = &bin_low + (crate::bigint::random::urandomm(&bin_size) << 1_u8);
+                if crate::bigint::primality::is_prob_prime(&candidate) != 0 {
+                    break candidate;
+                }
+            };
+            assert_eq!(prime, expected);
+            assert_eq!(miller_rabin_random(&prime, 3), Some(1));
+            let semiprime = random_unrestricted_semiprime(65).expect("semiprime");
+            assert_eq!(semiprime.bits(), 65);
+            crate::srand(17);
+            assert_eq!(random_prime(&low, &high), Some(prime.clone()));
+            assert_eq!(miller_rabin_random(&prime, 3), Some(1));
+            assert_eq!(random_unrestricted_semiprime(65), Some(semiprime));
+        }
     };
 }
 
-#[cfg(feature = "bigint")]
-#[test]
-fn seeded_large_random_results_replay() {
-    use math_prime_util::bigint::random::{
-        miller_rabin_random, random_prime, random_unrestricted_semiprime,
-    };
-    use num_bigint::BigUint;
-    let low = BigUint::from(1_u8) << 66_u8;
-    let high = &low + (BigUint::from(1_u8) << 66_u8);
-    math_prime_util::srand(17);
-    let prime = random_prime(&low, &high).expect("prime");
-    assert!(prime >= low && prime <= high);
-    math_prime_util::srand(17);
-    // This interval has 2^65 odd candidates in 2^33 equal bins.
-    let bins = BigUint::from(1_u8) << 33_u8;
-    let part = math_prime_util::bigint::random::urandomm(&bins);
-    let bin_low = &low + 1_u8 + (part << 33_u8);
-    let bin_size = BigUint::from(1_u8) << 32_u8;
-    let expected = loop {
-        let candidate = &bin_low + (math_prime_util::bigint::random::urandomm(&bin_size) << 1_u8);
-        if math_prime_util::bigint::primality::is_prob_prime(&candidate) != 0 {
-            break candidate;
-        }
-    };
-    assert_eq!(prime, expected);
-    assert_eq!(miller_rabin_random(&prime, 3), Some(1));
-    let semiprime = random_unrestricted_semiprime(65).expect("semiprime");
-    assert_eq!(semiprime.bits(), 65);
-    math_prime_util::srand(17);
-    assert_eq!(random_prime(&low, &high), Some(prime.clone()));
-    assert_eq!(miller_rabin_random(&prime, 3), Some(1));
-    assert_eq!(random_unrestricted_semiprime(65), Some(semiprime));
-}
+#[allow(unused_imports)]
+pub(crate) use proving_cases;
+#[allow(unused_imports)]
+pub(crate) use random_cases;

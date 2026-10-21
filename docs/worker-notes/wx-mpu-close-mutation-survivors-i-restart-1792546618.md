@@ -7,3 +7,5 @@ Added upper Hasse rejection, product-equals-limit acceptance, and first semiprim
 Reference confirms Hasse interval and inclusive product limit. Preparing exact mutation selectors; no new production bug found so far.
 Focused build still running. Existing helper locations mapped; mutation run will restrict tests to mutation_regressions.
 Launched exact fourteen-mutant rerun with nice 15 and jobs 2, offline. Gate running in parallel.
+All twelve focused regression tests passed. Checking whether the original factored-integer > mutation mapped to a redundant primality guard or to the product-limit branch.
+Mutation preflight selected fourteen entries. Gate passed default clippy and is checking bigint.

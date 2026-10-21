@@ -29,3 +29,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The harmonic cutoff is an equivalent output mutation, so the literal all-13-killed criterion cannot honestly be claimed. Preserve C semantics rather than change correct numerical code just to alter a mutation score. A second full offline to <<cut 87 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 63 bytes)
+Second mutant run confirms the harmonic < to == mutation survives, consistent with f64 equivalence. Remaining mutants continue. Correction to the bound assessment: the requested Axler threshold is 3999654659; exact Ramanujan-prime evaluatio <<cut 97 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 73 bytes)

@@ -1,7 +1,0 @@
-- Plan: add tests/mutants_estimates.rs killing the 13 listed survivors; check bounds in lucky, nth_ramanujan_prime_upper, nth_almost_prime, real harmreal.
-- Found prior WIP: tests/mutants_estimates.rs wired via #[path] into 4 src modules. Running focused tests now.
-- 2026-10-21T02:29:34Z launcher: no commit for 60 s; 121 s elapsed. Files changed so far: docs/worker-notes/wx-mpu-close-mutation-survivors-i-restart-1792549501-no-write-continue.md.
-- Result: tests/mutants_estimates.rs exists from the earlier WIP and is included by 4 src modules via #[path]; 21 estimate_mutation_tests pass (tools/test.sh --lib mutation).
-- Not done: cargo-mutants re-run on the four files (time limit); no proof that each of the 13 survivors is killed.
-- harmreal 763:23 (< to ==) looks equivalent: the break only skips terms below 1e-44, which do not change the f64 sum.
-- Deviation: the wiring edits four src files (#[path] include), not only the new test file.

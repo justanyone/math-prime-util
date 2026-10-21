@@ -10,3 +10,5 @@ Extracted the unchanged PP.pm harmonic correction loop into an iterator helper; 
 All 37 focused estimate tests pass. Starting the 13 requested mutation cases (harmreal cutoff now in harmonic_correction); repository gate runs separately. The listed Ramanujan comparison is at 15360, not the equivalent 306 branch.
 
 Mutation runner found exactly 13 requested cases. Clippy default and bigint passed; gmp/all-feature checks and mutation builds continue. Boundary triage: harmonic cutoff affects work only; lucky simple_approx is an estimate, and the listed divisions are not exact-result paths.
+
+Boundary arithmetic: changing either lucky division to multiplication yields a negative factor (saturating to zero), so its lower bound stays valid but useless. Reversed branch comparisons give smaller lower estimates at 1000001 and 10000001 (70861 vs 70936; 600795 vs 602729). No original wrong bound identified. Full tools/test.sh started as required.

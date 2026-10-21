@@ -26,3 +26,5 @@ Stopped the full-suite attempt after quota exhaustion; removed only task-local i
 Compact validation is running: cleared only worktree target cache; no source behavior or dependencies changed. Mutation selection remains exactly 13; gate restart includes the required full suite.
 
 Compact mutant retry exposed a duplicated --lib argument (build and test options both supplied it); remove the duplicate and rerun with the build option alone.
+
+Corrected the duplicate --lib invocation; fresh focused mutation baseline is compiling. Gate compact retry is progressing independently.

@@ -17,8 +17,8 @@ fn harmreal_matches_small_harmonic_numbers() {
 
 #[test]
 fn ramanujan_prime_upper_bounds_known_values() {
-    // Ramanujan primes R_1..R_10: 2, 11, 17, 29, 41, 47, 59, 67, 77, 83.
-    let r = [2u64, 11, 17, 29, 41, 47, 59, 67, 77, 83];
+    // Ramanujan primes R_1..R_10: 2, 11, 17, 29, 41, 47, 59, 67, 71, 97.
+    let r = [2u64, 11, 17, 29, 41, 47, 59, 67, 71, 97];
     for (i, &rn) in r.iter().enumerate() {
         let upper = nth_ramanujan_prime_upper((i + 1) as u64).unwrap();
         assert!(upper >= rn, "upper {upper} < R_{} = {rn}", i + 1);
@@ -52,5 +52,7 @@ fn lucky_numbers_small_values() {
     for (i, &v) in lucky.iter().enumerate() {
         assert_eq!(nth_lucky((i + 1) as u64), Some(v));
     }
-    assert_eq!(lucky_count(12), 12);
+    // lucky_count(x) counts lucky numbers <= x.
+    assert_eq!(lucky_count(12), 4);
+    assert_eq!(lucky_count(43), 12);
 }

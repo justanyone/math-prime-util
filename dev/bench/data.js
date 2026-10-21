@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792611298063,
+  "lastUpdate": 1792612954282,
   "repoUrl": "https://github.com/justanyone/math-prime-util",
   "entries": {
     "Benchmark": [
@@ -5435,6 +5435,2346 @@ window.BENCHMARK_DATA = {
             "name": "sumset",
             "value": 15217,
             "range": "± 1445",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "noreply@anthropic.com",
+            "name": "SkyBuild Project PR",
+            "username": "claude"
+          },
+          "committer": {
+            "email": "noreply@anthropic.com",
+            "name": "SkyBuild Project PR",
+            "username": "claude"
+          },
+          "distinct": true,
+          "id": "c4357e5ca43e96d9391fabce827f09d9aaabef2a",
+          "message": "Merge pull request #170 from justanyone/task/mpu-pull-dana-jacobsen-s-2026-10-21-fix-commit-update-20261020-x",
+          "timestamp": "2026-10-21T12:47:03-05:00",
+          "tree_id": "945080f35d1990b28cfe009ceb3945211bc6c0a9",
+          "url": "https://github.com/justanyone/math-prime-util/commit/c4357e5ca43e96d9391fabce827f09d9aaabef2a"
+        },
+        "date": 1792612953502,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "arith/sopfr",
+            "value": 169,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/sopf",
+            "value": 163,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/kronecker",
+            "value": 13,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/chinese",
+            "value": 139,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "euler_phi",
+            "value": 200,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "moebius",
+            "value": 210,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "totient_range",
+            "value": 17275,
+            "range": "± 119",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "jordan_totient",
+            "value": 136,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "carmichael_lambda",
+            "value": 156,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "moebius_range",
+            "value": 31903,
+            "range": "± 356",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "mertens",
+            "value": 27535,
+            "range": "± 217",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "liouville",
+            "value": 200,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumliouville",
+            "value": 28086,
+            "range": "± 191",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "exp_mangoldt",
+            "value": 162,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumtotient",
+            "value": 31189,
+            "range": "± 240",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dedekind_psi",
+            "value": 185,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "inverse_totient",
+            "value": 227221,
+            "range": "± 1967",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_totient",
+            "value": 20582,
+            "range": "± 173",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/divisor_sum",
+            "value": 182,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/aliquot_sum",
+            "value": 162,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/abundance",
+            "value": 161,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/ramanujan_tau",
+            "value": 126,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/chinese2",
+            "value": 103,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/is_primitive_root",
+            "value": 567,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/znorder",
+            "value": 618,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/znprimroot",
+            "value": 463,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/qnr",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/is_qr",
+            "value": 175,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/is_fundamental",
+            "value": 129,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/inverse_sigma0",
+            "value": 27661488,
+            "range": "± 270234",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/inverse_sigma0_count",
+            "value": 26359728,
+            "range": "± 231225",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/ramanujan_sum",
+            "value": 75,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "arith/valuation",
+            "value": 202,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bigint/is_prime_200/num-bigint",
+            "value": 179,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bigint/factor_60/num-bigint",
+            "value": 11611257,
+            "range": "± 110616",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bigint/is_prime_200/rug",
+            "value": 72,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bigint/factor_60/rug",
+            "value": 11696810,
+            "range": "± 145368",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitand",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitor",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitxor",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitnot",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bits_ops1/bitandnot",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bitset",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bitclear",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bitflip",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bittest",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bitscan0",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bitscan1",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bernfrac_58",
+            "value": 2244,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "harmfrac_60",
+            "value": 5649,
+            "range": "± 28",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primorial_52",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "pn_primorial_15",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "binomial",
+            "value": 786,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "catalan_number",
+            "value": 229,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "stirling",
+            "value": 1418,
+            "range": "± 12",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bell_number",
+            "value": 369,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factorial/20",
+            "value": 6,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "subfactorial/20",
+            "value": 29,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "multifactorial/33/2",
+            "value": 11,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "fubini/15",
+            "value": 1323,
+            "range": "± 14",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "fubini/18",
+            "value": 646,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "falling_factorial",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rising_factorial",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powersum",
+            "value": 604,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "integer_complexity_cached",
+            "value": 16,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "partitions_200",
+            "value": 3226,
+            "range": "± 12",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "partitionsq_400",
+            "value": 10833,
+            "range": "± 36",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "permtonum_20",
+            "value": 134,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "consecutive_integer_lcm",
+            "value": 27,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "frobenius_number",
+            "value": 1800,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_congruent_number",
+            "value": 688,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_polygonal",
+            "value": 13,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_pillai",
+            "value": 5817,
+            "range": "± 132",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_happy",
+            "value": 32,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "hclassno",
+            "value": 87587,
+            "range": "± 212",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "numtoperm",
+            "value": 126,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_lower/1000000",
+            "value": 6721,
+            "range": "± 39",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_upper/1000000",
+            "value": 347,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_approx/1000000",
+            "value": 77308,
+            "range": "± 629",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_lower/1000000000",
+            "value": 8016,
+            "range": "± 98",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_upper/1000000000",
+            "value": 7948,
+            "range": "± 34",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_approx/1000000000",
+            "value": 22550,
+            "range": "± 80",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_lower/1000000000000",
+            "value": 9049,
+            "range": "± 37",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_upper/1000000000000",
+            "value": 8980,
+            "range": "± 39",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count_approx/1000000000000",
+            "value": 47824,
+            "range": "± 746",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/prime_count/10^7",
+            "value": 384805,
+            "range": "± 1709",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_lower/10000",
+            "value": 3681,
+            "range": "± 32",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_upper/10000",
+            "value": 5437,
+            "range": "± 28",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_approx/10000",
+            "value": 83465,
+            "range": "± 324",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_lower/1000000",
+            "value": 5198,
+            "range": "± 19",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_upper/1000000",
+            "value": 745,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_approx/1000000",
+            "value": 170053,
+            "range": "± 857",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_lower/1000000000000",
+            "value": 24,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_upper/1000000000000",
+            "value": 763,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_approx/1000000000000",
+            "value": 266861,
+            "range": "± 869",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_lower/100000000000000000",
+            "value": 18,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_upper/100000000000000000",
+            "value": 812,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "count/nth_prime_approx/100000000000000000",
+            "value": 463265,
+            "range": "± 1574",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "todigits",
+            "value": 171,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumdigits",
+            "value": 13,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "tozeckendorf",
+            "value": 346,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "mulint",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "fermat_factor",
+            "value": 273,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "holf_factor",
+            "value": 353,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lehman_factor",
+            "value": 8882,
+            "range": "± 55",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "squfof_factor",
+            "value": 8364,
+            "range": "± 32",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_carmichael",
+            "value": 1962,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_quasi_carmichael",
+            "value": 287,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_cyclic",
+            "value": 846,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_perfect_number",
+            "value": 176,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prho_factor",
+            "value": 26211,
+            "range": "± 80",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "pbrent_factor",
+            "value": 14692,
+            "range": "± 91",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "pminus1_factor",
+            "value": 99296,
+            "range": "± 3257",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "pplus1_factor",
+            "value": 15679,
+            "range": "± 89",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ecm_factor",
+            "value": 19954,
+            "range": "± 71",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cheb_factor",
+            "value": 121355,
+            "range": "± 567",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_bigomega",
+            "value": 24479,
+            "range": "± 78",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_omega",
+            "value": 24466,
+            "range": "± 73",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_signature",
+            "value": 24483,
+            "range": "± 91",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_practical",
+            "value": 437,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_smooth",
+            "value": 132,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_rough",
+            "value": 23125,
+            "range": "± 68",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "smooth_count",
+            "value": 784566,
+            "range": "± 2164",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_square_free/30",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_semiprime/30",
+            "value": 5,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_almost_prime/30",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_omega_prime/30",
+            "value": 2,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_square_free/1000036000099",
+            "value": 28878,
+            "range": "± 137",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_semiprime/1000036000099",
+            "value": 29050,
+            "range": "± 125",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_almost_prime/1000036000099",
+            "value": 28938,
+            "range": "± 185",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_omega_prime/1000036000099",
+            "value": 28928,
+            "range": "± 214",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_square_free/18446744073709551615",
+            "value": 8851,
+            "range": "± 29",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_semiprime/18446744073709551615",
+            "value": 5,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_almost_prime/18446744073709551615",
+            "value": 11,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/is_omega_prime/18446744073709551615",
+            "value": 122,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor/360",
+            "value": 111,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor_exp/360",
+            "value": 131,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/divisors/360",
+            "value": 357,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/trial_factor/360",
+            "value": 44,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor/600851475143",
+            "value": 1875,
+            "range": "± 13",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor_exp/600851475143",
+            "value": 1909,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/divisors/600851475143",
+            "value": 2082,
+            "range": "± 15",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/trial_factor/600851475143",
+            "value": 575,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor/1000036000099",
+            "value": 15548,
+            "range": "± 91",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor_exp/1000036000099",
+            "value": 15440,
+            "range": "± 95",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/divisors/1000036000099",
+            "value": 15478,
+            "range": "± 109",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/trial_factor/1000036000099",
+            "value": 555,
+            "range": "± 8",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor/18446744073709551615",
+            "value": 4343,
+            "range": "± 32",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/factor_exp/18446744073709551615",
+            "value": 4431,
+            "range": "± 20",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/divisors/18446744073709551615",
+            "value": 5349,
+            "range": "± 22",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor/trial_factor/18446744073709551615",
+            "value": 571,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factor_u128",
+            "value": 4370002,
+            "range": "± 19185",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_prime_u128",
+            "value": 6074,
+            "range": "± 31",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "almost_primes",
+            "value": 648086,
+            "range": "± 7240",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "almost_prime_count",
+            "value": 161955,
+            "range": "± 1275",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "almost_prime_count_approx",
+            "value": 46,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "almost_prime_count_lower",
+            "value": 31,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_almost_prime_upper",
+            "value": 441,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "omega_primes",
+            "value": 2346737,
+            "range": "± 10861",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "omega_prime_count",
+            "value": 378991,
+            "range": "± 2074",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_omega_prime",
+            "value": 188629,
+            "range": "± 1077",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_powers",
+            "value": 310423,
+            "range": "± 1950",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_prime_power",
+            "value": 605,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "next_prime_power",
+            "value": 282,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prev_prime_power",
+            "value": 605,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_prime_power",
+            "value": 988827,
+            "range": "± 18938",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_prime_power_approx",
+            "value": 891593,
+            "range": "± 4827",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_prime_power_lower",
+            "value": 57039,
+            "range": "± 431",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_prime_power_upper",
+            "value": 59704,
+            "range": "± 219",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucky_numbers",
+            "value": 10997385,
+            "range": "± 46188",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucky_count",
+            "value": 409928,
+            "range": "± 2597",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_lucky",
+            "value": 809697,
+            "range": "± 8139",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_lucky",
+            "value": 395306,
+            "range": "± 2975",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "twin_primes",
+            "value": 170388,
+            "range": "± 660",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "twin_prime_count",
+            "value": 189104,
+            "range": "± 1150",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "twin_prime_count_approx",
+            "value": 282,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_twin_prime",
+            "value": 133140,
+            "range": "± 647",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_ramanujan_prime",
+            "value": 203612,
+            "range": "± 4757",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_ramanujan_prime_approx",
+            "value": 273452,
+            "range": "± 1740",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_ramanujan_prime_lower",
+            "value": 79002,
+            "range": "± 509",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ramanujan_prime_count_upper",
+            "value": 379218,
+            "range": "± 2436",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powerful_count",
+            "value": 3526,
+            "range": "± 13",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powerful_numbers",
+            "value": 18402,
+            "range": "± 206",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumpowerful",
+            "value": 10897,
+            "range": "± 62",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powerfree_count",
+            "value": 53354,
+            "range": "± 234",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_twin_prime_approx",
+            "value": 4240,
+            "range": "± 18",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "semi_primes",
+            "value": 124695,
+            "range": "± 724",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "semiprime_count",
+            "value": 601857,
+            "range": "± 8574",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "semiprime_count_approx",
+            "value": 28,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_ramanujan_prime_upper",
+            "value": 64,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_ramanujan_prime",
+            "value": 16330,
+            "range": "± 92",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_semiprime",
+            "value": 342423,
+            "range": "± 1759",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_semiprime_approx",
+            "value": 2,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "almost_prime_count_upper",
+            "value": 39,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_almost_prime",
+            "value": 5345,
+            "range": "± 21",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_almost_prime_lower",
+            "value": 531,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_almost_prime_approx",
+            "value": 1070,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ramanujan_primes",
+            "value": 1075020,
+            "range": "± 12050",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ramanujan_prime_count",
+            "value": 272340,
+            "range": "± 2829",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ramanujan_prime_count_approx",
+            "value": 1397,
+            "range": "± 8",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ramanujan_prime_count_lower",
+            "value": 1810,
+            "range": "± 15",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "minimal_goldbach_pair",
+            "value": 78162,
+            "range": "± 698",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "goldbach_pair_count",
+            "value": 2215804,
+            "range": "± 44168",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "goldbach_pairs",
+            "value": 223647,
+            "range": "± 1913",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "next_chen_prime",
+            "value": 689223,
+            "range": "± 4561",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_gaussian_prime",
+            "value": 496,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_sum_of_squares",
+            "value": 946,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_power_count_approx",
+            "value": 506,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_power_count_lower",
+            "value": 507,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_power_count_upper",
+            "value": 504,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_perfect_power",
+            "value": 1759,
+            "range": "± 13",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_power_count",
+            "value": 84284,
+            "range": "± 643",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_power_count_approx",
+            "value": 12614,
+            "range": "± 90",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_power_count_lower",
+            "value": 12188,
+            "range": "± 275",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "prime_power_count_upper",
+            "value": 11984,
+            "range": "± 97",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/is_perfect_power/1000003",
+            "value": 119,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/next_perfect_power/1000003",
+            "value": 603,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/prev_perfect_power/1000003",
+            "value": 546,
+            "range": "± 12",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/perfect_power_count/1000003",
+            "value": 301,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/is_perfect_power/4294967296",
+            "value": 2,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/next_perfect_power/4294967296",
+            "value": 1070,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/prev_perfect_power/4294967296",
+            "value": 1010,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/perfect_power_count/4294967296",
+            "value": 509,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/is_perfect_power/9223372036854775808",
+            "value": 2,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/next_perfect_power/9223372036854775808",
+            "value": 1229,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/prev_perfect_power/9223372036854775808",
+            "value": 1161,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/perfect_power_count/9223372036854775808",
+            "value": 542,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/is_perfect_power/18446744073709551615",
+            "value": 69,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/next_perfect_power/18446744073709551615",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/prev_perfect_power/18446744073709551615",
+            "value": 1035,
+            "range": "± 8",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "perfect_powers/perfect_power_count/18446744073709551615",
+            "value": 493,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powerfree_sum",
+            "value": 4986,
+            "range": "± 30",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powerfree_part",
+            "value": 106,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_powerful",
+            "value": 106,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "powerfree_part_sum",
+            "value": 3152,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "is_powerfree",
+            "value": 376,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_powerful",
+            "value": 20918,
+            "range": "± 63",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_powerfree",
+            "value": 1011,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/sqrtint/1000003",
+            "value": 5,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint3/1000003",
+            "value": 20,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint7/1000003",
+            "value": 21,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/is_power_exp/1000003",
+            "value": 118,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/logint10/1000003",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/gcd/1000003",
+            "value": 39,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/sqrtint/4294967311",
+            "value": 5,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint3/4294967311",
+            "value": 20,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint7/4294967311",
+            "value": 21,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/is_power_exp/4294967311",
+            "value": 94,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/logint10/4294967311",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/gcd/4294967311",
+            "value": 41,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/sqrtint/2305843009213693951",
+            "value": 5,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint3/2305843009213693951",
+            "value": 20,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint7/2305843009213693951",
+            "value": 21,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/is_power_exp/2305843009213693951",
+            "value": 94,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/logint10/2305843009213693951",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/gcd/2305843009213693951",
+            "value": 61,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/sqrtint/18446744073709551557",
+            "value": 4,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint3/18446744073709551557",
+            "value": 19,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/rootint7/18446744073709551557",
+            "value": 20,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/is_power_exp/18446744073709551557",
+            "value": 106,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/logint10/18446744073709551557",
+            "value": 1,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "int/gcd/18446744073709551557",
+            "value": 69,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/mulmod/1000003",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/powmod/1000003",
+            "value": 108,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/invmod/1000003",
+            "value": 17,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/mulmod/4294967311",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/powmod/4294967311",
+            "value": 166,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/invmod/4294967311",
+            "value": 26,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/mulmod/2305843009213693951",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/powmod/2305843009213693951",
+            "value": 586,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/invmod/2305843009213693951",
+            "value": 25,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/mulmod/18446744073709551557",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/powmod/18446744073709551557",
+            "value": 605,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "modular/invmod/18446744073709551557",
+            "value": 33,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/almost_primes",
+            "value": 446181,
+            "range": "± 4063",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/factored",
+            "value": 1389112,
+            "range": "± 34463",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/squarefree",
+            "value": 1475010,
+            "range": "± 17628",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/squarefree_int",
+            "value": 17245,
+            "range": "± 230",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/primes",
+            "value": 10566543,
+            "range": "± 43721",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/composites",
+            "value": 2474963,
+            "range": "± 11396",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/odd_composites",
+            "value": 2477720,
+            "range": "± 6242",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/semiprimes",
+            "value": 5283837,
+            "range": "± 14682",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/partitions",
+            "value": 138252,
+            "range": "± 425",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/combinations",
+            "value": 179164,
+            "range": "± 695",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/compositions",
+            "value": 723844,
+            "range": "± 3637",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/divisors",
+            "value": 12135,
+            "range": "± 82",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/permutations",
+            "value": 556204,
+            "range": "± 4219",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/derangements",
+            "value": 320839,
+            "range": "± 4957",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/multipermutations",
+            "value": 2746,
+            "range": "± 21",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter/set_product",
+            "value": 12382,
+            "range": "± 56",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucas_sequence",
+            "value": 1931,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucasuvmod_even",
+            "value": 1917,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucasvmod",
+            "value": 235,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucasuv",
+            "value": 66,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "fibonacci",
+            "value": 8,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "lucas_number",
+            "value": 8,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "floor_sum",
+            "value": 118,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "remove_factors",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "remove_factors_exp",
+            "value": 43,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "print_primes",
+            "value": 1041659,
+            "range": "± 10437",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sqrtmod",
+            "value": 192,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "allsqrtmod",
+            "value": 824,
+            "range": "± 16",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rootmod",
+            "value": 114,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "allrootmod",
+            "value": 10085,
+            "range": "± 40",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "factorialmod",
+            "value": 1018473,
+            "range": "± 15064",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "binomialmod",
+            "value": 887,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "znlog",
+            "value": 933,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "pisano_period",
+            "value": 4980,
+            "range": "± 15",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/is_prime/1000003",
+            "value": 103,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/bpsw/1000003",
+            "value": 221,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/underwood/1000003",
+            "value": 201,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/khashin/1000003",
+            "value": 227,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/is_prime/4294967311",
+            "value": 355,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/bpsw/4294967311",
+            "value": 336,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/underwood/4294967311",
+            "value": 267,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/khashin/4294967311",
+            "value": 328,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/is_prime/2305843009213693951",
+            "value": 677,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/bpsw/2305843009213693951",
+            "value": 648,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/underwood/2305843009213693951",
+            "value": 540,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/khashin/2305843009213693951",
+            "value": 874,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/is_prime/18446744073709551557",
+            "value": 912,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/bpsw/18446744073709551557",
+            "value": 895,
+            "range": "± 12",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/underwood/18446744073709551557",
+            "value": 1354,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "primality/khashin/18446744073709551557",
+            "value": 1181,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "aks",
+            "value": 3531,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "provable",
+            "value": 913,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "certificate",
+            "value": 970,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "provable_with_certificate",
+            "value": 971,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "verify",
+            "value": 2221,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "generic/is_prime",
+            "value": 6058,
+            "range": "± 11",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "generic/factor",
+            "value": 1013,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "generic/powmod",
+            "value": 531,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "generic/gcd",
+            "value": 93,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "generic/next_prime",
+            "value": 10827,
+            "range": "± 34",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/maurer_cert32",
+            "value": 1023,
+            "range": "± 19",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/shawe_taylor32",
+            "value": 958,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/shawe_taylor_cert64",
+            "value": 18266,
+            "range": "± 550",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/semiprime64",
+            "value": 3166,
+            "range": "± 39",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/maurer64",
+            "value": 4038,
+            "range": "± 48",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/proven64",
+            "value": 4114,
+            "range": "± 80",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/proven_cert64",
+            "value": 4114,
+            "range": "± 46",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random_unrestricted_semiprime/32",
+            "value": 7209,
+            "range": "± 133",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/prime",
+            "value": 2972,
+            "range": "± 14",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/ndigit_prime",
+            "value": 1995,
+            "range": "± 21",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/nbit_prime",
+            "value": 4050,
+            "range": "± 49",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/safe_prime",
+            "value": 8475,
+            "range": "± 220",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/irand32",
+            "value": 22,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/irand64",
+            "value": 46,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/urandomm",
+            "value": 24,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random_factored_integer/32",
+            "value": 1006,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "randperm/sparse",
+            "value": 1134,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "shuffle/1000",
+            "value": 25873,
+            "range": "± 211",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/vecsample",
+            "value": 488,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "random/miller_rabin_random",
+            "value": 1059,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "contfrac",
+            "value": 150,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "bestrational",
+            "value": 54,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_calkin_wilf",
+            "value": 11,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "nth_stern_brocot",
+            "value": 15,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "farey",
+            "value": 15884,
+            "range": "± 229",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "farey_rank",
+            "value": 5552,
+            "range": "± 16",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "farey_nth",
+            "value": 12551,
+            "range": "± 185",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/ei",
+            "value": 16,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/li",
+            "value": 179,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/zeta",
+            "value": 7,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/riemann_r",
+            "value": 1546,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/lambert_w",
+            "value": 70,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/inverse_li",
+            "value": 981,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "real/pi",
+            "value": 25871,
+            "range": "± 31",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/primes/10000",
+            "value": 24685,
+            "range": "± 209",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/next_prime/10000",
+            "value": 641,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/prev_prime/10000",
+            "value": 1030,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/sum_primes/10000",
+            "value": 25173,
+            "range": "± 62",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/primes/100000",
+            "value": 285555,
+            "range": "± 1110",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/next_prime/100000",
+            "value": 937,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/prev_prime/100000",
+            "value": 782,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/sum_primes/100000",
+            "value": 288973,
+            "range": "± 1304",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/primes/1000000",
+            "value": 3429933,
+            "range": "± 12984",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/next_prime/1000000",
+            "value": 1067,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/prev_prime/1000000",
+            "value": 1415,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/sum_primes/1000000",
+            "value": 3007123,
+            "range": "± 16329",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/sieve_range_1e6_40",
+            "value": 3900,
+            "range": "± 42",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sieve/next_prime_near_2_63",
+            "value": 6036,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "vecsum",
+            "value": 650,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "vecsort",
+            "value": 10389,
+            "range": "± 27",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "setunion",
+            "value": 27088,
+            "range": "± 171",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sumset",
+            "value": 23438,
+            "range": "± 215",
             "unit": "ns/iter"
           }
         ]

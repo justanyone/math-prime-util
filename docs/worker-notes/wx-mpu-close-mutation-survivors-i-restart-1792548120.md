@@ -23,3 +23,7 @@ They also cover urandomm subtraction and remainder, final-bin subtraction, facto
 The original random_factored_integer s > 1 to s >= 1 mutant is equivalent: s=1 fails is_prob_prime. The inherited source removes this redundant guard; no test can distinguish it.
 No correctness bug was found. No dependency, fixture, build tooling, credential, or service was changed.
 tools/gate.sh finished successfully. Checking for its required green marker and the separate tools/test.sh result before finishing.
+Verified == gate: green: fmt, all clippy feature sets, MSRV, full tests, and docs passed offline. Only the separate tools/test.sh whole-suite invocation is still active.
+About five minutes remain; all required runs have now finished. No further source changes or test reruns are needed.
+Final verification: 14 focused tests pass; tools/test.sh full suite passes; tools/gate.sh prints == gate: green; offline cargo-mutants catches all 13 behavioral mutants (nice 15, jobs 2).
+Stopped with the requested regression file complete. The equivalent guard is removed, no correctness bug was found, and no commit or push was attempted.

@@ -31,3 +31,5 @@ Launched an additional exact max-minus-one mutation check against the new power-
 All code and tests are written. Started final clippy and the mandated tools/test.sh whole-suite run. Mutation outcomes and gate completion remain to collect.
 All thirteen final focused regressions passed. The whole-suite gate has advanced past the long count tests into later integration groups.
 Final all-features clippy passed after the thirteenth regression. Mutation workers are active; exact result logs are being checked before reporting kills.
+Mutation worker logs now contain completed failures for targeted expressions. Checking test failure summaries to distinguish caught mutants from build errors.
+Confirmed five targeted mutants caught by assertion failures, not build failures: both ECPP checks, both BLS75 arithmetic sites, and curve_orders.

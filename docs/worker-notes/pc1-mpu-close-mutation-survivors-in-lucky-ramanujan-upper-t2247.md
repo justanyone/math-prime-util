@@ -12,3 +12,5 @@ All 37 focused estimate tests pass. Starting the 13 requested mutation cases (ha
 Mutation runner found exactly 13 requested cases. Clippy default and bigint passed; gmp/all-feature checks and mutation builds continue. Boundary triage: harmonic cutoff affects work only; lucky simple_approx is an estimate, and the listed divisions are not exact-result paths.
 
 Boundary arithmetic: changing either lucky division to multiplication yields a negative factor (saturating to zero), so its lower bound stays valid but useless. Reversed branch comparisons give smaller lower estimates at 1000001 and 10000001 (70861 vs 70936; 600795 vs 602729). No original wrong bound identified. Full tools/test.sh started as required.
+
+All four clippy feature sets passed; gate is building MSRV. Mutation baseline builds all test targets before applying its focused runtime filter, so compilation is longer than the focused test run. No live services or external files changed.

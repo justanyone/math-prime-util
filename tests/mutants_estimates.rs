@@ -155,8 +155,8 @@ fn ramanujan_small_prime_index_transition() {
     assert_eq!(nth_ramanujan_prime_upper(133), nth_prime_upper(307));
 }
 
-// MPU inverse_interpolate.c: interpolate_with_approx. Larger ranks
-// exercise corrections beyond the 20,000-count stopping tolerance.
+// MPU inverse_interpolate.c: interpolate_with_approx. Check exact
+// ranks for larger inputs to the approximate inverse.
 #[test]
 fn almost_prime_interpolation_large_ranks() {
     for k in [3, 4] {

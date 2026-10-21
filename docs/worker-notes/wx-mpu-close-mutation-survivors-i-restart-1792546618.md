@@ -20,3 +20,5 @@ Final all-features clippy requested after guard removal. Builds are sharing the 
 Still waiting for compiler completion. Exact mutation selection remains fourteen, including the now-removed equivalent guard in the isolated snapshot.
 Full suite is executing and its completed integration groups pass. Focused final-source tests and clippy results are being collected.
 Final source focused tests: 12 passed. Final all-targets/all-features clippy passed. Full gate still progressing; mutation build status is under review.
+Initial cargo-mutants builds all integration targets despite test filter. Started a corrected library-only rerun of thirteen behavioral mutations at nice 15/jobs 2, with offline bigint and debug-free unoptimized builds.
+Corrected mutation command uses -C --lib so the build phase is also restricted. Full gate integration tests continue without failures.

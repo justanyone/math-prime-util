@@ -20,3 +20,4 @@ The final focused run passed all eight tests, including the added BLS cofactor a
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -20 bytes)
 The broad mutation baseline did eventually pass (81 s build, 36 s test). Interrupted it and restarted all fourteen targets with --lib builds and a skipped, already-passing baseline. The gate has advanced past MSRV into full tests.
 Added a controlled last-bin prime test: seeded samples almost never choose the last of 2^33 bins. The helper keeps public sampling unchanged and checks the exact residual width.
+The fourteen-site run reports 14 caught in 60 seconds. Auditing the mutation test logs before accepting that result. The final focused suite now passes nine tests, including the explicit last-bin case.

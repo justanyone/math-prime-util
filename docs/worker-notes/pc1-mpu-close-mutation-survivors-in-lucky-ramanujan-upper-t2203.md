@@ -26,3 +26,4 @@ All four clippy configurations passed. Gate now waits for MSRV build; final focu
 Verification still running; no additional production changes. The boundary and trace tests are saved in tests/mutants_estimates.rs.
 Final mutation baseline passed. Harmonic equivalence survives again; extra 306 threshold also survives as expected. Gate MSRV compiler is now running.
 About five minutes remain. All 36 final focused tests pass; waiting for final mutant and gate outcomes, then recording exact remaining blockers without marking READY.
+Thirteen-mutation run completed: 9 caught, 4 missed (harmonic and three wide-upper-bracket mutations). That copy predates the newly added wide-bracket trace. Re-running the same thirteen against final tests to confirm all three new kills. Extra boundary run caught task line 146; inherited claim of two task equivalents was incorrect (306 was not a listed survivor).

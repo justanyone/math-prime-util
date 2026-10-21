@@ -41,3 +41,4 @@ Final targeted confirmation complete: 13 tested in 70 seconds, 3 caught, 10 miss
 About five minutes remain: final focused suite is green (13/13); targeted mutation run confirms 3 catches and 10 misses. Full gate and explicit whole suite are waiting on the expensive prime_count oracle case; no completion claim will be made before their results.
 Validation still running in prime_count_oracle; no new implementation changes. Final report will retain the ten missed mutants and the required unresolved full-domain bound checks.
 - 2026-10-21T01:30:18Z launcher: no commit for 60 s; 485 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2021.md, tests/mutants_estimates.rs.
+Minute update: final gate is still running the prime-count oracle test; earlier gate has progressed into bigint property tests. No gate failure has been observed, but green is not yet printed.

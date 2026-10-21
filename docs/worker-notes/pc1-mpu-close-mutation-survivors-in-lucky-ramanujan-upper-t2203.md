@@ -19,3 +19,4 @@ The 306 threshold was an inherited extra case; the actual task threshold is 1536
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 36 bytes)
 Mutation build invokes all test targets even though execution is filtered; this is slower than expected. Final focused tests and full suite are queued behind the gate build lock.
+Build command confirmed cargo test --no-run (all targets); execution filter does not restrict its compile phase. Waiting for current run rather than adding more competing builds.

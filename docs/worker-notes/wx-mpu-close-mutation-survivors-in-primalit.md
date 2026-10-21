@@ -15,3 +15,6 @@ Added the BLS prime 1,028,456,449 with n−1 = 2^16 × 3 × 5231. Its certificat
 The fourteen-site mutation baseline now reports Cargo cache error 8 (attempt to write a readonly database), then build/artifact locks. No mutant outcome is confirmed. All requested regression cases are written; final gate and whole-suite jo <<cut 18 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -6 bytes)
+The final focused run passed all eight tests, including the added BLS cofactor and zero-polynomial cases. The mutation baseline builds every integration binary by default; limiting its Cargo build to --lib for the remaining validation attem <<cut 3 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -20 bytes)

@@ -4,3 +4,4 @@ Run focused regressions and the final repository gate; fix any failures within t
 Do not mark READY; record exact verification outcomes and remaining blockers here.
 Reviewed inherited regression macros and sampler helper extraction; focused tests running, preparing the exact fourteen mutation selectors.
 Exact selectors mapped for all fourteen original mutations. First mutation invocation rejected unsupported --offline; corrected to cargo argument -C --offline. Gate and focused tests are running.
+Focused mutation_regressions: 9 passed. Selector preflight found only 3 of 14 due to filtering; investigating before accepting mutation evidence. Gate progressing through feature clippy checks.

@@ -768,3 +768,13 @@ pub fn harmreal(n: u64) -> f64 {
     }
     h + 1.0 / (2.0 * n) + EULER + n.ln()
 }
+
+#[cfg(test)]
+mod estimate_mutation_tests {
+    use crate as math_prime_util;
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/mutants_estimates.rs"
+    ));
+    private_estimate_tests!(real);
+}

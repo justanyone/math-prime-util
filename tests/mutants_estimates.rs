@@ -1,6 +1,6 @@
-//! Killing tests for surviving mutants in the lucky, Ramanujan-prime upper
-//! and almost-prime estimate helpers. Each test uses the public API and
-//! checks values that a flipped comparison or operator would change.
+// Killing tests for surviving mutants in the lucky, Ramanujan-prime upper
+// and almost-prime estimate helpers. Each test uses the public API and
+// checks values that a flipped comparison or operator would change.
 
 use math_prime_util::families::{
     lucky_count, lucky_count_lower, lucky_count_upper, nth_almost_prime, nth_lucky,
@@ -55,4 +55,71 @@ fn lucky_numbers_small_values() {
     // lucky_count(x) counts lucky numbers <= x.
     assert_eq!(lucky_count(12), 4);
     assert_eq!(lucky_count(43), 12);
+}
+
+// The source modules include this file so tests can reach private helpers.
+#[allow(unused_macros)]
+macro_rules! private_estimate_tests {
+    (lucky) => {
+        #[test]
+        fn mutation_simple_approx_boundaries() {
+            for (n, expected) in [
+                (7, 3),
+                (1_000_001, 71_653),
+                (10_000_000, 609_491),
+                (10_000_001, 608_818),
+                (100_000_000, 5_286_045),
+                (100_000_001, 5_281_586),
+            ] {
+                assert_eq!(super::simple_approx(n), expected, "n={n}");
+            }
+        }
+    };
+    (ramanujan) => {
+        #[test]
+        fn mutation_axler_tail_boundaries() {
+            for (n, expected) in [
+                (514_808_375_201, -2.435),
+                (514_808_375_202, -2.535),
+                (84_086_679_236, -2.235),
+                (84_086_679_237, -2.435),
+            ] {
+                assert!((super::axler_d_tail(n) - expected).abs() < f64::EPSILON);
+            }
+        }
+        #[test]
+        fn mutation_nth_prime_upper_boundary() {
+            assert_eq!(super::nth_prime_upper(306), 2_029);
+        }
+    };
+    (almost) => {
+        #[test]
+        fn mutation_interpolation_bracket_repairs() {
+            // Exact count is the identity. Deliberately poor estimates force
+            // the same bracket repair paths as the C callback algorithm.
+            for estimate in [
+                |n: u64| if n == 100_000 { 50_000 } else { 200_000 },
+                |n: u64| if n == 100_000 { 150_000 } else { 0 },
+            ] {
+                assert_eq!(
+                    super::interpolate_approx_with(100_000, estimate, |x| x, |_| true),
+                    100_000
+                );
+            }
+        }
+    };
+    (real) => {
+        #[test]
+        #[allow(clippy::cast_precision_loss)]
+        fn mutation_harmreal_asymptotic_boundary() {
+            for n in [2003_u64, 10_000, u64::MAX] {
+                let expected = (1..=n.min(10_000)).map(|k| 1.0 / k as f64).sum::<f64>();
+                if n <= 10_000 {
+                    assert!((super::harmreal(n) - expected).abs() < 1e-12);
+                } else {
+                    assert!(super::harmreal(n).is_finite());
+                }
+            }
+        }
+    };
 }

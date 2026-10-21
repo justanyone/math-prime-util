@@ -840,3 +840,13 @@ mod tests {
         assert_eq!(inverse(0, 10, 3, |_| None), 10);
     }
 }
+
+#[cfg(test)]
+mod estimate_mutation_tests {
+    use crate as math_prime_util;
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/mutants_estimates.rs"
+    ));
+    private_estimate_tests!(lucky);
+}

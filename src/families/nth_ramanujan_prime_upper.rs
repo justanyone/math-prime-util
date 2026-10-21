@@ -384,3 +384,13 @@ mod tests {
         assert_eq!(ceil_u64(1.1), 2);
     }
 }
+
+#[cfg(test)]
+mod estimate_mutation_tests {
+    use crate as math_prime_util;
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/mutants_estimates.rs"
+    ));
+    private_estimate_tests!(ramanujan);
+}

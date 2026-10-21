@@ -121,9 +121,24 @@ pub fn nth_almost_prime(k: u32, n: u64) -> Option<u64> {
     Some(hi)
 }
 
-// MPU inverse_interpolate.c: interpolate_with_approx, tolerance 20000.
+/// MPU `inverse_interpolate.c`, `interpolate_with_approx`, tolerance 20000.
 fn interpolate_approx(k: u32, n: u64) -> u64 {
     let nth = |v| super::nth_almost_prime_approx(k, v).unwrap_or(0);
+    interpolate_approx_with(
+        n,
+        nth,
+        |x| exact_count(k, x),
+        |x| crate::is_almost_prime(u64::from(k), x),
+    )
+}
+
+/// MPU `inverse_interpolate.c`, `interpolate_with_approx`.
+fn interpolate_approx_with(
+    n: u64,
+    nth: impl Fn(u64) -> u64,
+    exact_count: impl Fn(u64) -> u64,
+    is_almost_prime: impl Fn(u64) -> bool,
+) -> u64 {
     let original = nth(n);
     let mut guess = original;
     let mut count = 0;
@@ -132,7 +147,7 @@ fn interpolate_approx(k: u32, n: u64) -> u64 {
     let mut iterations = 0;
     for _ in 2..20 {
         iterations += 1;
-        count = exact_count(k, guess);
+        count = exact_count(guess);
         if n.abs_diff(count) < 20_000 {
             break;
         }
@@ -162,27 +177,37 @@ fn interpolate_approx(k: u32, n: u64) -> u64 {
         }
     }
     if iterations == 18 {
-        count = exact_count(k, guess);
+        count = exact_count(guess);
     }
     if count < n {
         while count < n {
             guess += 1;
-            while !crate::is_almost_prime(u64::from(k), guess) {
+            while !is_almost_prime(guess) {
                 guess += 1;
             }
             count += 1;
         }
     } else {
-        while !crate::is_almost_prime(u64::from(k), guess) {
+        while !is_almost_prime(guess) {
             guess -= 1;
         }
         while count > n {
             guess -= 1;
-            while !crate::is_almost_prime(u64::from(k), guess) {
+            while !is_almost_prime(guess) {
                 guess -= 1;
             }
             count -= 1;
         }
     }
     guess
+}
+
+#[cfg(test)]
+mod estimate_mutation_tests {
+    use crate as math_prime_util;
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/mutants_estimates.rs"
+    ));
+    private_estimate_tests!(almost);
 }

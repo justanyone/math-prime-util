@@ -95,7 +95,7 @@ macro_rules! private_estimate_tests {
         #[test]
         fn mutation_nth_prime_upper_boundary() {
             assert_eq!(super::nth_prime_upper(306), 2_017);
-            assert_eq!(super::nth_prime_upper(15_360), 0);
+            assert_eq!(super::nth_prime_upper(15_360), 168_432);
         }
     };
     (almost) => {

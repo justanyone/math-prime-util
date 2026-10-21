@@ -153,3 +153,42 @@ fn ramanujan_upper_at_prime_bound_transition() {
         math_prime_util::nth_prime_upper(15_360)
     );
 }
+
+#[test]
+fn lucky_estimates_at_every_fit_boundary() {
+    // MPU lucky_numbers.c::_simple_lucky_count_approx supplies the lower
+    // search endpoint. Check all public estimates on both sides of each fit.
+    for n in [
+        999_999,
+        1_000_000,
+        1_000_001,
+        9_999_999,
+        10_000_000,
+        10_000_001,
+        99_999_999,
+        100_000_000,
+        100_000_001,
+        3_999_999_999,
+        4_000_000_000,
+        4_000_000_001,
+    ] {
+        let lower = lucky_count_lower(n);
+        let approx = lucky_count_approx(n);
+        let upper = lucky_count_upper(n);
+        assert!(lower <= approx, "n={n}: lower={lower}, approx={approx}");
+        assert!(approx <= upper, "n={n}: approx={approx}, upper={upper}");
+    }
+}
+
+#[test]
+fn fourth_almost_primes_match_independent_factor_counts() {
+    // MPU almost_primes.c::nth_almost_prime also uses interpolation for k=4.
+    let omega = omega_table(4_000_000);
+    for n in [8, 20_000, 100_000, 200_000, 400_000] {
+        assert_eq!(
+            nth_almost_prime(4, n as u64),
+            Some(brute_nth_almost(&omega, 4, n)),
+            "n={n}"
+        );
+    }
+}

@@ -16,3 +16,4 @@ Progress checkpoint: added three passing regressions; removed one equivalent mut
 Final source now omits the equivalent guard. Formatting passes; focused tests rerun after the source change. Mutation baseline and MSRV build are still active.
 MSRV build passed. The required gate is now running the full suite against the final source.
 Validation continues offline: baseline mutation build and full-suite compilation are active. No external services or fixture generators were used.
+Final all-features clippy requested after guard removal. Builds are sharing the available CPU; no verification result is being inferred from compilation alone.

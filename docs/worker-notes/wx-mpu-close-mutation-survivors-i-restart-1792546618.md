@@ -24,3 +24,5 @@ Initial cargo-mutants builds all integration targets despite test filter. Starte
 Corrected mutation command uses -C --lib so the build phase is also restricted. Full gate integration tests continue without failures.
 About five minutes remain. The initial mutation baseline passed after 292 seconds of build time; the corrected thirteen-mutant library run is also active. Gate still running the full suite.
 Waiting for final mutation outcomes. Focused tests, final clippy, and MSRV have passed; the full gate remains active.
+Corrected mutation baseline passed in 38 seconds, but worker log creation failed with disk quota exceeded in /tmp. Restarted using task-local target scratch/output paths; no external files were deleted.
+The /tmp disk-quota failure is recorded, not counted as a mutation kill. Worktree-local verification is running with the same thirteen selectors.

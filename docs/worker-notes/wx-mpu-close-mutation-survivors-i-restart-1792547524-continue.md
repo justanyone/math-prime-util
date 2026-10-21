@@ -41,3 +41,6 @@ KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on di
 The nth-prime boundary mutant returns 168418 instead of 168432: it tightens the bound by 14. Both arise from the existing C upper-bound constructions. The surviving harmonic mutant changes termination work, not its f64 value; literal 13/13  <<cut 74 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 50 bytes)
+Independent byte sieve gives p_15360=168281, below both original 168432 and mutant 168418; that comparison mutant preserves a valid, tighter bound. Full gate tests are at the slow prime_count oracle case; no failures reported. No further co <<cut 21 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed -3 bytes)

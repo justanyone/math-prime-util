@@ -1,4 +1,9 @@
 //! Regression tests for exact certificate and rejection-sampling boundaries.
+//!
+//! The proving cases cover both Hasse bounds, BLS trial remainders, sextic
+//! twists, and multiplication by the zero polynomial on either side.
+//! The random cases cover the rejection tail, modular reduction, the last
+//! interval bin, product bounds, strict acceptance, base two, and small factors.
 #[allow(unused_macros)]
 macro_rules! proving_cases {
     () => {
@@ -136,6 +141,19 @@ macro_rules! random_cases {
             assert_eq!(result, (2_u8.into(), vec![2_u8.into()]));
             assert_eq!(draws.next(), None);
         }
+        #[test]
+        fn factored_sampler_unit_limit_has_empty_factorization() {
+            let mut calls = 0;
+            let result = super::random_factored_integer_with(&1_u8.into(), |bound| {
+                calls += 1;
+                assert_eq!(*bound, 1_u8.into());
+                assert_eq!(calls, 1);
+                0_u8.into()
+            });
+            assert_eq!(result, (1_u8.into(), vec![]));
+            assert_eq!(calls, 1);
+        }
+
         #[test]
         fn factored_sampler_accepts_product_equal_to_limit() {
             let mut draws = [4_u8, 1, 0, 9].into_iter();

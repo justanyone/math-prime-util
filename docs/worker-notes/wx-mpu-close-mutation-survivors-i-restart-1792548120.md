@@ -4,3 +4,4 @@ I will run focused offline tests, the gate, and a two-job mutation rerun.
 The requested new test path already exists in this restarted checkout; I will finish it in place.
 Reviewed existing deterministic cases; focused tests are running. Next I will target the 14 exact operator changes with cargo-mutants.
 The initial filter matched no tests; corrected it to mutation_regressions. The gate is running. One listed guard was removed in the inherited change as equivalent; I will record that exception explicitly.
+All 13 inherited regressions pass. Added a deterministic unit-limit case for empty factorization. cargo-mutants rejects --offline; using CARGO_NET_OFFLINE=true instead.

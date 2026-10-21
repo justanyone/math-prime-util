@@ -8,3 +8,5 @@ Nine focused tests pass. Clippy default and bigint pass. Added precise Axler bou
 Classification: lucky simple_approx n<7 is unreachable through public APIs (small tables; simple_lower calls it only above 9000). Its comparison mutant cannot be killed by a public API test.
 Classification: harmreal < to == adds terms below 1e-44 to an accumulated correction of at least about 1e-40, or to a much larger correction. These additions do not change the returned f64 at tested boundaries.
 The four interpolation mutations alter fallback guesses. Exact counting and final traversal can still recover the exact nth value. A surviving fallback mutation alone does not prove the returned result is wrong.
+Mutation baseline failed before testing any mutant: copied target plus all test builds exceeded the sandbox disk quota. Retry with no target copy, no debug info, no incremental state, and only the new integration-test target.
+Gate has passed fmt, all four clippy feature sets, and the MSRV build; its all-features test stage is running.

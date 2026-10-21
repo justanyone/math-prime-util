@@ -2,6 +2,12 @@
 //! Ramanujan-upper and almost-prime families. They use only the public
 //! API, so they check results at the boundary inputs the helpers serve.
 
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+
 use math_prime_util::*;
 
 /// Direct harmonic sum, used as the reference for `harmreal`.
@@ -15,7 +21,10 @@ fn harmreal_matches_direct_sum_across_split() {
     for n in [1, 2, 2002, 2003, 2004, 5000, 100_000] {
         let got = harmreal(n);
         let want = direct_harmonic(n);
-        assert!((got - want).abs() < 1e-9, "harmreal({n}) = {got}, want {want}");
+        assert!(
+            (got - want).abs() < 1e-9,
+            "harmreal({n}) = {got}, want {want}"
+        );
     }
 }
 
@@ -36,7 +45,10 @@ fn nth_ramanujan_prime_upper_bounds_known_values() {
     for (i, &r) in known.iter().enumerate() {
         let n = i as u64 + 1;
         let upper = nth_ramanujan_prime_upper(n).expect("in range");
-        assert!(upper >= r, "nth_ramanujan_prime_upper({n}) = {upper} < R_n = {r}");
+        assert!(
+            upper >= r,
+            "nth_ramanujan_prime_upper({n}) = {upper} < R_n = {r}"
+        );
     }
 }
 
@@ -66,5 +78,53 @@ fn nth_lucky_returns_lucky_values() {
     for n in 1..=50 {
         let v = nth_lucky(n).expect("in range");
         assert!(is_lucky(v), "nth_lucky({n}) = {v} is not lucky");
+    }
+}
+
+// MPU lucky_numbers.c: _simple_lucky_count_approx, composed with the
+// lower/upper midpoint used by lucky_count_approx. Pin both sides of
+// each fit change. Bounds alone cannot detect a looser valid estimate.
+#[test]
+fn lucky_estimate_fit_boundaries() {
+    for n in [
+        1_000_001_u64,
+        9_999_999,
+        10_000_000,
+        10_000_001,
+        99_999_999,
+        100_000_000,
+        100_000_001,
+        4_000_000_000,
+    ] {
+        let x = n as f64;
+        let logn = x.ln();
+        let factor = if n <= 10_000_000 {
+            1.035_23 - logn / 305.0
+        } else if n <= 100_000_000 {
+            1.034_32 - logn / 304.0
+        } else {
+            1.036_13 - logn / (100.0 * logn.ln())
+        };
+        let simple = (factor * x / logn) as u64;
+        let lower = (0.99 * simple as f64) as u64;
+        let a = if n < 10_017_000 {
+            0.580_03 - 3.00e-9 * (x - 7000.0)
+        } else {
+            0.55
+        };
+        let upper = (x / (1.065 * logn - a - 3.1 / logn - 2.85 / (logn * logn))) as u64;
+        assert_eq!(lucky_count_approx(n), (lower + upper) / 2, "n={n}");
+    }
+}
+
+// MPU inverse_interpolate.c: interpolate_with_approx. Check the rank
+// after interpolation rather than just membership in the sequence.
+#[test]
+fn almost_prime_interpolation_preserves_rank() {
+    for (k, n) in [(3, 100_000), (4, 100_000), (3, 1_000_000), (4, 1_000_000)] {
+        let value = nth_almost_prime(k, n).expect("in range");
+        assert!(is_almost_prime(u64::from(k), value));
+        assert_eq!(almost_prime_count(k, value), n, "k={k}, n={n}");
+        assert_eq!(almost_prime_count(k, value - 1), n - 1);
     }
 }

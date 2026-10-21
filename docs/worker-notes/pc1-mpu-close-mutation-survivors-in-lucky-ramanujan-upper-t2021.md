@@ -46,3 +46,5 @@ Stronger formal resolution of lucky:337 and lucky:339: their reached input inter
 Stronger formal resolution of real:763: the first correction has magnitude a=1/(12*n^2), and is never below 1e-44 for any native n. For a later term with denominator d and power n^(2j+2), j>=1, being below 1e-44 implies its ratio to a is at <<cut 501 chars by kit>>
 
 KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 740 bytes)
+Minute update: full validation has reached bigint property tests and continues; no green marker yet. Formal notes now establish unreachable lucky n=7, valid zero lower endpoints for both multiplication mutants, and f64 equivalence of the harmonic cutoff mutant.
+Required final gate completed successfully and printed == gate: green (fmt, all clippy feature sets, MSRV, all-features tests and docs). The explicit tools/test.sh whole-suite invocation is still finishing; task remains PARTIAL because mutation acceptance is unmet.

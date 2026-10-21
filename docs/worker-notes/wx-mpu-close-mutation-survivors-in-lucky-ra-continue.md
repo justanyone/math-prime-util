@@ -10,3 +10,4 @@ Classification: harmreal < to == adds terms below 1e-44 to an accumulated correc
 The four interpolation mutations alter fallback guesses. Exact counting and final traversal can still recover the exact nth value. A surviving fallback mutation alone does not prove the returned result is wrong.
 Mutation baseline failed before testing any mutant: copied target plus all test builds exceeded the sandbox disk quota. Retry with no target copy, no debug info, no incremental state, and only the new integration-test target.
 Gate has passed fmt, all four clippy feature sets, and the MSRV build; its all-features test stage is running.
+Retry now runs offline with debug/incremental output disabled. No production source has changed; the tests preserve the C algorithms and do not add observability hooks solely to kill equivalent mutants.

@@ -1,5 +1,5 @@
-//! Tests that kill cargo-mutants survivors in the lucky, Ramanujan-upper,
-//! almost-prime and harmonic estimate code. Each test uses only the public API.
+//! Regression tests for lucky, Ramanujan-upper, almost-prime, and harmonic
+//! estimates. Each test uses only the public API.
 
 use math_prime_util::{
     harmreal, lucky_count, lucky_count_approx, lucky_count_lower, lucky_count_upper,
@@ -44,7 +44,7 @@ fn brute_nth_almost(omega: &[u8], k: u8, n: usize) -> u64 {
 
 #[test]
 fn nth_almost_prime_matches_brute_force_for_large_n() {
-    // Large n drives the interpolation path in interpolate_approx.
+    // k = 3 uses interpolate_approx; k = 2 uses the semiprime path.
     let omega = omega_table(4_000_000);
     for &(k, n) in &[
         (2u8, 1usize),
@@ -81,7 +81,7 @@ fn lucky_bounds_sandwich_exact_count_near_regime_edges() {
 
 #[test]
 fn lucky_small_n_below_seven_uses_exact_table() {
-    // simple_approx branch n < 7 and simple_lower branch n <= 6.
+    // Public callers use SMALL_LUCKY_COUNT here, bypassing simple_approx.
     for n in 1u64..=7 {
         assert_eq!(lucky_count_lower(n), lucky_count(n), "n={n}");
     }

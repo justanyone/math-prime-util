@@ -45,6 +45,18 @@ macro_rules! proving_cases {
 macro_rules! random_cases {
     () => {
         #[test]
+        fn miller_rabin_lowest_draw_is_base_two() {
+            let n = (num_bigint::BigUint::from(1_u8) << 127_u8) - 1_u8;
+            assert_eq!(
+                super::miller_rabin_random_with(&n, 1, |bound| {
+                    assert_eq!(*bound, &n - 2_u8);
+                    0_u8.into()
+                }),
+                Some(1)
+            );
+        }
+
+        #[test]
         fn modulus_rejects_incomplete_tail_and_reduces_the_draw() {
             let n = (num_bigint::BigUint::from(1_u8) << 64_u8) + 13_u8;
             let mut calls = 0;
@@ -86,6 +98,19 @@ fn seeded_large_random_results_replay() {
     math_prime_util::srand(17);
     let prime = random_prime(&low, &high).expect("prime");
     assert!(prime >= low && prime <= high);
+    math_prime_util::srand(17);
+    // This interval has 2^65 odd candidates in 2^33 equal bins.
+    let bins = BigUint::from(1_u8) << 33_u8;
+    let part = math_prime_util::bigint::random::urandomm(&bins);
+    let bin_low = &low + 1_u8 + (part << 33_u8);
+    let bin_size = BigUint::from(1_u8) << 32_u8;
+    let expected = loop {
+        let candidate = &bin_low + (math_prime_util::bigint::random::urandomm(&bin_size) << 1_u8);
+        if math_prime_util::bigint::primality::is_prob_prime(&candidate) != 0 {
+            break candidate;
+        }
+    };
+    assert_eq!(prime, expected);
     assert_eq!(miller_rabin_random(&prime, 3), Some(1));
     let semiprime = random_unrestricted_semiprime(65).expect("semiprime");
     assert_eq!(semiprime.bits(), 65);

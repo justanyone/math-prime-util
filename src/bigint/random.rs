@@ -596,8 +596,17 @@ pub fn miller_rabin_random(n: &BigUint, bases: u64) -> Option<u8> {
     if let Ok(n) = u64::try_from(n) {
         return crate::miller_rabin_random(u128::from(n), bases);
     }
+    miller_rabin_random_with(n, bases, urandomm)
+}
+
+/// Base sampling from `reference/mpu/lib/Math/Prime/Util/PP.pm::miller_rabin_random`.
+fn miller_rabin_random_with(
+    n: &BigUint,
+    bases: u64,
+    mut draw: impl FnMut(&BigUint) -> BigUint,
+) -> Option<u8> {
     for _ in 0..bases {
-        let base = urandomm(&(n - 2_u8)) + 2_u8;
+        let base = draw(&(n - 2_u8)) + 2_u8;
         if !is_strong_pseudoprime(n, &[base]) {
             return Some(0);
         }
@@ -724,6 +733,7 @@ mod tests {
 
 #[cfg(all(test, feature = "bigint"))]
 mod mutation_regressions {
+    use crate as math_prime_util;
     include!("../../tests/mutants_proving_random.rs");
     random_cases!();
 }

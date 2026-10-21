@@ -25,3 +25,4 @@ Recorded all 13 boundary assessments. Cargo-mutants confirms the harmonic equiva
 The second expected equivalent survivor is confirmed: nth_prime_upper < to <= at 306. Remaining mutation cases and offline whole-suite/gate checks are still running.
 Initial mutation summary: 10 caught, 2 equivalent missed, 1 unviable (span addition). Inspecting that build failure before deciding whether to rerun it.
 The unviable span-addition mutant failed in unrelated integration-target linking (rust-lld bus error), not Rust compilation. Rerunning only that mutant with --cargo-arg=--lib and two build jobs.
+Gate clippy checks are complete and gate tests are progressing. The narrowed span-addition mutation rerun is building without integration targets.

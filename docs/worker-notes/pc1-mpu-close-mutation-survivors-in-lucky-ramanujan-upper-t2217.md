@@ -12,3 +12,4 @@ Validation checkpoint: full gate and targeted mutations still running; monitorin
 Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.
 Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.
 Fresh mutation run complete: 13 tested, 13 caught, zero missed/timeouts/unviable. Focused lib tests: 37 passed. Gate passed fmt, all clippy configurations and MSRV; count compatibility oracle remains active. No incorrect original numerical bound established and no source fix needed in this continuation.
+Gate checkpoint: waiting for complete all-features suite and docs; all targeted mutations already caught and no new source changes required.

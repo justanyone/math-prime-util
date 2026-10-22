@@ -13,3 +13,5 @@ Full gate is still running count compatibility tests; no failures reported. No s
 Gate checkpoint: prime_count_oracle remains active (over 60 seconds); other count oracle tests passed. Fresh mutation result remains 13/13 and focused tests 37/37.
 Gate passed the long count suite and advanced through factor oracle tests; no failures. Awaiting remaining compatibility/property tests, doctests and documentation.
 Gate reached property tests after compatibility suites passed. No failures reported; awaiting gate completion and the explicit green marker.
+About five minutes remain; validation completed early: tools/gate.sh exited 0 and printed == gate: green.
+Final: 37 focused tests passed; fresh exact four-file cargo-mutants caught all 13 targets, zero misses/timeouts/unviable; gate passed fmt, all clippy configurations, MSRV, full all-features tests, doctests and docs. No incorrect unmutated bound found. No existing test files edited, no READY marking, no git writes.

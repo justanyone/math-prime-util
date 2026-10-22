@@ -19,3 +19,9 @@ Gate remains on bigint native_agreement, with no reported failure; preserving th
 Full gate still waits on the same bigint native_agreement test; no failure or green marker reported yet. All task-specific checks are complete.
 Confirmed cargo-mutants exit 0: 13 tested, 13 caught. Remaining gate stage is tests/prop_bigint_functions.rs::native_agreement; it is still running with no reported failure.
 The long bigint native_agreement test passed; gate advanced to bigint modular-helper property tests, with no failures.
+Final: tools/gate.sh exited 0 and printed == gate: green, including fmt, all four clippy configurations, MSRV build, full all-features tests, doctests and documentation.
+Final targeted verification: tools/test.sh --lib estimate_mutation_tests passed 37 tests; fresh cargo-mutants on the four explicit files tested exactly the 13 requested mutation names, caught all 13 and exited 0.
+Boundary assessment retained: lucky mutations change approximations or loosen checked lower bounds; the 15,360 prime-upper mutation preserves an upper bound but changes tightness; harmonic cutoff is numerically inert but wastes evaluation;  <<cut 291 chars by kit>>
+Final state: no source or existing test edits needed in this continuation; only this required progress note was added. No READY marking, commits or pushes performed.
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 266 bytes)

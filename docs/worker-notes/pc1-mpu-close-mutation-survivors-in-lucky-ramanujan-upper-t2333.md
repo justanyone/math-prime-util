@@ -14,3 +14,4 @@ Gate checkpoint: prime_count_oracle has exceeded 60 seconds; all completed count
 Gate passed the count suite and advanced through factor compatibility tests without failures. Awaiting the remaining full-suite, doctest and docs stages; no git writes performed.
 Gate checkpoint: bigint compatibility suites are passing, with no failures reported. Full green marker remains pending; targeted mutation and focused-test verification are complete.
 Gate continues through compatibility and bigint tests without failures; waiting for full completion. No source changes are required by the verification results so far.
+About five minutes remain. Gate is running the long bigint native_agreement test (over 60 seconds), with no failures. Focused tests: 37 passed; exact four-file mutation sweep: all 13 caught.

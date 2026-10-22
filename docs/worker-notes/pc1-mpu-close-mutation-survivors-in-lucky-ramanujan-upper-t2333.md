@@ -7,3 +7,5 @@ Fresh focused tests and full gate are running; launched cargo-mutants with the e
 Fresh mutation enumeration selected exactly 13 targets. Focused tests are still building; gate is waiting on Cargo build lock, with no reported failure.
 Focused test process exited successfully; checking the result count. Gate has started compiling clippy dependencies; mutation baseline is building.
 Focused verification confirmed: 37 estimate_mutation_tests passed, zero failures. Awaiting the complete gate and fresh 13-site mutation outcomes.
+Checkpoint: 37 focused tests passed; full gate and fresh mutation sweep remain active with no reported failures.
+Fresh exact four-file cargo-mutants sweep completed: 13 tested, 13 caught. Gate passed fmt, all four clippy configurations and MSRV; full all-features tests are running.

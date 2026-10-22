@@ -15,3 +15,7 @@ Fresh mutation run complete: 13 tested, 13 caught, zero missed/timeouts/unviable
 Gate checkpoint: waiting for complete all-features suite and docs; all targeted mutations already caught and no new source changes required.
 Gate checkpoint: waiting for complete all-features suite and docs; all targeted mutations already caught and no new source changes required.
 Gate checkpoint: waiting for complete all-features suite and docs; all targeted mutations already caught and no new source changes required.
+About five minutes remain: full gate now printed == gate: green; all requested validation finished before the deadline.
+Final validation: tools/test.sh --lib estimate_mutation_tests passed 37 tests; fresh cargo-mutants over the four explicit files tested exactly the 13 listed mutations and caught all 13 (exit 0). tools/gate.sh exited 0 with == gate: green, c <<cut 220 chars by kit>>
+
+KIT NOTE, NOT FILE CONTENT: this output was shortened by the kit; the file on disk is whole; show a part with sed -n A,Bp FILE (kit removed 195 bytes)

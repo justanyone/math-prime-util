@@ -18,3 +18,4 @@ About five minutes remain. Gate is running the long bigint native_agreement test
 Gate remains on bigint native_agreement, with no reported failure; preserving the existing implementation while waiting for the required final marker.
 Full gate still waits on the same bigint native_agreement test; no failure or green marker reported yet. All task-specific checks are complete.
 Confirmed cargo-mutants exit 0: 13 tested, 13 caught. Remaining gate stage is tests/prop_bigint_functions.rs::native_agreement; it is still running with no reported failure.
+The long bigint native_agreement test passed; gate advanced to bigint modular-helper property tests, with no failures.

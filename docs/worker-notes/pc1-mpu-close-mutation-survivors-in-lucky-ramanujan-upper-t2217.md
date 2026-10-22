@@ -10,3 +10,5 @@ Focused lib regressions: 37 passed, 0 failed. Gate and exact 13-site mutants rem
 Gate passed all four clippy feature sets and MSRV 1.85 build; full all-features tests now running. Cargo-mutants baseline passed (39s build, 0s tests); targeted mutations are executing.
 Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.
 Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.
+Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.
+Fresh mutation run complete: 13 tested, 13 caught, zero missed/timeouts/unviable. Focused lib tests: 37 passed. Gate passed fmt, all clippy configurations and MSRV; count compatibility oracle remains active. No incorrect original numerical bound established and no source fix needed in this continuation.

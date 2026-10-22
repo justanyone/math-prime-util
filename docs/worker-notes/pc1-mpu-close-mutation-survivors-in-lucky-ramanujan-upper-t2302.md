@@ -10,3 +10,4 @@ Fresh cargo-mutants selected exactly 13 targets on the four source files. Initia
 Corrected focused tests passed: 37/37. Gate passed fmt, four clippy feature sets and MSRV, and is running the full suite. Fresh 13-site mutation baseline passed.
 Fresh cargo-mutants completed successfully: 13 tested, 13 caught, zero misses/timeouts/unviable. Command used --no-config --all-features -C --offline -C --lib, four explicit -f paths, exact site regex, and -- estimate_mutation_tests.
 Full gate is still running count compatibility tests; no failures reported. No source or existing test edits are needed in this continuation.
+Gate checkpoint: prime_count_oracle remains active (over 60 seconds); other count oracle tests passed. Fresh mutation result remains 13/13 and focused tests 37/37.

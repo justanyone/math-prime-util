@@ -11,3 +11,4 @@ Corrected focused tests passed: 37/37. Gate passed fmt, four clippy feature sets
 Fresh cargo-mutants completed successfully: 13 tested, 13 caught, zero misses/timeouts/unviable. Command used --no-config --all-features -C --offline -C --lib, four explicit -f paths, exact site regex, and -- estimate_mutation_tests.
 Full gate is still running count compatibility tests; no failures reported. No source or existing test edits are needed in this continuation.
 Gate checkpoint: prime_count_oracle remains active (over 60 seconds); other count oracle tests passed. Fresh mutation result remains 13/13 and focused tests 37/37.
+Gate passed the long count suite and advanced through factor oracle tests; no failures. Awaiting remaining compatibility/property tests, doctests and documentation.

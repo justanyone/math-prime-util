@@ -8,3 +8,5 @@ All 13 archived outcomes map to the requested sites. Preparing a fresh four-file
 - 2026-10-22T04:05:24Z launcher: no commit for 60 s; 182 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2302.md.
 Fresh cargo-mutants selected exactly 13 targets on the four source files. Initial zero-match filter finished; corrected private filter is queued, and gate has progressed into clippy checks.
 Corrected focused tests passed: 37/37. Gate passed fmt, four clippy feature sets and MSRV, and is running the full suite. Fresh 13-site mutation baseline passed.
+Fresh cargo-mutants completed successfully: 13 tested, 13 caught, zero misses/timeouts/unviable. Command used --no-config --all-features -C --offline -C --lib, four explicit -f paths, exact site regex, and -- estimate_mutation_tests.
+Full gate is still running count compatibility tests; no failures reported. No source or existing test edits are needed in this continuation.

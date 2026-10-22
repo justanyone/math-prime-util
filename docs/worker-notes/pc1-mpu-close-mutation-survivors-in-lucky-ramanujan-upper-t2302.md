@@ -12,3 +12,4 @@ Fresh cargo-mutants completed successfully: 13 tested, 13 caught, zero misses/ti
 Full gate is still running count compatibility tests; no failures reported. No source or existing test edits are needed in this continuation.
 Gate checkpoint: prime_count_oracle remains active (over 60 seconds); other count oracle tests passed. Fresh mutation result remains 13/13 and focused tests 37/37.
 Gate passed the long count suite and advanced through factor oracle tests; no failures. Awaiting remaining compatibility/property tests, doctests and documentation.
+Gate reached property tests after compatibility suites passed. No failures reported; awaiting gate completion and the explicit green marker.

@@ -10,3 +10,4 @@ Focused verification confirmed: 37 estimate_mutation_tests passed, zero failures
 Checkpoint: 37 focused tests passed; full gate and fresh mutation sweep remain active with no reported failures.
 Fresh exact four-file cargo-mutants sweep completed: 13 tested, 13 caught. Gate passed fmt, all four clippy configurations and MSRV; full all-features tests are running.
 Full gate checkpoint: count compatibility tests are passing; waiting for the long prime-count oracle. Mutation sweep remains 13/13 caught and focused tests 37/37 passed.
+Gate checkpoint: prime_count_oracle has exceeded 60 seconds; all completed count tests passed. No additional code changes or tests are needed while awaiting gate completion.

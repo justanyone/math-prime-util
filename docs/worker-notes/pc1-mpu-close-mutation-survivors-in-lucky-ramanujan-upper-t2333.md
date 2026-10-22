@@ -16,3 +16,4 @@ Gate checkpoint: bigint compatibility suites are passing, with no failures repor
 Gate continues through compatibility and bigint tests without failures; waiting for full completion. No source changes are required by the verification results so far.
 About five minutes remain. Gate is running the long bigint native_agreement test (over 60 seconds), with no failures. Focused tests: 37 passed; exact four-file mutation sweep: all 13 caught.
 Gate remains on bigint native_agreement, with no reported failure; preserving the existing implementation while waiting for the required final marker.
+Full gate still waits on the same bigint native_agreement test; no failure or green marker reported yet. All task-specific checks are complete.

@@ -9,3 +9,4 @@ Exact 13-site mutation run started with four explicit source paths, lib-only tes
 Focused lib regressions: 37 passed, 0 failed. Gate and exact 13-site mutants remain active, with no failure observed; awaiting compilation and full-suite completion.
 Gate passed all four clippy feature sets and MSRV 1.85 build; full all-features tests now running. Cargo-mutants baseline passed (39s build, 0s tests); targeted mutations are executing.
 Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.
+Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.

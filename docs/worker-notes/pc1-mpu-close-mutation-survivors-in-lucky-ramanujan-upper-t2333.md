@@ -11,3 +11,4 @@ Checkpoint: 37 focused tests passed; full gate and fresh mutation sweep remain a
 Fresh exact four-file cargo-mutants sweep completed: 13 tested, 13 caught. Gate passed fmt, all four clippy configurations and MSRV; full all-features tests are running.
 Full gate checkpoint: count compatibility tests are passing; waiting for the long prime-count oracle. Mutation sweep remains 13/13 caught and focused tests 37/37 passed.
 Gate checkpoint: prime_count_oracle has exceeded 60 seconds; all completed count tests passed. No additional code changes or tests are needed while awaiting gate completion.
+Gate passed the count suite and advanced through factor compatibility tests without failures. Awaiting the remaining full-suite, doctest and docs stages; no git writes performed.

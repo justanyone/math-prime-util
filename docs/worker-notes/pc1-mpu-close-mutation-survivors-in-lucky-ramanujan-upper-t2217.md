@@ -8,3 +8,4 @@ Exact 13-site mutation run started with four explicit source paths, lib-only tes
 - 2026-10-22T03:20:58Z launcher: no commit for 60 s; 183 s elapsed. Files changed so far: docs/worker-notes/pc1-mpu-close-mutation-survivors-in-lucky-ramanujan-upper-t2217.md.
 Focused lib regressions: 37 passed, 0 failed. Gate and exact 13-site mutants remain active, with no failure observed; awaiting compilation and full-suite completion.
 Gate passed all four clippy feature sets and MSRV 1.85 build; full all-features tests now running. Cargo-mutants baseline passed (39s build, 0s tests); targeted mutations are executing.
+Validation checkpoint: full gate and targeted mutations still running; monitoring logs for failures and completion.

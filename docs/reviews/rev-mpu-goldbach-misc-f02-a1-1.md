@@ -1,0 +1,11 @@
+Verdict: FAIL
+
+1. src/families/is_gaussian_prime.rs:197 — Open. The stopped run is incomplete against the acceptance criteria: this new family has no generator section in tools/gen_fixtures.pl, committed tests/fixtures/<family>.tsv, or fixture-consuming compatibility tests in the supplied diff. Handwritten examples and repeat/thread checks do not establish agreement with MPU, especially above u64::MAX. Add generated oracle cases for both public functions, including boundary and hard-factor inputs, and tests that detect incorrect outputs.
+
+2. src/families/is_gaussian_prime.rs:72 — Open. Large norms are accepted solely by seven fixed Miller–Rabin bases. This is a replacement algorithm, not the required MPU port: reference/mpu/XS.xs:2622 dispatches overflowing norms to PP, and reference/mpu/lib/Math/Prime/Util/PP.pm:7627 calls Mis_prime on the norm. The comment claiming the same test is unsupported by that implementation. Restore the reference primality path and verify large prime and pseudoprime norms against generated oracle results; the current tests exercise only one accepted large norm.
+
+3. src/families/is_sum_of_squares.rs:99 — Open. The reference uses factorint (reference/mpu/util.c:3240); this implementation substitutes an unbounded Floyd rho search. Each rho attempt runs until a gcd changes, and pollard retries indefinitely without an iteration budget or fallback. A difficult residual composite can monopolize a call even though the input is a valid u64. Port the reference factoring strategy and add a hard-composite regression with bounded work; the lone roughly 10^10 semiprime test does not cover this behavior.
+
+No earlier findings were supplied. The supplied diff was reviewed for guards, repeated effects, arithmetic bounds, and termination. The small-count guards protect the zero trailing-zero paths, and wide modular sums have room for their carry; those checks do not resolve the open acceptance failures above.
+
+Validation: tools/test.sh --lib is_gaussian_prime completed with zero matching tests on the base checkout. tools/gate.sh passed fmt, clippy and the MSRV build, but remained in prime_count_oracle without printing == gate: green at review completion. The single tools/test.sh full-suite run was also pending. These base-only runs cannot certify candidate code. No code was modified.

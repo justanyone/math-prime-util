@@ -1,0 +1,11 @@
+Verdict: FAIL
+
+1. src/families/powerfree_part_sum.rs:32 — Open. For `k = 2` and `n >= 10_201`, the root exceeds 100, but the port still calls `factor_exponents(j)` separately for every integer through the root. MPU 0.75 switches to `factor_range_init` / `factor_range_next` in `reference/mpu/powerfree.c:207–221`. Large summatory inputs therefore lose the reference's range factorization algorithm, contrary to the required faithful port. Restore that algorithm and test the root-100/101 boundary; the added test uses only root 17 and the benchmark root 100, so neither exercises this reference branch.
+
+2. src/families/powerfree_sum.rs:53 — Open. A valid wide input such as `powerfree_sum(u64::MAX, 2)` requests two vectors of 4,294,967,296 elements each (about 8 GiB total), followed by billions of sieve iterations. This can abort the process on allocation failure despite the documented exact `u128` result. The C function guards large inputs before doing any work (`reference/mpu/powerfree.c:147`); the candidate removes that bound without a bounded-memory replacement or an explicit failure API. Add a practical resource strategy and boundary regression coverage; the added tests only sum through 300.
+
+The stopped run is not complete against the acceptance criteria: the diff retains the above algorithm and resource gaps. No earlier findings were supplied. The three STATUS.md entries are already checked in the candidate, and existing family oracle tests are present; neither establishes that these gaps are fixed. No shared mutable state or duplicate side effects appear in the added repeat/thread paths.
+
+Validation: the checkout is the base, so local test and gate results apply only to the base and cannot certify candidate coverage or correctness. Candidate execution was not performed. Review used the supplied complete diff and targeted reads of the C reference and existing oracle tests.
+
+Local checks: `tools/test.sh powerfree` exited successfully on the base. `tools/gate.sh` failed at clippy on the base's four exact float comparisons in `src/count/mod.rs` and `src/proving/is_aks_prime.rs`; it did not print `== gate: green`. The supplied candidate diff adds the corresponding lint allowances, so this base failure is not an additional candidate finding.

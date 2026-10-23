@@ -1,0 +1,8 @@
+Verdict: FAIL
+
+1. src/modular/cornacchia.rs:23 — Open. `cornacchia(1, 2^61 - 1)` scans more than 1.5 billion candidates before returning `None`. MPU `reference/mpu/util.c:3325` first checks primality and rejects this prime using the Kronecker symbol; it also has a large-composite root path. The candidate ports only the fallback scan, violating the requirement to port the C algorithm as it is and creating a severe runtime regression on valid u64 inputs. Restore those paths and add regression tests for prime rejection and the large-composite path; the small-input property test does not exercise either.
+2. tests/compat_modular.rs:1 — Open. Replacing this file removes the existing `znlog`, `factorialmod`, and `binomialmod` oracle tests. Likewise, tests/prop_modular.rs:5 replaces their recurrence, Pascal, logarithm, zero-modulus, repeat-call, and concurrency tests, plus the Pisano first-period property. Future regressions in these existing exports now pass these suites without the previous checks. Preserve the existing tests alongside the new tests.
+
+The stopped run is not complete against its acceptance criteria: the diff itself demonstrates the open algorithm and regression-coverage requirements above. No earlier review findings were supplied, so there are no earlier fixes to validate with failing-before tests. The checkout is the base; local test results cannot certify the candidate.
+
+Validation: `tools/test.sh tests/compat_modular.rs` passed all eight base tests, including the three deleted oracle tests. `tools/gate.sh` stopped at Clippy float-comparison errors in base `tests/mutants_rest.rs:86,119,121,123`; it did not print `== gate: green`. Neither result is a candidate execution result.

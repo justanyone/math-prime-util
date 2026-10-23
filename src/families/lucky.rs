@@ -840,3 +840,15 @@ mod tests {
         assert_eq!(inverse(0, 10, 3, |_| None), 10);
     }
 }
+
+#[cfg(test)]
+#[macro_use]
+#[allow(clippy::duplicate_mod)]
+#[path = "../../tests/mutants_estimates.rs"]
+mod estimate_mutation_cases;
+
+#[cfg(test)]
+mod estimate_mutation_tests {
+    public_estimate_tests!();
+    private_estimate_tests!(lucky);
+}

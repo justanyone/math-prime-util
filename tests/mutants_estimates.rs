@@ -1,0 +1,291 @@
+//! Regression cases included by the four source modules to test private estimates.
+//! The source modules include these tests to reach private helpers.
+#![allow(unused_macros)]
+
+macro_rules! public_estimate_tests {
+    () => {
+        use crate::{
+            lucky_count, lucky_count_lower, lucky_count_upper, nth_almost_prime, nth_lucky,
+            nth_lucky_lower, nth_lucky_upper, nth_ramanujan_prime_upper,
+        };
+
+        /// `ramanujan_primes.c` `small_ram_primes`, the first 23 Ramanujan primes.
+        const SMALL_RAM: [u64; 23] = [
+            2, 11, 17, 29, 41, 47, 59, 67, 71, 97, 101, 107, 127, 149, 151, 167, 179, 181, 227,
+            229, 233, 239, 241,
+        ];
+
+        /// Lucky count bounds must bracket the exact count across the small-n
+        /// branch (`n < 48`) and the first interpolation steps above it.
+        #[test]
+        fn lucky_count_bounds_bracket_exact_count() {
+            for n in (1..=3_000).chain([4_096, 10_000]) {
+                let exact = lucky_count(n);
+                let lo = lucky_count_lower(n);
+                let hi = lucky_count_upper(n);
+                assert!(lo <= exact, "lower {lo} > exact {exact} at n={n}");
+                assert!(exact <= hi, "exact {exact} > upper {hi} at n={n}");
+            }
+        }
+
+        /// The `n <= 10_000` and `n <= 1_000_000` branch limits of the lucky
+        /// estimate must keep the lower bound below the upper bound.
+        #[test]
+        fn lucky_count_bounds_are_ordered_at_branch_limits() {
+            for n in [
+                10_000,
+                10_001,
+                1_000_000,
+                1_000_001,
+                10_000_000,
+                100_000_000,
+            ] {
+                assert!(lucky_count_lower(n) <= lucky_count_upper(n), "n={n}");
+            }
+        }
+
+        /// `nth_lucky_lower(n) <= nth_lucky(n) <= nth_lucky_upper(n)` for small `n`.
+        #[test]
+        fn nth_lucky_bounds_bracket_exact_value() {
+            for n in 1..=500 {
+                let exact = nth_lucky(n).unwrap_or(u64::MAX);
+                let lo = nth_lucky_lower(n).unwrap_or(0);
+                let hi = nth_lucky_upper(n).unwrap_or(u64::MAX);
+                assert!(lo <= exact, "lower {lo} > exact {exact} at n={n}");
+                assert!(exact <= hi, "exact {exact} > upper {hi} at n={n}");
+            }
+        }
+
+        /// The Ramanujan upper bound must not fall below the known Ramanujan primes
+        /// `R_1` through `R_23`, which sit in the small-n range.
+        #[test]
+        fn ramanujan_upper_bounds_small_ramanujan_primes() {
+            for (i, &r) in SMALL_RAM.iter().enumerate() {
+                let n = (i + 1) as u64;
+                let hi = nth_ramanujan_prime_upper(n).unwrap_or(0);
+                assert!(hi >= r, "upper {hi} < R_{n} = {r}");
+            }
+        }
+
+        /// The Ramanujan upper bound must grow with the index across the Axler
+        /// band edges, where `axler_d_tail` changes its constant.
+        #[test]
+        fn ramanujan_upper_is_increasing_over_small_indices() {
+            let mut prev = 0;
+            for n in 1..=2_000 {
+                let hi = nth_ramanujan_prime_upper(n).unwrap_or(0);
+                assert!(hi > prev, "bound not increasing at n={n}: {hi} <= {prev}");
+                prev = hi;
+            }
+        }
+
+        /// `nth_almost_prime(2, n)` gives the semiprimes in order. The
+        /// interpolation path must land on the exact value for small `n`.
+        #[test]
+        fn nth_almost_prime_k2_matches_semiprimes() {
+            let semis: Vec<u64> = (4..=200u64)
+                .filter(|&m| {
+                    let mut count = 0;
+                    let mut d = 2;
+                    let mut r = m;
+                    while d * d <= r {
+                        while r % d == 0 {
+                            r /= d;
+                            count += 1;
+                        }
+                        d += 1;
+                    }
+                    if r > 1 {
+                        count += 1;
+                    }
+                    count == 2
+                })
+                .collect();
+            for (i, &s) in semis.iter().enumerate() {
+                assert_eq!(nth_almost_prime(2, (i + 1) as u64), Some(s), "n={}", i + 1);
+            }
+        }
+
+        /// `k == 0` and `n == 0` have fixed answers, which the branch checks rely on.
+        #[test]
+        fn nth_almost_prime_edge_inputs() {
+            assert_eq!(nth_almost_prime(0, 1), Some(1));
+            assert_eq!(nth_almost_prime(0, 2), None);
+            assert_eq!(nth_almost_prime(3, 0), None);
+        }
+    };
+}
+
+macro_rules! private_estimate_tests {
+    (lucky) => {
+        #[test]
+        fn lucky_estimate_branch_values() {
+            // MPU lucky_numbers.c, _simple_lucky_count_approx.
+            for (n, expected) in [
+                (6, 2),
+                (7, 3),
+                (10_000, 1124),
+                (10_001, 1081),
+                (1_000_000, 72074),
+                (1_000_001, 71653),
+                (10_000_000, 609491),
+                (10_000_001, 608818),
+                (100_000_000, 5286045),
+                (100_000_001, 5281586),
+            ] {
+                assert_eq!(super::simple_approx(n), expected, "n={n}");
+            }
+        }
+    };
+    (ramanujan) => {
+        #[test]
+        fn ramanujan_tail_boundaries() {
+            // MPU ramanujan_primes.c, nth_ramanujan_prime_upper.
+            assert_eq!(super::axler_d_tail(3_999_654_659), -2.0884);
+            assert_eq!(super::axler_d_tail(3_999_654_660), -2.235);
+            assert_eq!(super::axler_d_tail(28_330_126_673_435), -2.635);
+            assert_eq!(super::axler_d_tail(28_330_126_673_436), -2.735);
+            assert_eq!(super::axler_d_tail(117_462_814_829_787), -2.735);
+            assert_eq!(super::axler_d_tail(117_462_814_829_788), -2.8);
+        }
+
+        #[test]
+        fn ramanujan_prime_upper_306() {
+            // MPU prime_counts.c, nth_prime_upper: exact below 306.
+            // The < -> <= mutant is equivalent: the analytic branch already
+            // returns the exact prime at 306, so both branches return 2017.
+            assert_eq!(super::nth_prime_upper(305), 2011);
+            assert_eq!(super::nth_prime_upper(306), 2017);
+            assert!(super::nth_prime_upper(306) >= crate::nth_prime(306).unwrap());
+        }
+
+        #[test]
+        fn ramanujan_prime_upper_15360() {
+            // MPU prime_counts.c, nth_prime_upper: at 15360 the formula uses
+            // c = 4.80 and d = -51.5928 instead of inverting prime_count_lower.
+            for (n, expected) in [(15_360, 168_432), (15_361, 168_444)] {
+                assert_eq!(super::nth_prime_upper(n), expected, "n={n}");
+                assert!(expected >= crate::nth_prime(n).unwrap(), "n={n}");
+            }
+        }
+    };
+    (almost) => {
+        #[test]
+        fn almost_interpolation_bracket_trace() {
+            // MPU inverse_interpolate.c, interpolate_with_approx.
+            // Monotone counts model a plateau. Estimates overshoot both brackets.
+            let visits = std::cell::RefCell::new(Vec::new());
+            let value = super::interpolate_approx_with(
+                100_000,
+                |n| match n {
+                    120_000 => 110_001,
+                    80_000 => 89_999,
+                    _ => 100_000,
+                },
+                |x| {
+                    visits.borrow_mut().push(x);
+                    if x < 94_999 {
+                        80_000
+                    } else if x < 100_000 {
+                        100_000
+                    } else {
+                        120_000
+                    }
+                },
+                |_| true,
+            );
+            assert_eq!(value, 94_999);
+            assert_eq!(*visits.borrow(), [100_000, 89_999, 94_999]);
+        }
+
+        #[test]
+        fn almost_interpolation_upper_bracket_step() {
+            // MPU inverse_interpolate.c, interpolate_with_approx: an overshoot
+            // with span > tol - 1 must retreat from max by exactly tol - 1.
+            let visits = std::cell::RefCell::new(Vec::new());
+            let value = super::interpolate_approx_with(
+                100_000,
+                |n| match n {
+                    120_000 => 140_000,
+                    80_000 => 50_000,
+                    _ => 100_000,
+                },
+                |x| {
+                    visits.borrow_mut().push(x);
+                    if x < 70_000 {
+                        80_000
+                    } else if x < 100_000 {
+                        100_000
+                    } else {
+                        120_000
+                    }
+                },
+                |_| true,
+            );
+            assert_eq!(value, 80_001);
+            assert_eq!(*visits.borrow(), [100_000, 60_000, 80_001]);
+        }
+    };
+    (real) => {
+        #[test]
+        fn harmonic_expansion_stops_before_consuming_negligible_tail() {
+            // PP.pm::harmreal stops once a term is below the working precision.
+            // At n > 2002 the tail cannot change f64, but continuing wastes work.
+            for (n, expected_terms) in [(2003_u64, 6), (1_000_000, 4), (u64::MAX, 2)] {
+                let visited = std::cell::Cell::new(0);
+                let denominators = [
+                    -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0,
+                    -276.0, 65520.0, -12.0,
+                ]
+                .into_iter()
+                .inspect(|_| visited.set(visited.get() + 1));
+                let x = n as f64;
+                let correction = super::harmonic_correction(x * x, denominators);
+                assert_eq!(visited.get(), expected_terms, "n={n}");
+                assert_eq!(
+                    (correction + 1.0 / (2.0 * x) + super::EULER + x.ln()).to_bits(),
+                    crate::harmreal(n).to_bits(),
+                    "n={n}",
+                );
+            }
+        }
+
+        #[test]
+        fn harmonic_asymptotic_boundary() {
+            let exact: f64 = (1..=2003).map(|n| 1.0 / f64::from(n)).sum();
+            assert!((crate::harmreal(2003) - exact).abs() < 2e-14);
+            assert!(crate::harmreal(u64::MAX).is_finite());
+        }
+
+        #[test]
+        fn harmonic_cutoff_only_discards_unrepresentable_corrections() {
+            // MPU PP.pm::harmreal's asymptotic expansion. Compare the complete
+            // finite expansion with its cutoff, including the first asymptotic
+            // input and inputs where the cutoff moves to an earlier term.
+            // This documents why < -> == at the cutoff cannot be killed by a
+            // numerical assertion: adding the omitted terms leaves f64 intact.
+            for n in [2001_u64, 2003, 10_000, 1_000_000, 1_000_000_000, u64::MAX] {
+                let x = n as f64;
+                let square = x * x;
+                let mut power = square;
+                let mut full = 0.0;
+                let mut cut = 0.0;
+                let mut stopped = false;
+                for denominator in [
+                    -12.0, 120.0, -252.0, 240.0, -132.0, 32760.0, -12.0, 8160.0, -14364.0, 6600.0,
+                    -276.0, 65520.0, -12.0,
+                ] {
+                    let term: f64 = 1.0 / (denominator * power);
+                    stopped |= term.abs() < 1e-44;
+                    full += term;
+                    if !stopped {
+                        cut += term;
+                    }
+                    power *= square;
+                }
+                assert!(stopped, "n={n}");
+                assert_eq!(cut.to_bits(), full.to_bits(), "n={n}");
+            }
+        }
+    };
+}

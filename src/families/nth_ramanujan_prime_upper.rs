@@ -384,3 +384,15 @@ mod tests {
         assert_eq!(ceil_u64(1.1), 2);
     }
 }
+
+#[cfg(test)]
+#[macro_use]
+#[allow(clippy::duplicate_mod)]
+#[path = "../../tests/mutants_estimates.rs"]
+mod estimate_mutation_cases;
+
+#[cfg(test)]
+mod estimate_mutation_tests {
+    public_estimate_tests!();
+    private_estimate_tests!(ramanujan);
+}
